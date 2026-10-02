@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductConfig, productList, products, type ProductSlug } from "@bokang/app-config";
 import { DashboardGrid, MetricCard, ProductShell } from "@bokang/ui";
@@ -28,7 +29,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {config.sector} workspace
         </p>
         <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(30px, 5vw, 48px)" }}>{config.name}</h1>
-        <p style={{ maxWidth: 760, color: "#667085", lineHeight: 1.7 }}>{config.description}</p>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "end", flexWrap: "wrap" }}>
+          <p style={{ maxWidth: 760, color: "#667085", lineHeight: 1.7, marginBottom: 0 }}>{config.description}</p>
+          <Link
+            href={`/products/${config.slug}/admin`}
+            style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 12, padding: "10px 14px", fontWeight: 850 }}
+          >
+            Admin & settings →
+          </Link>
+        </div>
 
         {config.slug === "lex-intake" ? (
           <LexIntakeShowcase />
