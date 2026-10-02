@@ -151,6 +151,7 @@ export function PharmaDeskShowcase() {
               <div style={{height:virtualizer.getTotalSize(),width:"100%",position:"relative"}}>
                 {virtualizer.getVirtualItems().map((virtualRow) => {
                   const medicine = filtered[virtualRow.index];
+                  if (!medicine) return null;
                   return (
                     <div key={medicine.id} style={{
                       position:"absolute",
