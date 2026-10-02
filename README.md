@@ -767,3 +767,36 @@ Operators can configure site profiles for requirements such as:
 - secured cargo.
 
 These are application/site-policy controls and do not replace formal statutory inspection, roadworthiness certification or a mine/operator's official safety procedures.
+
+
+## ExploreBW public safari website
+
+ExploreBW now has a dedicated prospect-facing tourism website instead of inheriting the generic Studio demo layout.
+
+The public experience is designed around how Botswana safari travelers actually research:
+
+```text
+Inspiration
+→ destinations
+→ safari ideas
+→ duration / route / start-end points / price guide
+→ day-by-day itinerary
+→ inclusions / highlights
+→ map
+→ local operator story
+→ direct planning enquiry
+```
+
+### Public routes
+
+- `/demo/explore-bw`
+- `/demo/explore-bw/safaris`
+- `/demo/explore-bw/safaris/<safari>`
+- `/demo/explore-bw/about`
+- `/demo/explore-bw/plan`
+
+The safari planning form is intentionally intent-first. Travelers can begin with trip style, preferred gateway, trip length, party size, date flexibility and comfort level instead of being forced through a full booking form.
+
+The site uses Botswana-specific destination structure around Maun, the Okavango Delta, Khwai/Moremi, Chobe/Kasane and Makgadikgadi. Pricing and package details in the showcase are explicitly illustrative until replaced with verified operator inventory.
+
+The internal ExploreBW operations workspace remains separate and continues to handle bookings, travellers, saved trips, maps and operator analytics.
