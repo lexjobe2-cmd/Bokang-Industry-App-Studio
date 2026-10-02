@@ -77,3 +77,49 @@ export const paymentMethods = [
   "Insurance",
   "Account"
 ] as const;
+
+
+export const legalMatterTypes = [
+  "Corporate & Commercial",
+  "Civil Litigation",
+  "Criminal Defence",
+  "Employment & Labour",
+  "Family Law",
+  "Property & Conveyancing",
+  "Debt Recovery",
+  "Estate & Succession",
+  "Regulatory & Compliance",
+  "Immigration",
+  "Other"
+] as const;
+
+export const legalConsultationModes = [
+  "In person",
+  "Phone",
+  "Video call",
+  "Email review"
+] as const;
+
+export const legalMatterStages = [
+  "New intake",
+  "Conflict check",
+  "Consultation booked",
+  "Engagement pending",
+  "Active matter",
+  "Awaiting client",
+  "Awaiting third party",
+  "Ready to close",
+  "Closed"
+] as const;
+
+export const legalDocumentTypes = [
+  "Identification",
+  "Engagement letter",
+  "Client instruction",
+  "Contract",
+  "Court filing",
+  "Correspondence",
+  "Evidence",
+  "Invoice",
+  "Other"
+] as const;
