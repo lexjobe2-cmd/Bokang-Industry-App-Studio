@@ -93,6 +93,8 @@ export type FleetIncident = {
   category: "Defect" | "Damage" | "Breakdown" | "Safety" | "Other";
   description: string;
   status: "Open" | "Investigating" | "Resolved";
+  resolutionNote?: string;
+  resolvedAt?: string;
 };
 
 export const MOVE_TRACK_KEYS = {
