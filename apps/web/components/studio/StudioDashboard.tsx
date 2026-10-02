@@ -7,6 +7,17 @@ import { defaultDemoConfig, demoParams, type DemoConfig } from "../../lib/demo-c
 
 type Drafts = Record<string, DemoConfig>;
 
+const publicSurfaceLabels: Record<string, string> = {
+  "lex-intake": "Law firm website",
+  "ledger-desk": "Accounting firm website",
+  "tax-flow": "Tax advisory website",
+  "clinic-flow": "Patient-facing clinic website",
+  "pharma-desk": "Community pharmacy website",
+  "build-quote": "Construction company website",
+  "explore-bw": "Safari operator website",
+  "move-track": "Logistics company website",
+};
+
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {
   const [drafts, setDrafts] = useState<Drafts>({});
   const [editing, setEditing] = useState<string | null>(null);
@@ -79,7 +90,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
             Configure, preview and share outreach demos.
           </h1>
           <p style={{ maxWidth: 780, color: "#667085", fontSize: 18, lineHeight: 1.7, margin: 0 }}>
-            Open any app internally, or prepare a prospect-specific showcase before copying the link into your outreach email.
+            Every product now has two deliberately separate surfaces: the internal operating app and an industry-specific public prospect website. Configure the client name once, preview the public site, then copy the current-deployment link into outreach.
           </p>
         </div>
 
@@ -92,8 +103,8 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
 
       <section style={{ marginTop: 22, display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap", background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 14 }}>
         <div>
-          <strong>Prospect intelligence</strong>
-          <div style={{ color: "#667085", fontSize: 12, marginTop: 3 }}>Browse current public Botswana businesses, choose a matching solution, and prepare manual outreach.</div>
+          <strong>Website-gap prospect intelligence</strong>
+          <div style={{ color: "#667085", fontSize: 12, marginTop: 3 }}>Target Botswana businesses whose Google business/search result did not show a website link when checked, then prepare a matching public-site demo and manual outreach.</div>
         </div>
         <a href="/prospects" style={{ background: "#2563eb", color: "#fff", borderRadius: 11, padding: "10px 14px", fontWeight: 900, fontSize: 13 }}>
           View prospects →
@@ -123,10 +134,11 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
                     {product.sector}
                   </span>
                   <span style={{ fontSize: 11, fontWeight: 850, color: "#027a48", background: "#ecfdf3", borderRadius: 999, padding: "5px 8px" }}>
-                    Interactive
+                    Public site ready
                   </span>
                 </div>
                 <h2 style={{ margin: "9px 0 7px", fontSize: 25 }}>{product.name}</h2>
+                <div style={{ color: "#2563eb", fontSize: 12, fontWeight: 850, marginBottom: 7 }}>{publicSurfaceLabels[product.slug] ?? "Industry-specific public website"}</div>
                 <p style={{ color: "#667085", lineHeight: 1.55, fontSize: 14, margin: 0 }}>{product.description}</p>
               </div>
 
@@ -205,11 +217,11 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 8 }}>
                 <a href={`/products/${product.slug}`} style={actionStyle}>
-                  Open <ExternalLink size={14} />
+                  Internal app <ExternalLink size={14} />
                 </a>
-                <a href={`/products/${product.slug}/onboarding`} style={actionStyle}>Setup</a>
+                <a href={`/products/${product.slug}/onboarding`} style={actionStyle}>Client setup</a>
                 <a href={demoPath(product)} target="_blank" rel="noreferrer" style={{ ...actionStyle, background: "#101827", color: "#fff", borderColor: "#101827" }}>
-                  Preview <ExternalLink size={14} />
+                  Public site <ExternalLink size={14} />
                 </a>
               </div>
 
@@ -231,10 +243,9 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
       </section>
 
       <section style={{ marginTop: 26, background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 20, padding: 18 }}>
-        <strong>Outreach workflow</strong>
+        <strong>Public-site routing</strong>
         <p style={{ color: "#475467", lineHeight: 1.65, marginBottom: 0 }}>
-          Configure client demo → preview it yourself → copy/share the generated URL → place that URL in LeadForge outreach.
-          The prospect sees the app presentation you prepared, not this Studio dashboard or its admin/integration foundation.
+          The eight public websites use the current deployment origin plus their dedicated /demo/&lt;product&gt; route. That means the Studio always copies the newest deployed site URL instead of hard-coding temporary Cloudflare preview hosts. Configure client → open public site → copy/share link → use it in manual outreach.
         </p>
       </section>
 
