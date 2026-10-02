@@ -10,7 +10,6 @@ import { BuildQuoteShowcase } from "../../../components/products/BuildQuoteShowc
 import { ExploreBWShowcase } from "../../../components/products/ExploreBWShowcase";
 import { MoveTrackShowcase } from "../../../components/products/MoveTrackShowcase";
 import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataShowcase";
-import { SharedWorkspaceTools } from "../../../components/SharedWorkspaceTools";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -69,8 +68,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             ))}
           </div>
         </section>
-
-        <SharedWorkspaceTools productName={config.name} />
 
         {config.slug === "pharma-desk" ? (
           <section style={{ marginTop: 28, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 22, padding: 22 }}>
