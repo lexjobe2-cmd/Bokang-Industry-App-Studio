@@ -43,7 +43,7 @@
     "@fullcalendar/daygrid": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
     "@fullcalendar/interaction": "^6.1.19",
-    "maplibre-gl": "^5.7.1"
+    "maplibre-gl": "^6.11.2"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
