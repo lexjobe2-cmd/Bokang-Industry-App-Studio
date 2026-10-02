@@ -27,7 +27,8 @@
     "@bokang/domain-data": "workspace:*",
     "@bokang/persistence": "workspace:*",
     "@bokang/coordination": "workspace:*",
-    "@bokang/integrations": "workspace:*"
+    "@bokang/integrations": "workspace:*",
+    "@bokang/prospects": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
