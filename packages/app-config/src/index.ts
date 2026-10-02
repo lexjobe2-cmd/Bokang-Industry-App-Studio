@@ -8,6 +8,16 @@ export type ProductSlug =
   | "explore-bw"
   | "move-track";
 
+export type ProductExperienceProfile = {
+  mood: string;
+  accent: string;
+  surface: string;
+  hero: string;
+  onboarding: readonly string[];
+  signatureFeatures: readonly string[];
+  compliance: readonly string[];
+};
+
 export type ProductConfig = {
   slug: ProductSlug;
   name: string;
@@ -16,10 +26,19 @@ export type ProductConfig = {
   tabs: readonly [string, string, string, string, string];
   modules: readonly string[];
   dashboardMetrics: readonly string[];
+  experience: ProductExperienceProfile;
 };
 
 export const products: Record<ProductSlug, ProductConfig> = {
-  "lex-intake": {
+    experience: {
+      mood: "Quiet authority",
+      accent: "#7c3aed",
+      surface: "#faf7ff",
+      hero: "Confidential client intake and matter clarity.",
+      onboarding: ["Firm profile", "Practice areas", "Conflict-check preferences", "Client intake rules", "Document categories"],
+      signatureFeatures: ["Conflict-check queue", "KYC/identity review", "Matter timeline", "Engagement-letter checklist", "Secure document index"],
+      compliance: ["Client identity review", "Consent and instruction record", "Conflict-check evidence", "Audit trail"]
+    },  "lex-intake": {
     slug: "lex-intake",
     name: "LexIntake AI",
     sector: "Legal",
@@ -28,7 +47,15 @@ export const products: Record<ProductSlug, ProductConfig> = {
     modules: ["Intake", "Consultations", "Clients", "Matters", "Documents", "Tasks", "Billing milestones", "Analytics"],
     dashboardMetrics: ["New enquiries", "Open matters", "Documents awaiting review", "Upcoming consultations"]
   },
-  "ledger-desk": {
+    experience: {
+      mood: "Precision and calm",
+      accent: "#0f766e",
+      surface: "#f0fdfa",
+      hero: "A clean operating desk for recurring finance work.",
+      onboarding: ["Practice profile", "Service catalogue", "Client types", "Recurring work templates", "Document request packs"],
+      signatureFeatures: ["Month-end cockpit", "Document chase board", "Recurring work calendar", "Client completeness score", "Large ledger views"],
+      compliance: ["Client due diligence", "Engagement approval", "Document retention checklist", "Reviewer audit trail"]
+    },  "ledger-desk": {
     slug: "ledger-desk",
     name: "LedgerDesk AI",
     sector: "Accounting",
@@ -37,7 +64,15 @@ export const products: Record<ProductSlug, ProductConfig> = {
     modules: ["Onboarding", "Clients", "Engagements", "Documents", "Recurring work", "Deadlines", "Analytics"],
     dashboardMetrics: ["Active clients", "Open engagements", "Missing documents", "Deadlines this week"]
   },
-  "tax-flow": {
+    experience: {
+      mood: "Deadline confidence",
+      accent: "#b45309",
+      surface: "#fffbeb",
+      hero: "Turn tax obligations into visible, trackable flows.",
+      onboarding: ["Tax practice profile", "Return types", "Tax periods", "Deadline rules", "Document packs"],
+      signatureFeatures: ["Deadline heatmap", "Questionnaire builder", "Readiness score", "Reviewer queue", "Submission evidence"],
+      compliance: ["Taxpayer identity review", "Authority/mandate checklist", "Return sign-off", "Submission audit record"]
+    },  "tax-flow": {
     slug: "tax-flow",
     name: "TaxFlow AI",
     sector: "Tax",
@@ -46,7 +81,15 @@ export const products: Record<ProductSlug, ProductConfig> = {
     modules: ["Questionnaires", "Tax returns", "Documents", "Review", "Submission tracker", "Deadlines", "Analytics"],
     dashboardMetrics: ["Returns in progress", "Ready for review", "Missing documents", "Upcoming deadlines"]
   },
-  "clinic-flow": {
+    experience: {
+      mood: "Human and reassuring",
+      accent: "#0284c7",
+      surface: "#f0f9ff",
+      hero: "A patient-first clinic flow from booking to follow-up.",
+      onboarding: ["Clinic profile", "Practitioners", "Services", "Opening hours", "Appointment rules"],
+      signatureFeatures: ["Touch-friendly schedule", "Patient intake", "Waiting-room status", "Follow-up reminders", "Clinical document index"],
+      compliance: ["Patient consent", "Identity confirmation", "Privacy acknowledgement", "Access audit"]
+    },  "clinic-flow": {
     slug: "clinic-flow",
     name: "ClinicFlow AI",
     sector: "Healthcare",
@@ -55,7 +98,15 @@ export const products: Record<ProductSlug, ProductConfig> = {
     modules: ["Patients", "Practitioners", "Appointments", "Intake", "Documents", "Reminders", "Clinic analytics"],
     dashboardMetrics: ["Appointments today", "Waiting patients", "Practitioners available", "Follow-ups due"]
   },
-  "pharma-desk": {
+    experience: {
+      mood: "Operational clarity",
+      accent: "#059669",
+      surface: "#ecfdf5",
+      hero: "Fast medicine operations with traceable stock.",
+      onboarding: ["Pharmacy profile", "Branches", "Medicine catalogue", "Suppliers", "Stock and expiry rules"],
+      signatureFeatures: ["Barcode/QR scanning", "Virtualized inventory", "Batch and expiry control", "Reorder signals", "Dispensing queue"],
+      compliance: ["Prescription review", "Batch traceability", "Recall/quarantine workflow", "Dispensing audit"]
+    },  "pharma-desk": {
     slug: "pharma-desk",
     name: "PharmaDesk AI",
     sector: "Pharmacy",
@@ -77,7 +128,15 @@ export const products: Record<ProductSlug, ProductConfig> = {
     ],
     dashboardMetrics: ["Medicines in stock", "Low-stock items", "Expiring batches", "Dispensing today"]
   },
-  "build-quote": {
+    experience: {
+      mood: "Industrial and decisive",
+      accent: "#ea580c",
+      surface: "#fff7ed",
+      hero: "Move from site lead to approved quote and visible project.",
+      onboarding: ["Contractor profile", "Trades", "Rate cards", "Service areas", "Quote templates"],
+      signatureFeatures: ["Site-photo intake", "Quote builder", "Material lists", "Milestone board", "Approval signatures"],
+      compliance: ["Client approval", "Site safety checklist", "Variation approval", "Completion evidence"]
+    },  "build-quote": {
     slug: "build-quote",
     name: "BuildQuote AI",
     sector: "Construction",
@@ -86,7 +145,15 @@ export const products: Record<ProductSlug, ProductConfig> = {
     modules: ["Leads", "Site visits", "Quotes", "Projects", "Milestones", "Materials", "Photos", "Client updates", "Analytics"],
     dashboardMetrics: ["Open leads", "Quotes awaiting approval", "Active projects", "Milestones due"]
   },
-  "explore-bw": {
+    experience: {
+      mood: "Editorial and adventurous",
+      accent: "#0f766e",
+      surface: "#f0fdfa",
+      hero: "Discover, compose and sell Botswana experiences beautifully.",
+      onboarding: ["Operator profile", "Destinations", "Experiences", "Capacity rules", "Booking policies"],
+      signatureFeatures: ["Visual itinerary builder", "Map-first discovery", "Traveller profiles", "Saved experiences", "Booking enquiry board"],
+      compliance: ["Traveller consent", "Terms acknowledgement", "Emergency-contact capture", "Supplier confirmation"]
+    },  "explore-bw": {
     slug: "explore-bw",
     name: "ExploreBW AI",
     sector: "Tourism",
@@ -103,7 +170,15 @@ export const products: Record<ProductSlug, ProductConfig> = {
     tabs: ["Home", "Jobs", "Fleet", "Track", "More"],
     modules: ["Quote requests", "Jobs", "Fleet", "Drivers", "Delivery states", "Proof of delivery", "Maintenance", "Analytics"],
     dashboardMetrics: ["Active jobs", "Vehicles available", "Deliveries today", "Maintenance due"]
-  }
+    experience: {
+      mood: "Live operations",
+      accent: "#1d4ed8",
+      surface: "#eff6ff",
+      hero: "A control tower for quotes, vehicles and deliveries.",
+      onboarding: ["Operator profile", "Fleet", "Drivers", "Service zones", "Job rules"],
+      signatureFeatures: ["Dispatch board", "QR proof-of-delivery", "Fleet availability", "Job timeline", "Maintenance alerts"],
+      compliance: ["Driver verification", "Vehicle document checklist", "POD audit", "Incident record"]
+    },  }
 };
 
 export const productList = Object.values(products);
