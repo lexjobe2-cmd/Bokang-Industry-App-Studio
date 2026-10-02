@@ -8,20 +8,35 @@ type OnboardingState = {
   completed: boolean;
   preferredProvider: "google" | "microsoft" | "later";
   storagePolicy: "connected-workspace" | "local-showcase";
+  configuredSteps: string[];
   completedAt?: string;
 };
 
 export function OnboardingFlow({ config }: { config: ProductConfig }) {
   const { session, updateSession } = useStudioSession();
   const [state, setState] = usePersistentState<OnboardingState>(
-    `bokang-studio.${config.slug}.onboarding.v1`,
+    `bokang-studio.${config.slug}.onboarding.v2`,
     {
       completed: false,
       preferredProvider: "later",
       storagePolicy: "connected-workspace",
+      configuredSteps: [],
     }
   );
-  const [step, setStep] = useState(state.completed ? 4 : 1);
+  const totalSteps = config.experience.onboarding.length + 2;
+  const [step, setStep] = useState(state.completed ? totalSteps : 1);
+
+  const domainIndex = step - 2;
+  const domainStep = config.experience.onboarding[domainIndex];
+
+  function toggleDomain(label: string) {
+    setState((current) => ({
+      ...current,
+      configuredSteps: current.configuredSteps.includes(label)
+        ? current.configuredSteps.filter((item) => item !== label)
+        : [...current.configuredSteps, label],
+    }));
+  }
 
   function finish() {
     setState((current) => ({
@@ -29,135 +44,101 @@ export function OnboardingFlow({ config }: { config: ProductConfig }) {
       completed: true,
       completedAt: new Date().toISOString(),
     }));
-    setStep(4);
+    setStep(totalSteps);
   }
 
   return (
-    <section style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 24, padding: 22 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <div>
-          <p style={{ margin: 0, color: "#2563eb", fontSize: 12, fontWeight: 850, textTransform: "uppercase", letterSpacing: 1.4 }}>
-            Workspace onboarding
-          </p>
-          <h2 style={{ marginBottom: 6 }}>Set up {config.name}</h2>
-          <p style={{ color: "#667085", marginTop: 0 }}>Step {step} of 4 · configuration is persisted for this product.</p>
-        </div>
-        {state.completed ? <span style={{ color: "#027a48", fontWeight: 850 }}>✓ Setup complete</span> : null}
-      </div>
+    <section style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 26, overflow: "hidden" }}>
+      <header style={{ padding: 24, background: config.experience.surface, borderBottom: "1px solid #e5e7eb" }}>
+        <p style={{ margin: 0, color: config.experience.accent, fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1.4 }}>
+          {config.experience.mood} onboarding
+        </p>
+        <h1 style={{ margin: "8px 0 6px", fontSize: "clamp(28px,4vw,42px)" }}>{config.experience.hero}</h1>
+        <p style={{ color: "#667085", margin: 0 }}>Step {step} of {totalSteps} · tailored to {config.sector.toLowerCase()} operations.</p>
+      </header>
 
-      {step === 1 ? (
-        <div style={{ display: "grid", gap: 14, marginTop: 20 }}>
-          <label style={{ display: "grid", gap: 6, fontSize: 12, fontWeight: 800 }}>
-            Workspace name
-            <input
-              value={session.workspaceName}
-              onChange={(event) => updateSession({ workspaceName: event.target.value })}
-              style={{ border: "1px solid #d0d5dd", borderRadius: 12, padding: 11 }}
-            />
-          </label>
-          <label style={{ display: "grid", gap: 6, fontSize: 12, fontWeight: 800 }}>
-            Owner / admin
-            <input
-              value={session.displayName}
-              onChange={(event) => updateSession({ displayName: event.target.value })}
-              style={{ border: "1px solid #d0d5dd", borderRadius: 12, padding: 11 }}
-            />
-          </label>
-        </div>
-      ) : null}
+      <div style={{ padding: 24 }}>
+        {step === 1 ? (
+          <div style={{ display: "grid", gap: 14 }}>
+            <h2 style={{ marginTop: 0 }}>Start with the workspace</h2>
+            <label style={fieldLabel}>Workspace name<input value={session.workspaceName} onChange={(e) => updateSession({ workspaceName: e.target.value })} style={inputStyle} /></label>
+            <label style={fieldLabel}>Owner / admin<input value={session.displayName} onChange={(e) => updateSession({ displayName: e.target.value })} style={inputStyle} /></label>
+          </div>
+        ) : null}
 
-      {step === 2 ? (
-        <div style={{ display: "grid", gap: 10, marginTop: 20 }}>
-          {([
-            ["google", "Google Workspace", "Drive · Gmail · Sheets"],
-            ["microsoft", "Microsoft 365", "OneDrive · Excel · Outlook · SharePoint-ready"],
-            ["later", "Choose later", "Continue in local showcase mode for now"],
-          ] as const).map(([value, label, detail]) => (
-            <button
-              key={value}
-              onClick={() => setState((current) => ({ ...current, preferredProvider: value }))}
-              style={{
+        {domainStep ? (
+          <div>
+            <p style={{ color: config.experience.accent, fontWeight: 900, fontSize: 12, textTransform: "uppercase", letterSpacing: 1.2 }}>Industry setup</p>
+            <h2>{domainStep}</h2>
+            <p style={{ color: "#667085", lineHeight: 1.6 }}>
+              Configure this area now or mark it ready and refine the exact values later. The onboarding flow differs by product rather than forcing every industry through the same generic wizard.
+            </p>
+            <button onClick={() => toggleDomain(domainStep)} style={{
+              border: "1px solid #d0d5dd",
+              background: state.configuredSteps.includes(domainStep) ? config.experience.surface : "#fff",
+              color: state.configuredSteps.includes(domainStep) ? config.experience.accent : "#344054",
+              borderRadius: 14,
+              padding: "12px 14px",
+              fontWeight: 850
+            }}>
+              {state.configuredSteps.includes(domainStep) ? "✓ Marked ready" : "Mark this setup area ready"}
+            </button>
+          </div>
+        ) : null}
+
+        {step === totalSteps - 1 ? (
+          <div style={{ display: "grid", gap: 12 }}>
+            <h2 style={{ marginTop: 0 }}>Storage & integrations</h2>
+            <p style={{ color: "#667085" }}>For showcase mode, these choices remain architectural preferences only. No OAuth or Redis connection is required.</p>
+            {([
+              ["google", "Google Workspace", "Drive · Gmail · Sheets"],
+              ["microsoft", "Microsoft 365", "OneDrive · SharePoint · Excel · Outlook"],
+              ["later", "Choose later", "Stay fully local for demonstrations"],
+            ] as const).map(([value, label, detail]) => (
+              <button key={value} onClick={() => setState((c) => ({ ...c, preferredProvider: value }))} style={{
                 border: "1px solid #d0d5dd",
-                background: state.preferredProvider === value ? "#eff8ff" : "#fff",
+                background: state.preferredProvider === value ? config.experience.surface : "#fff",
                 borderRadius: 14,
                 padding: 14,
-                textAlign: "left",
-              }}
-            >
-              <strong>{state.preferredProvider === value ? "✓ " : ""}{label}</strong>
-              <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>{detail}</div>
-            </button>
-          ))}
-        </div>
-      ) : null}
+                textAlign: "left"
+              }}>
+                <strong>{state.preferredProvider === value ? "✓ " : ""}{label}</strong>
+                <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>{detail}</div>
+              </button>
+            ))}
+          </div>
+        ) : null}
 
-      {step === 3 ? (
-        <div style={{ display: "grid", gap: 10, marginTop: 20 }}>
-          <button
-            onClick={() => setState((current) => ({ ...current, storagePolicy: "connected-workspace" }))}
-            style={{
-              border: "1px solid #d0d5dd",
-              background: state.storagePolicy === "connected-workspace" ? "#eff8ff" : "#fff",
-              borderRadius: 14,
-              padding: 14,
-              textAlign: "left",
-            }}
-          >
-            <strong>{state.storagePolicy === "connected-workspace" ? "✓ " : ""}User-owned connected workspace</strong>
-            <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>
-              Recommended: business files stay in the customer&apos;s authorized cloud.
+        {step === totalSteps ? (
+          <div style={{ display: "grid", gap: 14 }}>
+            <div style={{ background: config.experience.surface, borderRadius: 18, padding: 18 }}>
+              <strong>{session.workspaceName || "Workspace"} is ready for the showcase.</strong>
+              <p style={{ color: "#667085", lineHeight: 1.6, marginBottom: 0 }}>
+                {state.configuredSteps.length}/{config.experience.onboarding.length} industry setup areas marked ready. You can revisit onboarding at any time.
+              </p>
             </div>
-          </button>
-          <button
-            onClick={() => setState((current) => ({ ...current, storagePolicy: "local-showcase" }))}
-            style={{
-              border: "1px solid #d0d5dd",
-              background: state.storagePolicy === "local-showcase" ? "#fff7ed" : "#fff",
-              borderRadius: 14,
-              padding: 14,
-              textAlign: "left",
-            }}
-          >
-            <strong>{state.storagePolicy === "local-showcase" ? "✓ " : ""}Local showcase only</strong>
-            <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>
-              Useful for demonstrations; not intended for long-lived sensitive documents.
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {config.experience.signatureFeatures.map((feature) => (
+                <span key={feature} style={{ background: "#f2f4f7", borderRadius: 999, padding: "7px 10px", fontSize: 12, fontWeight: 800 }}>{feature}</span>
+              ))}
             </div>
-          </button>
-        </div>
-      ) : null}
+          </div>
+        ) : null}
 
-      {step === 4 ? (
-        <div style={{ marginTop: 20, padding: 18, background: "#f8fafc", borderRadius: 16 }}>
-          <strong>{session.workspaceName || "Workspace"} is ready.</strong>
-          <p style={{ color: "#667085", lineHeight: 1.6, marginBottom: 0 }}>
-            Preferred data plane: {state.preferredProvider === "google" ? "Google Workspace" : state.preferredProvider === "microsoft" ? "Microsoft 365" : "Not connected yet"}.
-            You can change integrations and access controls from Admin & settings.
-          </p>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginTop: 24 }}>
+          <button disabled={step === 1} onClick={() => setStep((current) => Math.max(1, current - 1))} style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 11, padding: "9px 13px", fontWeight: 800, opacity: step === 1 ? 0.4 : 1 }}>Back</button>
+          {step < totalSteps - 1 ? (
+            <button onClick={() => setStep((current) => current + 1)} style={{ border: 0, background: config.experience.accent, color: "#fff", borderRadius: 11, padding: "9px 14px", fontWeight: 850 }}>Continue</button>
+          ) : step === totalSteps - 1 ? (
+            <button onClick={finish} style={{ border: 0, background: config.experience.accent, color: "#fff", borderRadius: 11, padding: "9px 14px", fontWeight: 850 }}>Finish setup</button>
+          ) : (
+            <button onClick={() => setStep(1)} style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 11, padding: "9px 14px", fontWeight: 850 }}>Review setup</button>
+          )}
         </div>
-      ) : null}
-
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginTop: 20 }}>
-        <button
-          disabled={step === 1}
-          onClick={() => setStep((current) => Math.max(1, current - 1))}
-          style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 11, padding: "9px 13px", fontWeight: 800, opacity: step === 1 ? 0.4 : 1 }}
-        >
-          Back
-        </button>
-        {step < 3 ? (
-          <button onClick={() => setStep((current) => current + 1)} style={{ border: 0, background: "#2563eb", color: "#fff", borderRadius: 11, padding: "9px 14px", fontWeight: 850 }}>
-            Continue
-          </button>
-        ) : step === 3 ? (
-          <button onClick={finish} style={{ border: 0, background: "#2563eb", color: "#fff", borderRadius: 11, padding: "9px 14px", fontWeight: 850 }}>
-            Finish setup
-          </button>
-        ) : (
-          <button onClick={() => setStep(1)} style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 11, padding: "9px 14px", fontWeight: 850 }}>
-            Review setup
-          </button>
-        )}
       </div>
     </section>
   );
 }
+
+const fieldLabel: React.CSSProperties = { display: "grid", gap: 6, fontSize: 12, fontWeight: 800 };
+const inputStyle: React.CSSProperties = { border: "1px solid #d0d5dd", borderRadius: 12, padding: 11, font: "inherit" };
