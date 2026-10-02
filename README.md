@@ -226,3 +226,50 @@ Every product now also includes:
 - reusable domain arrays for faster input.
 
 The current connected-workspace controls are showcase connection states only. OAuth scopes and real provider writes are intentionally deferred to the integration implementation phase; the UI does not falsely claim a live Google or Microsoft connection.
+
+
+## Platform layer: persistence, admin, OAuth and coordination
+
+The showcase foundation now includes a second platform layer shared by all eight products:
+
+- durable browser persistence for product working state,
+- persistent workspace identity, members, roles and notification preferences,
+- per-product storage snapshot state,
+- a shared `/products/[slug]/admin` workspace,
+- optional Upstash Redis REST coordination with a local-only fallback,
+- Google Workspace OAuth start/callback/disconnect routes,
+- Microsoft 365 OAuth start/callback/disconnect routes,
+- encrypted server-only OAuth token cookies,
+- safe client-visible connection status without exposing access or refresh tokens.
+
+### OAuth security boundary
+
+Provider tokens are never written to `localStorage`.
+
+OAuth callbacks encrypt token bundles using AES-256-GCM with `APP_ENCRYPTION_SECRET` and keep them in HTTP-only cookies. Client components receive only connection state and account labels.
+
+Configure the provider callback URLs to match the deployment, for example:
+
+```text
+http://localhost:3000/api/oauth/google/callback
+http://localhost:3000/api/oauth/microsoft/callback
+```
+
+For production, set `APP_BASE_URL` to the deployed HTTPS origin and register the matching callback URLs with Google and Microsoft.
+
+Google currently requests identity plus Drive file, Gmail send and Sheets access. Microsoft currently requests identity, Files.ReadWrite and Mail.Send. SharePoint-specific permissions should only be added when the SharePoint workflow is implemented and the required scope is justified.
+
+### Persisted product state
+
+The current showcase collections now survive refresh/navigation:
+
+- LexIntake matters/intakes,
+- LedgerDesk engagements,
+- TaxFlow returns,
+- ClinicFlow appointments,
+- PharmaDesk medicines and dispensing queue,
+- BuildQuote leads,
+- ExploreBW saved/experience state,
+- MoveTrack jobs.
+
+This browser persistence is a showcase/offline-friendly working layer. Production long-lived business documents remain intended for the user's authorized Google or Microsoft workspace.
