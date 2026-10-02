@@ -27,13 +27,15 @@ export function ProductShell({ config, children }: { config: ProductConfig; chil
     <div className="studio-grid">
       <aside className="desktop-nav" style={{ borderRight: "1px solid #e5e7eb", background: config.experience.surface, padding: 22 }}>
         <div style={{ fontWeight: 900, fontSize: 20 }}>{config.name}</div>
-        <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>{config.sector}</div>\n        <div style={{ color: config.experience.accent, fontSize: 11, marginTop: 8, fontWeight: 850 }}>{config.experience.mood}</div>
+        <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>{config.sector}</div>
+        <div style={{ color: config.experience.accent, fontSize: 11, marginTop: 8, fontWeight: 850 }}>{config.experience.mood}</div>
 
         <nav style={{ display: "grid", gap: 8, marginTop: 34 }}>
           {config.tabs.map((tab, index) => (
             <button key={tab} style={{
               display: "flex", gap: 10, alignItems: "center", border: 0, borderRadius: 12,
-              padding: "11px 12px", background: index === 0 ? "#fff" : "transparent",\n              color: index === 0 ? config.experience.accent : "#475467", fontWeight: 750, cursor: "pointer"
+              padding: "11px 12px", background: index === 0 ? "#fff" : "transparent",
+              color: index === 0 ? config.experience.accent : "#475467", fontWeight: 750, cursor: "pointer"
             }}>
               {index === 0 ? <Home size={18}/> : index === 1 ? <Search size={18}/> : index === 2 ? <FolderKanban size={18}/> : index === 3 ? <BarChart3 size={18}/> : <Menu size={18}/>}
               {tab}
