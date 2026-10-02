@@ -11,6 +11,7 @@ import { BuildQuoteShowcase } from "../../../components/products/BuildQuoteShowc
 import { ExploreBWShowcase } from "../../../components/products/ExploreBWShowcase";
 import { MoveTrackShowcase } from "../../../components/products/MoveTrackShowcase";
 import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataShowcase";
+import { ConnectedFileRegistry } from "../../../components/shared/ConnectedFileRegistry";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -31,12 +32,20 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(30px, 5vw, 48px)" }}>{config.name}</h1>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "end", flexWrap: "wrap" }}>
           <p style={{ maxWidth: 760, color: "#667085", lineHeight: 1.7, marginBottom: 0 }}>{config.description}</p>
-          <Link
-            href={`/products/${config.slug}/admin`}
-            style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 12, padding: "10px 14px", fontWeight: 850 }}
-          >
-            Admin & settings →
-          </Link>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <Link
+              href={`/products/${config.slug}/onboarding`}
+              style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 12, padding: "10px 14px", fontWeight: 850 }}
+            >
+              Setup workspace
+            </Link>
+            <Link
+              href={`/products/${config.slug}/admin`}
+              style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 12, padding: "10px 14px", fontWeight: 850 }}
+            >
+              Admin & settings →
+            </Link>
+          </div>
         </div>
 
         {config.slug === "lex-intake" ? (
@@ -66,6 +75,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         )}
 
         <WorkspaceDataShowcase config={config} />
+
+        <ConnectedFileRegistry config={config} />
 
         <section style={{ marginTop: 28, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 22, padding: 22 }}>
           <h2 style={{ marginTop: 0 }}>Workspace modules</h2>
