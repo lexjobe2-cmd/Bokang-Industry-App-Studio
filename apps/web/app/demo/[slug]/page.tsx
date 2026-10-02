@@ -4,6 +4,7 @@ import { getProductConfig, productList, products, type ProductSlug } from "@boka
 import { ProductExperience } from "../../../components/products/ProductExperience";
 import { PersistenceScope } from "@bokang/persistence";
 import { demoScope, parseDemoConfig, safeLogoUrl } from "../../../lib/demo-config";
+import { ProductMediaHero } from "../../../components/shared/ProductMediaHero";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -63,6 +64,8 @@ export default async function ClientDemoPage({
       </section>
 
       <section style={{ maxWidth: 1180, margin: "0 auto", padding: "0 22px 70px" }}>
+        <ProductMediaHero config={config} />
+
         {demo.showAnalytics ? (
           <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12, margin: "18px 0 6px" }}>
             {config.dashboardMetrics.map((metric, index) => (
