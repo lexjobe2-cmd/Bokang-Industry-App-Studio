@@ -1,15 +1,23 @@
 import type { ProductSlug } from "@bokang/app-config";
 
+export type WebsiteStatus = "no-first-party-site-found" | "social-only" | "directory-only" | "website-found" | "unclear";
+export type ProspectVerificationState = "source-checked" | "needs-recheck" | "verified-website";
+
 export type Prospect = {
   id: string;
   name: string;
   sector: string;
   location: string;
+  city: string;
+  country: "Botswana";
   email?: string;
   phone?: string;
   website?: string;
-  websiteStatus: string;
+  websiteStatus: WebsiteStatus;
+  websiteEvidence: string;
+  verificationState: ProspectVerificationState;
   sourceUrl: string;
+  sourceLinks: string[];
   sourceLabel: string;
   checkedAt: string;
   recommendedProduct: ProductSlug;
@@ -21,9 +29,20 @@ function googleSearchUrl(name: string) {
   return `https://www.google.com/search?q=${encodeURIComponent(name + " Botswana")}`;
 }
 
-const noWebsiteStatus = "No website link listed in the Google business/search result when checked";
+const noWebsiteStatus: WebsiteStatus = "no-first-party-site-found";
 
-export const prospects: Prospect[] = [
+type ProspectSeed = Omit<Prospect, "city" | "country" | "websiteEvidence" | "verificationState" | "sourceLinks"> & {
+  city?: string;
+  verificationState?: ProspectVerificationState;
+  sourceLinks?: string[];
+};
+
+function inferCity(location: string) {
+  const known = ["Gaborone", "Maun", "Francistown", "Kanye", "Tlokweng", "Kasane", "Palapye", "Lobatse", "Jwaneng", "Serowe"];
+  return known.find((city) => location.toLowerCase().includes(city.toLowerCase())) ?? "Botswana";
+}
+
+const seedProspects: ProspectSeed[] = [
   {
     id: "gape-april-attorneys",
     name: "Gape April Attorneys",
@@ -285,5 +304,14 @@ export const prospects: Prospect[] = [
     publicEvidence: "Google's result describes taxi, airport shuttle, cross-border connections and transfer services with a public phone number and no website link when checked."
   }
 ];
+
+export const prospects: Prospect[] = seedProspects.map((prospect) => ({
+  ...prospect,
+  city: prospect.city ?? inferCity(prospect.location),
+  country: "Botswana",
+  websiteEvidence: prospect.publicEvidence,
+  verificationState: prospect.verificationState ?? "source-checked",
+  sourceLinks: prospect.sourceLinks?.length ? prospect.sourceLinks : [prospect.sourceUrl],
+}));
 
 export const prospectCount = prospects.length;
