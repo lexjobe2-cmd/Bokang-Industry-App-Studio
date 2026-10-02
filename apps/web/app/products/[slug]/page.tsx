@@ -4,6 +4,11 @@ import { DashboardGrid, MetricCard, ProductShell } from "@bokang/ui";
 import { LexIntakeShowcase } from "../../../components/products/LexIntakeShowcase";
 import { LedgerDeskShowcase } from "../../../components/products/LedgerDeskShowcase";
 import { TaxFlowShowcase } from "../../../components/products/TaxFlowShowcase";
+import { ClinicFlowShowcase } from "../../../components/products/ClinicFlowShowcase";
+import { PharmaDeskShowcase } from "../../../components/products/PharmaDeskShowcase";
+import { BuildQuoteShowcase } from "../../../components/products/BuildQuoteShowcase";
+import { ExploreBWShowcase } from "../../../components/products/ExploreBWShowcase";
+import { MoveTrackShowcase } from "../../../components/products/MoveTrackShowcase";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -30,6 +35,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <LedgerDeskShowcase />
         ) : config.slug === "tax-flow" ? (
           <TaxFlowShowcase />
+        ) : config.slug === "clinic-flow" ? (
+          <ClinicFlowShowcase />
+        ) : config.slug === "pharma-desk" ? (
+          <PharmaDeskShowcase />
+        ) : config.slug === "build-quote" ? (
+          <BuildQuoteShowcase />
+        ) : config.slug === "explore-bw" ? (
+          <ExploreBWShowcase />
+        ) : config.slug === "move-track" ? (
+          <MoveTrackShowcase />
         ) : (
           <section style={{ marginTop: 28 }}>
             <DashboardGrid>
