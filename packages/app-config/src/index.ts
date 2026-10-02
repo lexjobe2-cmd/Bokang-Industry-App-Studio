@@ -175,16 +175,16 @@ export const products: Record<ProductSlug, ProductConfig> = {
     sector: "Logistics",
     description: "Quotes, jobs, fleet, drivers, delivery status, proof of delivery and logistics analytics.",
     tabs: ["Home", "Jobs", "Fleet", "Track", "More"],
-    modules: ["Quote requests", "Jobs", "Fleet", "Drivers", "Delivery states", "Proof of delivery", "Maintenance", "Analytics"],
+    modules: ["Quote requests", "Jobs", "Fleet onboarding", "Driver onboarding", "Driver assignments", "Driver mobile app", "Pre-start compliance", "Automatic grounding", "Corrective release", "Proof of delivery", "Maintenance", "Incidents", "Analytics"],
     dashboardMetrics: ["Active jobs", "Vehicles available", "Deliveries today", "Maintenance due"],
     experience: {
       mood: "Live operations",
       accent: "#1d4ed8",
       surface: "#eff6ff",
       hero: "A control tower for quotes, vehicles and deliveries.",
-      onboarding: ["Operator profile", "Fleet", "Drivers", "Service zones", "Job rules"],
-      signatureFeatures: ["Dispatch board", "QR proof-of-delivery", "Fleet availability", "Job timeline", "Maintenance alerts"],
-      compliance: ["Driver verification", "Vehicle document checklist", "POD audit", "Incident record"]
+      onboarding: ["Operator profile", "Operating sites", "Fleet onboarding", "Driver onboarding", "Site authorisations", "Pre-start policy", "Dispatch rules"],
+      signatureFeatures: ["Fleet onboarding", "Driver mobile app", "GO / NO-GO pre-starts", "Automatic vehicle grounding", "Dispatch board", "QR proof-of-delivery", "Maintenance alerts"],
+      compliance: ["Driver/site authorisation", "Vehicle roadworthiness record", "Fire-extinguisher service record", "Mandatory pre-start checklist", "POD audit", "Incident/corrective-action record"]
     }
   }
 };
