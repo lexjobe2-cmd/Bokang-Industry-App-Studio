@@ -886,3 +886,47 @@ The internal LexIntake workspace remains separate and continues to manage:
 - analytics.
 
 The public site also points prospects toward the Law Society of Botswana for practitioner verification rather than inventing badges or accreditation claims.
+
+
+## LedgerDesk public accounting website
+
+LedgerDesk now has a dedicated prospect-facing accounting-firm website separate from the internal engagement/work-management application.
+
+The public journey is designed around a clear business outcome rather than a catalogue of accounting services:
+
+```text
+Monthly finance clarity
+→ common business problems
+→ service pathways
+→ interactive finance health check
+→ business fit
+→ professional verification
+→ insights
+→ simple prospect enquiry
+```
+
+### Public routes
+
+- `/demo/ledger-desk`
+- `/demo/ledger-desk/services`
+- `/demo/ledger-desk/insights`
+- `/demo/ledger-desk/about`
+- `/demo/ledger-desk/start`
+
+The website leads with a Monthly Finance Desk concept, then expands into payroll/compliance and finance/advisory pathways. A two-minute finance health check helps prospects recognise process gaps without pretending to provide an audit or professional conclusion.
+
+The first enquiry captures business fit, need, size, current finance process and timing. Detailed ledgers, payroll files and supporting documents remain inside the secure LedgerDesk onboarding process after engagement acceptance.
+
+The public site links to BICA's active-member-firm information rather than inventing professional badges.
+
+The internal LedgerDesk workspace remains separate and continues to manage:
+
+- client onboarding,
+- engagements,
+- recurring work,
+- document collection,
+- month-end calendar,
+- reconciliation,
+- close packs,
+- deadlines,
+- analytics.
