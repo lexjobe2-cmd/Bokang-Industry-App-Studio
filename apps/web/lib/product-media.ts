@@ -20,8 +20,8 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     imageUrl: "https://images.pexels.com/photos/8297145/pexels-photo-8297145.jpeg?auto=compress&dpr=1&h=900&w=1600",
     sourceUrl: "https://www.pexels.com/photo/a-woman-using-a-calculator-8297145/",
     sourceLabel: "Pexels · Mikhail Nilov",
-    alt: "Black finance professional using a calculator and reviewing documents",
-    locality: "Finance operations"
+    alt: "Black finance professional reviewing accounts and calculations",
+    locality: "Botswana accounting firm concept"
   },
   "tax-flow": {
     imageUrl: "https://images.pexels.com/photos/5668875/pexels-photo-5668875.jpeg?auto=compress&dpr=1&h=900&w=1600",
