@@ -9,6 +9,7 @@ import { PharmaDeskShowcase } from "../../../components/products/PharmaDeskShowc
 import { BuildQuoteShowcase } from "../../../components/products/BuildQuoteShowcase";
 import { ExploreBWShowcase } from "../../../components/products/ExploreBWShowcase";
 import { MoveTrackShowcase } from "../../../components/products/MoveTrackShowcase";
+import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataShowcase";
 import { SharedWorkspaceTools } from "../../../components/SharedWorkspaceTools";
 
 export function generateStaticParams() {
@@ -55,6 +56,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </DashboardGrid>
           </section>
         )}
+
+        <WorkspaceDataShowcase config={config} />
 
         <section style={{ marginTop: 28, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 22, padding: 22 }}>
           <h2 style={{ marginTop: 0 }}>Workspace modules</h2>
