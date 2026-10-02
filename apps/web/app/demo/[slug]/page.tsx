@@ -5,6 +5,7 @@ import { ProductExperience } from "../../../components/products/ProductExperienc
 import { PersistenceScope } from "@bokang/persistence";
 import { demoScope, parseDemoConfig, safeLogoUrl } from "../../../lib/demo-config";
 import { ProductMediaHero } from "../../../components/shared/ProductMediaHero";
+import { BuildQuoteClientSite } from "../../../components/products/BuildQuoteClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -25,6 +26,18 @@ export default async function ClientDemoPage({
   const demo = parseDemoConfig(config, query);
   const logo = safeLogoUrl(demo.logo);
   const legalQuery = `?client=${encodeURIComponent(demo.client)}`;
+
+  if (config.slug === "build-quote") {
+    return (
+      <BuildQuoteClientSite
+        clientName={demo.client}
+        location={demo.location || "Gaborone, Botswana"}
+        contact={demo.contact}
+        email={demo.email}
+        cta={demo.cta || "Request a consultation"}
+      />
+    );
+  }
 
   return (
     <main style={{ minHeight: "100vh", background: "#f7f8fb" }}>
