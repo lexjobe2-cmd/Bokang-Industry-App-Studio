@@ -12,32 +12,47 @@ import {
   useState,
 } from "react";
 
+const PersistenceScopeContext = createContext("");
+
+export function PersistenceScope({
+  scope,
+  children,
+}: PropsWithChildren<{ scope: string }>) {
+  return (
+    <PersistenceScopeContext.Provider value={scope}>
+      {children}
+    </PersistenceScopeContext.Provider>
+  );
+}
+
 export function usePersistentState<T>(
   key: string,
   initialValue: T
 ): [T, Dispatch<SetStateAction<T>>, boolean] {
+  const scope = useContext(PersistenceScopeContext);
+  const scopedKey = scope ? `${scope}::${key}` : key;
   const [value, setValue] = useState<T>(initialValue);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(key);
+      const raw = window.localStorage.getItem(scopedKey);
       if (raw !== null) setValue(JSON.parse(raw) as T);
     } catch {
       // Keep the safe starter value when browser storage is unavailable or malformed.
     } finally {
       setHydrated(true);
     }
-  }, [key]);
+  }, [scopedKey]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.localStorage.setItem(key, JSON.stringify(value));
+      window.localStorage.setItem(scopedKey, JSON.stringify(value));
     } catch {
       // Storage quota/private mode should not make the UI unusable.
     }
-  }, [hydrated, key, value]);
+  }, [hydrated, scopedKey, value]);
 
   return [value, setValue, hydrated];
 }
