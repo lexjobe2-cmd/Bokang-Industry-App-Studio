@@ -148,7 +148,7 @@ export function evaluatePrestart(args: {
   const { checks, criticalChecks, vehicle, driver } = args;
 
   for (const [item, result] of Object.entries(checks)) {
-    const critical = criticalChecks.includes(item);
+    const critical = criticalChecks.some((criticalItem) => criticalItem === item);
     if (critical && result !== "pass") {
       reasons.push(item + " must explicitly PASS");
       continue;
