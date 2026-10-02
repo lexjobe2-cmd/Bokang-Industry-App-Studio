@@ -1,14 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { products, type ProductSlug } from "@bokang/app-config";
 import { prospects, type Prospect, type WebsiteStatus, type ProspectVerificationState } from "@bokang/prospects";
-import { ExternalLink, Mail, Copy, Link2, Search, CheckCircle2 } from "lucide-react";
+import { ExternalLink, Mail, Copy, Link2, Search, CheckCircle2, Trash2, ArchiveX, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { defaultDemoConfig, demoParams } from "../../lib/demo-config";
 import { usePersistentState } from "@bokang/persistence";
 
 type ProspectStatus = "New" | "Prepared" | "Contacted" | "Replied" | "Converted" | "Not now";
 type StatusMap = Record<string, ProspectStatus>;
+type ModerationState = "active" | "discarded" | "removed";
+type ModerationMap = Record<string, ModerationState>;
+type ModerationFilter = "active" | "discarded" | "removed" | "all";
 
 const websiteStatusLabels: Record<WebsiteStatus, string> = {
   "no-first-party-site-found": "No first-party website found",
@@ -61,14 +64,24 @@ export function ProspectPipeline() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [statuses, setStatuses] = usePersistentState<StatusMap>("bokang-studio.prospect-status.v1", {});
+  const [moderation, setModeration] = usePersistentState<ModerationMap>("bokang-studio.prospect-moderation.v1", {});
+  const [moderationFilter, setModerationFilter] = useState<ModerationFilter>("active");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useState(1);
 
   const industries = useMemo(() => Array.from(new Set(prospects.map((prospect) => prospect.sector))).sort(), []);
   const cities = useMemo(() => Array.from(new Set(prospects.map((prospect) => prospect.city))).sort(), []);
 
-  const visible = useMemo(() => {
+  function moderationFor(id: string): ModerationState {
+    return moderation[id] ?? "active";
+  }
+
+  const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return prospects.filter((prospect) => {
       const matchesProduct = productFilter === "all" || prospect.recommendedProduct === productFilter;
+      const matchesModeration = moderationFilter === "all" || moderationFor(prospect.id) === moderationFilter;
       const matchesIndustry = industryFilter === "all" || prospect.sector === industryFilter;
       const matchesCity = cityFilter === "all" || prospect.city === cityFilter;
       const matchesWebsite = websiteFilter === "all" || prospect.websiteStatus === websiteFilter;
@@ -80,9 +93,47 @@ export function ProspectPipeline() {
         prospect.location.toLowerCase().includes(needle) ||
         (prospect.email ?? "").toLowerCase().includes(needle) ||
         (prospect.phone ?? "").toLowerCase().includes(needle);
-      return matchesProduct && matchesIndustry && matchesCity && matchesWebsite && matchesOutreach && matchesVerification && matchesQuery;
+      return matchesModeration && matchesProduct && matchesIndustry && matchesCity && matchesWebsite && matchesOutreach && matchesVerification && matchesQuery;
     });
-  }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, statuses]);
+  }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, moderationFilter, statuses, moderation]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const visible = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  useEffect(() => {
+    setPage(1);
+    setSelectedIds([]);
+  }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, moderationFilter, pageSize]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  function setModerationState(ids: string[], state: ModerationState) {
+    if (!ids.length) return;
+    setModeration((current) => {
+      const next = { ...current };
+      for (const id of ids) next[id] = state;
+      return next;
+    });
+    setSelectedIds([]);
+    if (activeId && ids.includes(activeId)) setActiveId(null);
+  }
+
+  function toggleSelected(id: string) {
+    setSelectedIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  }
+
+  function togglePageSelection() {
+    const pageIds = visible.map((prospect) => prospect.id);
+    const allSelected = pageIds.length > 0 && pageIds.every((id) => selectedIds.includes(id));
+    setSelectedIds((current) => allSelected
+      ? current.filter((id) => !pageIds.includes(id))
+      : Array.from(new Set([...current, ...pageIds])));
+  }
 
   function demoUrl(prospect: Prospect) {
     if (typeof window === "undefined") return "";
@@ -129,6 +180,12 @@ export function ProspectPipeline() {
       </header>
 
       <section style={{ marginTop: 26, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 10 }}>
+        <select value={moderationFilter} onChange={(event) => setModerationFilter(event.target.value as ModerationFilter)} style={filterStyle}>
+          <option value="active">Active prospects</option>
+          <option value="discarded">Discarded</option>
+          <option value="removed">Removed</option>
+          <option value="all">All moderation states</option>
+        </select>
         <label style={{ position: "relative", gridColumn: "span 2" }}>
           <Search size={17} style={{ position: "absolute", left: 12, top: 13, color: "#98a2b3" }} />
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search business, sector, location, phone or email" style={{ width: "100%", border: "1px solid #d0d5dd", borderRadius: 13, padding: "11px 12px 11px 38px", font: "inherit" }} />
@@ -160,10 +217,42 @@ export function ProspectPipeline() {
       </section>
 
       <section style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-        <span style={{ fontSize: 12, color: "#667085", fontWeight: 800 }}>{visible.length} of {prospects.length} prospects</span>
-        <button onClick={() => { setQuery(""); setIndustryFilter("all"); setCityFilter("all"); setWebsiteFilter("no-first-party-site-found"); setProductFilter("all"); setOutreachFilter("all"); setVerificationFilter("all"); }} style={secondaryAction}>
+        <span style={{ fontSize: 12, color: "#667085", fontWeight: 800 }}>{filtered.length} matching · {prospects.length} total · page {page} of {totalPages}</span>
+        <button onClick={() => { setQuery(""); setIndustryFilter("all"); setCityFilter("all"); setWebsiteFilter("no-first-party-site-found"); setProductFilter("all"); setOutreachFilter("all"); setVerificationFilter("all"); setModerationFilter("active"); setPage(1); }} style={secondaryAction}>
           Reset to website-gap priority
         </button>
+      </section>
+
+      <section style={{ marginTop: 14, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 14, padding: 10 }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 12, fontWeight: 800 }}>
+          <input
+            type="checkbox"
+            checked={visible.length > 0 && visible.every((prospect) => selectedIds.includes(prospect.id))}
+            onChange={togglePageSelection}
+          />
+          Select page
+        </label>
+        <span style={{ fontSize: 12, color: "#667085" }}>{selectedIds.length} selected</span>
+        {selectedIds.length > 0 ? (
+          <>
+            <button onClick={() => setModerationState(selectedIds, "active")} style={secondaryAction}><RotateCcw size={14} /> Keep active</button>
+            <button onClick={() => setModerationState(selectedIds, "discarded")} style={secondaryAction}><ArchiveX size={14} /> Discard</button>
+            <button
+              onClick={() => {
+                if (window.confirm("Remove the selected prospects from the working list? You can still restore them from the Removed view on this device.")) {
+                  setModerationState(selectedIds, "removed");
+                }
+              }}
+              style={{ ...secondaryAction, color: "#b42318", borderColor: "#fecdca" }}
+            >
+              <Trash2 size={14} /> Remove completely
+            </button>
+          </>
+        ) : null}
+        <span style={{ marginLeft: "auto", fontSize: 12, color: "#667085" }}>Rows per page</span>
+        <select value={pageSize} onChange={(event) => setPageSize(Number(event.target.value))} style={{ ...filterStyle, padding: "7px 9px" }}>
+          {[25, 50, 100].map((size) => <option key={size} value={size}>{size}</option>)}
+        </select>
       </section>
 
       <section style={{ display: "grid", gap: 14, marginTop: 20 }}>
@@ -176,7 +265,8 @@ export function ProspectPipeline() {
 
           return (
             <article key={prospect.id} style={{ background: "#fff", border: isActive ? "1px solid #93c5fd" : "1px solid #e5e7eb", borderRadius: 22, overflow: "hidden" }}>
-              <div style={{ padding: 18, display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", gap: 14, alignItems: "start" }}>
+              <div style={{ padding: 18, display: "grid", gridTemplateColumns: "auto minmax(0,1fr) auto", gap: 14, alignItems: "start" }}>
+                <input type="checkbox" aria-label={"Select " + prospect.name} checked={selectedIds.includes(prospect.id)} onChange={() => toggleSelected(prospect.id)} style={{ marginTop: 6 }} />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <h2 style={{ margin: 0, fontSize: 22 }}>{prospect.name}</h2>
@@ -201,6 +291,13 @@ export function ProspectPipeline() {
               <div style={{ padding: "0 18px 18px", display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <a href={prospect.sourceUrl} target="_blank" rel="noreferrer" style={secondaryAction}>Re-check Google <ExternalLink size={14} /></a>
                 {prospect.website ? <a href={prospect.website} target="_blank" rel="noreferrer" style={secondaryAction}>Website <ExternalLink size={14} /></a> : null}
+                {moderationFor(prospect.id) !== "active" ? <button onClick={() => setModerationState([prospect.id], "active")} style={secondaryAction}><RotateCcw size={14} /> Restore</button> : null}
+                {moderationFor(prospect.id) === "active" ? <button onClick={() => setModerationState([prospect.id], "discarded")} style={secondaryAction}><ArchiveX size={14} /> Discard</button> : null}
+                {moderationFor(prospect.id) !== "removed" ? <button onClick={() => {
+                  if (window.confirm("Remove " + prospect.name + " from the working list? You can restore it later from the Removed view on this device.")) {
+                    setModerationState([prospect.id], "removed");
+                  }
+                }} style={{ ...secondaryAction, color: "#b42318", borderColor: "#fecdca" }}><Trash2 size={14} /> Remove</button> : null}
                 <button onClick={() => { setActiveId(isActive ? null : prospect.id); setStatuses((current) => ({ ...current, [prospect.id]: current[prospect.id] ?? "Prepared" })); }} style={{ ...primaryAction, marginLeft: "auto" }}>
                   <Mail size={15} /> {isActive ? "Close outreach" : "Prepare outreach"}
                 </button>
@@ -246,6 +343,19 @@ export function ProspectPipeline() {
       </section>
 
       {visible.length === 0 ? <div style={{ marginTop: 30, padding: 30, border: "1px dashed #d0d5dd", borderRadius: 18, textAlign: "center", color: "#667085" }}>No prospects match the current filters.</div> : null}
+
+      {filtered.length > pageSize ? (
+        <nav aria-label="Prospect pages" style={{ marginTop: 20, display: "flex", justifyContent: "center", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <button onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1} style={secondaryAction}><ChevronLeft size={14} /> Previous</button>
+          {Array.from({ length: totalPages }, (_, index) => index + 1).filter((value) => value === 1 || value === totalPages || Math.abs(value - page) <= 2).map((value, index, shown) => (
+            <span key={value} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              {index > 0 && value - shown[index - 1] > 1 ? <span style={{ color: "#98a2b3" }}>…</span> : null}
+              <button onClick={() => setPage(value)} aria-current={page === value ? "page" : undefined} style={{ ...secondaryAction, background: page === value ? "#101827" : "#fff", color: page === value ? "#fff" : "#344054" }}>{value}</button>
+            </span>
+          ))}
+          <button onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages} style={secondaryAction}>Next <ChevronRight size={14} /></button>
+        </nav>
+      ) : null}
 
       <footer style={{ marginTop: 48, color: "#98a2b3", fontSize: 12 }}>Designed &amp; developed by Bokang Jobe</footer>
     </main>
