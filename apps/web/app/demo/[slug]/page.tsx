@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductConfig, productList, products, type ProductSlug } from "@bokang/app-config";
 import { ProductExperience } from "../../../components/products/ProductExperience";
+import { PersistenceScope } from "@bokang/persistence";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -53,7 +54,9 @@ export default async function ClientDemoPage({
       </section>
 
       <section style={{ maxWidth: 1180, margin: "0 auto", padding: "0 22px 70px" }}>
-        <ProductExperience config={config} />
+        <PersistenceScope scope={`client-demo:${config.slug}:${client.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "prospect"}`}>
+          <ProductExperience config={config} />
+        </PersistenceScope>
 
         <div style={{ marginTop: 30, background: "#101827", color: "#fff", borderRadius: 22, padding: 22, display: "flex", justifyContent: "space-between", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
           <div style={{ maxWidth: 720 }}>
