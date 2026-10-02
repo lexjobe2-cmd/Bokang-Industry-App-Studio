@@ -6,8 +6,9 @@ import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataS
 import { ConnectedFileRegistry } from "../../../components/shared/ConnectedFileRegistry";
 import { ProductExperience } from "../../../components/products/ProductExperience";
 import { WorkspaceUtilities } from "../../../components/shared/WorkspaceUtilities";
-import { BulkCsvWorkbench } from "../../../components/shared/BulkCsvWorkbench";
-import { AuditTimeline } from "../../../components/shared/AuditTimeline";
+import { DataImportWorkbench } from "../../../components/shared/DataImportWorkbench";
+import { ActivityAuditTimeline } from "../../../components/shared/ActivityAuditTimeline";
+import { ProductReports } from "../../../components/shared/ProductReports";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -48,9 +49,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         <ProductExperience config={config} />
 
-        <BulkCsvWorkbench config={config} />
+        <DataImportWorkbench config={config} />
 
-        <AuditTimeline config={config} />
+        <ActivityAuditTimeline config={config} />
+
+        <ProductReports config={config} />
 
         <WorkspaceDataShowcase config={config} />
 
