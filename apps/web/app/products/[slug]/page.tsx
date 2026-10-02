@@ -1,17 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductConfig, productList, products, type ProductSlug } from "@bokang/app-config";
-import { DashboardGrid, MetricCard, ProductShell } from "@bokang/ui";
-import { LexIntakeShowcase } from "../../../components/products/LexIntakeShowcase";
-import { LedgerDeskShowcase } from "../../../components/products/LedgerDeskShowcase";
-import { TaxFlowShowcase } from "../../../components/products/TaxFlowShowcase";
-import { ClinicFlowShowcase } from "../../../components/products/ClinicFlowShowcase";
-import { PharmaDeskShowcase } from "../../../components/products/PharmaDeskShowcase";
-import { BuildQuoteShowcase } from "../../../components/products/BuildQuoteShowcase";
-import { ExploreBWShowcase } from "../../../components/products/ExploreBWShowcase";
-import { MoveTrackShowcase } from "../../../components/products/MoveTrackShowcase";
+import { ProductShell } from "@bokang/ui";
 import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataShowcase";
 import { ConnectedFileRegistry } from "../../../components/shared/ConnectedFileRegistry";
+import { ProductExperience } from "../../../components/products/ProductExperience";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -48,31 +41,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
 
-        {config.slug === "lex-intake" ? (
-          <LexIntakeShowcase />
-        ) : config.slug === "ledger-desk" ? (
-          <LedgerDeskShowcase />
-        ) : config.slug === "tax-flow" ? (
-          <TaxFlowShowcase />
-        ) : config.slug === "clinic-flow" ? (
-          <ClinicFlowShowcase />
-        ) : config.slug === "pharma-desk" ? (
-          <PharmaDeskShowcase />
-        ) : config.slug === "build-quote" ? (
-          <BuildQuoteShowcase />
-        ) : config.slug === "explore-bw" ? (
-          <ExploreBWShowcase />
-        ) : config.slug === "move-track" ? (
-          <MoveTrackShowcase />
-        ) : (
-          <section style={{ marginTop: 28 }}>
-            <DashboardGrid>
-              {config.dashboardMetrics.map((metric, index) => (
-                <MetricCard key={metric} label={metric} value={index === 0 ? "12" : index === 1 ? "8" : index === 2 ? "3" : "5"} detail="Starter dashboard data" />
-              ))}
-            </DashboardGrid>
-          </section>
-        )}
+        <ProductExperience config={config} />
 
         <WorkspaceDataShowcase config={config} />
 
