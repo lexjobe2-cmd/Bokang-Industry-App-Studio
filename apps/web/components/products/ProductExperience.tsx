@@ -9,6 +9,7 @@ import { BuildQuoteShowcase } from "./BuildQuoteShowcase";
 import { ExploreBWShowcase } from "./ExploreBWShowcase";
 import { MoveTrackShowcase } from "./MoveTrackShowcase";
 import { ComplianceJourney } from "../shared/ComplianceJourney";
+import { IndustryEnhancements } from "../shared/IndustryEnhancements";
 
 export function ProductExperience({ config }: { config: ProductConfig }) {
   let body: React.ReactNode;
@@ -34,7 +35,17 @@ export function ProductExperience({ config }: { config: ProductConfig }) {
   const complianceApps = new Set(["lex-intake","ledger-desk","tax-flow","clinic-flow","pharma-desk","move-track"]);
   return (
     <>
+      <section style={{ marginTop: 20, background: config.experience.surface, borderRadius: 22, padding: 18, border: "1px solid #e5e7eb" }}>
+        <p style={{ margin: 0, color: config.experience.accent, fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1.2 }}>{config.experience.mood}</p>
+        <h2 style={{ margin: "7px 0 10px" }}>{config.experience.hero}</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {config.experience.signatureFeatures.map((feature) => (
+            <span key={feature} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 999, padding: "7px 10px", fontSize: 12, fontWeight: 800 }}>{feature}</span>
+          ))}
+        </div>
+      </section>
       {body}
+      <IndustryEnhancements config={config} />
       {complianceApps.has(config.slug) ? <ComplianceJourney config={config} /> : null}
     </>
   );
