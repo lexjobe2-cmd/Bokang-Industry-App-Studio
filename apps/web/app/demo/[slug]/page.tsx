@@ -7,6 +7,7 @@ import { demoScope, parseDemoConfig, safeLogoUrl } from "../../../lib/demo-confi
 import { ProductMediaHero } from "../../../components/shared/ProductMediaHero";
 import { BuildQuoteClientSite } from "../../../components/products/BuildQuoteClientSite";
 import { ExploreBWClientSite } from "../../../components/products/ExploreBWClientSite";
+import { MoveTrackClientSite } from "../../../components/products/MoveTrackClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -42,6 +43,10 @@ export default async function ClientDemoPage({
 
   if (config.slug === "explore-bw") {
     return <ExploreBWClientSite clientName={demo.client} />;
+  }
+
+  if (config.slug === "move-track") {
+    return <MoveTrackClientSite clientName={demo.client} />;
   }
 
   return (
