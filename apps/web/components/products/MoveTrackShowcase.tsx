@@ -12,10 +12,13 @@ import {
   MOVE_TRACK_KEYS,
   starterDrivers,
   starterFleet,
+  starterPolicies,
+  dateIsCurrent,
   type FleetAssignment,
   type FleetDriver,
   type FleetIncident,
   type FleetVehicle,
+  type FleetSitePolicy,
   type PrestartRecord,
 } from "../../lib/move-track";
 
@@ -33,8 +36,9 @@ export function MoveTrackShowcase(){
   const [assignments,setAssignments]=usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
   const [prestarts]=usePersistentState<PrestartRecord[]>(MOVE_TRACK_KEYS.prestarts,[]);
   const [incidents,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
+  const [policies,setPolicies]=usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
 
-  const [view,setView]=useState<"control"|"fleet"|"drivers"|"assign"|"jobs"|"analytics">("control");
+  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics">("control");
   const [notice,setNotice]=useState("");
   const [client,setClient]=useState("");
   const [jobType,setJobType]=useState<(typeof logisticsJobTypes)[number]>("Local delivery");
@@ -96,6 +100,16 @@ export function MoveTrackShowcase(){
     if(["No-go","Maintenance","Out of service","On job","Assigned"].includes(vehicle.status)){
       setNotice(vehicle.fleetNo+" cannot be assigned while status is "+vehicle.status+".");return;
     }
+    if(!dateIsCurrent(vehicle.roadworthyExpiry) || !dateIsCurrent(vehicle.extinguisherServiceDue)){
+      setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,status:"No-go"}:item));
+      setNotice(vehicle.fleetNo+" is GROUNDED because the roadworthiness or fire-extinguisher service record is expired/missing.");
+      return;
+    }
+    const policy=policies.find((item)=>item.name===assignSite);
+    if(!driver.siteAuthorised || (policy?.requireOpenPitPermit && !driver.openPitPermit) || (policy?.requireFirstAid && !driver.firstAid) || (policy?.requireDefensiveDriving && !driver.defensiveDriving)){
+      setNotice(driver.name+" does not yet satisfy the selected site's driver authorisation/training policy.");
+      return;
+    }
     if(driver.status!=="Available"){setNotice(driver.name+" is not currently available.");return;}
     if(activeAssignments.some((item)=>item.vehicleId===vehicle.id||item.driverId===driver.id)){
       setNotice("The selected vehicle or driver already has an active assignment.");return;
@@ -147,7 +161,7 @@ export function MoveTrackShowcase(){
   return <section style={{marginTop:28,display:"grid",gap:18}}>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
       {([
-        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"]
+        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"]
       ] as const).map(([key,label])=><button key={key} onClick={()=>setView(key)} style={{border:"1px solid #bfdbfe",background:view===key?"#1d4ed8":"#fff",color:view===key?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{label}</button>)}
     </div>
 
@@ -233,6 +247,41 @@ export function MoveTrackShowcase(){
       </div>
     </div>:null}
 
+    
+    {view==="sites"?<div style={{display:"grid",gap:12}}>
+      <section style={panel}>
+        <p style={{margin:0,color:"#1d4ed8",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Site policy profiles</p>
+        <h2 style={{marginBottom:6}}>Configure what a driver must satisfy before GO.</h2>
+        <p style={{fontSize:12,color:"#667085",lineHeight:1.6}}>These are operator/site rules for the app's compliance engine, not a substitute for statutory inspection or the mine's formal procedures.</p>
+      </section>
+      {policies.map((policy)=><article key={policy.id} style={panel}>
+        <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+          <strong>{policy.name}</strong>
+          <span style={{fontSize:11,color:"#667085"}}>{policy.additionalCriticalChecks.length} extra critical controls</span>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:8,marginTop:12}}>
+          <label style={checkRow}><span>Require site/open-pit permit</span><input type="checkbox" checked={policy.requireOpenPitPermit} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,requireOpenPitPermit:e.target.checked}:item))}/></label>
+          <label style={checkRow}><span>Require first-aid training</span><input type="checkbox" checked={policy.requireFirstAid} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,requireFirstAid:e.target.checked}:item))}/></label>
+          <label style={checkRow}><span>Require defensive driving</span><input type="checkbox" checked={policy.requireDefensiveDriving} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,requireDefensiveDriving:e.target.checked}:item))}/></label>
+        </div>
+        <div style={{marginTop:12}}>
+          <div style={{fontSize:11,fontWeight:850,color:"#667085",marginBottom:7}}>Additional critical vehicle controls</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:7}}>
+            {[
+              "First aid kit present and stocked",
+              "Two-way radio / site communication available",
+              "Beacon / strobe functional where site requires",
+              "Whip flag fitted where site requires",
+              "Emergency triangles / beacons present",
+              "Reflective strips / vehicle identification visible",
+              "No critical fluid leaks",
+              "Cargo secured"
+            ].map((label)=><label key={label} style={checkRow}><span>{label}</span><input type="checkbox" checked={policy.additionalCriticalChecks.includes(label)} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,additionalCriticalChecks:e.target.checked?[...item.additionalCriticalChecks,label]:item.additionalCriticalChecks.filter((x)=>x!==label)}:item))}/></label>)}
+          </div>
+        </div>
+      </article>)}
+    </div>:null}
+
     {view==="assign"?<section style={panel}>
       <p style={{margin:0,color:"#1d4ed8",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Dispatch</p>
       <h2 style={{marginBottom:6}}>Assign driver + vehicle</h2>
@@ -275,4 +324,5 @@ const formGrid:React.CSSProperties={display:"grid",gridTemplateColumns:"repeat(a
 const input:React.CSSProperties={border:"1px solid #d0d5dd",borderRadius:10,padding:10,font:"inherit",background:"#fff"};
 const primaryButton:React.CSSProperties={marginTop:14,border:0,background:"#1d4ed8",color:"#fff",borderRadius:11,padding:"10px 14px",fontWeight:900};
 const secondaryButton:React.CSSProperties={border:"1px solid #d0d5dd",background:"#fff",borderRadius:10,padding:"8px 10px",fontWeight:800,fontSize:11};
+const checkRow:React.CSSProperties={display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",background:"#f8fafc",border:"1px solid #e5e7eb",borderRadius:10,padding:"9px 10px",fontSize:11,fontWeight:750};
 const primaryLink:React.CSSProperties={display:"inline-flex",alignItems:"center",justifyContent:"center",background:"#1d4ed8",color:"#fff",borderRadius:10,padding:"8px 11px",fontWeight:850,fontSize:11,textDecoration:"none"};
