@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getProductConfig, productList, products, type ProductSlug } from "@bokang/app-config";
 import { DashboardGrid, MetricCard, ProductShell } from "@bokang/ui";
 import { LexIntakeShowcase } from "../../../components/products/LexIntakeShowcase";
+import { LedgerDeskShowcase } from "../../../components/products/LedgerDeskShowcase";
+import { TaxFlowShowcase } from "../../../components/products/TaxFlowShowcase";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -24,6 +26,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         {config.slug === "lex-intake" ? (
           <LexIntakeShowcase />
+        ) : config.slug === "ledger-desk" ? (
+          <LedgerDeskShowcase />
+        ) : config.slug === "tax-flow" ? (
+          <TaxFlowShowcase />
         ) : (
           <section style={{ marginTop: 28 }}>
             <DashboardGrid>
