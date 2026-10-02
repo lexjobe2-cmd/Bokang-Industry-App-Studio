@@ -123,3 +123,125 @@ export const legalDocumentTypes = [
   "Invoice",
   "Other"
 ] as const;
+
+
+export const accountingEngagementTypes = [
+  "Monthly bookkeeping",
+  "Management accounts",
+  "Payroll",
+  "Annual financial statements",
+  "Audit support",
+  "Company secretarial",
+  "Advisory",
+  "Other"
+] as const;
+
+export const accountingDocumentTypes = [
+  "Bank statement",
+  "Invoice",
+  "Receipt",
+  "Payroll schedule",
+  "Tax document",
+  "Financial statement",
+  "Company registration",
+  "Other"
+] as const;
+
+export const taxReturnTypes = [
+  "Individual income tax",
+  "Company income tax",
+  "VAT",
+  "PAYE",
+  "Withholding tax",
+  "Capital gains",
+  "Other"
+] as const;
+
+export const taxWorkflowStages = [
+  "Questionnaire sent",
+  "Awaiting documents",
+  "Preparation",
+  "Review",
+  "Ready to submit",
+  "Submitted",
+  "Completed"
+] as const;
+
+export const clinicAppointmentTypes = [
+  "General consultation",
+  "Follow-up",
+  "Chronic care",
+  "Vaccination",
+  "Minor procedure",
+  "Medical certificate",
+  "Screening",
+  "Other"
+] as const;
+
+export const clinicAppointmentStates = [
+  "Requested",
+  "Confirmed",
+  "Checked in",
+  "With practitioner",
+  "Completed",
+  "No show",
+  "Cancelled"
+] as const;
+
+export const constructionTradeTypes = [
+  "General building",
+  "Electrical",
+  "Plumbing",
+  "Carpentry",
+  "Roofing",
+  "Painting",
+  "Tiling",
+  "Welding",
+  "Civil works",
+  "Renovation"
+] as const;
+
+export const quoteStages = [
+  "New lead",
+  "Site visit required",
+  "Estimating",
+  "Quote sent",
+  "Negotiation",
+  "Approved",
+  "Declined"
+] as const;
+
+export const tourismExperienceTypes = [
+  "Safari",
+  "Cultural experience",
+  "City tour",
+  "Accommodation",
+  "Transfers",
+  "Camping",
+  "Adventure",
+  "Birding",
+  "Photography",
+  "Custom itinerary"
+] as const;
+
+export const logisticsJobTypes = [
+  "Local delivery",
+  "Long-haul delivery",
+  "Courier",
+  "Furniture move",
+  "Office relocation",
+  "Freight",
+  "Warehouse transfer",
+  "Custom job"
+] as const;
+
+export const logisticsJobStates = [
+  "Quote requested",
+  "Scheduled",
+  "Driver assigned",
+  "Collected",
+  "In transit",
+  "Delivered",
+  "Proof of delivery received",
+  "Closed"
+] as const;
