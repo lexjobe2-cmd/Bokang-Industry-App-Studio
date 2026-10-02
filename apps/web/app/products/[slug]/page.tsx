@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProductConfig, productList, products, type ProductSlug } from "@bokang/app-config";
 import { DashboardGrid, MetricCard, ProductShell } from "@bokang/ui";
+import { LexIntakeShowcase } from "../../../components/products/LexIntakeShowcase";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -21,13 +22,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(30px, 5vw, 48px)" }}>{config.name}</h1>
         <p style={{ maxWidth: 760, color: "#667085", lineHeight: 1.7 }}>{config.description}</p>
 
-        <section style={{ marginTop: 28 }}>
-          <DashboardGrid>
-            {config.dashboardMetrics.map((metric, index) => (
-              <MetricCard key={metric} label={metric} value={index === 0 ? "12" : index === 1 ? "8" : index === 2 ? "3" : "5"} detail="Starter dashboard data" />
-            ))}
-          </DashboardGrid>
-        </section>
+        {config.slug === "lex-intake" ? (
+          <LexIntakeShowcase />
+        ) : (
+          <section style={{ marginTop: 28 }}>
+            <DashboardGrid>
+              {config.dashboardMetrics.map((metric, index) => (
+                <MetricCard key={metric} label={metric} value={index === 0 ? "12" : index === 1 ? "8" : index === 2 ? "3" : "5"} detail="Starter dashboard data" />
+              ))}
+            </DashboardGrid>
+          </section>
+        )}
 
         <section style={{ marginTop: 28, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 22, padding: 22 }}>
           <h2 style={{ marginTop: 0 }}>Workspace modules</h2>
