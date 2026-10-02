@@ -6,7 +6,7 @@ export default async function ExploreBWAboutPage({searchParams}:{searchParams:Pr
 
   return <ExploreBWPublicShell clientName={client} current="about">
     <section style={{maxWidth:1240,margin:"0 auto",padding:"82px 22px"}}>
-      <div style={{display:"grid",gridTemplateColumns:"minmax(0,.8fr) minmax(0,1.2fr)",gap:48}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:48}}>
         <div><p style={safariEyebrow}>The operator story</p><h1 style={safariTitle}>Travelers want to know who is taking them into the bush.</h1></div>
         <div><p style={safariLead}>{client} is presented here as a Botswana-based safari operator built around local knowledge, thoughtful pacing and direct relationships with travelers.</p><p style={safariBody}>A final site should replace this concept story with the operator&apos;s verified founders, guides, memberships, vehicle/camp model, conservation approach and years of experience. Those trust details matter more than generic marketing claims.</p></div>
       </div>
