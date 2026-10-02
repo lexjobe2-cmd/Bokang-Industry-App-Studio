@@ -273,3 +273,34 @@ The current showcase collections now survive refresh/navigation:
 - MoveTrack jobs.
 
 This browser persistence is a showcase/offline-friendly working layer. Production long-lived business documents remain intended for the user's authorized Google or Microsoft workspace.
+
+
+## End-to-end showcase path
+
+Every product now supports the same reusable showcase journey:
+
+```text
+Product launcher
+→ product workspace
+→ persisted domain CRUD
+→ workspace onboarding
+→ Google / Microsoft connection
+→ connected file registry
+→ storage snapshots
+→ admin & members
+→ Redis/platform health
+```
+
+The connected file registry stores file metadata only in browser persistence. File bytes are deliberately not written into browser storage. Once a provider is connected, the next connector implementation step is to stream uploads directly into the user's authorized Drive/OneDrive/SharePoint destination and persist only references/metadata in app state.
+
+The shared onboarding route is available at:
+
+```text
+/products/<product-slug>/onboarding
+```
+
+The shared admin route is available at:
+
+```text
+/products/<product-slug>/admin
+```
