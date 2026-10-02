@@ -22,9 +22,10 @@ export function ProductMediaHero({ config }: { config: ProductConfig }) {
       }}>
         <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.3, fontWeight: 900, opacity: .82 }}>{config.experience.mood}</div>
         <strong style={{ display: "block", fontSize: 24, marginTop: 6 }}>{config.experience.hero}</strong>
-        <a href={media.sourceUrl} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 8, fontSize: 11, opacity: .78, textDecoration: "underline" }}>
-          Photo: {media.sourceLabel}
-        </a>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 8, fontSize: 11, opacity: .82 }}>
+          {media.locality ? <span>{media.locality}</span> : null}
+          <a href={media.sourceUrl} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>Photo: {media.sourceLabel}</a>
+        </div>
       </div>
     </section>
   );
