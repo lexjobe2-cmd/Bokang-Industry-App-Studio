@@ -14,6 +14,8 @@ export function WorkspaceUtilities({ config }: { config: ProductConfig }) {
   const [palette, setPalette] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [online, setOnline] = useState(true);
+  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   const [notifications, setNotifications] = usePersistentState<NotificationItem[]>(
     `bokang-studio.${config.slug}.notifications.v1`,
     [
@@ -25,6 +27,31 @@ export function WorkspaceUtilities({ config }: { config: ProductConfig }) {
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
   }, [dark]);
+
+  useEffect(() => {
+    setOnline(navigator.onLine);
+    const onOnline = () => setOnline(true);
+    const onOffline = () => setOnline(false);
+    const onInstall = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event);
+    };
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    window.addEventListener("beforeinstallprompt", onInstall);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+      window.removeEventListener("beforeinstallprompt", onInstall);
+    };
+  }, []);
+
+  async function installApp() {
+    if (!installPrompt) return;
+    const promptEvent = installPrompt as Event & { prompt?: () => Promise<void> };
+    await promptEvent.prompt?.();
+    setInstallPrompt(null);
+  }
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -81,7 +108,10 @@ export function WorkspaceUtilities({ config }: { config: ProductConfig }) {
         <button onClick={() => setNotificationsOpen((current) => !current)} style={controlStyle}><Bell size={14}/> Notifications {unread ? `(${unread})` : ""}</button>
         <button onClick={() => setDark((current) => !current)} style={controlStyle}>{dark ? <Sun size={14}/> : <Moon size={14}/>} {dark ? "Light" : "Dark"}</button>
         <button onClick={exportReport} style={controlStyle}><Download size={14}/> Export report</button>
-        <span style={{ marginLeft: "auto", color: "#667085", fontSize: 11, fontWeight: 800 }}>{role} view</span>
+        {installPrompt ? <button onClick={() => void installApp()} style={controlStyle}>Install app</button> : null}
+        <span style={{ marginLeft: "auto", color: online ? "#027a48" : "#b54708", fontSize: 11, fontWeight: 800 }}>
+          {online ? "● Online" : "● Offline-ready"} · {role} view
+        </span>
       </section>
 
       {notificationsOpen ? (
