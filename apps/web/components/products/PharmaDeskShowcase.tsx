@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import { pharmacyDispenseStatuses, pharmacyMedicineForms, pharmacyPurchaseStatuses, pharmacyStockStates } from "@bokang/domain-data";
 
 type Medicine={id:string;name:string;form:string;batch:string;qty:number;reorder:number;expiry:string;supplier:string;state:string};
@@ -16,8 +17,8 @@ const dispensing:Dispense[]=[
 ];
 
 export function PharmaDeskShowcase(){
- const [medicines,setMedicines]=useState(starter);
- const [dispenses,setDispenses]=useState(dispensing);
+ const [medicines,setMedicines]=usePersistentState("bokang-studio.pharma-desk.medicines.v1", starter);
+ const [dispenses,setDispenses]=usePersistentState("bokang-studio.pharma-desk.dispensing.v1", dispensing);
  const [view,setView]=useState<"inventory"|"add"|"dispense"|"orders">("inventory");
  const [name,setName]=useState(""); const [form,setForm]=useState<(typeof pharmacyMedicineForms)[number]>("Tablet"); const [qty,setQty]=useState("0"); const [batch,setBatch]=useState("");
  const stats=useMemo(()=>({low:medicines.filter(x=>x.qty<=x.reorder).length,expiring:medicines.filter(x=>x.state==="Near expiry").length,total:medicines.reduce((n,x)=>n+x.qty,0)}),[medicines]);
