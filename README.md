@@ -135,3 +135,94 @@ Open the Studio launcher and select a product. Product routes are generated from
 ## Engineering rule
 
 Features that are not genuinely industry-specific should be implemented once in a shared package and consumed by each frontend. We should only fork product behavior where the underlying workflow actually differs.
+
+
+## Showcase implementation status
+
+The first showcase-ready workflow pass is now implemented in product order.
+
+### 1. LexIntake AI
+- Guided client intake
+- Botswana location presets
+- Legal matter type presets
+- Consultation mode presets
+- Matter pipeline with editable stages
+- Document review list
+- Practice metrics and conversion snapshot
+
+### 2. LedgerDesk AI
+- Client onboarding
+- Accounting engagement types
+- Engagement status pipeline
+- Missing-document tracking
+- Document category presets
+- Practice performance metrics
+
+### 3. TaxFlow AI
+- Tax return creation
+- Return-type presets
+- Tax workflow stages
+- Deadline visibility
+- Preparation checklist
+- Tax operations metrics
+
+### 4. ClinicFlow AI
+- Appointment booking
+- Appointment type presets
+- Appointment state updates
+- Patient workspace preview
+- Follow-up visibility
+- Clinic operations metrics
+
+### 5. PharmaDesk AI
+- Medicine inventory
+- Dosage/form presets
+- Batch tracking
+- Quantity and reorder thresholds
+- Expiry / near-expiry states
+- Low-stock visibility
+- Supplier references
+- Purchase order workflow
+- Prescription/dispensing queue
+- Dispensing state changes
+
+### 6. BuildQuote AI
+- Quote lead capture
+- Construction trade presets
+- Site/project locations
+- Quote pipeline stages
+- Project progress preview
+- Commercial metrics
+
+### 7. ExploreBW AI
+- Experience catalogue
+- Destination filters
+- Tourism experience presets
+- Saved experiences
+- Sample itinerary
+- Booking enquiry workflow
+- Operator dashboard metrics
+
+### 8. MoveTrack AI
+- Logistics job creation
+- Job type presets
+- Botswana origin/destination selectors
+- Job status pipeline
+- Fleet status
+- Delivery and POD metrics
+
+## Shared showcase capabilities
+
+Every product now also includes:
+
+- adaptive desktop workspace shell,
+- fixed 5-tab mobile navigation,
+- Google Workspace / Microsoft 365 connection-state preview,
+- storage usage snapshot,
+- refreshable snapshot demo,
+- cleanup entry point,
+- reusable Recharts activity dashboard,
+- reusable product attribution,
+- reusable domain arrays for faster input.
+
+The current connected-workspace controls are showcase connection states only. OAuth scopes and real provider writes are intentionally deferred to the integration implementation phase; the UI does not falsely claim a live Google or Microsoft connection.
