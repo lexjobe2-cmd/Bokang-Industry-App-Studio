@@ -843,3 +843,46 @@ The internal MoveTrack application remains separate and continues to manage:
 - maintenance and incident control.
 
 The public logistics website uses representative African freight/warehouse imagery and explicitly treats all operator capabilities as proposal content until verified by the client.
+
+
+## LexIntake public law firm website
+
+LexIntake now has a dedicated prospect-facing law-firm website separate from the internal client-intake/matter workspace.
+
+The public journey is designed around legal client trust rather than software features:
+
+```text
+Firm positioning
+→ client need / expertise
+→ lawyer profiles
+→ how engagement works
+→ legal insights
+→ office / verification
+→ minimal confidential enquiry
+```
+
+### Public routes
+
+- `/demo/lex-intake`
+- `/demo/lex-intake/expertise`
+- `/demo/lex-intake/people`
+- `/demo/lex-intake/insights`
+- `/demo/lex-intake/start`
+
+The public enquiry intentionally captures only the minimum required for routing and conflict screening: client/organisation name, contact, matter category, urgency, other-party name if known, and a short summary.
+
+It explicitly avoids encouraging document uploads or highly sensitive evidence before the firm confirms it can act.
+
+The internal LexIntake workspace remains separate and continues to manage:
+
+- intake pipeline,
+- conflict review,
+- consultations,
+- engagement state,
+- matters,
+- documents,
+- billing milestones,
+- KYC/compliance checkpoints,
+- analytics.
+
+The public site also points prospects toward the Law Society of Botswana for practitioner verification rather than inventing badges or accreditation claims.
