@@ -998,3 +998,36 @@ The site also distinguishes public clinic access from secure patient functions. 
 A commissioned site should publish only verified practitioner registration, qualifications, facility details, medical-aid participation and professional credentials.
 
 The internal ClinicFlow workspace remains separate and continues to manage patient records, appointments, intake, queue state, documents, reminders and clinic analytics.
+
+
+## PharmaDesk public pharmacy website
+
+PharmaDesk now has a dedicated customer-facing community-pharmacy website separate from the internal medicine-management workspace.
+
+The public journey follows a modern pharmacy-access model:
+
+```text
+Prescription access
+→ pharmacist support
+→ pickup / delivery preference
+→ medical-aid / payment context
+→ health & pharmacy services
+→ branches / opening hours
+→ regulated-care trust
+```
+
+### Public routes
+
+- `/demo/pharma-desk`
+- `/demo/pharma-desk/prescriptions`
+- `/demo/pharma-desk/services`
+- `/demo/pharma-desk/branches`
+- `/demo/pharma-desk/about`
+
+The prescription request deliberately stops at pharmacist review. It captures request type, prescription status, pickup/delivery preference, branch, payment/medical-aid context and contact information.
+
+It does not diagnose, prescribe, automatically approve or directly sell prescription-only medicines.
+
+The site also separates public pharmacy access from the internal medicine-management system. Barcode/QR inventory, batches, expiry, suppliers, purchase orders, receiving, cycle counts, recalls/quarantine states and dispensing records remain inside PharmaDesk operations.
+
+Current regulatory information is linked back to BoMRA rather than hard-coded into marketing pages.
