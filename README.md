@@ -800,3 +800,46 @@ The safari planning form is intentionally intent-first. Travelers can begin with
 The site uses Botswana-specific destination structure around Maun, the Okavango Delta, Khwai/Moremi, Chobe/Kasane and Makgadikgadi. Pricing and package details in the showcase are explicitly illustrative until replaced with verified operator inventory.
 
 The internal ExploreBW operations workspace remains separate and continues to handle bookings, travellers, saved trips, maps and operator analytics.
+
+
+## MoveTrack public logistics website
+
+MoveTrack now has a dedicated prospect-facing logistics website separate from the internal fleet/driver operations app.
+
+The public journey is designed around how logistics buyers evaluate operators:
+
+```text
+Who we are
+→ services
+→ industries served
+→ fleet capacity
+→ Botswana / regional coverage
+→ shipment tracking
+→ qualified quote request
+```
+
+### Public routes
+
+- `/demo/move-track`
+- `/demo/move-track/services`
+- `/demo/move-track/fleet`
+- `/demo/move-track/about`
+- `/demo/move-track/track`
+- `/demo/move-track/quote`
+
+The public tracking surface uses sample records in showcase mode. The quote form captures origin, destination, service type, commodity/load, approximate weight/volume, timing, contact details and special site/handling requirements.
+
+The internal MoveTrack application remains separate and continues to manage:
+
+- fleet onboarding,
+- driver onboarding,
+- site safety policies,
+- assignments,
+- driver mobile app,
+- pre-start GO / NO-GO logic,
+- automatic vehicle grounding,
+- corrective action,
+- proof of delivery,
+- maintenance and incident control.
+
+The public logistics website uses representative African freight/warehouse imagery and explicitly treats all operator capabilities as proposal content until verified by the client.
