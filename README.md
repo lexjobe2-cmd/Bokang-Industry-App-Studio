@@ -515,3 +515,60 @@ The shared files workspace now uses Uppy for modern drag/drop and multi-file sta
 - tus resumable upload support is installed but remains disabled until a real endpoint/storage policy is configured.
 
 This keeps the showcase honest while preserving the production upload architecture.
+
+
+## Fleet, mining safety and visual media
+
+### MoveTrack fleet management
+
+MoveTrack now includes a persistent fleet and driver operating model:
+
+- fleet vehicle CRUD,
+- fleet number + registration,
+- make/model + vehicle class,
+- site assignment,
+- odometer and maintenance thresholds,
+- roadworthiness expiry,
+- fire-extinguisher service date,
+- operational state including NO-GO,
+- driver CRUD,
+- site-driving authorisation,
+- open-pit permit flag,
+- first-aid and defensive-driving flags,
+- mine/industrial pre-start checklists,
+- critical no-go controls,
+- persisted GO / NO-GO pre-start history.
+
+The showcase checklist is grounded in Botswana mine-vehicle requirements and contemporary mine-site contractor controls. It is a workflow aid and does not replace a statutory inspection, mine-specific technical standard, competent-person assessment or employer/site procedure.
+
+Current critical demo gates include driver/site authorisation, roadworthiness, seat belts, brakes/handbrake, required warning lights/signals, reverse alarm and accessible/in-service fire extinguisher.
+
+### Free visual media
+
+Product experiences now use curated free-to-use photography with visible source attribution.
+
+Current examples include:
+
+- Okavango Delta, Botswana tourism imagery from Unsplash,
+- Chobe National Park, Botswana vehicle imagery from Unsplash,
+- Gaborone, Botswana construction imagery from Unsplash,
+- Black professional/office imagery from Pexels,
+- Black-patient healthcare imagery from Pexels.
+
+Image source URLs and attribution labels are stored in `apps/web/lib/product-media.ts` so photography can be replaced or audited without searching component code.
+
+### Shared 2026 utility layer
+
+Internal product workspaces now also include:
+
+- role lens: Operator / Manager / Viewer,
+- Cmd/Ctrl-K command palette,
+- persistent notification centre,
+- light/dark mode,
+- reduced-motion accessibility,
+- JSON showcase report export,
+- CSV bulk-import preview,
+- persisted audit/activity timeline,
+- lightweight PWA manifest and service-worker registration.
+
+The service worker deliberately excludes `/api/*` and cross-origin requests from caching.
