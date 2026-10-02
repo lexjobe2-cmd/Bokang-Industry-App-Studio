@@ -930,3 +930,36 @@ The internal LedgerDesk workspace remains separate and continues to manage:
 - close packs,
 - deadlines,
 - analytics.
+
+
+## TaxFlow public tax advisory website
+
+TaxFlow now has a dedicated prospect-facing tax-practice website separate from the internal return workflow.
+
+The public journey follows a 2026 tax-client pattern:
+
+```text
+Tax certainty
+→ taxpayer context
+→ readiness map
+→ official BURS guidance
+→ year-round tax advice
+→ simple tax enquiry
+```
+
+### Public routes
+
+- `/demo/tax-flow`
+- `/demo/tax-flow/services`
+- `/demo/tax-flow/readiness`
+- `/demo/tax-flow/guidance`
+- `/demo/tax-flow/about`
+- `/demo/tax-flow/start`
+
+The signature public interaction is a Tax Readiness Map covering registration, records, returns, payments and clearance/correspondence. It does not calculate liability or determine legal obligations.
+
+Changing tax rules, rates and filing/payment requirements are deliberately linked back to current BURS sources instead of being copied into static marketing pages.
+
+The first enquiry captures taxpayer context, the main issue, tax period, urgency and whether BURS correspondence is involved. Detailed returns, schedules and evidence remain inside the secure TaxFlow workflow after engagement acceptance.
+
+The internal TaxFlow workspace remains separate and continues to manage questionnaires, documents, preparation, review, submission state, deadline control and analytics.
