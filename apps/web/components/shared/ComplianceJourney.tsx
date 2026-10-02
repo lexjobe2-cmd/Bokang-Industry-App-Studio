@@ -13,7 +13,7 @@ const verificationSchema = z.object({
   subjectName: z.string().min(2, "Enter a name or organisation"),
   documentType: z.enum(["National ID / Omang", "Passport", "Company registration", "Other approved document"]),
   reference: z.string().min(3, "Enter a document/reference identifier"),
-  consent: z.literal(true, { error: "Consent/authority acknowledgement is required" }),
+  consent: z.boolean().refine((value) => value, { message: "Consent/authority acknowledgement is required" }),
 });
 
 type VerificationForm = z.infer<typeof verificationSchema>;
