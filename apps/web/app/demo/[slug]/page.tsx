@@ -9,6 +9,7 @@ import { BuildQuoteClientSite } from "../../../components/products/BuildQuoteCli
 import { ExploreBWClientSite } from "../../../components/products/ExploreBWClientSite";
 import { MoveTrackClientSite } from "../../../components/products/MoveTrackClientSite";
 import { LexIntakeClientSite } from "../../../components/products/LexIntakeClientSite";
+import { LedgerDeskClientSite } from "../../../components/products/LedgerDeskClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -52,6 +53,10 @@ export default async function ClientDemoPage({
 
   if (config.slug === "lex-intake") {
     return <LexIntakeClientSite clientName={demo.client} />;
+  }
+
+  if (config.slug === "ledger-desk") {
+    return <LedgerDeskClientSite clientName={demo.client} />;
   }
 
   return (
