@@ -963,3 +963,38 @@ Changing tax rules, rates and filing/payment requirements are deliberately linke
 The first enquiry captures taxpayer context, the main issue, tax period, urgency and whether BURS correspondence is involved. Detailed returns, schedules and evidence remain inside the secure TaxFlow workflow after engagement acceptance.
 
 The internal TaxFlow workspace remains separate and continues to manage questionnaires, documents, preparation, review, submission state, deadline control and analytics.
+
+
+## ClinicFlow public clinic website
+
+ClinicFlow now has a dedicated patient-facing clinic website separate from the internal clinic operations workspace.
+
+The public journey follows a healthcare digital-front-door model:
+
+```text
+Find care
+→ understand clinician options
+→ request an appointment
+→ prepare for the visit
+→ understand payment/medical-aid expectations
+→ find the clinic
+→ move into secure patient operations after confirmation
+```
+
+### Public routes
+
+- `/demo/clinic-flow`
+- `/demo/clinic-flow/care`
+- `/demo/clinic-flow/team`
+- `/demo/clinic-flow/patient-info`
+- `/demo/clinic-flow/book`
+
+The public appointment request captures only scheduling information: patient/contact, care area, visit reason, clinician preference, visit type, preferred timing, payment/medical-aid context and whether the patient is new or existing.
+
+It deliberately does not diagnose, collect a detailed medical history or request sensitive clinical documents on the public form.
+
+The site also distinguishes public clinic access from secure patient functions. Results, clinical messaging, records and detailed intake belong in the secure patient workflow after appointment confirmation.
+
+A commissioned site should publish only verified practitioner registration, qualifications, facility details, medical-aid participation and professional credentials.
+
+The internal ClinicFlow workspace remains separate and continues to manage patient records, appointments, intake, queue state, documents, reminders and clinic analytics.
