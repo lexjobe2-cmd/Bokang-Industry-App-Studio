@@ -27,7 +27,7 @@ export function MoveTrackTrackingDemo(){
     {result?<article style={{marginTop:16,background:"#fff",border:"1px solid #d7dce1",padding:18}}>
       <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><div style={{fontSize:10,color:"#667085",fontWeight:900}}>REFERENCE</div><strong style={{fontSize:20}}>{result.reference}</strong></div><span style={{fontWeight:900,color:result.status==="Delivered"?"#027a48":"#1d4ed8"}}>{result.status}</span></div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:10,marginTop:16}}>
-        {[["Route",result.route],["Last update",result.lastUpdate],["Next",result.next]].map(([label,value])=><div key={label}><div style={{fontSize:10,color:"#98a2b3",fontWeight:900}}>{label.toUpperCase()}</div><div style={{fontSize:12,fontWeight:800,marginTop:3}}>{value}</div></div>)}
+        {([["Route",result.route],["Last update",result.lastUpdate],["Next",result.next]] as Array<[string,string]>).map(([label,value])=><div key={label}><div style={{fontSize:10,color:"#98a2b3",fontWeight:900}}>{label.toUpperCase()}</div><div style={{fontSize:12,fontWeight:800,marginTop:3}}>{value}</div></div>)}
       </div>
       <p style={{fontSize:10,color:"#98a2b3",marginBottom:0}}>Demo tracking data only. A commissioned version can bind this surface to the operator&apos;s actual shipment/job system.</p>
     </article>:null}
