@@ -13,7 +13,7 @@ export function DeepIndustryWorkflows({ config }: { config: ProductConfig }) {
   if (config.slug === "pharma-desk") return <PharmaDepth config={config} />;
   if (config.slug === "build-quote") return <BuildDepth config={config} />;
   if (config.slug === "explore-bw") return <ExploreDepth config={config} />;
-  if (config.slug === "move-track") return <MoveDepth config={config} />;
+  if (config.slug === "move-track") return null;
   return null;
 }
 
@@ -346,57 +346,6 @@ function ExploreDepth({ config }: { config: ProductConfig }) {
           </label>
           <div style={{ fontSize: 36, fontWeight: 950, marginTop: 18 }}>P {total.toLocaleString()}</div>
           <div style={smallMuted}>Sample package total for {travellers} traveller{travellers === 1 ? "" : "s"}</div>
-        </article>
-      </div>
-    </Shell>
-  );
-}
-
-function MoveDepth({ config }: { config: ProductConfig }) {
-  const [inspection, setInspection] = usePersistentState(
-    "bokang-studio.move-track.inspection.v1",
-    [
-      { label: "Tyres / wheel nuts", ok: true },
-      { label: "Lights / indicators", ok: true },
-      { label: "Fire extinguisher", ok: false },
-      { label: "First-aid kit", ok: true },
-      { label: "Reverse alarm", ok: true },
-      { label: "Seat belts", ok: true },
-      { label: "Vehicle documents", ok: false },
-    ]
-  );
-  const [incidents, setIncidents] = usePersistentState(
-    "bokang-studio.move-track.incidents.v1",
-    [{ id: "INC-1", detail: "Minor loading delay at client site", state: "Open" }]
-  );
-  const ready = inspection.every((item) => item.ok);
-
-  return (
-    <Shell config={config} eyebrow="Fleet safety" title="Pre-trip inspection + incident control">
-      <div style={twoCol}>
-        <article style={panel}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-            <strong>Driver checklist</strong>
-            <span style={{ color: ready ? "#027a48" : "#b42318", fontWeight: 900 }}>{ready ? "Ready" : "Hold vehicle"}</span>
-          </div>
-          <p style={muted}>Useful for fleet, industrial and mining-style operating environments.</p>
-          {inspection.map((item, index) => (
-            <label key={item.label} style={row}>
-              <input type="checkbox" checked={item.ok} onChange={(e) => setInspection((current) => current.map((x, i) => i === index ? { ...x, ok: e.target.checked } : x))} />
-              <span>{item.label}</span>
-            </label>
-          ))}
-        </article>
-        <article style={panel}>
-          <strong>Incident / exception log</strong>
-          {incidents.map((item) => (
-            <div key={item.id} style={row}>
-              <span style={{ flex: 1 }}><strong>{item.id}</strong><div style={smallMuted}>{item.detail}</div></span>
-              <select value={item.state} onChange={(e) => setIncidents((current) => current.map((x) => x.id === item.id ? { ...x, state: e.target.value } : x))} style={selectStyle}>
-                <option>Open</option><option>Investigating</option><option>Resolved</option>
-              </select>
-            </div>
-          ))}
         </article>
       </div>
     </Shell>
