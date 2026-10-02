@@ -28,7 +28,21 @@
     "@bokang/persistence": "workspace:*",
     "@bokang/coordination": "workspace:*",
     "@bokang/integrations": "workspace:*",
-    "@bokang/prospects": "workspace:*"
+    "@bokang/prospects": "workspace:*",
+    "@tanstack/react-virtual": "^3.13.12",
+    "@zxing/browser": "^0.2.1",
+    "@zxing/library": "^0.22.0",
+    "react-hook-form": "^7.62.0",
+    "zod": "^4.1.11",
+    "@hookform/resolvers": "^5.2.2",
+    "@uppy/core": "^5.1.1",
+    "@uppy/dashboard": "^5.0.2",
+    "@uppy/tus": "^5.0.2",
+    "@fullcalendar/react": "^6.1.19",
+    "@fullcalendar/core": "^6.1.19",
+    "@fullcalendar/daygrid": "^6.1.19",
+    "@fullcalendar/timegrid": "^6.1.19",
+    "@fullcalendar/interaction": "^6.1.19"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
