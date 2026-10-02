@@ -12,6 +12,7 @@ import { LexIntakeClientSite } from "../../../components/products/LexIntakeClien
 import { LedgerDeskClientSite } from "../../../components/products/LedgerDeskClientSite";
 import { TaxFlowClientSite } from "../../../components/products/TaxFlowClientSite";
 import { ClinicFlowClientSite } from "../../../components/products/ClinicFlowClientSite";
+import { PharmaDeskClientSite } from "../../../components/products/PharmaDeskClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -67,6 +68,10 @@ export default async function ClientDemoPage({
 
   if (config.slug === "clinic-flow") {
     return <ClinicFlowClientSite clientName={demo.client} />;
+  }
+
+  if (config.slug === "pharma-desk") {
+    return <PharmaDeskClientSite clientName={demo.client} />;
   }
 
   return (
