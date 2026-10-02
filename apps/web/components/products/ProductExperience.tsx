@@ -10,6 +10,7 @@ import { ExploreBWShowcase } from "./ExploreBWShowcase";
 import { MoveTrackShowcase } from "./MoveTrackShowcase";
 import { ComplianceJourney } from "../shared/ComplianceJourney";
 import { IndustryEnhancements } from "../shared/IndustryEnhancements";
+import { DeepIndustryWorkflows } from "../shared/DeepIndustryWorkflows";
 import { ProductMediaHero } from "../shared/ProductMediaHero";
 
 export function ProductExperience({ config }: { config: ProductConfig }) {
@@ -48,6 +49,7 @@ export function ProductExperience({ config }: { config: ProductConfig }) {
       </section>
       {body}
       <IndustryEnhancements config={config} />
+      <DeepIndustryWorkflows config={config} />
       {complianceApps.has(config.slug) ? <ComplianceJourney config={config} /> : null}
     </>
   );
