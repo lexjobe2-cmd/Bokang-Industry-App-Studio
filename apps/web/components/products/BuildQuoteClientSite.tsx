@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { KeylessMap } from "../shared/KeylessMap";
+import { buildQuoteClientQuery } from "../../lib/buildquote-site";
 
 type Props = {
   clientName: string;
@@ -57,6 +58,7 @@ export function BuildQuoteClientSite({clientName,location,contact,email,cta}:Pro
 
   const matchedPlace=Object.keys(locationCoordinates).find((place)=>location.toLowerCase().includes(place.toLowerCase())) || "Gaborone";
   const coords=locationCoordinates[matchedPlace] ?? locationCoordinates["Gaborone"]!;
+  const q=buildQuoteClientQuery(clientName);
 
   function submit(){
     if(!name.trim()) return;
@@ -72,10 +74,10 @@ export function BuildQuoteClientSite({clientName,location,contact,email,cta}:Pro
             <div style={{fontSize:10,color:"#737373",textTransform:"uppercase",letterSpacing:1.4}}>Construction · Botswana</div>
           </div>
           <nav style={{display:"flex",gap:18,alignItems:"center",fontSize:12,fontWeight:800}}>
-            <a href="#about">About</a>
-            <a href="#projects">Projects</a>
-            <a href="#services">Services</a>
-            <a href="#contact" style={{background:"#171717",color:"#fff",padding:"9px 12px",borderRadius:999}}>Contact</a>
+            <Link href={"/demo/build-quote/about"+q}>About</Link>
+            <Link href={"/demo/build-quote/projects"+q}>Projects</Link>
+            <Link href={"/demo/build-quote/services"+q}>Services</Link>
+            <Link href={"/demo/build-quote/contact"+q} style={{background:"#171717",color:"#fff",padding:"9px 12px",borderRadius:999}}>Contact</Link>
           </nav>
         </div>
       </header>
@@ -97,8 +99,8 @@ export function BuildQuoteClientSite({clientName,location,contact,email,cta}:Pro
               A proposed digital presence for {clientName}: focused on the company, the work, the people behind it and the places it serves.
             </p>
             <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:24}}>
-              <a href="#projects" style={{background:"#fff",color:"#171717",padding:"12px 16px",borderRadius:999,fontWeight:900,fontSize:13}}>View projects</a>
-              <a href="#contact" style={{border:"1px solid rgba(255,255,255,.65)",color:"#fff",padding:"12px 16px",borderRadius:999,fontWeight:900,fontSize:13}}>Start a conversation</a>
+              <Link href={"/demo/build-quote/projects"+q} style={{background:"#fff",color:"#171717",padding:"12px 16px",borderRadius:999,fontWeight:900,fontSize:13}}>View projects</Link>
+              <Link href={"/demo/build-quote/contact"+q} style={{border:"1px solid rgba(255,255,255,.65)",color:"#fff",padding:"12px 16px",borderRadius:999,fontWeight:900,fontSize:13}}>Start a conversation</Link>
             </div>
           </div>
           <div style={{marginTop:28,fontSize:10,opacity:.72}}>
