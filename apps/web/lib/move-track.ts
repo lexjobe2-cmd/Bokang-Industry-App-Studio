@@ -147,8 +147,19 @@ export function evaluatePrestart(args: {
   const reasons: string[] = [];
   const { checks, criticalChecks, vehicle, driver } = args;
 
-  for (const item of criticalChecks) {
-    if (checks[item] !== "pass") reasons.push(item + " failed/not passed");
+  for (const [item, result] of Object.entries(checks)) {
+    const critical = criticalChecks.includes(item);
+    if (critical && result !== "pass") {
+      reasons.push(item + " must explicitly PASS");
+      continue;
+    }
+    if (!critical && result === "unset") {
+      reasons.push(item + " is incomplete");
+      continue;
+    }
+    if (result === "fail") {
+      reasons.push(item + " failed");
+    }
   }
 
   if (!driver.siteAuthorised) reasons.push("Driver is not site-authorised");
