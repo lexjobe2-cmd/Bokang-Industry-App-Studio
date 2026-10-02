@@ -420,3 +420,47 @@ For the current outreach showcase:
 - production privacy/security requirements are treated as a later deployment obligation rather than falsely claiming the demo is a production system.
 
 Botswana production deployments should be reviewed against the current Data Protection Act and any applicable sector-specific requirements before real client data is processed.
+
+
+## Prospect intelligence and manual outreach
+
+The Studio now includes:
+
+```text
+/prospects
+```
+
+This view is seeded with current publicly verifiable Botswana businesses across all eight solution categories.
+
+Each prospect record contains:
+
+- business name,
+- sector and location,
+- public business email/phone where available,
+- recommended Studio product,
+- public evidence summary,
+- source URL and source type,
+- source-check date,
+- a clearly labelled product-fit hypothesis,
+- local outreach status: New, Prepared, Contacted, Replied, Converted or Not now.
+
+### Manual outreach flow
+
+```text
+Studio dashboard
+→ View prospects
+→ choose prospect
+→ Prepare outreach
+→ review source/evidence
+→ generated subject + email body
+→ generated client-specific demo link
+→ Copy recipient
+→ Copy email
+→ Copy demo link
+→ Preview client demo
+→ manually paste into Gmail and send
+```
+
+Gmail is deliberately not connected. The Studio prepares the material; the user remains in control of reviewing and sending the message.
+
+The registry does not claim that a business has a problem or needs the proposed product. Public facts and the Studio's fit hypothesis are stored separately.
