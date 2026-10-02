@@ -647,3 +647,32 @@ PharmaDesk's virtualized medicine inventory now supports multi-select bulk state
 - Recalled.
 
 The bulk-action pattern can now be reused for logistics jobs, construction leads and accounting/tax work queues.
+
+
+## Deep industry workflows and local visual layer
+
+The showcase now goes beyond shared platform plumbing into product-specific operating depth.
+
+### Deeper product workflows
+
+- **LexIntake AI** — conflict-review queue and matter billing milestones in Botswana pula.
+- **LedgerDesk AI** — bank reconciliation and month-end close pack.
+- **TaxFlow AI** — structured client questionnaire and return-readiness score.
+- **ClinicFlow AI** — front-desk patient queue and visit-state flow without diagnosis/treatment automation.
+- **PharmaDesk AI** — purchase-order receiving and shelf cycle counts in addition to barcode/QR inventory.
+- **BuildQuote AI** — bill of quantities and client variation-order workflow.
+- **ExploreBW AI** — priced Botswana itinerary and traveller quote.
+- **MoveTrack AI** — pre-trip vehicle safety inspection and incident/exception control, including fire extinguisher, first-aid, reverse alarm and vehicle-document checks.
+
+### Local / representative imagery
+
+Product and client-demo pages now include an attributed visual hero.
+
+The media strategy is deliberate:
+
+- Botswana-specific imagery is preferred when place is central to the experience, especially tourism/logistics.
+- Free Black-professional imagery is used for legal, accounting, tax, healthcare, pharmacy and construction where suitable Botswana-specific stock imagery is limited.
+- Photo source attribution remains visible in the showcase.
+- Imagery is representational and is not presented as a photograph of the prospect or their staff.
+
+Current sources include Pexels and Unsplash.
