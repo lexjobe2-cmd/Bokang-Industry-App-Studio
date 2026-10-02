@@ -5,6 +5,9 @@ import { ProductShell } from "@bokang/ui";
 import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataShowcase";
 import { ConnectedFileRegistry } from "../../../components/shared/ConnectedFileRegistry";
 import { ProductExperience } from "../../../components/products/ProductExperience";
+import { WorkspaceUtilities } from "../../../components/shared/WorkspaceUtilities";
+import { BulkCsvWorkbench } from "../../../components/shared/BulkCsvWorkbench";
+import { AuditTimeline } from "../../../components/shared/AuditTimeline";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -41,7 +44,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
 
+        <WorkspaceUtilities config={config} />
+
         <ProductExperience config={config} />
+
+        <BulkCsvWorkbench config={config} />
+
+        <AuditTimeline config={config} />
 
         <WorkspaceDataShowcase config={config} />
 
