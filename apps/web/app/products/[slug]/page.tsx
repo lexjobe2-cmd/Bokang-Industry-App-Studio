@@ -9,6 +9,7 @@ import { WorkspaceUtilities } from "../../../components/shared/WorkspaceUtilitie
 import { DataImportWorkbench } from "../../../components/shared/DataImportWorkbench";
 import { ActivityAuditTimeline } from "../../../components/shared/ActivityAuditTimeline";
 import { ProductReports } from "../../../components/shared/ProductReports";
+import { ProductMediaHero } from "../../../components/shared/ProductMediaHero";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -44,6 +45,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </Link>
           </div>
         </div>
+
+        <ProductMediaHero config={config} />
 
         <WorkspaceUtilities config={config} />
 
