@@ -40,6 +40,7 @@ export function MoveTrackShowcase(){
 
   const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics">("control");
   const [notice,setNotice]=useState("");
+  const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [client,setClient]=useState("");
   const [jobType,setJobType]=useState<(typeof logisticsJobTypes)[number]>("Local delivery");
   const [from,setFrom]=useState<(typeof botswanaPlaces)[number]>("Gaborone");
@@ -149,7 +150,22 @@ export function MoveTrackShowcase(){
   }
 
   function resolveIncident(id:string){
-    setIncidents((current)=>current.map((item)=>item.id===id?{...item,status:"Resolved"}:item));
+    const note=(resolutionNotes[id]||"").trim();
+    if(!note){setNotice("Document corrective action before resolving the safety/defect record.");return;}
+    setIncidents((current)=>current.map((item)=>item.id===id?{
+      ...item,status:"Resolved",resolutionNote:note,resolvedAt:new Date().toISOString()
+    }:item));
+    setResolutionNotes((current)=>({...current,[id]:""}));
+    setNotice("Corrective action recorded and incident resolved.");
+  }
+
+  function recheckVehicleBaseline(vehicle:FleetVehicle){
+    const valid=dateIsCurrent(vehicle.roadworthyExpiry)&&dateIsCurrent(vehicle.extinguisherServiceDue);
+    const unresolved=incidents.some((item)=>item.vehicleId===vehicle.id&&item.status!=="Resolved");
+    if(!valid){setNotice(vehicle.fleetNo+" remains GROUNDED: roadworthiness or extinguisher service record is expired/missing.");return;}
+    if(unresolved){setNotice(vehicle.fleetNo+" remains GROUNDED until all open defects/safety incidents are resolved.");return;}
+    setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,status:"Inspection due"}:item));
+    setNotice(vehicle.fleetNo+" baseline records are valid. Status moved to INSPECTION DUE; a fresh driver pre-start is still required.");
   }
 
   function addJob(){
@@ -200,7 +216,13 @@ export function MoveTrackShowcase(){
         <h2 style={{marginTop:0}}>Open safety / defect reports</h2>
         {incidents.filter((item)=>item.status!=="Resolved").length===0?<p style={{color:"#667085"}}>No open reports.</p>:incidents.filter((item)=>item.status!=="Resolved").map((item)=>{
           const vehicle=fleet.find((x)=>x.id===item.vehicleId);
-          return <div key={item.id} style={{padding:"10px 0",borderBottom:"1px solid #fee2e2",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"#667085"}}>{item.description}</div></div><button onClick={()=>resolveIncident(item.id)} style={secondaryButton}>Mark resolved</button></div>;
+          return <div key={item.id} style={{padding:"10px 0",borderBottom:"1px solid #fee2e2",display:"grid",gap:8}}>
+            <div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"#667085"}}>{item.description}</div></div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <input value={resolutionNotes[item.id]||""} onChange={(e)=>setResolutionNotes((current)=>({...current,[item.id]:e.target.value}))} placeholder="Corrective action / repair completed…" style={{...input,flex:"1 1 280px"}}/>
+              <button onClick={()=>resolveIncident(item.id)} style={secondaryButton}>Resolve with evidence</button>
+            </div>
+          </div>;
         })}
       </section>
     </div>:null}
@@ -221,7 +243,12 @@ export function MoveTrackShowcase(){
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
           <div style={{fontSize:12,color:"#667085",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
           <div style={{fontSize:11,color:"#667085",marginTop:3}}>{vehicle.site}</div>
-          <div style={{display:"grid",gap:5,marginTop:12,fontSize:11}}><span>Roadworthy expiry: <strong>{vehicle.roadworthyExpiry}</strong></span><span>Extinguisher service: <strong>{vehicle.extinguisherServiceDue}</strong></span><span>Odometer: <strong>{vehicle.odometerKm.toLocaleString()} km</strong></span></div>
+          <div style={{display:"grid",gap:8,marginTop:12,fontSize:11}}>
+            <label style={fieldInline}>Roadworthy expiry<input type="date" value={vehicle.roadworthyExpiry==="Not set"?"":vehicle.roadworthyExpiry} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,roadworthyExpiry:e.target.value||"Not set"}:item))} style={input}/></label>
+            <label style={fieldInline}>Extinguisher service due<input type="date" value={vehicle.extinguisherServiceDue==="Not set"?"":vehicle.extinguisherServiceDue} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,extinguisherServiceDue:e.target.value||"Not set"}:item))} style={input}/></label>
+            <span>Odometer: <strong>{vehicle.odometerKm.toLocaleString()} km</strong></span>
+          </div>
+          {vehicle.status==="No-go"?<button onClick={()=>recheckVehicleBaseline(vehicle)} style={{...secondaryButton,marginTop:12}}>Recheck baseline after corrective action</button>:null}
         </article>)}
       </div>
     </div>:null}
@@ -325,4 +352,5 @@ const input:React.CSSProperties={border:"1px solid #d0d5dd",borderRadius:10,padd
 const primaryButton:React.CSSProperties={marginTop:14,border:0,background:"#1d4ed8",color:"#fff",borderRadius:11,padding:"10px 14px",fontWeight:900};
 const secondaryButton:React.CSSProperties={border:"1px solid #d0d5dd",background:"#fff",borderRadius:10,padding:"8px 10px",fontWeight:800,fontSize:11};
 const checkRow:React.CSSProperties={display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",background:"#f8fafc",border:"1px solid #e5e7eb",borderRadius:10,padding:"9px 10px",fontSize:11,fontWeight:750};
+const fieldInline:React.CSSProperties={display:"grid",gridTemplateColumns:"1fr minmax(140px,180px)",gap:10,alignItems:"center",fontSize:11,fontWeight:750};
 const primaryLink:React.CSSProperties={display:"inline-flex",alignItems:"center",justifyContent:"center",background:"#1d4ed8",color:"#fff",borderRadius:10,padding:"8px 11px",fontWeight:850,fontSize:11,textDecoration:"none"};
