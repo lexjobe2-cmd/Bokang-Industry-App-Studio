@@ -14,7 +14,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
-        <StudioSessionProvider><OfflineBootstrap />{children}</StudioSessionProvider>
+        <a className="skip-link" href="#main-content">Skip to main content</a>
+        <StudioSessionProvider><OfflineBootstrap /><div id="main-content">{children}</div></StudioSessionProvider>
       </body>
     </html>
   );
