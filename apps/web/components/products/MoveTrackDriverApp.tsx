@@ -8,11 +8,13 @@ import {
   evaluatePrestart,
   starterDrivers,
   starterFleet,
+  starterPolicies,
   type ChecklistResult,
   type FleetAssignment,
   type FleetDriver,
   type FleetIncident,
   type FleetVehicle,
+  type FleetSitePolicy,
   type PrestartRecord,
 } from "../../lib/move-track";
 
@@ -22,6 +24,7 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
   const [assignments,setAssignments] = usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
   const [prestarts,setPrestarts] = usePersistentState<PrestartRecord[]>(MOVE_TRACK_KEYS.prestarts,[]);
   const [incidents,setIncidents] = usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
+  const [policies] = usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
   const [tab,setTab] = useState<"home"|"assignment"|"check"|"incidents"|"profile">("home");
   const [checks,setChecks] = useState<Record<string,ChecklistResult>>(() => Object.fromEntries(miningPrestartChecks.map((item)=>[item,"unset"])));
   const [notes,setNotes] = useState("");
@@ -45,13 +48,19 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
 
   function submitPrestart(){
     if(!driver || !activeAssignment || !vehicle){ setNotice("No active vehicle assignment."); return; }
-    const requireOpenPitPermit = activeAssignment.site.toLowerCase().includes("mine");
+    const policy = policies.find((item)=>item.name===activeAssignment.site);
+    const criticalChecks = Array.from(new Set([
+      ...miningCriticalChecks,
+      ...(policy?.additionalCriticalChecks ?? [])
+    ]));
     const evaluated=evaluatePrestart({
       checks,
-      criticalChecks:miningCriticalChecks,
+      criticalChecks,
       vehicle,
       driver,
-      requireOpenPitPermit
+      requireOpenPitPermit:policy?.requireOpenPitPermit ?? activeAssignment.site.toLowerCase().includes("mine"),
+      requireFirstAid:policy?.requireFirstAid ?? false,
+      requireDefensiveDriving:policy?.requireDefensiveDriving ?? false
     });
     const record:PrestartRecord={
       id:"PRE-"+Date.now(),
@@ -160,7 +169,7 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
 
     {tab==="assignment"?<section style={{marginTop:18,...card}}>
       <h2 style={{marginTop:0}}>Assignment</h2>
-      {activeAssignment&&vehicle?<div style={{display:"grid",gap:10}}><Info label="Vehicle" value={vehicle.fleetNo+" · "+vehicle.registration}/><Info label="Site" value={activeAssignment.site}/><Info label="Job" value={activeAssignment.jobId||"Fleet movement / no job linked"}/><Info label="Roadworthy expiry" value={vehicle.roadworthyExpiry}/><Info label="Extinguisher service due" value={vehicle.extinguisherServiceDue}/></div>:<p>No active assignment.</p>}
+      {activeAssignment&&vehicle?<div style={{display:"grid",gap:10}}><Info label="Vehicle" value={vehicle.fleetNo+" · "+vehicle.registration}/><Info label="Site" value={activeAssignment.site}/><Info label="Job" value={activeAssignment.jobId||"Fleet movement / no job linked"}/><Info label="Roadworthy expiry" value={vehicle.roadworthyExpiry}/><Info label="Extinguisher service due" value={vehicle.extinguisherServiceDue}/><Info label="Site policy" value={policies.find((item)=>item.name===activeAssignment.site)?.name||"Default fleet policy"}/></div>:<p>No active assignment.</p>}
     </section>:null}
 
     {tab==="check"?<section style={{display:"grid",gap:10,marginTop:18}}>
