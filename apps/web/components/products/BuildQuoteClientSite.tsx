@@ -56,7 +56,7 @@ export function BuildQuoteClientSite({clientName,location,contact,email,cta}:Pro
   const [sent,setSent]=useState(false);
 
   const matchedPlace=Object.keys(locationCoordinates).find((place)=>location.toLowerCase().includes(place.toLowerCase())) || "Gaborone";
-  const coords=locationCoordinates[matchedPlace];
+  const coords=locationCoordinates[matchedPlace] ?? locationCoordinates["Gaborone"]!;
 
   function submit(){
     if(!name.trim()) return;
