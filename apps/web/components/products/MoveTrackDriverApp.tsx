@@ -82,6 +82,19 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
     setFleet((current)=>current.map((item)=>item.id===vehicle.id?{
       ...item,status:evaluated.result==="GO"?"Assigned":"No-go"
     }:item));
+    if(evaluated.result==="NO-GO"){
+      setIncidents((current)=>[{
+        id:"INC-"+Date.now(),
+        vehicleId:vehicle.id,
+        driverId:driver.id,
+        assignmentId:activeAssignment.id,
+        createdAt:new Date().toISOString(),
+        severity:"High",
+        category:"Safety",
+        description:"Pre-start NO-GO: "+evaluated.reasons.join("; "),
+        status:"Open"
+      },...current]);
+    }
     setNotice(evaluated.result==="GO"
       ? vehicle.fleetNo+" is compliant with this demo site pre-start and cleared to take."
       : vehicle.fleetNo+" is GROUNDED: "+evaluated.reasons.join("; "));
