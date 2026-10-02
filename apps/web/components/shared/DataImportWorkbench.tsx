@@ -29,7 +29,7 @@ const targets: Record<string, string[]> = {
 
 export function DataImportWorkbench({ config }: { config: ProductConfig }) {
   const productTargets = targets[config.slug] ?? ["Records"];
-  const [target, setTarget] = useState(productTargets[0]);
+  const [target, setTarget] = useState(productTargets[0] ?? "Records");
   const [preview, setPreview] = useState<ImportedDataset | null>(null);
   const [datasets, setDatasets] = usePersistentState<ImportedDataset[]>(
     `bokang-studio.${config.slug}.imports.v1`,
