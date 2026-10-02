@@ -45,11 +45,11 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     locality: "Medicine operations"
   },
   "build-quote": {
-    imageUrl: "https://images.pexels.com/photos/11321790/pexels-photo-11321790.jpeg?auto=compress&dpr=1&h=900&w=1600",
-    sourceUrl: "https://www.pexels.com/photo/construction-man-wearing-a-safety-helmet-11321790/",
-    sourceLabel: "Pexels · Safari Consoler",
-    alt: "African construction professional in safety gear on a building site",
-    locality: "Southern African field work"
+    imageUrl: "https://images.unsplash.com/photo-1664662566501-73a7e41d8c19?auto=format&fit=crop&fm=jpg&q=82&w=1800",
+    sourceUrl: "https://unsplash.com/photos/a-building-under-construction-Ler7ucoR7vc",
+    sourceLabel: "Unsplash · Thatselby",
+    alt: "Construction activity in Gaborone, Botswana",
+    locality: "Gaborone · Botswana"
   },
   "explore-bw": {
     imageUrl: "https://images.unsplash.com/photo-1759252973843-957dc1b5e0e5?auto=format&fit=crop&fm=jpg&q=82&w=1800",
