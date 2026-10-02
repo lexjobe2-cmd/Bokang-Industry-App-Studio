@@ -122,23 +122,40 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
               </label>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 8 }}>
               <a
                 href={`/products/${product.slug}`}
                 style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  gap: 7,
+                  gap: 6,
                   border: "1px solid #d0d5dd",
                   borderRadius: 12,
-                  padding: "10px 11px",
+                  padding: "10px 8px",
                   fontWeight: 850,
-                  fontSize: 13,
+                  fontSize: 12,
                   background: "#fff",
                 }}
               >
-                Open app <ExternalLink size={15} />
+                Open <ExternalLink size={14} />
+              </a>
+              <a
+                href={`/products/${product.slug}/onboarding`}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 6,
+                  border: "1px solid #d0d5dd",
+                  borderRadius: 12,
+                  padding: "10px 8px",
+                  fontWeight: 850,
+                  fontSize: 12,
+                  background: "#fff",
+                }}
+              >
+                Setup
               </a>
               <a
                 href={demoPath(product)}
@@ -148,16 +165,16 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  gap: 7,
+                  gap: 6,
                   borderRadius: 12,
-                  padding: "10px 11px",
+                  padding: "10px 8px",
                   fontWeight: 850,
-                  fontSize: 13,
+                  fontSize: 12,
                   background: "#101827",
                   color: "#fff",
                 }}
               >
-                Client preview <ExternalLink size={15} />
+                Preview <ExternalLink size={14} />
               </a>
             </div>
 
