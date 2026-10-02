@@ -3,6 +3,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "@uppy/dashboard/css/style.min.css";
 import type { Metadata } from "next";
 import { StudioSessionProvider } from "@bokang/persistence";
+import { OfflineBootstrap } from "../components/shared/OfflineBootstrap";
 
 export const metadata: Metadata = {
   title: "Bokang Industry App Studio",
@@ -13,7 +14,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
-        <StudioSessionProvider>{children}</StudioSessionProvider>
+        <StudioSessionProvider><OfflineBootstrap />{children}</StudioSessionProvider>
       </body>
     </html>
   );
