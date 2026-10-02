@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@bokang/app-config", "@bokang/ui", "@bokang/domain-data", "@bokang/integrations"]
+  transpilePackages: ["@bokang/app-config", "@bokang/ui", "@bokang/domain-data", "@bokang/integrations", "@bokang/persistence", "@bokang/coordination"]
 };
 
 export default nextConfig;
