@@ -90,7 +90,17 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
         </div>
       </header>
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 16, marginTop: 36 }}>
+      <section style={{ marginTop: 22, display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap", background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 14 }}>
+        <div>
+          <strong>Prospect intelligence</strong>
+          <div style={{ color: "#667085", fontSize: 12, marginTop: 3 }}>Browse current public Botswana businesses, choose a matching solution, and prepare manual outreach.</div>
+        </div>
+        <a href="/prospects" style={{ background: "#2563eb", color: "#fff", borderRadius: 11, padding: "10px 14px", fontWeight: 900, fontSize: 13 }}>
+          View prospects →
+        </a>
+      </section>
+
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 16, marginTop: 20 }}>
         {products.map((product) => {
           const current = draft(product);
           const isEditing = editing === product.slug;
