@@ -44,7 +44,8 @@ export function parseDemoConfig(
 ): DemoConfig {
   const read = (key: string, max: number) => {
     const value = query[key];
-    return (Array.isArray(value) ? value[0] : value || "").slice(0, max).trim();
+    const selected = Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+    return selected.slice(0, max).trim();
   };
 
   return {
