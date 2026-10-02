@@ -373,3 +373,50 @@ pnpm deploy:cf
 The showcase does not require Google, Microsoft or Redis credentials. Those variables are only needed when the dormant integration foundation is enabled.
 
 For Cloudflare dashboard builds, install from the monorepo root so pnpm can resolve the shared workspace packages.
+
+
+## Demo Composer
+
+Before sharing any outreach demo, use **Configure client demo** on the Studio dashboard.
+
+The composer controls:
+
+- target business name,
+- attention/contact name,
+- location,
+- proposal headline,
+- prospect-facing intro copy,
+- optional business logo URL,
+- CTA label,
+- CTA email,
+- whether to show the dashboard analytics summary.
+
+The resulting values are encoded into the client-facing demo URL, so the outreach link opens exactly the presentation prepared in Studio.
+
+## Prospect dashboards and analytics
+
+Client demos can show an immediate four-card dashboard summary using the product's industry-specific KPI labels. The underlying interactive product workflows also retain their own analytics/operations views.
+
+Current analytics are explicitly labelled as **sample showcase metrics**. They must not be represented as real client business data unless a production data source is later connected.
+
+## Privacy, terms and demo data notices
+
+Every product demo now has its own sector-aware legal URLs generated from one reusable policy engine:
+
+```text
+/demo/<product>/legal/privacy
+/demo/<product>/legal/terms
+/demo/<product>/legal/data-notice
+```
+
+The privacy page adapts the described data categories to the selected product, including legal intake/matter metadata, accounting/tax workflow data, healthcare appointment/intake demo data, pharmacy inventory/dispensing demo records, construction quotes/projects, tourism enquiries/bookings and logistics jobs/routes.
+
+For the current outreach showcase:
+
+- the demo does not require OAuth or Redis,
+- local browser state powers the interactive experience,
+- sample records and analytics are illustrative,
+- users are instructed not to enter real sensitive or confidential records,
+- production privacy/security requirements are treated as a later deployment obligation rather than falsely claiming the demo is a production system.
+
+Botswana production deployments should be reviewed against the current Data Protection Act and any applicable sector-specific requirements before real client data is processed.
