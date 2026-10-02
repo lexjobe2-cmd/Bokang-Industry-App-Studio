@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import { taxReturnTypes, taxWorkflowStages } from "@bokang/domain-data";
 
 type ReturnItem = { id:string; client:string; type:string; period:string; stage:string; days:number };
@@ -12,7 +13,7 @@ const starter: ReturnItem[] = [
 ];
 
 export function TaxFlowShowcase(){
-  const [returns,setReturns]=useState(starter);
+  const [returns,setReturns]=usePersistentState("bokang-studio.tax-flow.returns.v1", starter);
   const [client,setClient]=useState("");
   const [type,setType]=useState<(typeof taxReturnTypes)[number]>("Company income tax");
   const [period,setPeriod]=useState("2026");
