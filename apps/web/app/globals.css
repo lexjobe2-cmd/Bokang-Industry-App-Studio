@@ -42,3 +42,39 @@ a { color: inherit; text-decoration: none; }
     padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
   }
 }
+
+
+html[data-theme="dark"] {
+  --background: #0b1220;
+  --foreground: #f8fafc;
+  --panel: #111827;
+  --line: #243043;
+  --muted: #94a3b8;
+}
+
+html[data-theme="dark"] body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+html[data-theme="dark"] .studio-grid,
+html[data-theme="dark"] main {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] button {
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
