@@ -6,6 +6,7 @@ import { PersistenceScope } from "@bokang/persistence";
 import { demoScope, parseDemoConfig, safeLogoUrl } from "../../../lib/demo-config";
 import { ProductMediaHero } from "../../../components/shared/ProductMediaHero";
 import { BuildQuoteClientSite } from "../../../components/products/BuildQuoteClientSite";
+import { ExploreBWClientSite } from "../../../components/products/ExploreBWClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -37,6 +38,10 @@ export default async function ClientDemoPage({
         cta={demo.cta || "Request a consultation"}
       />
     );
+  }
+
+  if (config.slug === "explore-bw") {
+    return <ExploreBWClientSite clientName={demo.client} />;
   }
 
   return (
