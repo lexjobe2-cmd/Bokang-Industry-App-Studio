@@ -349,7 +349,7 @@ export function ProspectPipeline() {
           <button onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1} style={secondaryAction}><ChevronLeft size={14} /> Previous</button>
           {Array.from({ length: totalPages }, (_, index) => index + 1).filter((value) => value === 1 || value === totalPages || Math.abs(value - page) <= 2).map((value, index, shown) => (
             <span key={value} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-              {index > 0 && value - shown[index - 1] > 1 ? <span style={{ color: "#98a2b3" }}>…</span> : null}
+              {index > 0 && value - (shown[index - 1] ?? value) > 1 ? <span style={{ color: "#98a2b3" }}>…</span> : null}
               <button onClick={() => setPage(value)} aria-current={page === value ? "page" : undefined} style={{ ...secondaryAction, background: page === value ? "#101827" : "#fff", color: page === value ? "#fff" : "#344054" }}>{value}</button>
             </span>
           ))}
