@@ -11,6 +11,7 @@ import { MoveTrackClientSite } from "../../../components/products/MoveTrackClien
 import { LexIntakeClientSite } from "../../../components/products/LexIntakeClientSite";
 import { LedgerDeskClientSite } from "../../../components/products/LedgerDeskClientSite";
 import { TaxFlowClientSite } from "../../../components/products/TaxFlowClientSite";
+import { ClinicFlowClientSite } from "../../../components/products/ClinicFlowClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -62,6 +63,10 @@ export default async function ClientDemoPage({
 
   if (config.slug === "tax-flow") {
     return <TaxFlowClientSite clientName={demo.client} />;
+  }
+
+  if (config.slug === "clinic-flow") {
+    return <ClinicFlowClientSite clientName={demo.client} />;
   }
 
   return (
