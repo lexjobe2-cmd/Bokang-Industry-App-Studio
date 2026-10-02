@@ -36,6 +36,7 @@ export function PharmaDeskShowcase() {
   const [dispenses,setDispenses] = usePersistentState("bokang-studio.pharma-desk.dispensing.v1", dispensing);
   const [view,setView] = useState<"inventory"|"scan"|"add"|"dispense"|"orders">("inventory");
   const [query,setQuery] = useState("");
+  const [selected,setSelected] = useState<string[]>([]);
   const [scanResult,setScanResult] = useState("");
   const [name,setName] = useState("");
   const [form,setForm] = useState<(typeof pharmacyMedicineForms)[number]>("Tablet");
@@ -131,6 +132,20 @@ export function PharmaDeskShowcase() {
               </div>
               <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search name, barcode, batch, supplier…" style={{minWidth:260,border:"1px solid #d0d5dd",borderRadius:11,padding:10}}/>
             </div>
+            {selected.length ? (
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",marginTop:12,padding:10,borderRadius:12,background:"#ecfdf5"}}>
+                <strong style={{fontSize:12}}>{selected.length} selected</strong>
+                {["In stock","Low stock","Quarantined","Recalled"].map((state)=>(
+                  <button key={state} onClick={()=>{
+                    setMedicines((current)=>current.map((item)=>selected.includes(item.id)?{...item,state}:item));
+                    setSelected([]);
+                  }} style={{border:"1px solid #a7f3d0",background:"#fff",borderRadius:9,padding:"7px 9px",fontSize:11,fontWeight:800}}>
+                    Mark {state}
+                  </button>
+                ))}
+                <button onClick={()=>setSelected([])} style={{border:0,background:"transparent",fontSize:11,fontWeight:800}}>Clear</button>
+              </div>
+            ) : null}
 
             <div ref={parentRef} style={{height:360,overflow:"auto",marginTop:12,border:"1px solid #eef2f6",borderRadius:14}}>
               <div style={{height:virtualizer.getTotalSize(),width:"100%",position:"relative"}}>
@@ -143,12 +158,20 @@ export function PharmaDeskShowcase() {
                       transform:`translateY(${virtualRow.start}px)`,
                       minHeight:72,padding:"12px 14px",
                       borderBottom:"1px solid #f0f2f5",
-                      display:"grid",gap:6,background:"#fff"
+                      display:"grid",gap:6,background:selected.includes(medicine.id)?"#f0fdf4":"#fff"
                     }}>
                       <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
-                        <div>
+                        <div style={{display:"flex",gap:9,alignItems:"start"}}>
+                          <input
+                            type="checkbox"
+                            checked={selected.includes(medicine.id)}
+                            onChange={(e)=>setSelected((current)=>e.target.checked?[...current,medicine.id]:current.filter((id)=>id!==medicine.id))}
+                            aria-label={`Select ${medicine.name}`}
+                          />
+                          <div>
                           <strong>{medicine.name}</strong>
                           <div style={{fontSize:12,color:"#667085"}}>{medicine.code} · {medicine.form} · batch {medicine.batch} · expires {medicine.expiry}</div>
+                          </div>
                         </div>
                         <select value={medicine.state} onChange={(e)=>setMedicines((current)=>current.map((item)=>item.id===medicine.id?{...item,state:e.target.value}:item))} style={{border:"1px solid #d0d5dd",borderRadius:10,padding:"7px 9px"}}>
                           {pharmacyStockStates.map((state)=><option key={state}>{state}</option>)}
