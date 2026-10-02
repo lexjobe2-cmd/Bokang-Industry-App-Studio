@@ -225,7 +225,10 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
                 </a>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 8 }}>
+                <a href="/prospects" style={{ ...secondaryButton, textAlign: "center", textDecoration: "none", color: "#344054" }}>
+                  Prospects &amp; outreach
+                </a>
                 <button onClick={() => void copyLink(product)} style={secondaryButton}>
                   <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
                     <Link2 size={14} /> {copied === product.slug ? "Copied!" : "Copy demo link"}
