@@ -572,3 +572,78 @@ Internal product workspaces now also include:
 - lightweight PWA manifest and service-worker registration.
 
 The service worker deliberately excludes `/api/*` and cross-origin requests from caching.
+
+
+## Operations refinement: imports, audit, reports and offline
+
+The internal product workspaces now include a deeper operating layer in addition to the industry-specific showcase workflows.
+
+### Bulk CSV / Excel import
+
+A shared importer supports:
+
+- CSV via Papa Parse,
+- XLSX via ExcelJS,
+- product-specific import targets,
+- preview before commit,
+- up to 5,000 rows per showcase import,
+- retained local import batches,
+- audit events for committed imports.
+
+This replaces the earlier naive comma-splitting CSV preview.
+
+### Audit / activity timeline
+
+Each product workspace now has one consolidated local audit trail for:
+
+- bulk imports,
+- report exports,
+- operator notes,
+- future workflow actions that emit the shared audit event contract.
+
+The showcase retains the latest 250 events locally. Production can later bind the same contract to an authoritative event store.
+
+### Reports / exports
+
+Every product can:
+
+- download a JSON showcase snapshot,
+- open the browser print flow for Save as PDF,
+- record report/export actions in the local audit trail.
+
+### Operator utilities
+
+The shared workspace utility bar includes:
+
+- Operator / Manager / Viewer view selector,
+- global command palette with Cmd/Ctrl+K,
+- notification centre,
+- dark/light mode,
+- online/offline status,
+- PWA install prompt when supported,
+- showcase report export.
+
+### PWA / accessibility
+
+The Studio includes:
+
+- web app manifest,
+- service worker shell caching,
+- installable app metadata/icon,
+- online/offline feedback,
+- reduced-motion handling,
+- keyboard focus-visible styling,
+- skip-to-main-content navigation.
+
+Personalized client demo URLs and API/OAuth routes remain excluded from the intended offline data model.
+
+### Bulk pharmacy operations
+
+PharmaDesk's virtualized medicine inventory now supports multi-select bulk state changes such as:
+
+- In stock,
+- Low stock,
+- Quarantined,
+- Recalled.
+
+The bulk-action pattern can now be reused for logistics jobs, construction leads and accounting/tax work queues.
