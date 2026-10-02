@@ -10,6 +10,7 @@ import { ExploreBWClientSite } from "../../../components/products/ExploreBWClien
 import { MoveTrackClientSite } from "../../../components/products/MoveTrackClientSite";
 import { LexIntakeClientSite } from "../../../components/products/LexIntakeClientSite";
 import { LedgerDeskClientSite } from "../../../components/products/LedgerDeskClientSite";
+import { TaxFlowClientSite } from "../../../components/products/TaxFlowClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -57,6 +58,10 @@ export default async function ClientDemoPage({
 
   if (config.slug === "ledger-desk") {
     return <LedgerDeskClientSite clientName={demo.client} />;
+  }
+
+  if (config.slug === "tax-flow") {
+    return <TaxFlowClientSite clientName={demo.client} />;
   }
 
   return (
