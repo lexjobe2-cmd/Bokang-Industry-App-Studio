@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import { botswanaPlaces, logisticsJobStates, logisticsJobTypes } from "@bokang/domain-data";
 
 type Job={id:string;client:string;type:string;from:string;to:string;driver:string;state:string};
 const starter:Job[]=[{id:"MT-601",client:"Kgetsi Furnishers",type:"Furniture move",from:"Gaborone",to:"Molepolole",driver:"K. Dube",state:"In transit"},{id:"MT-602",client:"Northside Pharmacy",type:"Local delivery",from:"Gaborone",to:"Tlokweng",driver:"L. Moagi",state:"Driver assigned"}];
 export function MoveTrackShowcase(){
- const [jobs,setJobs]=useState(starter); const [client,setClient]=useState(""); const [type,setType]=useState<(typeof logisticsJobTypes)[number]>("Local delivery"); const [from,setFrom]=useState<(typeof botswanaPlaces)[number]>("Gaborone"); const [to,setTo]=useState<(typeof botswanaPlaces)[number]>("Tlokweng"); const [view,setView]=useState<"jobs"|"new"|"fleet"|"analytics">("jobs");
+ const [jobs,setJobs]=usePersistentState("bokang-studio.move-track.jobs.v1", starter); const [client,setClient]=useState(""); const [type,setType]=useState<(typeof logisticsJobTypes)[number]>("Local delivery"); const [from,setFrom]=useState<(typeof botswanaPlaces)[number]>("Gaborone"); const [to,setTo]=useState<(typeof botswanaPlaces)[number]>("Tlokweng"); const [view,setView]=useState<"jobs"|"new"|"fleet"|"analytics">("jobs");
  function add(){if(!client.trim())return;setJobs(c=>[{id:`MT-${600+c.length+1}`,client:client.trim(),type,from,to,driver:"Unassigned",state:"Quote requested"},...c]);setClient("");setView("jobs");}
  return <section style={{marginTop:28,display:"grid",gap:18}}>
   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{([["jobs","Jobs"],["new","New job"],["fleet","Fleet"],["analytics","Analytics"]] as const).map(([k,l])=><button key={k} onClick={()=>setView(k)} style={{border:"1px solid #d0d5dd",background:view===k?"#101827":"#fff",color:view===k?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{l}</button>)}</div>
