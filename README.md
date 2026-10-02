@@ -464,3 +464,54 @@ Studio dashboard
 Gmail is deliberately not connected. The Studio prepares the material; the user remains in control of reviewing and sending the message.
 
 The registry does not claim that a business has a problem or needs the proposed product. Public facts and the Studio's fit hypothesis are stored separately.
+
+
+## 2026 product refinement layer
+
+The product family now deliberately diverges by workflow, visual mood and onboarding rather than sharing only renamed navigation.
+
+### Shared community capability foundation
+
+The showcase uses or prepares these open-source/community capabilities:
+
+- **ZXing Browser** — camera-based QR and 1D/2D barcode scanning,
+- **TanStack Virtual** — virtualized large inventories/lists,
+- **Uppy** — large-file staging with tus resumable upload support ready for a future endpoint,
+- **React Hook Form + Zod** — schema-driven onboarding/compliance forms,
+- **FullCalendar** — scheduling, recurring work and deadline calendars,
+- **MapLibre GL + OpenStreetMap** — keyless showcase maps,
+- existing shadcn/Tailwind/Lucide/Recharts UI and analytics foundation.
+
+### Distinct product identities
+
+- **LexIntake AI** — quiet-authority legal experience; firm/practice onboarding; conflict/identity review; matter evidence and audit checkpoints.
+- **LedgerDesk AI** — precision accounting workspace; service/recurring-work onboarding; month-end and recurring-work calendar; due-diligence/reviewer checkpoints.
+- **TaxFlow AI** — deadline-driven tax workspace; return/deadline onboarding; deadline calendar, readiness/reviewer flow and submission evidence.
+- **ClinicFlow AI** — patient-first healthcare experience; practitioner/service/hours onboarding; touch-friendly scheduling and consent/privacy checkpoints.
+- **PharmaDesk AI** — operational pharmacy experience; branch/catalogue/supplier onboarding; barcode/QR scanning, virtualized medicine/batch inventory, expiry/reorder and dispensing traceability.
+- **BuildQuote AI** — industrial field workflow; trades/rate/service-area onboarding; site readiness checklist, evidence handling, materials/milestones and approvals.
+- **ExploreBW AI** — editorial/map-first tourism experience; destination/experience/capacity onboarding; keyless itinerary map, traveller/booking flow.
+- **MoveTrack AI** — live-operations logistics experience; fleet/driver/service-zone onboarding; dispatch map, QR/POD scanning, vehicle/document and incident checkpoints.
+
+### KYC / compliance approach
+
+The showcase does not claim automated biometric identity verification. It provides:
+
+- schema-validated identity/compliance intake,
+- consent/authority acknowledgement,
+- document/reference capture,
+- industry-specific human review checklists,
+- persisted audit/checkpoint state.
+
+Biometric liveness, authoritative document verification and sanctions/watch-list checks remain replaceable production adapters if required later.
+
+### Large files
+
+The shared files workspace now uses Uppy for modern drag/drop and multi-file staging. In showcase mode:
+
+- file bytes are not uploaded,
+- browser-persisted state stores metadata only,
+- large files can be staged in the UI,
+- tus resumable upload support is installed but remains disabled until a real endpoint/storage policy is configured.
+
+This keeps the showcase honest while preserving the production upload architecture.
