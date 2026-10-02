@@ -13,7 +13,7 @@ export default async function ExploreBWSafarisPage({searchParams}:{searchParams:
       <p style={{...safariBody,maxWidth:760,fontSize:16}}>Each trip clearly shows duration, start/end point, style, route and indicative pricing before asking the traveler to enquire.</p>
     </section>
     <section style={{maxWidth:1240,margin:"0 auto",padding:"0 22px 90px",display:"grid",gap:18}}>
-      {explorePackages.map((item)=><Link key={item.slug} href={"/demo/explore-bw/safaris/"+item.slug+q} style={{display:"grid",gridTemplateColumns:"minmax(280px,.9fr) minmax(0,1.1fr)",background:"#fff",border:"1px solid #d9d1c1",textDecoration:"none",color:"#183126"}}>
+      {explorePackages.map((item)=><Link key={item.slug} href={"/demo/explore-bw/safaris/"+item.slug+q} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",background:"#fff",border:"1px solid #d9d1c1",textDecoration:"none",color:"#183126"}}>
         <img src={item.image} alt={item.title} style={{width:"100%",height:"100%",minHeight:300,objectFit:"cover"}}/>
         <div style={{padding:26}}>
           <p style={safariEyebrow}>{item.kicker}</p>
