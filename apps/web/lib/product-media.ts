@@ -59,10 +59,10 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     locality: "Okavango Delta · Botswana"
   },
   "move-track": {
-    imageUrl: "https://images.unsplash.com/photo-1759130534261-3895289d6011?auto=format&fit=crop&fm=jpg&q=82&w=1800",
-    sourceUrl: "https://unsplash.com/photos/two-open-top-vehicles-drive-on-a-dusty-road-ZMIdqdsbP2U",
-    sourceLabel: "Unsplash · Ed Wingate",
-    alt: "Vehicles travelling on a dusty road in Chobe National Park, Botswana",
-    locality: "Chobe · Botswana"
+    imageUrl: "https://images.pexels.com/photos/36298868/pexels-photo-36298868.jpeg?auto=compress&dpr=1&h=900&w=1800",
+    sourceUrl: "https://www.pexels.com/photo/wide-load-truck-on-open-highway-in-africa-36298868/",
+    sourceLabel: "Pexels · Amos Getanda",
+    alt: "Heavy freight truck on an African highway",
+    locality: "Southern African road freight"
   }
 };
