@@ -11,7 +11,7 @@ type ProspectStatus = "New" | "Prepared" | "Contacted" | "Replied" | "Converted"
 type StatusMap = Record<string, ProspectStatus>;
 
 function outreachSubject(prospect: Prospect) {
-  return "A working " + products[prospect.recommendedProduct].name + " concept for " + prospect.name;
+  return "A working " + products[prospect.recommendedProduct].name + " website concept for " + prospect.name;
 }
 
 function outreachBody(prospect: Prospect, demoUrl: string) {
@@ -21,14 +21,14 @@ function outreachBody(prospect: Prospect, demoUrl: string) {
     "",
     "I came across " + prospect.name + " while researching Botswana businesses in the " + prospect.sector.toLowerCase() + " space.",
     "",
-    "I build practical business software, and I prepared a working " + product.name + " concept to show how a lightweight digital workflow could support areas such as " + product.description.toLowerCase(),
+    "When I checked your Google business/search result, I did not see a website link listed. I build practical business software and websites, so I prepared a working " + product.name + " concept specifically to show what an owned digital presence could look like for your business.",
     "",
-    "You can explore the interactive demo here:",
+    "You can explore the interactive concept here:",
     demoUrl,
     "",
     "This is only a proposal/demo — it is not connected to your systems and does not use your real business data.",
     "",
-    "If the direction is useful, I would be happy to tailor it around how " + prospect.name + " actually works.",
+    "If you already have a website that Google did not surface, please disregard that observation. If the concept is useful, I would be happy to tailor it around how " + prospect.name + " actually works.",
     "",
     "Regards,",
     "Bokang Jobe",
@@ -51,7 +51,8 @@ export function ProspectPipeline() {
         prospect.name.toLowerCase().includes(needle) ||
         prospect.sector.toLowerCase().includes(needle) ||
         prospect.location.toLowerCase().includes(needle) ||
-        prospect.email.toLowerCase().includes(needle);
+        (prospect.email ?? "").toLowerCase().includes(needle) ||
+        (prospect.phone ?? "").toLowerCase().includes(needle);
       return matchesProduct && matchesQuery;
     });
   }, [query, productFilter]);
@@ -90,13 +91,13 @@ export function ProspectPipeline() {
           <p style={{ margin: 0, color: "#2563eb", fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Prospect intelligence</p>
           <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(34px,5vw,58px)" }}>Real businesses → relevant demo → manual outreach.</h1>
           <p style={{ margin: 0, maxWidth: 820, color: "#667085", lineHeight: 1.7, fontSize: 17 }}>
-            Publicly verifiable Botswana businesses mapped to one of the eight Studio products. Evidence is factual; product fit is explicitly a hypothesis for outreach.
+            Botswana businesses whose Google business/search result did not show a website link when checked. Each one is mapped to a relevant Studio product; re-check the listing before outreach because search results can change.
           </p>
         </div>
         <div style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
           <div style={{ fontSize: 11, opacity: .65, textTransform: "uppercase", letterSpacing: 1.2 }}>Current seed list</div>
           <strong style={{ display: "block", fontSize: 26, marginTop: 3 }}>{prospects.length}</strong>
-          <div style={{ fontSize: 11, opacity: .72 }}>publicly sourced prospects</div>
+          <div style={{ fontSize: 11, opacity: .72 }}>no website link listed when checked</div>
         </div>
       </header>
 
@@ -125,12 +126,13 @@ export function ProspectPipeline() {
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <h2 style={{ margin: 0, fontSize: 22 }}>{prospect.name}</h2>
-                    <span style={{ background: "#ecfdf3", color: "#027a48", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>
-                      <CheckCircle2 size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />Public source checked
+                    <span style={{ background: "#fff7ed", color: "#b54708", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>
+                      <CheckCircle2 size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />No website listed on Google
                     </span>
                   </div>
-                  <div style={{ color: "#667085", fontSize: 13, marginTop: 5 }}>{prospect.sector} · {prospect.location} · {prospect.email}</div>
+                  <div style={{ color: "#667085", fontSize: 13, marginTop: 5 }}>{prospect.sector} · {prospect.location}{prospect.phone ? " · " + prospect.phone : ""}{prospect.email ? " · " + prospect.email : ""}</div>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "12px 0 0" }}><strong>Public evidence:</strong> {prospect.publicEvidence}</p>
+                  <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Website check:</strong> {prospect.websiteStatus}</p>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Fit hypothesis:</strong> {prospect.fitHypothesis}</p>
                 </div>
 
@@ -143,7 +145,7 @@ export function ProspectPipeline() {
               </div>
 
               <div style={{ padding: "0 18px 18px", display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <a href={prospect.sourceUrl} target="_blank" rel="noreferrer" style={secondaryAction}>Verify source <ExternalLink size={14} /></a>
+                <a href={prospect.sourceUrl} target="_blank" rel="noreferrer" style={secondaryAction}>Re-check Google <ExternalLink size={14} /></a>
                 {prospect.website ? <a href={prospect.website} target="_blank" rel="noreferrer" style={secondaryAction}>Website <ExternalLink size={14} /></a> : null}
                 <button onClick={() => { setActiveId(isActive ? null : prospect.id); setStatuses((current) => ({ ...current, [prospect.id]: current[prospect.id] ?? "Prepared" })); }} style={{ ...primaryAction, marginLeft: "auto" }}>
                   <Mail size={15} /> {isActive ? "Close outreach" : "Prepare outreach"}
@@ -153,10 +155,11 @@ export function ProspectPipeline() {
               {isActive ? (
                 <div style={{ borderTop: "1px solid #e5e7eb", background: "#f8fafc", padding: 18, display: "grid", gap: 14 }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12 }}>
-                    <Info label="Recipient" value={prospect.email} />
+                    <Info label="Primary contact" value={prospect.email || prospect.phone || "Manual lookup required"} />
                     <Info label="Recommended demo" value={product.name} />
                     <Info label="Source checked" value={prospect.checkedAt} />
                     <Info label="Source type" value={prospect.sourceLabel} />
+                    <Info label="Website status" value={prospect.websiteStatus} />
                   </div>
 
                   <div>
@@ -165,19 +168,20 @@ export function ProspectPipeline() {
                   </div>
 
                   <div>
-                    <div style={{ fontSize: 11, color: "#667085", fontWeight: 850, textTransform: "uppercase", letterSpacing: 1.2 }}>Email body</div>
+                    <div style={{ fontSize: 11, color: "#667085", fontWeight: 850, textTransform: "uppercase", letterSpacing: 1.2 }}>Outreach message</div>
                     <textarea readOnly value={body} style={{ width: "100%", marginTop: 5, minHeight: 270, border: "1px solid #d0d5dd", borderRadius: 13, padding: 13, font: "inherit", lineHeight: 1.55, background: "#fff" }} />
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <button onClick={() => void copy(prospect.email, prospect.id + "-email")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-email" ? "Copied" : "Copy recipient"}</button>
-                    <button onClick={() => void copy("Subject: " + subject + "\n\n" + body, prospect.id + "-body")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-body" ? "Copied" : "Copy email"}</button>
+                    {prospect.email ? <button onClick={() => void copy(prospect.email!, prospect.id + "-contact")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-contact" ? "Copied" : "Copy email"}</button> : null}
+                    {!prospect.email && prospect.phone ? <button onClick={() => void copy(prospect.phone!, prospect.id + "-contact")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-contact" ? "Copied" : "Copy phone"}</button> : null}
+                    <button onClick={() => void copy((prospect.email ? "Subject: " + subject + "\n\n" : "") + body, prospect.id + "-body")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-body" ? "Copied" : "Copy outreach"}</button>
                     <button onClick={() => void copy(link, prospect.id + "-link")} style={secondaryAction}><Link2 size={14} /> {copied === prospect.id + "-link" ? "Copied" : "Copy demo link"}</button>
                     <a href={link} target="_blank" rel="noreferrer" style={primaryAction}>Preview client demo <ExternalLink size={14} /></a>
                   </div>
 
                   <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
-                    Gmail is intentionally not connected. Copy the recipient and generated email, review the wording, paste it into Gmail yourself, and send manually.
+                    Outreach remains manual. Re-check the Google result first, review the wording, then use the public email, phone or WhatsApp channel the business provides. "No website listed" describes the search result at the checked date; it is not proof that no website exists anywhere.
                   </div>
                 </div>
               ) : null}
