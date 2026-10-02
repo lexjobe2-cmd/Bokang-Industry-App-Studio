@@ -29,7 +29,7 @@ export function ExploreBWClientSite({clientName}:{clientName:string}){
     </section>
 
     <section style={{maxWidth:1240,margin:"0 auto",padding:"82px 22px"}}>
-      <div style={{display:"grid",gridTemplateColumns:"minmax(0,.8fr) minmax(0,1.2fr)",gap:48}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:48}}>
         <div><p style={safariEyebrow}>Start with the feeling</p><h2 style={safariTitle}>Not everyone knows which safari they want yet.</h2></div>
         <div><p style={safariLead}>Some travelers know “Okavango.” Others only know they want water, elephants, quiet camps, photography, or a first safari that does not feel rushed.</p><p style={safariBody}>ExploreBW is designed to let an operator lead with inspiration, then progressively reveal the practical details travelers need to make a confident enquiry.</p></div>
       </div>
@@ -58,7 +58,7 @@ export function ExploreBWClientSite({clientName}:{clientName:string}){
       </div>
     </section>
 
-    <section style={{maxWidth:1240,margin:"0 auto",padding:"82px 22px",display:"grid",gridTemplateColumns:"minmax(0,.8fr) minmax(0,1.2fr)",gap:42}}>
+    <section style={{maxWidth:1240,margin:"0 auto",padding:"82px 22px",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:42}}>
       <div><p style={safariEyebrow}>Where the journeys happen</p><h2 style={safariTitle}>A map makes the route real.</h2><p style={safariBody}>Botswana safari planning is geographic. Maun and Kasane are important gateways, but the traveler needs to understand how the Delta, Khwai, Chobe and the pans relate to one another.</p></div>
       <KeylessMap points={mapPoints} center={[24.1,-19.5]} zoom={5.2}/>
     </section>
