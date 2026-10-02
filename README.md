@@ -304,3 +304,72 @@ The shared admin route is available at:
 ```text
 /products/<product-slug>/admin
 ```
+
+
+## Studio dashboard and outreach demos
+
+The root route is now the operating dashboard for the showcase studio.
+
+```text
+/
+```
+
+It renders all eight industry applications in one responsive grid. Each card supports:
+
+- **Open** — enter the internal product workspace,
+- **Setup** — jump directly to that product's onboarding,
+- **Preview** — open the prospect-facing demo,
+- **Copy demo link** — copy an outreach-ready URL,
+- **Share** — use the browser/device share sheet when available.
+
+Enter the prospect or business name before generating the demo URL. The share format is:
+
+```text
+/demo/<product-slug>?client=<business-name>&source=outreach
+```
+
+Example:
+
+```text
+/demo/lex-intake?client=Dube%20%26%20Partners&source=outreach
+```
+
+The prospect-facing demo deliberately does **not** expose the Studio dashboard, admin/settings, onboarding, Redis controls or OAuth setup. It opens directly into the interactive industry workflow and clearly identifies itself as a concept demonstration.
+
+Client demo state is scoped by product + prospect name, so previewing one prospect does not reuse another prospect's persisted demo interactions on the same browser.
+
+## Showcase runtime vs integration foundation
+
+For the current outreach/showcase phase:
+
+- OAuth remains implemented foundation but is not required to run a client demo.
+- Redis remains optional coordination foundation but is not required to run a client demo.
+- Client demos use local interactive showcase state.
+- Long-lived provider integrations can be enabled later without redesigning the product frontends.
+
+This separation keeps Cloudflare-hosted outreach demos fast and self-contained while retaining the production integration architecture for later stages.
+
+## Cloudflare Workers deployment
+
+This existing Next.js application is configured for Cloudflare Workers using the OpenNext adapter.
+
+Cloudflare files live under:
+
+```text
+apps/web/open-next.config.ts
+apps/web/wrangler.jsonc
+```
+
+The Wrangler configuration enables `nodejs_compat`, points to the OpenNext Worker output and serves the OpenNext assets directory.
+
+From the repository root:
+
+```bash
+pnpm install
+pnpm preview:cf
+pnpm deploy:cf
+```
+
+The showcase does not require Google, Microsoft or Redis credentials. Those variables are only needed when the dormant integration foundation is enabled.
+
+For Cloudflare dashboard builds, install from the monorepo root so pnpm can resolve the shared workspace packages.
