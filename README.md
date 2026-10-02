@@ -1031,3 +1031,35 @@ It does not diagnose, prescribe, automatically approve or directly sell prescrip
 The site also separates public pharmacy access from the internal medicine-management system. Barcode/QR inventory, batches, expiry, suppliers, purchase orders, receiving, cycle counts, recalls/quarantine states and dispensing records remain inside PharmaDesk operations.
 
 Current regulatory information is linked back to BoMRA rather than hard-coded into marketing pages.
+
+
+## Website-gap prospect targeting
+
+The Studio prospect pipeline now prioritizes Botswana businesses whose Google business/search result did **not** show a website link at the time of the check.
+
+This is deliberately narrower than saying a business has no website anywhere. Before outreach:
+
+1. Re-run the supplied Google search.
+2. Confirm the business identity, location and public contact details.
+3. Confirm that the Google result still does not list a website link.
+4. If a current official website is discovered elsewhere, remove or deprioritize the prospect.
+5. Use only public business contact information and keep outreach manual.
+
+The pipeline supports phone-first prospects as well as email. Where no public email is available, it prepares a short outreach message and lets the operator copy the public phone number and client-specific demo link.
+
+The current seed list replaces the earlier website-heavy targets with prospects selected for this website-gap condition.
+
+## Studio public-site links
+
+The Studio dashboard does not hard-code Cloudflare temporary preview hosts. Each product's **Public site** action is generated from the current runtime origin plus the dedicated product route:
+
+- LexIntake → `/demo/lex-intake`
+- LedgerDesk → `/demo/ledger-desk`
+- TaxFlow → `/demo/tax-flow`
+- ClinicFlow → `/demo/clinic-flow`
+- PharmaDesk → `/demo/pharma-desk`
+- BuildQuote → `/demo/build-quote`
+- ExploreBW → `/demo/explore-bw`
+- MoveTrack → `/demo/move-track`
+
+This keeps copied prospect links on the deployment the user is actually viewing and avoids stale temporary preview URLs.
