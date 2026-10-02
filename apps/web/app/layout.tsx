@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { StudioSessionProvider } from "@bokang/persistence";
 
 export const metadata: Metadata = {
   title: "Bokang Industry App Studio",
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <StudioSessionProvider>{children}</StudioSessionProvider>
+      </body>
     </html>
   );
 }

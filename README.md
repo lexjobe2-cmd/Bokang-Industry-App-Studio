@@ -226,3 +226,150 @@ Every product now also includes:
 - reusable domain arrays for faster input.
 
 The current connected-workspace controls are showcase connection states only. OAuth scopes and real provider writes are intentionally deferred to the integration implementation phase; the UI does not falsely claim a live Google or Microsoft connection.
+
+
+## Platform layer: persistence, admin, OAuth and coordination
+
+The showcase foundation now includes a second platform layer shared by all eight products:
+
+- durable browser persistence for product working state,
+- persistent workspace identity, members, roles and notification preferences,
+- per-product storage snapshot state,
+- a shared `/products/[slug]/admin` workspace,
+- optional Upstash Redis REST coordination with a local-only fallback,
+- Google Workspace OAuth start/callback/disconnect routes,
+- Microsoft 365 OAuth start/callback/disconnect routes,
+- encrypted server-only OAuth token cookies,
+- safe client-visible connection status without exposing access or refresh tokens.
+
+### OAuth security boundary
+
+Provider tokens are never written to `localStorage`.
+
+OAuth callbacks encrypt token bundles using AES-256-GCM with `APP_ENCRYPTION_SECRET` and keep them in HTTP-only cookies. Client components receive only connection state and account labels.
+
+Configure the provider callback URLs to match the deployment, for example:
+
+```text
+http://localhost:3000/api/oauth/google/callback
+http://localhost:3000/api/oauth/microsoft/callback
+```
+
+For production, set `APP_BASE_URL` to the deployed HTTPS origin and register the matching callback URLs with Google and Microsoft.
+
+Google currently requests identity plus Drive file, Gmail send and Sheets access. Microsoft currently requests identity, Files.ReadWrite and Mail.Send. SharePoint-specific permissions should only be added when the SharePoint workflow is implemented and the required scope is justified.
+
+### Persisted product state
+
+The current showcase collections now survive refresh/navigation:
+
+- LexIntake matters/intakes,
+- LedgerDesk engagements,
+- TaxFlow returns,
+- ClinicFlow appointments,
+- PharmaDesk medicines and dispensing queue,
+- BuildQuote leads,
+- ExploreBW saved/experience state,
+- MoveTrack jobs.
+
+This browser persistence is a showcase/offline-friendly working layer. Production long-lived business documents remain intended for the user's authorized Google or Microsoft workspace.
+
+
+## End-to-end showcase path
+
+Every product now supports the same reusable showcase journey:
+
+```text
+Product launcher
+→ product workspace
+→ persisted domain CRUD
+→ workspace onboarding
+→ Google / Microsoft connection
+→ connected file registry
+→ storage snapshots
+→ admin & members
+→ Redis/platform health
+```
+
+The connected file registry stores file metadata only in browser persistence. File bytes are deliberately not written into browser storage. Once a provider is connected, the next connector implementation step is to stream uploads directly into the user's authorized Drive/OneDrive/SharePoint destination and persist only references/metadata in app state.
+
+The shared onboarding route is available at:
+
+```text
+/products/<product-slug>/onboarding
+```
+
+The shared admin route is available at:
+
+```text
+/products/<product-slug>/admin
+```
+
+
+## Studio dashboard and outreach demos
+
+The root route is now the operating dashboard for the showcase studio.
+
+```text
+/
+```
+
+It renders all eight industry applications in one responsive grid. Each card supports:
+
+- **Open** — enter the internal product workspace,
+- **Setup** — jump directly to that product's onboarding,
+- **Preview** — open the prospect-facing demo,
+- **Copy demo link** — copy an outreach-ready URL,
+- **Share** — use the browser/device share sheet when available.
+
+Enter the prospect or business name before generating the demo URL. The share format is:
+
+```text
+/demo/<product-slug>?client=<business-name>&source=outreach
+```
+
+Example:
+
+```text
+/demo/lex-intake?client=Dube%20%26%20Partners&source=outreach
+```
+
+The prospect-facing demo deliberately does **not** expose the Studio dashboard, admin/settings, onboarding, Redis controls or OAuth setup. It opens directly into the interactive industry workflow and clearly identifies itself as a concept demonstration.
+
+Client demo state is scoped by product + prospect name, so previewing one prospect does not reuse another prospect's persisted demo interactions on the same browser.
+
+## Showcase runtime vs integration foundation
+
+For the current outreach/showcase phase:
+
+- OAuth remains implemented foundation but is not required to run a client demo.
+- Redis remains optional coordination foundation but is not required to run a client demo.
+- Client demos use local interactive showcase state.
+- Long-lived provider integrations can be enabled later without redesigning the product frontends.
+
+This separation keeps Cloudflare-hosted outreach demos fast and self-contained while retaining the production integration architecture for later stages.
+
+## Cloudflare Workers deployment
+
+This existing Next.js application is configured for Cloudflare Workers using the OpenNext adapter.
+
+Cloudflare files live under:
+
+```text
+apps/web/open-next.config.ts
+apps/web/wrangler.jsonc
+```
+
+The Wrangler configuration enables `nodejs_compat`, points to the OpenNext Worker output and serves the OpenNext assets directory.
+
+From the repository root:
+
+```bash
+pnpm install
+pnpm preview:cf
+pnpm deploy:cf
+```
+
+The showcase does not require Google, Microsoft or Redis credentials. Those variables are only needed when the dormant integration foundation is enabled.
+
+For Cloudflare dashboard builds, install from the monorepo root so pnpm can resolve the shared workspace packages.

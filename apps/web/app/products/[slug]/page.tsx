@@ -1,16 +1,10 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductConfig, productList, products, type ProductSlug } from "@bokang/app-config";
-import { DashboardGrid, MetricCard, ProductShell } from "@bokang/ui";
-import { LexIntakeShowcase } from "../../../components/products/LexIntakeShowcase";
-import { LedgerDeskShowcase } from "../../../components/products/LedgerDeskShowcase";
-import { TaxFlowShowcase } from "../../../components/products/TaxFlowShowcase";
-import { ClinicFlowShowcase } from "../../../components/products/ClinicFlowShowcase";
-import { PharmaDeskShowcase } from "../../../components/products/PharmaDeskShowcase";
-import { BuildQuoteShowcase } from "../../../components/products/BuildQuoteShowcase";
-import { ExploreBWShowcase } from "../../../components/products/ExploreBWShowcase";
-import { MoveTrackShowcase } from "../../../components/products/MoveTrackShowcase";
+import { ProductShell } from "@bokang/ui";
 import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataShowcase";
-import { SharedWorkspaceTools } from "../../../components/SharedWorkspaceTools";
+import { ConnectedFileRegistry } from "../../../components/shared/ConnectedFileRegistry";
+import { ProductExperience } from "../../../components/products/ProductExperience";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -29,35 +23,29 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {config.sector} workspace
         </p>
         <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(30px, 5vw, 48px)" }}>{config.name}</h1>
-        <p style={{ maxWidth: 760, color: "#667085", lineHeight: 1.7 }}>{config.description}</p>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "end", flexWrap: "wrap" }}>
+          <p style={{ maxWidth: 760, color: "#667085", lineHeight: 1.7, marginBottom: 0 }}>{config.description}</p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <Link
+              href={`/products/${config.slug}/onboarding`}
+              style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 12, padding: "10px 14px", fontWeight: 850 }}
+            >
+              Setup workspace
+            </Link>
+            <Link
+              href={`/products/${config.slug}/admin`}
+              style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 12, padding: "10px 14px", fontWeight: 850 }}
+            >
+              Admin & settings →
+            </Link>
+          </div>
+        </div>
 
-        {config.slug === "lex-intake" ? (
-          <LexIntakeShowcase />
-        ) : config.slug === "ledger-desk" ? (
-          <LedgerDeskShowcase />
-        ) : config.slug === "tax-flow" ? (
-          <TaxFlowShowcase />
-        ) : config.slug === "clinic-flow" ? (
-          <ClinicFlowShowcase />
-        ) : config.slug === "pharma-desk" ? (
-          <PharmaDeskShowcase />
-        ) : config.slug === "build-quote" ? (
-          <BuildQuoteShowcase />
-        ) : config.slug === "explore-bw" ? (
-          <ExploreBWShowcase />
-        ) : config.slug === "move-track" ? (
-          <MoveTrackShowcase />
-        ) : (
-          <section style={{ marginTop: 28 }}>
-            <DashboardGrid>
-              {config.dashboardMetrics.map((metric, index) => (
-                <MetricCard key={metric} label={metric} value={index === 0 ? "12" : index === 1 ? "8" : index === 2 ? "3" : "5"} detail="Starter dashboard data" />
-              ))}
-            </DashboardGrid>
-          </section>
-        )}
+        <ProductExperience config={config} />
 
         <WorkspaceDataShowcase config={config} />
+
+        <ConnectedFileRegistry config={config} />
 
         <section style={{ marginTop: 28, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 22, padding: 22 }}>
           <h2 style={{ marginTop: 0 }}>Workspace modules</h2>
@@ -69,8 +57,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             ))}
           </div>
         </section>
-
-        <SharedWorkspaceTools productName={config.name} />
 
         {config.slug === "pharma-desk" ? (
           <section style={{ marginTop: 28, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 22, padding: 22 }}>

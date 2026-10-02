@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import { botswanaPlaces, clinicAppointmentStates, clinicAppointmentTypes } from "@bokang/domain-data";
 
 type Appointment={id:string;patient:string;type:string;practitioner:string;time:string;state:string;location:string};
@@ -11,7 +12,7 @@ const starter:Appointment[]=[
 ];
 
 export function ClinicFlowShowcase(){
- const [items,setItems]=useState(starter);
+ const [items,setItems]=usePersistentState("bokang-studio.clinic-flow.appointments.v1", starter);
  const [patient,setPatient]=useState("");
  const [type,setType]=useState<(typeof clinicAppointmentTypes)[number]>("General consultation");
  const [location,setLocation]=useState<(typeof botswanaPlaces)[number]>("Gaborone");
