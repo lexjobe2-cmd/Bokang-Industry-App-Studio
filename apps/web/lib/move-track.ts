@@ -74,6 +74,15 @@ export type PrestartRecord = {
   notes: string;
 };
 
+export type FleetSitePolicy = {
+  id: string;
+  name: string;
+  requireOpenPitPermit: boolean;
+  requireFirstAid: boolean;
+  requireDefensiveDriving: boolean;
+  additionalCriticalChecks: string[];
+};
+
 export type FleetIncident = {
   id: string;
   vehicleId: string;
@@ -92,6 +101,7 @@ export const MOVE_TRACK_KEYS = {
   assignments: "bokang-studio.move-track.assignments.v1",
   prestarts: "bokang-studio.move-track.prestarts.v2",
   incidents: "bokang-studio.move-track.fleet-incidents.v1",
+  policies: "bokang-studio.move-track.site-policies.v1",
 } as const;
 
 export const starterFleet: FleetVehicle[] = [
@@ -116,6 +126,42 @@ export const starterFleet: FleetVehicle[] = [
     odometerKm:69210, roadworthyExpiry:"2026-10-18",
     extinguisherServiceDue:"2026-10-12", nextServiceKm:70000
   },
+];
+
+export const starterPolicies: FleetSitePolicy[] = [
+  {
+    id:"SITE-001",
+    name:"Jwaneng mine · demo profile",
+    requireOpenPitPermit:true,
+    requireFirstAid:true,
+    requireDefensiveDriving:true,
+    additionalCriticalChecks:[
+      "First aid kit present and stocked",
+      "Two-way radio / site communication available",
+      "Beacon / strobe functional where site requires",
+      "Whip flag fitted where site requires"
+    ]
+  },
+  {
+    id:"SITE-002",
+    name:"Orapa mine · demo profile",
+    requireOpenPitPermit:true,
+    requireFirstAid:true,
+    requireDefensiveDriving:true,
+    additionalCriticalChecks:[
+      "First aid kit present and stocked",
+      "Two-way radio / site communication available",
+      "Beacon / strobe functional where site requires"
+    ]
+  },
+  {
+    id:"SITE-003",
+    name:"Gaborone workshop",
+    requireOpenPitPermit:false,
+    requireFirstAid:false,
+    requireDefensiveDriving:true,
+    additionalCriticalChecks:[]
+  }
 ];
 
 export const starterDrivers: FleetDriver[] = [
@@ -143,6 +189,8 @@ export function evaluatePrestart(args: {
   vehicle: FleetVehicle;
   driver: FleetDriver;
   requireOpenPitPermit?: boolean;
+  requireFirstAid?: boolean;
+  requireDefensiveDriving?: boolean;
 }) {
   const reasons: string[] = [];
   const { checks, criticalChecks, vehicle, driver } = args;
@@ -164,6 +212,8 @@ export function evaluatePrestart(args: {
 
   if (!driver.siteAuthorised) reasons.push("Driver is not site-authorised");
   if (args.requireOpenPitPermit && !driver.openPitPermit) reasons.push("Required site driving permit is missing");
+  if (args.requireFirstAid && !driver.firstAid) reasons.push("Required first-aid training is missing");
+  if (args.requireDefensiveDriving && !driver.defensiveDriving) reasons.push("Required defensive-driving training is missing");
   if (!dateIsCurrent(vehicle.roadworthyExpiry)) reasons.push("Roadworthiness record is expired or missing");
   if (!dateIsCurrent(vehicle.extinguisherServiceDue)) reasons.push("Fire extinguisher service date is expired or missing");
   if (vehicle.status === "Maintenance" || vehicle.status === "Out of service") {
