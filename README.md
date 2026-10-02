@@ -676,3 +676,94 @@ The media strategy is deliberate:
 - Imagery is representational and is not presented as a photograph of the prospect or their staff.
 
 Current sources include Pexels and Unsplash.
+
+
+## MoveTrack fleet compliance and driver app
+
+MoveTrack now includes a shared manager/driver fleet-compliance workflow designed for logistics, industrial and mining-style operating environments.
+
+### Fleet manager workflow
+
+```text
+Onboard vehicle
+→ onboard driver
+→ configure site safety policy
+→ assign driver + vehicle
+→ require driver pre-start
+→ GO / NO-GO decision
+→ in-use tracking
+→ return / defect capture
+→ corrective action
+→ fresh pre-start before reuse
+```
+
+Fleet records include:
+
+- fleet number and registration,
+- make/model and vehicle type,
+- operating site,
+- odometer,
+- roadworthiness expiry,
+- fire-extinguisher service due date,
+- maintenance/service mileage,
+- current compliance/availability state.
+
+### Driver mobile app
+
+The separate driver route is:
+
+```text
+/driver/move-track?driver=<driver-id>
+```
+
+It uses a five-tab mobile layout:
+
+- Home,
+- Vehicle,
+- Check,
+- Report,
+- Profile.
+
+Drivers can:
+
+- see the currently assigned vehicle/job/site,
+- complete an explicit Pass / Fail / N/A pre-start,
+- take the vehicle only after a GO result,
+- report safety issues/defects,
+- check the vehicle back in,
+- record odometer and return condition.
+
+### Automatic grounding
+
+The compliance engine is deliberately fail-safe:
+
+- every checklist item must be explicitly answered,
+- critical items must explicitly PASS,
+- any failed check produces NO-GO,
+- expired/missing roadworthiness records produce NO-GO,
+- expired/missing extinguisher-service records produce NO-GO,
+- missing required site/training authorisations produce NO-GO,
+- failed pre-starts automatically create safety incidents,
+- grounded vehicles cannot be dispatched,
+- corrective action must be documented,
+- unresolved incidents prevent release,
+- release returns the vehicle only to Inspection Due,
+- a fresh pre-start is required before movement.
+
+### Configurable site policy
+
+Operators can configure site profiles for requirements such as:
+
+- site/open-pit permit,
+- first-aid training,
+- defensive-driving training,
+- first-aid kit,
+- radio/site communication,
+- beacon/strobe,
+- whip flag,
+- emergency triangles/beacons,
+- reflective identification,
+- fluid leaks,
+- secured cargo.
+
+These are application/site-policy controls and do not replace formal statutory inspection, roadworthiness certification or a mine/operator's official safety procedures.
