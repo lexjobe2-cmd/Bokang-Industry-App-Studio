@@ -1,0 +1,3 @@
+Bokang Industry App Studio preview refresh
+Date: 2026-10-04
+Purpose: refresh temporary Cloudflare preview URLs for all public demos.
