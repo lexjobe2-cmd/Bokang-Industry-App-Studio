@@ -278,6 +278,8 @@ export function ProspectPipeline() {
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "12px 0 0" }}><strong>Public evidence:</strong> {prospect.publicEvidence}</p>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Website check:</strong> {prospect.websiteEvidence}</p>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Fit hypothesis:</strong> {prospect.fitHypothesis}</p>
+                  <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Outreach angle:</strong> {prospect.outreachAngle}</p>
+                  {prospect.newTemplateOpportunity ? <p style={{ color: "#6941c6", lineHeight: 1.6, margin: "8px 0 0" }}><strong>New template opportunity:</strong> {prospect.newTemplateOpportunity}</p> : null}
                 </div>
 
                 <div style={{ display: "grid", justifyItems: "end", gap: 8 }}>
@@ -312,6 +314,8 @@ export function ProspectPipeline() {
                     <Info label="Source type" value={prospect.sourceLabel} />
                     <Info label="Website status" value={websiteStatusLabels[prospect.websiteStatus]} />
                     <Info label="Verification" value={verificationLabels[prospect.verificationState]} />
+                    <Info label="Confidence" value={prospect.confidence} />
+                    <Info label="Proposed demo path" value={prospect.proposedDemoPath} />
                   </div>
 
                   <div>
@@ -330,6 +334,10 @@ export function ProspectPipeline() {
                     <button onClick={() => void copy((prospect.email ? "Subject: " + subject + "\n\n" : "") + body, prospect.id + "-body")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-body" ? "Copied" : "Copy outreach"}</button>
                     <button onClick={() => void copy(link, prospect.id + "-link")} style={secondaryAction}><Link2 size={14} /> {copied === prospect.id + "-link" ? "Copied" : "Copy demo link"}</button>
                     <a href={link} target="_blank" rel="noreferrer" style={primaryAction}>Preview client demo <ExternalLink size={14} /></a>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {prospect.sourceLinks.map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer" style={secondaryAction}>Evidence {index + 1} <ExternalLink size={14} /></a>)}
                   </div>
 
                   <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
