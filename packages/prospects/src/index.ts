@@ -2,10 +2,15 @@ import type { ProductSlug } from "@bokang/app-config";
 
 export type WebsiteStatus = "no-first-party-site-found" | "social-only" | "directory-only" | "website-found" | "unclear";
 export type ProspectVerificationState = "source-checked" | "needs-recheck" | "verified-website";
+export type ProspectConfidence = "high" | "medium" | "low";
+export type ProspectOutreachStatus = "new" | "prepared" | "contacted" | "replied" | "converted" | "not-now" | "handled" | "archived" | "previous-outreach";
 
 export type Prospect = {
   id: string;
+  company: string;
   name: string;
+  industry: string;
+  subIndustry: string;
   sector: string;
   location: string;
   city: string;
@@ -15,12 +20,21 @@ export type Prospect = {
   website?: string;
   websiteStatus: WebsiteStatus;
   websiteEvidence: string;
+  googleBusinessEvidence: string;
+  socialPresence: string[];
   verificationState: ProspectVerificationState;
   sourceUrl: string;
   sourceLinks: string[];
   sourceLabel: string;
   checkedAt: string;
   recommendedProduct: ProductSlug;
+  newTemplateOpportunity: string | null;
+  proposedDemoPath: string;
+  prospectReason: string;
+  outreachAngle: string;
+  confidence: ProspectConfidence;
+  outreachStatus: ProspectOutreachStatus;
+  lastChecked: string;
   fitHypothesis: string;
   publicEvidence: string;
 };
@@ -408,25 +422,54 @@ const seeds: Seed[] = [
   }
 ];
 
-export const prospects: Prospect[] = seeds.map((seed) => ({
-  id: seed.id,
-  name: seed.name,
-  sector: seed.sector,
-  location: seed.location,
-  city: seed.city,
-  country: "Botswana",
-  email: seed.email,
-  phone: seed.phone,
-  websiteStatus: seed.websiteStatus ?? "no-first-party-site-found",
-  websiteEvidence: seed.evidence,
-  verificationState: seed.verificationState ?? "source-checked",
-  sourceUrl: seed.sourceUrl,
-  sourceLinks: Array.from(new Set([seed.sourceUrl, googleSearchUrl(seed.name)])),
-  sourceLabel: seed.sourceLabel,
-  checkedAt,
-  recommendedProduct: seed.recommendedProduct,
-  fitHypothesis: seed.fitHypothesis,
-  publicEvidence: seed.evidence,
-}));
+export const prospects: Prospect[] = seeds.map((seed) => {
+  const websiteStatus = seed.websiteStatus ?? "no-first-party-site-found";
+  const newTemplateOpportunity = seed.sector === "Purified Water & Delivery"
+    ? "SME commerce + recurring delivery template"
+    : null;
+  const confidence: ProspectConfidence = websiteStatus === "unclear"
+    ? "low"
+    : websiteStatus === "social-only"
+      ? "medium"
+      : "high";
+  const socialPresence = websiteStatus === "social-only"
+    ? ["Social page surfaced in current search"]
+    : [];
+
+  return {
+    id: seed.id,
+    company: seed.name,
+    name: seed.name,
+    industry: seed.sector,
+    subIndustry: seed.sector,
+    sector: seed.sector,
+    location: seed.location,
+    city: seed.city,
+    country: "Botswana",
+    email: seed.email,
+    phone: seed.phone,
+    websiteStatus,
+    websiteEvidence: seed.evidence,
+    googleBusinessEvidence: googleSearchUrl(seed.name),
+    socialPresence,
+    verificationState: seed.verificationState ?? "source-checked",
+    sourceUrl: seed.sourceUrl,
+    sourceLinks: Array.from(new Set([seed.sourceUrl, googleSearchUrl(seed.name)])),
+    sourceLabel: seed.sourceLabel,
+    checkedAt,
+    recommendedProduct: seed.recommendedProduct,
+    newTemplateOpportunity,
+    proposedDemoPath: `/demo/${seed.recommendedProduct}`,
+    prospectReason: seed.fitHypothesis,
+    outreachAngle: newTemplateOpportunity
+      ? "Lead with an owned mobile ordering experience, repeat-order convenience and delivery visibility instead of a generic brochure website."
+      : `Lead with a working ${seed.recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`,
+    confidence,
+    outreachStatus: "new",
+    lastChecked: checkedAt,
+    fitHypothesis: seed.fitHypothesis,
+    publicEvidence: seed.evidence,
+  };
+});
 
 export const prospectCount = prospects.length;
