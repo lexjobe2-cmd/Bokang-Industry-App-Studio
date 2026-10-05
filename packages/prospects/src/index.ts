@@ -414,11 +414,11 @@ const seeds: Seed[] = [
     evidence:"Current search results surface social-page style contact and WhatsApp ordering information; no first-party website was surfaced in the checked result."
   },
   {
-    id:"splash2o-water", name:"SplasH2O Water", sector:"Purified Water & Delivery", location:"Commerce Park, Gaborone, Botswana", city:"Gaborone",
-    phone:"+267 391 1399", websiteStatus:"social-only", sourceUrl:"https://www.foodbevg.com/BW/Gaborone/2304950903162142/SplasH2O-Water",
-    sourceLabel:"Current social-page mirror / search result", recommendedProduct:"move-track",
-    fitHypothesis:"A branded water-ordering and delivery site could showcase bottle sizes, branded-water orders and local delivery while MoveTrack handles fulfilment operations.",
-    evidence:"Current search results surface a social-page mirror with products and phone contacts but no first-party business website."
+    id:"hydrate-still-water", name:"Hydrate Still Water", sector:"Purified Water & Delivery", location:"Jwaneng / Tlokweng, Botswana", city:"Jwaneng",
+    phone:"+267 72 229 812", email:"info@hydratestillwater.com", websiteStatus:"social-only", sourceUrl:"https://www.schoolandcollegelistings.com/BW/Unknown/507259373414240/Hydrate-Still-Water",
+    sourceLabel:"Current social-page mirror + public business coverage", recommendedProduct:"move-track",
+    fitHypothesis:"A branded water-ordering and recurring-delivery experience could support Hydrate's bottled water, custom-labelled corporate orders, refill points and water-service enquiries while MoveTrack-style operations handle fulfilment.",
+    evidence:"Current search results surface an active Facebook-led presence, public phone/email contacts and current 2026 product activity; no working first-party website was surfaced in the checked search."
   }
 ];
 
