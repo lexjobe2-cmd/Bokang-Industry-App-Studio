@@ -58,7 +58,7 @@ export function ProspectPipeline() {
   const [productFilter, setProductFilter] = useState<"all" | ProductSlug>("all");
   const [industryFilter, setIndustryFilter] = useState("all");
   const [cityFilter, setCityFilter] = useState("all");
-  const [websiteFilter, setWebsiteFilter] = useState<"all" | WebsiteStatus>("no-first-party-site-found");
+  const [websiteFilter, setWebsiteFilter] = useState<"all" | WebsiteStatus>("all");
   const [outreachFilter, setOutreachFilter] = useState<"all" | ProspectStatus>("all");
   const [verificationFilter, setVerificationFilter] = useState<"all" | ProspectVerificationState>("all");
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -169,13 +169,13 @@ export function ProspectPipeline() {
           <p style={{ margin: 0, color: "#2563eb", fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Prospect intelligence</p>
           <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(34px,5vw,58px)" }}>Real businesses → relevant demo → manual outreach.</h1>
           <p style={{ margin: 0, maxWidth: 820, color: "#667085", lineHeight: 1.7, fontSize: 17 }}>
-            Botswana businesses whose Google business/search result did not show a website link when checked. Each one is mapped to a relevant Studio product; re-check the listing before outreach because search results can change.
+            A fresh Botswana outreach batch sourced from current business/search and directory results where no clear first-party website was surfaced. Directory-only and social-only businesses are included because they still lack an owned first-party site in the checked result. Re-check immediately before outreach because search results can change.
           </p>
         </div>
         <div style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
           <div style={{ fontSize: 11, opacity: .65, textTransform: "uppercase", letterSpacing: 1.2 }}>Current seed list</div>
           <strong style={{ display: "block", fontSize: 26, marginTop: 3 }}>{prospects.length}</strong>
-          <div style={{ fontSize: 11, opacity: .72 }}>no website link listed when checked</div>
+          <div style={{ fontSize: 11, opacity: .72 }}>fresh website-gap opportunities · checked 05 Oct 2026</div>
         </div>
       </header>
 
