@@ -1,4 +1,4 @@
-name: Cloudflare Preview
+name: Cloudflare Deploy
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  preview:
+  deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -24,6 +24,6 @@ jobs:
       - name: Build OpenNext Worker
         run: pnpm --filter @bokang/web exec opennextjs-cloudflare build
 
-      - name: Deploy temporary Cloudflare preview
+      - name: Deploy stable Cloudflare Worker
         working-directory: apps/web
-        run: pnpm exec wrangler deploy --temporary
+        run: pnpm exec wrangler deploy
