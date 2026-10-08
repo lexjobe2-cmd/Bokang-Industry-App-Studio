@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { AlertTriangle, ClipboardCheck, RotateCcw, Truck, ShieldCheck, ArrowUpRight } from "lucide-react";
@@ -84,14 +83,14 @@ export function MoveTrackDemoLab(){
   <div style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"34px 20px 46px"}}>
    <div style={{maxWidth:1250,margin:"0 auto"}}>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-      <Link href="/products/move-track" style={{color:"#a9d3ff",fontWeight:800,fontSize:12,textDecoration:"none"}}>← MoveTrack AI / App Studio</Link>
+      <a href="/products/move-track" style={{color:"#a9d3ff",fontWeight:800,fontSize:12,textDecoration:"none"}}>← MoveTrack AI / App Studio</a>
       <span style={{padding:"8px 11px",border:"1px solid #647d9b",borderRadius:999,fontSize:11,fontWeight:900,letterSpacing:1}}>FRONTEND DEMO · NO SIGN-IN</span>
     </div>
     <p style={{color:"#93c5fd",letterSpacing:1.8,fontSize:11,fontWeight:900,textTransform:"uppercase",margin:"28px 0 8px"}}>Bokang Industry App Studio / MoveTrack AI</p>
     <h1 style={{fontSize:"clamp(30px,5vw,49px)",maxWidth:850,lineHeight:1.08,margin:"0 0 12px"}}>Fleet + SHE Operational Assurance</h1>
     <p style={{maxWidth:780,color:"#cbd5e1",fontSize:14,lineHeight:1.75,margin:0}}>Test connected fleet operations, mandatory pre-starts, risk assessments, toolbox talks, meeting registers, incidents and repair/release logic. Everything runs locally in your browser—no Firebase, Google account, Drive or backend setup.</p>
     <div style={{display:"flex",gap:9,flexWrap:"wrap",marginTop:22}}>
-     <Link href="/driver/move-track?driver=DRV-001" style={{...style,display:"flex",gap:7,alignItems:"center",padding:"11px 14px",color:"#fff",background:"#2563eb",fontSize:13,fontWeight:850,textDecoration:"none",border:0}}>Open driver mobile app <ArrowUpRight size={17}/></Link>
+     <a href="/driver/move-track?driver=DRV-001" style={{...style,display:"flex",gap:7,alignItems:"center",padding:"11px 14px",color:"#fff",background:"#2563eb",fontSize:13,fontWeight:850,textDecoration:"none",border:0}}>Open driver mobile app <ArrowUpRight size={17}/></a>
      <span style={{...style,padding:"11px 14px",color:"#cbd5e1",background:"#203550",border:"1px solid #58708f",fontSize:12}}>Demo site: Jwaneng mine profile</span>
     </div>
    </div>
