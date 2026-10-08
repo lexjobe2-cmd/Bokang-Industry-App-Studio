@@ -206,3 +206,36 @@ test("unverified hazard control prohibits simulation approval",()=>{
  assert.equal(assessJra(jra).unverifiedControls,0);
  assert.equal(assessJra(jra).decision,"READY_FOR_DEMO_REVIEW");
 });
+
+import {additionalAssuranceRecipes,validateWorkflowGraph,workflowLinks} from "../packages/domain-data/src/expanded-assurance.ts";
+test("21 new workflows have connected graphs and unique enforceable critical checks",()=>{
+ assert.equal(additionalAssuranceRecipes.length,21);
+ assert.equal(validateWorkflowGraph(),true);
+ const ids=new Set(additionalAssuranceRecipes.map(r=>r.id));
+ assert.equal(ids.has("working-at-height"),true);
+ for(const recipe of additionalAssuranceRecipes){
+  assert.ok(recipe.sections.length>=3);
+  const fields=recipe.sections.flatMap(s=>s.fields);
+  assert.ok(fields.filter(f=>f.critical).length>=4);
+  assert.ok(fields.some(f=>f.type==="people"));
+  assert.ok(fields.some(f=>f.type==="person"));
+  assert.ok(fields.some(f=>f.type==="risk"));
+  for(const id of workflowLinks(recipe.id))assert.ok(ids.has(id));
+  const branded=makeCustomTemplate({
+   id:"op-demo-mining-"+recipe.id,organization:demoOrganization,title:recipe.title,category:recipe.category,
+   description:recipe.description,sections:recipe.sections,now:"2026-10-08T13:00:00Z",status:"PUBLISHED"
+  });
+  const incomplete=evaluateForm(branded,{});
+  assert.equal(incomplete.decision,"INCOMPLETE");
+  const critical=fields.find(f=>f.critical);
+  assert.ok(critical);
+  assert.equal(evaluateForm(branded,{[critical.id]:"FAIL"}).decision,"NO_GO");
+ }
+});
+test("working at height captures collective fall protection, dropped objects and rescue",()=>{
+ const wf=additionalAssuranceRecipes.find(x=>x.id==="working-at-height");
+ assert.ok(wf);
+ const labels=wf.sections.flatMap(s=>s.fields.map(f=>f.label)).join(" ").toLowerCase();
+ for(const phrase of ["ground level","guardrails","anchor","falling-object","rescue","weather","working height"])
+   assert.ok(labels.includes(phrase),"Missing height control: "+phrase);
+});
