@@ -46,7 +46,8 @@
     "maplibre-gl": "^6.11.2",
     "papaparse": "^5.5.3",
     "exceljs": "^4.4.0",
-    "framer-motion": "^12.23.0"
+    "framer-motion": "^12.23.0",
+    "firebase": "^13.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
