@@ -62,7 +62,7 @@ export function getLocalValue<T>(key:string,initial:T):T{
  installStorageEvents();
  if(!defaults.has(key))defaults.set(key,initial);
  if(!cache.has(key))loadFromStorage(key,true);
- return (cache.get(key)?.value??defaults.get(key)) as T;
+ return (cache.has(key)?cache.get(key)!.value:defaults.get(key)) as T;
 }
 export function subscribeLocalValue(key:string,listener:()=>void){
  installStorageEvents();
@@ -95,8 +95,7 @@ export function writeLocalValue<T>(key:string,next:T):void{
  if(previous?.raw!==raw)notify(key);
  else statusListeners.forEach(fn=>fn());
 }
-export function resetLocalKey(key:string){
- const storage=browserStorage();
+export function resetLocalKey(key:string,storage:Storage|null=browserStorage()){
  try{storage?.removeItem(key);health.set(key,{status:"ready"});}catch{
   health.set(key,{status:"unavailable",error:"Unable to remove saved data."});
  }
@@ -155,6 +154,6 @@ export function restoreWorkspaceBackup(storage:Storage,backup:WorkspaceBackup){
 }
 export function clearWorkspaceData(storage:Storage){
  const keys=Object.keys(ownEntries(storage));
- for(const key of keys)resetLocalKey(key);
+ for(const key of keys)resetLocalKey(key,storage);
  return keys.length;
 }
