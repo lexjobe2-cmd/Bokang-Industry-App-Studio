@@ -83,6 +83,7 @@ export const GRAPH_DIRECTORY_ROUTES={
  users:"/v1.0/users?$select=id,displayName,mail,userPrincipalName,jobTitle,department,officeLocation,employeeId,accountEnabled&$top=100",
  organization:"/v1.0/organization?$select=id,displayName,verifiedDomains",
  branding:"/v1.0/organization/{organizationId}/branding",
+ directoryRoleAssignments:"/v1.0/roleManagement/directory/roleAssignments",
 } as const;
 /** No Graph network calls here. A future authenticated server adapter will map each page via this function. */
 export function mapGraphUser(user:GraphUser,orgId:string):PersonRecord{
@@ -99,6 +100,14 @@ export function mapGraphOrganization(org:GraphOrganization,now:string):Organizat
  return {id:"m365-org:"+org.id,name:org.displayName,domain,businessUnit:"",siteIds:[],accent:"#1849a9",
  documentPrefix:"SHE",footer:"Controlled document. Printed copies are uncontrolled.",
  ownerIds:[],source:"MICROSOFT_365",updatedAt:now};
+}
+export type GraphRoleAssignment={principalId:string;roleDefinitionId:string;directoryScopeId?:string};
+export const MICROSOFT_GLOBAL_ADMIN_ROLE="62e90394-69f5-4237-9190-012177145e10";
+/** Tenant admin candidates are not automatically owners of a MoveTrack organization. */
+export function mapDirectoryAdminCandidates(assignments:readonly GraphRoleAssignment[],members:readonly PersonRecord[]):string[]{
+ const memberByExternal=new Map(members.filter(p=>p.externalId).map(p=>[p.externalId,p.id]));
+ return [...new Set(assignments.filter(r=>r.roleDefinitionId.toLowerCase()===MICROSOFT_GLOBAL_ADMIN_ROLE&&(!r.directoryScopeId||r.directoryScopeId==="/"))
+  .map(r=>memberByExternal.get(r.principalId)).filter((value):value is string=>Boolean(value)))];
 }
 export const demoOrganization:OrganizationProfile={
  id:"demo-mining",name:"Demo Mining Operations",domain:"demo.invalid",businessUnit:"Mining Operations",
@@ -206,3 +215,34 @@ export function canSimulateApproval(jra:JobRiskAssessment):boolean{
  return assessJra(jra).decision==="READY_FOR_DEMO_REVIEW"&&Boolean(jra.reviewerId)&&
   jra.reviewerId!==jra.supervisorId&&jra.participants.every(p=>p.acknowledged);
 }
+
+export type TemplateRecipe={id:string;title:string;description:string;category:FormCategory;sections:FormSection[]};
+const q=(id:string,label:string,type:FormField["type"]="text",required=true):FormField=>({id,label,type,required});
+const check=(id:string,label:string,critical=false):FormField=>({...q(id,label,"pass_fail_na"),critical});
+const repeat=(id:string,label:string,columns:Array<[string,string]>):FormField=>({...q(id,label,"repeat"),children:columns.map(([key,name])=>q(key,name))});
+export const templateRecipes:readonly TemplateRecipe[]=[
+ {id:"permit-to-work",title:"Permit to Work — Work Authorization",category:"Safety",description:"Scope, permits, isolation, preconditions, duty holder and handback",sections:[
+  {id:"work",title:"Work authorization",fields:[q("job_ref","Work order / task ID"),q("area","Work area / location"),q("activity","Scope of permitted work","multiline"),q("start","Start date","datetime"),q("finish","Expiry date","datetime")]},
+  {id:"permits",title:"Critical permit controls",fields:[check("isolation","Energy sources isolated",true),check("barricade","Barricade and exclusion zone",true),check("induction","Workforce inducted and competent",true),q("authoriser","Permit issuer"),q("receivers","Responsible job holder")]}]},
+ {id:"lifting",title:"Lifting Operations Plan",category:"Risk",description:"Crane and rigging suitability, load, radius, exclusions and spotters",sections:[
+  {id:"lift",title:"Lift parameters",fields:[q("workorder","Work order"),q("load","Load description"),q("mass","Gross load mass (kg)","number"),q("crane","Crane / lifting device"),q("radius","Lift radius (m)","number")]},
+  {id:"hazards",title:"Lift safety",fields:[check("inspect","Lifting gear inspected",true),check("certified","Crane certification and operator license",true),check("exclusion","Exclusion zone confirmed",true),q("wind","Weather / wind speed"),repeat("riggers","Riggers / spotters",[["name","Name"],["role","Assignment"]])]}]},
+ {id:"loto",title:"Lockout Tagout Verification",category:"Safety",description:"Hazardous energy, isolation and zero-energy verification",sections:[
+  {id:"isolation",title:"Isolation register",fields:[q("equipment","Equipment ID"),q("permit","Isolation permit ID"),repeat("energy","Energy sources",[["source","Energy source"],["device","Isolator ID"],["lock","Lock/tag number"]])]},
+  {id:"prove",title:"Verify safe state",fields:[check("verify","Zero energy proved",true),check("stored","Stored energy dissipated",true),check("tags","Each person holds personal lock",true),q("isolator","Authorized isolator")]}]},
+ {id:"meeting",title:"Safety Committee Meeting & Attendance",category:"Meetings",description:"Agenda, attendance, decisions and action tracker",sections:[
+  {id:"details",title:"Meeting details",fields:[q("topic","Title"),q("date","Meeting date","date"),q("location","Location"),q("agenda","Agenda","multiline")]},
+  {id:"register",title:"Registers",fields:[repeat("attendees","Attendees",[["name","Name"],["department","Department"],["role","Role"]]),repeat("actions","Corrective actions",[["item","Action"],["owner","Owner"],["due","Due date"]])]}]},
+ {id:"machine",title:"Mobile Equipment Pre-Start",category:"Fleet",description:"Heavy and light equipment start-of-shift safety controls",sections:[
+  {id:"identity",title:"Asset and operator",fields:[q("asset","Equipment number"),q("operator","Operator"),q("hours","Engine hours","number")]},
+  {id:"critical",title:"Critical controls",fields:[check("brakes","Service, park and emergency brakes",true),check("steering","Steering and hydraulics",true),check("lights","Beacon and headlights",true),check("tyres","Tyres, tracks and undercarriage",true),check("reverse","Reverse alarm / cameras",true),check("fire","Fire suppression / extinguisher",true),q("defects","Defects and follow-up actions","multiline",false)]}]},
+ {id:"fatigue",title:"Fit for Work and Fatigue Declaration",category:"Safety",description:"Worker fatigue and fitness attestation for critical operations",sections:[
+  {id:"worker",title:"Worker declaration",fields:[q("person","Employee name"),q("shift","Shift"),q("rest","Rest hours in past 24h","number"),q("meds","Medication or fitness concerns","multiline",false)]},
+  {id:"check",title:"Fit for duty controls",fields:[{...q("fit","Employee fit for assigned task","yes_no"),critical:true},q("actions","Supervisor mitigation / reassignment","multiline",false)]}]},
+ {id:"incident",title:"Incident / Near Miss Investigation",category:"Inspections",description:"Event classification, circumstances, root causes and corrective actions",sections:[
+  {id:"event",title:"Event summary",fields:[q("time","Event date/time","datetime"),q("area","Location"),q("nature","Event description","multiline"),q("severity","Severity","select"),q("persons","People affected","multiline")]},
+  {id:"analysis",title:"Investigation",fields:[q("immediate","Immediate actions taken","multiline"),q("causes","Contributing / root causes","multiline"),repeat("corrective","Corrective action register",[["action","Action"],["owner","Owner"],["deadline","Due"]])]}]},
+ {id:"handover",title:"Shift Handover and Open Defects",category:"Handover",description:"Transfer plant status, critical risks, defects and unfinished permits",sections:[
+  {id:"shift",title:"Shift information",fields:[q("date","Handover time","datetime"),q("outgoing","Outgoing shift lead"),q("incoming","Incoming shift lead")]},
+  {id:"outstanding",title:"Items carried over",fields:[repeat("tasks","Incomplete work",[["ref","Job / asset"],["action","Outstanding work"],["owner","Owner"]]),q("grounded","Grounded assets","multiline"),q("hazards","Unresolved hazards","multiline"),check("accepted","Incoming shift understands the open risks",true)]}]}
+];
