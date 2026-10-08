@@ -205,7 +205,7 @@ function FieldInput({field,value,onChange,people}:{field:FormField;value:FormAns
    const rows=Array.isArray(value)&&value.every(v=>typeof v==="object"&&!Array.isArray(v))?value as Record<string,string|number|boolean|null>[]:[];
    return <div style={{...fieldStyle,background:"#f8fafc",padding:13,borderRadius:13,border:"1px solid #e2e8f0"}}>{label}{rows.map((row,index)=><div key={index} style={{...tile,display:"grid",gap:9}}>
      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><strong style={{fontSize:12}}>Entry {index+1}</strong><button type="button" style={{...button,padding:7,minHeight:34}} aria-label={"Remove entry "+(index+1)} onClick={()=>onChange(rows.filter((_,i)=>i!==index))}><Trash2 size={15}/></button></div>
-     {field.children?.map(child=><label key={child.id} style={{...fieldStyle,fontSize:12}}>{child.label}<input type={child.type==="number"?"number":"text"} value={String(row[child.id]??"")} onChange={e=>onChange(rows.map((r,i)=>i===index?{...r,[child.id]:child.type==="number"?Number(e.target.value):e.target.value}:r))} style={input}/></label>)}
+     {field.children?.map(child=><label key={child.id} style={{...fieldStyle,fontSize:12}}>{child.label}<input type={child.type==="number"?"number":child.type==="date"?"date":"text"} value={String(row[child.id]??"")} onChange={e=>onChange(rows.map((r,i)=>i===index?{...r,[child.id]:child.type==="number"?Number(e.target.value):e.target.value}:r))} style={input}/></label>)}
    </div>)}<button type="button" style={{...button,justifySelf:"start"}} onClick={()=>onChange([...rows,{}])}><Plus size={15} style={{display:"inline"}}/> Add attendee / step</button></div>;
  }
  if(field.type==="multiselect"){
