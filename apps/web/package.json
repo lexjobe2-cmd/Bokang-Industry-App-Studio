@@ -46,7 +46,9 @@
     "maplibre-gl": "^6.11.2",
     "papaparse": "^5.5.3",
     "exceljs": "^4.4.0",
-    "framer-motion": "^12.23.0"
+    "framer-motion": "^12.23.0",
+    "docx": "^9.8.1",
+    "jspdf": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
