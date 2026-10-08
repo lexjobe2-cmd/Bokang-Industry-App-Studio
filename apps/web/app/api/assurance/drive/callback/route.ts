@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { assuranceDb, dbUnavailable, serverError } from "../../../../../lib/assurance-server";
 import { encryptTokenBundle } from "../../../../../lib/oauth";
 export const dynamic="force-dynamic";
@@ -29,6 +30,7 @@ export async function GET(request:Request){
   if(!tokenResponse.ok)return Response.json({error:"Drive consent exchange failed"},{status:502});
   const tokens=await tokenResponse.json() as TokenBody;
   if(!tokens.access_token||!tokens.refresh_token)return Response.json({error:"A persistent Drive grant was not returned; reconnect and grant consent"},{status:409});
+  if(!tokens.scope?.split(" ").includes("https://www.googleapis.com/auth/drive.file"))return Response.json({error:"Required narrow Drive file scope was not granted"},{status:403});
   const info=await fetch("https://openidconnect.googleapis.com/v1/userinfo",{headers:{Authorization:"Bearer "+tokens.access_token},cache:"no-store"});
   if(!info.ok)return Response.json({error:"Drive account identity lookup failed"},{status:502});
   const profile=await info.json() as {sub?:string;email?:string};
@@ -48,8 +50,8 @@ export async function GET(request:Request){
       encrypted_token=excluded.encrypted_token,status='CONNECTED',updated_at=excluded.updated_at`)
    .bind(crypto.randomUUID(),saved.owner_node_id,orgId,profile.sub,profile.email??null,
     "PERSONAL_GOOGLE_DRIVE",tokens.scope??"https://www.googleapis.com/auth/drive.file",encrypted,"CONNECTED",now,now).run();
-  const response=Response.redirect(new URL("/products/move-track?drive=connected",origin),303);
-  response.headers.append("Set-Cookie","assurance_drive_state=; HttpOnly; SameSite=Lax; Path=/api/assurance/drive; Max-Age=0; Secure");
+  const response=NextResponse.redirect(new URL("/products/move-track?drive=connected",origin),303);
+  response.cookies.set("assurance_drive_state","",{httpOnly:true,sameSite:"lax",path:"/api/assurance/drive",maxAge:0,secure:new URL(origin).protocol==="https:"});
   return response;
  }catch(error){return serverError(error);}
 }
