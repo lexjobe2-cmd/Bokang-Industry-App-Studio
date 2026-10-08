@@ -5,7 +5,7 @@ import {motion,useReducedMotion} from "framer-motion";
 import {Plus,Trash2,ChevronUp,ChevronDown,Copy,Layers,Palette,FilePlus2,BookOpen,UsersRound,Upload,Eye,Save,CheckCircle2} from "lucide-react";
 import {usePersistentState} from "@bokang/persistence";
 import {
- ASSURANCE_STORAGE,dictionary,demoOrganization,demoPeople,makeCustomTemplate,nextPublishedVersion,
+ ASSURANCE_STORAGE,dictionary,demoOrganization,demoPeople,makeCustomTemplate,templateRecipes,
  type OrganizationProfile,type PersonRecord,type CustomTemplate
 } from "@bokang/domain-data/custom-assurance";
 import type {AnswerType,FormCategory,FormField,FormSection} from "@bokang/domain-data/assurance-forms";
@@ -45,6 +45,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  function patchSection(index:number,patch:Partial<FormSection>){setSections(xs=>xs.map((s,i)=>i===index?{...s,...patch}:s));}
  function patchField(si:number,fi:number,patch:Partial<FormField>){setSections(xs=>xs.map((s,i)=>i!==si?s:{...s,fields:s.fields.map((f,j)=>j===fi?{...f,...patch}:f)}));}
  function removeField(si:number,fi:number){setSections(xs=>xs.map((s,i)=>i!==si?s:{...s,fields:s.fields.filter((_,j)=>j!==fi)}));}
+ function startRecipe(recipeId:string){const recipe=templateRecipes.find(r=>r.id===recipeId);if(!recipe)return;setEditing(null);setTitle(recipe.title);setCategory(recipe.category);setDocumentType("GENERAL");setJobId("");setDescription(recipe.description);setSections(structuredClone(recipe.sections));setPanel("create");setNotice(recipe.title+" loaded into the designer. Customize fields, add your logo and publish.");}
  function load(template:CustomTemplate){
   setEditing(template.id);setTitle(template.title);setDescription(template.description);setCategory(template.category);
   setDocumentType(template.documentType);setJobId(template.jobId??"");setOrgId(template.organizationId);
@@ -140,6 +141,15 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    ].map(group=><div key={group.name}><strong style={{fontSize:13}}>{group.name}</strong><div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}}>{group.items.map(item=><span key={item} style={{fontSize:11,border:"1px solid #d9e2ec",padding:"7px 10px",borderRadius:9,background:"#f8fafc"}}>{item}</span>)}</div></div>)}
   </div>:null}
   {panel==="create"?<div style={{display:"grid",gap:12}}>
+   <div style={card}>
+    <div><h3 style={{margin:"0 0 4px"}}>Start from a real operations workflow</h3><p style={{fontSize:12,color:"#64748b",margin:0}}>Select a professionally structured form recipe. You can customize every field to match a job or industry.</p></div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:9,marginTop:12}}>
+     {templateRecipes.map(r=><button key={r.id} style={{...btn,textAlign:"left",display:"grid",gap:6,minHeight:90}} onClick={()=>startRecipe(r.id)}>
+      <span style={{fontSize:10,color:"#2563eb",fontWeight:900}}>{r.category.toUpperCase()}</span>
+      <strong style={{fontSize:12}}>{r.title}</strong><span style={{fontSize:10,color:"#64748b"}}>{r.sections.reduce((n,s)=>n+s.fields.length,0)} initial questions</span>
+     </button>)}
+    </div>
+   </div>
    <div style={card}>
     <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><h3 style={{margin:0}}>Template properties</h3><button onClick={reset} style={btn}>New blank form</button></div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:10,marginTop:13}}>
