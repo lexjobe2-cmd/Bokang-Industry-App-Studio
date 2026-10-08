@@ -1,7 +1,7 @@
 "use client";
 import {useState} from "react";
 import {Download,FileText,LoaderCircle} from "lucide-react";
-import {downloadDocument,type ExportDocument,type DocumentFormat} from "../lib/form-exports";
+import {downloadDocument,type ExportDocument,type DocumentFormat} from "../../lib/form-exports";
 
 const btn:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:9,background:"#fff",color:"#173764",padding:"8px 11px",minHeight:38,fontSize:12,fontWeight:800,cursor:"pointer"};
 export function DocumentDownloadActions({document:doc,compact=false}:{document:ExportDocument;compact?:boolean}){
