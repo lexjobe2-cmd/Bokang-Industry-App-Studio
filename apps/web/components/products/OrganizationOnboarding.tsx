@@ -13,7 +13,7 @@ const card:React.CSSProperties={background:"#fff",border:"1px solid #dae4f0",bor
 const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,fontWeight:800,color:"#344054"};
 type Draft=OrganizationProfile & {industry:string};
 const initial=():Draft=>({...demoOrganization,id:"",name:"",domain:"",businessUnit:"",siteIds:[],ownerIds:[],logoDataUrl:undefined,logoName:undefined,documentPrefix:"SHE",footer:"Uncontrolled when printed · Operational approval required",accent:"#155eef",source:"MANUAL" as const,industry:"Mining & resources",updatedAt:""});
-type PersonDraft={name:string;jobTitle:string;email:string;department:string;owner:boolean};
+type PersonDraft={id?:string;name:string;jobTitle:string;email:string;department:string;owner:boolean};
 const emptyMember=():PersonDraft=>({name:"",jobTitle:"",department:"",email:"",owner:false});
 export function OrganizationOnboarding(){
  const reduceMotion=useReducedMotion();
@@ -33,7 +33,7 @@ export function OrganizationOnboarding(){
  function resetDraft(){setDraft(initial());setMembers([emptyMember()]);setStep(0);setEditingId(null);setNotice("");setOpen(true);}
  function editCompany(org:OrganizationProfile){
   const related=people.filter(p=>p.orgId===org.id);
-  setDraft({...initial(),...org});setMembers(related.map(p=>({name:p.displayName,jobTitle:p.jobTitle,email:p.email,department:p.department,owner:org.ownerIds.includes(p.id)})));
+  setDraft({...initial(),...org});setMembers(related.map(p=>({id:p.id,name:p.displayName,jobTitle:p.jobTitle,email:p.email,department:p.department,owner:org.ownerIds.includes(p.id)})));
   setStep(0);setEditingId(org.id);setOpen(true);setNotice("");
  }
  function upload(file:File|undefined){
@@ -58,7 +58,7 @@ export function OrganizationOnboarding(){
   const existingMembers=people.filter(p=>p.orgId===id);
   const valid=members.filter(m=>m.name.trim()&&m.jobTitle.trim());
   const roster=valid.map((m,i):PersonRecord=>{
-   const old=existingMembers.find(p=>p.displayName===m.name.trim()&&p.jobTitle===m.jobTitle.trim())??existingMembers[i];
+   const old=m.id?existingMembers.find(p=>p.id===m.id):undefined;
    return {id:old?.id??"worker-"+crypto.randomUUID(),orgId:id,source:"MANUAL",displayName:m.name.trim(),
     jobTitle:m.jobTitle.trim(),department:m.department.trim(),location:draft.siteIds[0]||"",email:m.email.trim(),active:true};
   });
@@ -98,7 +98,7 @@ export function OrganizationOnboarding(){
     </div>
     {step===0?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:12}}>
      <label style={label}>Company legal/trading name *<input style={input} value={draft.name} onChange={e=>patch({name:e.target.value})} placeholder="Kalahari Mining Services"/></label>
-     <label style={label}>Verified domain (manual demo)<input style={input} value={draft.domain} onChange={e=>patch({domain:e.target.value})} placeholder="company.co.bw"/></label>
+     <label style={label}>Company email domain (not verified)<input style={input} value={draft.domain} onChange={e=>patch({domain:e.target.value})} placeholder="company.co.bw"/></label>
      <label style={label}>Industry<select style={input} value={draft.industry} onChange={e=>patch({industry:e.target.value})}>{["Mining & resources","Construction","Logistics & fleet","Manufacturing","Energy & utilities","Agriculture","Healthcare","Facilities","Government","Other"].map(x=><option key={x}>{x}</option>)}</select></label>
      <label style={label}>Business unit<input style={input} value={draft.businessUnit} onChange={e=>patch({businessUnit:e.target.value})} placeholder="Maintenance & operations"/></label>
      <label style={{...label,gridColumn:"1 / -1"}}>Operating sites * (one per line)<textarea style={{...input,minHeight:95}} value={draft.siteIds.join("\n")} onChange={e=>patch({siteIds:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)})} placeholder="Jwaneng Site\nGaborone Workshop"/></label>
