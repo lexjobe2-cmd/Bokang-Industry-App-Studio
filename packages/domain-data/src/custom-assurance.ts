@@ -182,8 +182,8 @@ export function blankHazard():HazardEntry{
  return {id:"haz-"+crypto.randomUUID(),category:dictionary.hazardCategories[0],
  hazard:"",consequence:"",exposedPersonIds:[],controls:[],initial:{...emptyRisk},residual:{...emptyRisk}};
 }
-export function assessJra(jra:JobRiskAssessment):{decision:JraDecision;missing:string[];maxResidual:number;highRisks:number}{
- const missing:string[]=[];let maxResidual=0,highRisks=0;
+export function assessJra(jra:JobRiskAssessment):{decision:JraDecision;missing:string[];maxResidual:number;highRisks:number;unverifiedControls:number}{
+ const missing:string[]=[];let maxResidual=0,highRisks=0,unverifiedControls=0;
  if(!jra.title.trim())missing.push("Job title");if(!jra.jobId.trim())missing.push("Job reference");
  if(!jra.siteId.trim())missing.push("Site");if(!jra.location.trim())missing.push("Work area");
  if(!jra.supervisorId)missing.push("Supervisor");if(!jra.scope.trim())missing.push("Scope of work");
@@ -200,16 +200,18 @@ export function assessJra(jra:JobRiskAssessment):{decision:JraDecision;missing:s
    if(!hazard.hazard.trim())missing.push(path+" description");
    if(!hazard.consequence.trim())missing.push(path+" consequence");
    if(!hazard.controls.length || hazard.controls.some(c=>!c.description.trim()||!c.hierarchy))missing.push(path+" mitigation controls");
+   unverifiedControls+=hazard.controls.filter(c=>!c.verified).length;
    if(!hazard.exposedPersonIds.length)missing.push(path+" exposed participants");
    try {
-    scoreRisk(defaultRiskMatrix,hazard.initial);
+    const before=scoreRisk(defaultRiskMatrix,hazard.initial);
     const risk=scoreRisk(defaultRiskMatrix,hazard.residual);maxResidual=Math.max(maxResidual,risk.score);
+    if(risk.score>before.score)missing.push(path+" residual risk exceeds initial risk");
     if(risk.requiresApproval)highRisks++;
    }catch{missing.push(path+" valid initial and residual risk scores");}
   }
  }
- return {decision:missing.length?"INCOMPLETE":highRisks?"REVIEW_REQUIRED":"READY_FOR_DEMO_REVIEW",
- missing,maxResidual,highRisks};
+ return {decision:missing.length?"INCOMPLETE":(highRisks||unverifiedControls)?"REVIEW_REQUIRED":"READY_FOR_DEMO_REVIEW",
+ missing,maxResidual,highRisks,unverifiedControls};
 }
 export function canSimulateApproval(jra:JobRiskAssessment):boolean{
  return assessJra(jra).decision==="READY_FOR_DEMO_REVIEW"&&Boolean(jra.reviewerId)&&
