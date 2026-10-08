@@ -1,4 +1,4 @@
-import { assuranceDb, dbUnavailable, provisionPersonalNode, requireFirebasePrincipal, serverError } from "../../../lib/assurance-server";
+import { assuranceDb, dbUnavailable, provisionPersonalNode, requireFirebasePrincipal, serverError } from "../../../../lib/assurance-server";
 
 export const dynamic="force-dynamic";
 export async function GET(request:Request){
