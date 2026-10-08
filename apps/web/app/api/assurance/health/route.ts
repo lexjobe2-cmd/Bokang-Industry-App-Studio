@@ -1,4 +1,4 @@
-import { assuranceDb } from "../../../lib/assurance-server";
+import { assuranceDb } from "../../../../lib/assurance-server";
 export const dynamic="force-dynamic";
 export async function GET(){
  const configured=Boolean(await assuranceDb());
