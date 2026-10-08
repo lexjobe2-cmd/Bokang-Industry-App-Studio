@@ -1,10 +1,12 @@
+import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "./risk-matrix";
+
 /**
  * Versioned, configuration-driven operational forms.
  * All browser submissions are demonstrations; trusted authorization is server-side.
  */
 export type AnswerType = "pass_fail_na" | "yes_no" | "text" | "multiline" | "number" | "date" | "datetime" | "select" | "multiselect" | "signature" | "photo" | "document" | "risk" | "repeat";
 export type PrimitiveAnswer = string | number | boolean | null;
-export type FormAnswer = PrimitiveAnswer | string[] | Record<string, PrimitiveAnswer>[];
+export type FormAnswer = PrimitiveAnswer | string[] | Record<string, PrimitiveAnswer>[] | RiskAnswer;
 export type FormAnswers = Record<string, FormAnswer>;
 export type FormCategory = "Fleet" | "Safety" | "Meetings" | "Risk" | "Handover" | "Inspections";
 export type ConditionalVisibility = { fieldId: string; equals: string | boolean | number };
@@ -39,7 +41,21 @@ export function isVisible(field: FormField, answers: FormAnswers) {
 }
 export function isAnswered(field: FormField, value: FormAnswer | undefined) {
   if (value === undefined || value === null || value === "") return false;
+  if (field.type === "risk") {
+    if (typeof value!=="object" || Array.isArray(value) || !("likelihood" in value) || !("consequence" in value)) return false;
+    try {scoreRisk(defaultRiskMatrix,value as RiskAnswer);return true;}catch{return false;}
+  }
+  if (field.type === "repeat") {
+    if (!Array.isArray(value) || value.length===0) return false;
+    const children=field.children??[];
+    return value.every(row=>{
+      if(!row || typeof row!=="object" || Array.isArray(row))return false;
+      const r=row as Record<string,PrimitiveAnswer>;
+      return children.every(child=>!child.required || (r[child.id]!==null && r[child.id]!==undefined && r[child.id]!==""));
+    });
+  }
   if (Array.isArray(value)) return value.length > 0;
+  if (typeof value==="string")return value.trim().length>0;
   return true;
 }
 export function evaluateForm(template: FormTemplate, answers: FormAnswers, evidence: readonly EvidencePointer[] = []): FormEvaluation {
@@ -49,20 +65,31 @@ export function evaluateForm(template: FormTemplate, answers: FormAnswers, evide
   let completed = 0;
   for (const f of active) {
     const value = answers[f.id];
-    const answered = isAnswered(f, value);
+    const answered = isAnswered(f,value);
     if (answered) completed++;
     if (f.required && !answered) missing.push(f.id);
     const failed = f.type === "pass_fail_na" ? value === "FAIL" : f.type === "yes_no" ? value === "NO" : false;
     if (f.critical && (failed || (answered && value === "NA"))) criticalFailures.push(f.id);
-    if (f.critical && f.required && !answered && !missing.includes(f.id)) missing.push(f.id);
+    if (f.type==="risk" && answered && typeof value==="object" && value!==null && !Array.isArray(value)) {
+      const assessment=scoreRisk(defaultRiskMatrix,value as RiskAnswer);
+      if(assessment.requiresApproval){
+        // REVIEW is required even if other questions are all complete.
+        // No approval/authorization is issued by this local-only evaluator.
+      }
+    }
     if (failed && f.evidenceOnFail && !evidence.some(e => e.fieldId === f.id && !e.localOnly)) {
-      // A staged, unsynced photo is not authoritative repair or inspection evidence.
       if (!missing.includes(f.id + ":evidence")) missing.push(f.id + ":evidence");
     }
   }
   const total = active.length;
+  const highRisk = active.some(f=>{
+    if(f.type!=="risk")return false;
+    const value=answers[f.id];
+    if(!isAnswered(f,value)||!value||typeof value!=="object"||Array.isArray(value))return false;
+    return scoreRisk(defaultRiskMatrix,value as RiskAnswer).requiresApproval;
+  });
   const decision = criticalFailures.length ? "NO_GO" : missing.length ? "INCOMPLETE" :
-    active.some(f => (f.type === "pass_fail_na" && answers[f.id] === "FAIL") || (f.type === "risk" && Number(answers[f.id]) >= 10)) ? "REVIEW" : "COMPLETE";
+    active.some(f => (f.type === "pass_fail_na" && answers[f.id] === "FAIL")) || highRisk ? "REVIEW" : "COMPLETE";
   return {completed,total,progress:total ? Math.round(completed / total * 100) : 100,missing,criticalFailures,decision};
 }
 export function makeSubmission(args: {
