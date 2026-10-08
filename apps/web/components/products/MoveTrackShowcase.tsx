@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
+import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import {
   botswanaPlaces,
   logisticsJobStates,
@@ -38,7 +39,7 @@ export function MoveTrackShowcase(){
   const [incidents,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
   const [policies,setPolicies]=usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
 
-  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics">("control");
+  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms">("control");
   const [notice,setNotice]=useState("");
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [client,setClient]=useState("");
@@ -177,7 +178,7 @@ export function MoveTrackShowcase(){
   return <section style={{marginTop:28,display:"grid",gap:18}}>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
       {([
-        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"]
+        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["forms","SHE forms"]
       ] as const).map(([key,label])=><button key={key} onClick={()=>setView(key)} style={{border:"1px solid #bfdbfe",background:view===key?"#1d4ed8":"#fff",color:view===key?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{label}</button>)}
     </div>
 
@@ -331,6 +332,8 @@ export function MoveTrackShowcase(){
       </div><button onClick={addJob} style={primaryButton}>Create job</button></section>
       <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
+
+    {view==="forms"?<AssuranceFormsWorkspace />:null}
 
     {view==="analytics"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
       {[
