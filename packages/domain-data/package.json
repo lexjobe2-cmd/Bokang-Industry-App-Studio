@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./operational-assurance": "./src/operational-assurance.ts"
+    "./operational-assurance": "./src/operational-assurance.ts",
+    "./assurance-forms": "./src/assurance-forms.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
