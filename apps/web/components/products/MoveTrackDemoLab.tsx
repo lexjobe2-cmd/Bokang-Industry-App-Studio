@@ -16,7 +16,7 @@ import { MoveTrackShowcase } from "./MoveTrackShowcase";
 
 type Scenario="assignment"|"grounded"|"reset";
 const style:React.CSSProperties={border:"1px solid #dce4ef",borderRadius:17,padding:17,background:"#fff"};
-const scenarios:[
+const scenarios=[
  {key:"assignment" as const,title:"Driver pre-start",desc:"A vehicle is assigned to K. Dube. Complete PASS/FAIL inspections in the driver app.",icon:Truck,color:"#2563eb"},
  {key:"grounded" as const,title:"Grounded equipment",desc:"A critical brake defect blocks release. Record corrective action, repair, reinspection and approval.",icon:AlertTriangle,color:"#b42318"},
  {key:"reset" as const,title:"Reset workspace",desc:"Restore fleet demo data, clear locally created records and start a fresh test.",icon:RotateCcw,color:"#64748b"},
