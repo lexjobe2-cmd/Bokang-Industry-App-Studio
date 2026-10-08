@@ -1,6 +1,6 @@
 import type {FormAnswer,FormAnswers,FormField,FormTemplate,FormSubmission} from "@bokang/domain-data/assurance-forms";
 import type {JobRiskAssessment,OrganizationProfile,PersonRecord} from "@bokang/domain-data/custom-assurance";
-import {scoreRisk,defaultRiskMatrix} from "@bokang/domain-data/risk-matrix";
+import {scoreRisk,defaultRiskMatrix,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 
 export type DocumentMode="blank"|"draft"|"filled";
 export type DocumentFormat="pdf"|"docx"|"csv"|"json";
@@ -18,7 +18,7 @@ function textValue(value:unknown,people:readonly PersonRecord[],field?:FormField
  if(typeof value==="string")return field?.type==="person"?(people.find(p=>p.id===value)?.displayName??value):value;
  if(Array.isArray(value))return value.map(x=>people.find(p=>p.id===x)?.displayName??String(x)).join("; ");
  if(typeof value==="object"&&"likelihood" in value&&"consequence" in value){
-  try{const v=scoreRisk(defaultRiskMatrix,value as {likelihood:number;consequence:number});return v.score+"/25 · "+v.level;}catch{return "Risk not assessed";}
+  try{const v=scoreRisk(defaultRiskMatrix,value as RiskAnswer);return v.score+"/25 · "+v.level;}catch{return "Risk not assessed";}
  }
  if(typeof value==="object")return Object.entries(value).map(([key,v])=>key+": "+textValue(v,people)).join("; ");
  return String(value);
