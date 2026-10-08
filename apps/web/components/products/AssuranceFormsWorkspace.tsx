@@ -237,6 +237,25 @@ function FieldInput({field,value,onChange,people}:{field:FormField;value:FormAns
  }
  if(field.type==="select")return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}><option value="">Select option</option>{(field.options??["Day shift","Night shift"]).map(opt=><option key={opt}>{opt}</option>)}</select></label>;
  if(field.type==="multiline")return <label style={fieldStyle}>{label}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)}/></label>;
- if(field.type==="photo"||field.type==="document"||field.type==="signature")return <div style={fieldStyle}>{label}<div style={{...tile,background:"#f8fafc",fontSize:12,color:"#667085"}}>Photo/document evidence and verified electronic signatures are disabled in this frontend-only demo. Enter supporting details in the notes field; no files will be uploaded.</div></div>;
+ if(field.type==="signature")return <label style={fieldStyle}>{label}
+    <input style={input} placeholder="Type your full name for a demo acknowledgement" value={answerText(value)} onChange={e=>onChange(e.target.value)}/>
+    <span style={{fontSize:11,color:"#b45309"}}>Typed name only. This is not a cryptographic or legally verified signature.</span>
+   </label>;
+ if(field.type==="photo"||field.type==="document")return <div style={fieldStyle}>
+   {label}
+   <input type="file" accept={field.type==="photo"?"image/png,image/jpeg,image/webp":"application/pdf,image/png,image/jpeg,image/webp"} style={{...input,padding:9}} onChange={event=>{
+     const file=event.target.files?.[0];
+     if(!file)return;
+     if(file.size>200000){window.alert("Choose a demo file under 200 KB. Uploaded evidence is local browser data only.");event.target.value="";return;}
+     const types=field.type==="photo"?["image/png","image/jpeg","image/webp"]:["application/pdf","image/png","image/jpeg","image/webp"];
+     if(!types.includes(file.type)){window.alert("Unsupported demo attachment type");return;}
+     const reader=new FileReader();
+     reader.onload=()=>{if(typeof reader.result==="string")onChange(reader.result);};
+     reader.readAsDataURL(file);
+   }}/>
+   {typeof value==="string"&&value.startsWith("data:image/")?<img src={value} alt={"Local preview for "+field.label} style={{maxHeight:150,maxWidth:200,objectFit:"contain",borderRadius:9}}/>:null}
+   {typeof value==="string"&&value.startsWith("data:application/pdf")?<span style={{fontSize:11,color:"#087f5b"}}>PDF attached in local demo</span>:null}
+   <span style={{fontSize:11,color:"#b45309"}}>Small local-only sample attachment. Not uploaded, verified or shared.</span>
+  </div>;
  return <label style={fieldStyle}>{label}<input type={field.type==="number"?"number":field.type==="date"?"date":field.type==="datetime"?"datetime-local":"text"} style={input} value={answerText(value)} onChange={e=>onChange(field.type==="number"?(e.target.value?Number(e.target.value):null):e.target.value)}/></label>;
 }
