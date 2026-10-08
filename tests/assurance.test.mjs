@@ -159,3 +159,29 @@ test("rich JRA demands people, hazard controls and valid initial/residual risk",
  hazard.controls=[];
  assert.ok(assessJra(jra).missing.some(v=>v.includes("mitigation")));
 });
+
+import {templateRecipes, sampleBrakeMaintenanceJra, mapDirectoryAdminCandidates, MICROSOFT_GLOBAL_ADMIN_ROLE} from "../packages/domain-data/src/custom-assurance.ts";
+
+test("every catalog recipe is structurally valid and publishable",()=>{
+ assert.equal(templateRecipes.length,8);
+ for(const recipe of templateRecipes){
+  const custom=makeCustomTemplate({id:recipe.id,organization:demoOrganization,title:recipe.title,category:recipe.category,description:recipe.description,sections:recipe.sections,now:"2026-10-08T12:00:00Z",status:"PUBLISHED"});
+  assert.ok(custom.sections.length>=1);
+  assert.equal(custom.status,"PUBLISHED");
+  assert.ok(custom.sections.every(section=>section.fields.length>0));
+ }
+});
+test("sample field JRA generates three complete hazard narratives but no false approvals",()=>{
+ const jra=sampleBrakeMaintenanceJra(demoOrganization,demoPeople,"2026-10-08T12:00:00Z");
+ assert.equal(jra.tasks.length,3);
+ assert.ok(jra.tasks.every(task=>task.hazards.every(h=>h.hazard&&h.consequence&&h.controls.length)));
+ assert.ok(jra.participants.length>0);
+ assert.equal(canSimulateApproval(jra),false);
+});
+test("Microsoft tenant admin candidates must not become organization owners automatically",()=>{
+ const person=mapGraphUser({id:"azure-user",displayName:"Demo Admin",jobTitle:"Manager"},demoOrganization.id);
+ const admins=mapDirectoryAdminCandidates([{principalId:"azure-user",roleDefinitionId:MICROSOFT_GLOBAL_ADMIN_ROLE,directoryScopeId:"/"}],[person]);
+ assert.deepEqual(admins,[person.id]);
+ assert.deepEqual(mapDirectoryAdminCandidates([{principalId:"azure-user",roleDefinitionId:"not-admin"}],[person]),[]);
+ assert.equal(demoOrganization.ownerIds.includes(person.id),false);
+});
