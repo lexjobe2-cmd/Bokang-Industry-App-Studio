@@ -145,7 +145,10 @@ export function renderProfessionalPdf(doc:ExportDocument):Blob {
  setText(st?.fg??NAVY);pdf.setFontSize(8);pdf.setFont("helvetica","bold");pdf.text(modeTitle,LEFT+4,y+6.6);
  if(doc.mode==="filled"){badge(statusTitle,LEFT+63,y+7,100);}
  y+=18;
- const metaLines:Array<[string,string]>=[["REFERENCE",doc.reference],["EXPORTED",renderDate(doc.timestamp)]];
+ const details=doc.sections.find(section=>section.title.toLowerCase()==="document information");
+ const detail=(name:string)=>details?.rows.find(row=>row.label.toLowerCase()===name)?.value??"Not specified";
+ const metaLines:Array<[string,string]>=[["REFERENCE",doc.reference],["JOB / WORK ORDER",detail("work order")],
+   ["WORK SITE",detail("site")],["DOCUMENT DATE",renderDate(doc.timestamp)]];
  for(const [label,value] of metaLines){
   setText(MUTED);pdf.setFont("helvetica","bold");pdf.setFontSize(7.1);pdf.text(label,LEFT,y);
   lines(words(value,130,8.4),LEFT+38,y,8.4,4.5,false,INK);
@@ -158,7 +161,8 @@ export function renderProfessionalPdf(doc:ExportDocument):Blob {
  reserve(noteH+8);setFill([255,249,235]);pdf.roundedRect(LEFT,y,CONTENT_W,noteH,2,2,"F");
  setFill([187,127,29]);pdf.rect(LEFT,y,2.5,noteH,"F");lines(notice,LEFT+7,y+6.2,8.2,4.1,true,[129,87,28]);
  y+=noteH+9;
- for(const [sectionIndex,section] of doc.sections.entries()){
+ const reportSections=doc.sections.filter(section=>section.title.toLowerCase()!=="document information");
+ for(const [sectionIndex,section] of reportSections.entries()){
   coloredDivider(section.title,sectionIndex+1,section.rows.length===0?"No records supplied":undefined);
   if(section.rows.length===0){row({label:"Records",value:"No entries recorded"});}
   else for(const r of section.rows)row(r);
