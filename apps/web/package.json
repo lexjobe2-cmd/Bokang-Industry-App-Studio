@@ -45,7 +45,8 @@
     "@fullcalendar/interaction": "^6.1.21",
     "maplibre-gl": "^6.11.2",
     "papaparse": "^5.5.3",
-    "exceljs": "^4.4.0"
+    "exceljs": "^4.4.0",
+    "framer-motion": "^12.23.0"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
