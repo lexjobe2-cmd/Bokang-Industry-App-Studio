@@ -12,6 +12,8 @@ import {
 import { type FormSubmission, type FormAnswers } from "@bokang/domain-data/assurance-forms";
 import { type RepairEvidence, type ReinspectionEvidence, type FleetReleaseRecord } from "../../lib/fleet-release";
 import { MoveTrackShowcase } from "./MoveTrackShowcase";
+import { OrganizationOnboarding } from "./OrganizationOnboarding";
+import { OperationalGraphPanel } from "./OperationalGraphPanel";
 
 type Scenario="assignment"|"grounded"|"reset";
 const style:React.CSSProperties={border:"1px solid #dce4ef",borderRadius:17,padding:17,background:"#fff"};
@@ -88,7 +90,7 @@ export function MoveTrackDemoLab(){
     </div>
     <p style={{color:"#93c5fd",letterSpacing:1.8,fontSize:11,fontWeight:900,textTransform:"uppercase",margin:"28px 0 8px"}}>Bokang Industry App Studio / MoveTrack AI</p>
     <h1 style={{fontSize:"clamp(30px,5vw,49px)",maxWidth:850,lineHeight:1.08,margin:"0 0 12px"}}>Fleet + SHE Operational Assurance</h1>
-    <p style={{maxWidth:780,color:"#cbd5e1",fontSize:14,lineHeight:1.75,margin:0}}>Test connected fleet operations, mandatory pre-starts, risk assessments, toolbox talks, meeting registers, incidents and repair/release logic. Everything runs locally in your browser—no Firebase, Google account, Drive or backend setup.</p>
+    <p style={{maxWidth:780,color:"#cbd5e1",fontSize:14,lineHeight:1.75,margin:0}}>Start by onboarding a company, then run 21 new linked SHE workflows, branded JRA and JSA, fleet inspections, incident controls, and repair/release processes. Everything runs locally in your browser—no Firebase, Google account, Drive or backend setup.</p>
     <div style={{display:"flex",gap:9,flexWrap:"wrap",marginTop:22}}>
      <a href="/driver/move-track?driver=DRV-001" style={{...style,display:"flex",gap:7,alignItems:"center",padding:"11px 14px",color:"#fff",background:"#2563eb",fontSize:13,fontWeight:850,textDecoration:"none",border:0}}>Open driver mobile app <ArrowUpRight size={17}/></a>
      <span style={{...style,padding:"11px 14px",color:"#cbd5e1",background:"#203550",border:"1px solid #58708f",fontSize:12}}>Demo site: Jwaneng mine profile</span>
@@ -96,6 +98,8 @@ export function MoveTrackDemoLab(){
    </div>
   </div>
   <div style={{maxWidth:1250,margin:"-24px auto 0",padding:"0 20px",position:"relative",display:"grid",gap:19}}>
+   <OrganizationOnboarding/>
+   <OperationalGraphPanel/>
    <section aria-label="Demo scenarios" style={style}>
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
       <div><p style={{fontSize:11,fontWeight:900,letterSpacing:1.3,color:"#2563eb",textTransform:"uppercase",margin:0}}>Quick start</p><h2 style={{fontSize:21,margin:"4px 0"}}>Choose a test scenario</h2><p style={{fontSize:12,color:"#64748b",margin:0}}>Each scenario loads connected demo records into the same fleet and driver app.</p></div>
