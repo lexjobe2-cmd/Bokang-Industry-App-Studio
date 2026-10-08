@@ -12,7 +12,7 @@ import {
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
-import {buildJraDocument} from "../../lib/form-exports";
+import {buildJraDocument,buildBlankJraDocument} from "../../lib/form-exports";
 
 const shell:React.CSSProperties={background:"#fff",border:"1px solid #dde5ee",borderRadius:16,padding:17};
 const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",background:"#fff",color:"#111827",font:"inherit",minHeight:43};
@@ -101,7 +101,7 @@ export function JraWorkspace(){
     <p style={{fontSize:11,color:"#64748b",margin:0}}>Generate an editable Word, PDF, CSV or JSON file. Blank templates, in-progress drafts and saved JRAs can be downloaded without a server.</p>
     <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
       <span style={{fontSize:11,fontWeight:800}}>Blank JRA:</span>
-      <DocumentDownloadActions document={buildJraDocument(blankJra(org,new Date().toISOString()),persons)} compact/>
+      <DocumentDownloadActions document={buildBlankJraDocument(org,persons)} compact/>
       {current?<><span style={{fontSize:11,fontWeight:800}}>Current {current.status==="DRAFT"?"draft":"assessment"}:</span><DocumentDownloadActions document={buildJraDocument(current,persons)} compact/></>:null}
     </div>
   </div>
