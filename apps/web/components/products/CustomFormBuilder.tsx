@@ -9,6 +9,8 @@ import {
  type OrganizationProfile,type PersonRecord,type CustomTemplate
 } from "@bokang/domain-data/custom-assurance";
 import type {AnswerType,FormCategory,FormField,FormSection} from "@bokang/domain-data/assurance-forms";
+import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance";
+import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 
 const card:React.CSSProperties={background:"#fff",border:"1px solid #d9e2ec",borderRadius:16,padding:17};
 const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",minHeight:43,font:"inherit",background:"#fff",color:"#101828"};
@@ -37,7 +39,8 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  const [jobTitle,setJobTitle]=useState("");
  const [dept,setDept]=useState("");
  const [email,setEmail]=useState("");
- const [orgId,setOrgId]=usePersistentState("bokang-studio.move-track.designer.orgId.v1",demoOrganization.id);
+ const [orgId,setOrgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
+ const [recipeFilter,setRecipeFilter]=useState("");
  const org=orgs.find(o=>o.id===orgId)??orgs[0]??demoOrganization;
  const current=templates.find(t=>t.id===editing);
  function addOrganization(){const id="org-"+crypto.randomUUID();const created={...structuredClone(demoOrganization),id,name:"New organization",domain:"",businessUnit:"",logoDataUrl:undefined,logoName:undefined,ownerIds:[],source:"MANUAL" as const,updatedAt:new Date().toISOString()};setOrgs(xs=>[...xs,created]);setOrgId(id);setPanel("branding");setNotice("Organization workspace created locally. Add branding and people before publishing.");}
@@ -45,7 +48,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  function patchSection(index:number,patch:Partial<FormSection>){setSections(xs=>xs.map((s,i)=>i===index?{...s,...patch}:s));}
  function patchField(si:number,fi:number,patch:Partial<FormField>){setSections(xs=>xs.map((s,i)=>i!==si?s:{...s,fields:s.fields.map((f,j)=>j===fi?{...f,...patch}:f)}));}
  function removeField(si:number,fi:number){setSections(xs=>xs.map((s,i)=>i!==si?s:{...s,fields:s.fields.filter((_,j)=>j!==fi)}));}
- function startRecipe(recipeId:string){const recipe=templateRecipes.find(r=>r.id===recipeId);if(!recipe)return;setEditing(null);setTitle(recipe.title);setCategory(recipe.category);setDocumentType("GENERAL");setJobId("");setDescription(recipe.description);setSections(structuredClone(recipe.sections));setPanel("create");setNotice(recipe.title+" loaded into the designer. Customize fields, add your logo and publish.");}
+ function startRecipe(recipeId:string){const recipe=[...templateRecipes,...additionalAssuranceRecipes].find(r=>r.id===recipeId);if(!recipe)return;setEditing(null);setTitle(recipe.title);setCategory(recipe.category);setDocumentType("GENERAL");setJobId("");setDescription(recipe.description);setSections(structuredClone(recipe.sections));setPanel("create");setNotice(recipe.title+" loaded into the designer. Customize fields, add your logo and publish.");}
  function load(template:CustomTemplate){
   setEditing(template.id);setTitle(template.title);setDescription(template.description);setCategory(template.category);
   setDocumentType(template.documentType);setJobId(template.jobId??"");setOrgId(template.organizationId);
@@ -143,8 +146,11 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
   {panel==="create"?<div style={{display:"grid",gap:12}}>
    <div style={card}>
     <div><h3 style={{margin:"0 0 4px"}}>Start from a real operations workflow</h3><p style={{fontSize:12,color:"#64748b",margin:0}}>Select a professionally structured form recipe. You can customize every field to match a job or industry.</p></div>
+    <label style={{display:"grid",gap:6,fontSize:12,fontWeight:800,marginTop:12}}>Search 29 editable workflow recipes
+       <input style={input} placeholder="Working at heights, scaffold, emergency..." value={recipeFilter} onChange={e=>setRecipeFilter(e.target.value)}/>
+    </label>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:9,marginTop:12}}>
-     {templateRecipes.map(r=><button key={r.id} style={{...btn,textAlign:"left",display:"grid",gap:6,minHeight:90}} onClick={()=>startRecipe(r.id)}>
+     {([...templateRecipes,...additionalAssuranceRecipes]).filter(r=>(r.title+" "+r.description).toLowerCase().includes(recipeFilter.toLowerCase())).map(r=><button key={r.id} style={{...btn,textAlign:"left",display:"grid",gap:6,minHeight:90}} onClick={()=>startRecipe(r.id)}>
       <span style={{fontSize:10,color:"#2563eb",fontWeight:900}}>{r.category.toUpperCase()}</span>
       <strong style={{fontSize:12}}>{r.title}</strong><span style={{fontSize:10,color:"#64748b"}}>{r.sections.reduce((n,s)=>n+s.fields.length,0)} initial questions</span>
      </button>)}
