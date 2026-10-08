@@ -185,3 +185,24 @@ test("Microsoft tenant admin candidates must not become organization owners auto
  assert.deepEqual(mapDirectoryAdminCandidates([{principalId:"azure-user",roleDefinitionId:"not-admin"}],[person]),[]);
  assert.equal(demoOrganization.ownerIds.includes(person.id),false);
 });
+
+test("conditional form questions are only required when a matching answer is selected",()=>{
+ const sections=[{id:"c1",title:"Permit check",fields:[
+  {id:"permit",label:"Is a permit required?",type:"yes_no",required:true},
+  {id:"permit_no",label:"Permit number",type:"text",required:true,visibleWhen:{fieldId:"permit",equals:"YES"}}
+ ]}];
+ const template=makeCustomTemplate({id:"cond",organization:demoOrganization,title:"Permit verification",category:"Safety",description:"",sections,now:"2026-10-08T00:00:00Z",status:"PUBLISHED"});
+ assert.equal(evaluateForm(template,{permit:"NO"}).decision,"COMPLETE");
+ assert.equal(evaluateForm(template,{permit:"YES"}).decision,"INCOMPLETE");
+ assert.equal(evaluateForm(template,{permit:"YES",permit_no:"PTW-001"}).decision,"COMPLETE");
+ assert.throws(()=>makeCustomTemplate({...template,id:"bad",organization:demoOrganization,now:"2026-10-08T00:00:00Z",
+  sections:[{id:"1",title:"Broken",fields:[{id:"f1",label:"Required",type:"text",visibleWhen:{fieldId:"not_found",equals:"YES"}}]}]}),/missing or self-dependent/);
+});
+test("unverified hazard control prohibits simulation approval",()=>{
+ const jra=sampleBrakeMaintenanceJra(demoOrganization,demoPeople,"2026-10-08T00:00:00Z");
+ assert.equal(assessJra(jra).decision,"REVIEW_REQUIRED");
+ assert.ok(assessJra(jra).unverifiedControls>0);
+ for(const step of jra.tasks)for(const hazard of step.hazards)for(const control of hazard.controls)control.verified=true;
+ assert.equal(assessJra(jra).unverifiedControls,0);
+ assert.equal(assessJra(jra).decision,"READY_FOR_DEMO_REVIEW");
+});
