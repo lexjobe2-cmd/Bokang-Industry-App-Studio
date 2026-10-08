@@ -8,7 +8,9 @@ import {
  ASSURANCE_STORAGE,dictionary,demoOrganization,demoPeople,makeCustomTemplate,templateRecipes,
  type OrganizationProfile,type PersonRecord,type CustomTemplate
 } from "@bokang/domain-data/custom-assurance";
-import type {AnswerType,FormCategory,FormField,FormSection} from "@bokang/domain-data/assurance-forms";
+import type {AnswerType,FormCategory,FormField,FormSection,FormTemplate} from "@bokang/domain-data/assurance-forms";
+import {DocumentDownloadActions} from "./DocumentDownloadActions";
+import {buildFormDocument} from "../../lib/form-exports";
 import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 
@@ -43,6 +45,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  const [recipeFilter,setRecipeFilter]=useState("");
  const org=orgs.find(o=>o.id===orgId)??orgs[0]??demoOrganization;
  const current=templates.find(t=>t.id===editing);
+ const previewTemplate:FormTemplate={id:editing??"unpublished-form",version:current?.version??1,title:title||"Untitled form",category,status:"DRAFT",effectiveDate:new Date().toISOString().slice(0,10),siteIds:[],assetClasses:[],sections};
  function addOrganization(){const id="org-"+crypto.randomUUID();const created={...structuredClone(demoOrganization),id,name:"New organization",domain:"",businessUnit:"",logoDataUrl:undefined,logoName:undefined,ownerIds:[],source:"MANUAL" as const,updatedAt:new Date().toISOString()};setOrgs(xs=>[...xs,created]);setOrgId(id);setPanel("branding");setNotice("Organization workspace created locally. Add branding and people before publishing.");}
  function patchOrg(patch:Partial<OrganizationProfile>){setOrgs(xs=>xs.map(o=>o.id===org.id?{...o,...patch,updatedAt:new Date().toISOString()}:o));}
  function patchSection(index:number,patch:Partial<FormSection>){setSections(xs=>xs.map((s,i)=>i===index?{...s,...patch}:s));}
@@ -218,6 +221,10 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    <div style={{...card,display:"flex",gap:9,flexWrap:"wrap",justifyContent:"space-between",alignItems:"center"}}>
     <div><strong>{sections.reduce((n,s)=>n+s.fields.length,0)} questions · {sections.length} sections</strong><p style={{fontSize:11,color:"#64748b",margin:"3px 0"}}>Changes to this designer autosave locally as you type. Publishing updates the active custom version; completed submissions preserve historical snapshots.</p></div>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+     <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap"}}>
+      <span style={{fontSize:11,color:"#64748b",fontWeight:800}}>Download this unpublished design (blank)</span>
+      <DocumentDownloadActions document={buildFormDocument({template:previewTemplate,mode:"blank",company:org,people})} compact/>
+     </div>
      <button style={btn} onClick={()=>save(false)}><Save size={15} style={{display:"inline"}}/> Save draft</button>
      <button style={blue} onClick={()=>save(true)}><CheckCircle2 size={15} style={{display:"inline"}}/> Publish live form</button>
     </div>
