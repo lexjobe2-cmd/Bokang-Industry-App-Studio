@@ -145,7 +145,7 @@ export function renderProfessionalPdf(doc:ExportDocument):Blob {
  setText(st?.fg??NAVY);pdf.setFontSize(8);pdf.setFont("helvetica","bold");pdf.text(modeTitle,LEFT+4,y+6.6);
  if(doc.mode==="filled"){badge(statusTitle,LEFT+63,y+7,100);}
  y+=18;
- const metaLines=[["REFERENCE",doc.reference],["EXPORTED",renderDate(doc.timestamp)]];
+ const metaLines:Array<[string,string]>=[["REFERENCE",doc.reference],["EXPORTED",renderDate(doc.timestamp)]];
  for(const [label,value] of metaLines){
   setText(MUTED);pdf.setFont("helvetica","bold");pdf.setFontSize(7.1);pdf.text(label,LEFT,y);
   lines(words(value,130,8.4),LEFT+38,y,8.4,4.5,false,INK);
