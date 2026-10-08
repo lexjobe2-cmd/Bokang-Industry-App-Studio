@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
 import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
-import { AssuranceDriveNetwork } from "./AssuranceDriveNetwork";
 import {
   botswanaPlaces,
   logisticsJobStates,
@@ -41,7 +40,7 @@ export function MoveTrackShowcase(){
   const [incidents,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
   const [policies,setPolicies]=usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
 
-  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"release"|"drive">("control");
+  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"release">("control");
   const [notice,setNotice]=useState("");
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [client,setClient]=useState("");
@@ -161,7 +160,7 @@ export function MoveTrackShowcase(){
   return <section style={{marginTop:28,display:"grid",gap:18}}>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
       {([
-        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["forms","SHE forms"],["release","Repair & release"],["drive","Drive network"]
+        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["forms","SHE forms"],["release","Repair & release"]
       ] as const).map(([key,label])=><button key={key} onClick={()=>setView(key)} style={{border:"1px solid #bfdbfe",background:view===key?"#1d4ed8":"#fff",color:view===key?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{label}</button>)}
     </div>
 
@@ -318,7 +317,6 @@ export function MoveTrackShowcase(){
 
     {view==="forms"?<AssuranceFormsWorkspace />:null}
     {view==="release"?<FleetReleaseWorkspace />:null}
-    {view==="drive"?<AssuranceDriveNetwork />:null}
 
     {view==="analytics"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
       {[
