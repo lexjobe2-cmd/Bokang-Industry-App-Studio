@@ -25,19 +25,19 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  const [orgs,setOrgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
  const [people,setPeople]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
  const [panel,setPanel]=useState<"create"|"branding"|"dictionary"|"people">("create");
- const [editing,setEditing]=useState<string|null>(null);
- const [title,setTitle]=useState("Custom field inspection");
- const [description,setDescription]=useState("");
- const [category,setCategory]=useState<FormCategory>("Inspections");
- const [documentType,setDocumentType]=useState<"GENERAL"|"JRA">("GENERAL");
- const [jobId,setJobId]=useState("");
- const [sections,setSections]=useState<FormSection[]>([newSection()]);
+ const [editing,setEditing]=usePersistentState<string|null>("bokang-studio.move-track.designer.editing.v1",null);
+ const [title,setTitle]=usePersistentState("bokang-studio.move-track.designer.title.v1","Custom field inspection");
+ const [description,setDescription]=usePersistentState("bokang-studio.move-track.designer.description.v1","");
+ const [category,setCategory]=usePersistentState<FormCategory>("bokang-studio.move-track.designer.category.v1","Inspections");
+ const [documentType,setDocumentType]=usePersistentState<"GENERAL"|"JRA">("bokang-studio.move-track.designer.documentType.v1","GENERAL");
+ const [jobId,setJobId]=usePersistentState("bokang-studio.move-track.designer.jobId.v1","");
+ const [sections,setSections]=usePersistentState<FormSection[]>("bokang-studio.move-track.designer.sections.v1",[{id:"sec-initial",title:"New section",fields:[{id:"field-initial",label:"New question",type:"text",required:true}]}]);
  const [notice,setNotice]=useState("");
  const [name,setName]=useState("");
  const [jobTitle,setJobTitle]=useState("");
  const [dept,setDept]=useState("");
  const [email,setEmail]=useState("");
- const [orgId,setOrgId]=useState(demoOrganization.id);
+ const [orgId,setOrgId]=usePersistentState("bokang-studio.move-track.designer.orgId.v1",demoOrganization.id);
  const org=orgs.find(o=>o.id===orgId)??orgs[0]??demoOrganization;
  const current=templates.find(t=>t.id===editing);
  function addOrganization(){const id="org-"+crypto.randomUUID();const created={...structuredClone(demoOrganization),id,name:"New organization",domain:"",businessUnit:"",logoDataUrl:undefined,logoName:undefined,ownerIds:[],source:"MANUAL" as const,updatedAt:new Date().toISOString()};setOrgs(xs=>[...xs,created]);setOrgId(id);setPanel("branding");setNotice("Organization workspace created locally. Add branding and people before publishing.");}
@@ -210,7 +210,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    </motion.section>)}
    <button style={{...btn,justifySelf:"start",display:"inline-flex",gap:8,alignItems:"center"}} onClick={()=>setSections(xs=>[...xs,newSection()])}><Layers size={16}/> Add section</button>
    <div style={{...card,display:"flex",gap:9,flexWrap:"wrap",justifyContent:"space-between",alignItems:"center"}}>
-    <div><strong>{sections.reduce((n,s)=>n+s.fields.length,0)} questions · {sections.length} sections</strong><p style={{fontSize:11,color:"#64748b",margin:"3px 0"}}>Drafts can be edited. Publishing replaces the active template version and preserves submitted snapshots.</p></div>
+    <div><strong>{sections.reduce((n,s)=>n+s.fields.length,0)} questions · {sections.length} sections</strong><p style={{fontSize:11,color:"#64748b",margin:"3px 0"}}>Changes to this designer autosave locally as you type. Publishing updates the active custom version; completed submissions preserve historical snapshots.</p></div>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
      <button style={btn} onClick={()=>save(false)}><Save size={15} style={{display:"inline"}}/> Save draft</button>
      <button style={blue} onClick={()=>save(true)}><CheckCircle2 size={15} style={{display:"inline"}}/> Publish live form</button>
