@@ -197,7 +197,7 @@ export function evaluatePrestart(args: {
   const reasons: string[] = [];
   const { checks, criticalChecks, vehicle, driver } = args;
 
-  for (const [item, result] of Object.entries(checks)) {
+  // Fail closed when a critical control is missing from a submitted record.\n  for (const item of criticalChecks) {\n    if (checks[item] !== "pass") reasons.push(item + " must explicitly PASS");\n  }\n  if (Object.keys(checks).length === 0) reasons.push("Inspection answers are missing");\n\n  for (const [item, result] of Object.entries(checks)) {
     const critical = criticalChecks.some((criticalItem) => criticalItem === item);
     if (critical && result !== "pass") {
       reasons.push(item + " must explicitly PASS");
@@ -218,7 +218,7 @@ export function evaluatePrestart(args: {
   if (args.requireDefensiveDriving && !driver.defensiveDriving) reasons.push("Required defensive-driving training is missing");
   if (!dateIsCurrent(vehicle.roadworthyExpiry)) reasons.push("Roadworthiness record is expired or missing");
   if (!dateIsCurrent(vehicle.extinguisherServiceDue)) reasons.push("Fire extinguisher service date is expired or missing");
-  if (vehicle.status === "Maintenance" || vehicle.status === "Out of service") {
+  if (vehicle.status === "No-go" || vehicle.status === "Maintenance" || vehicle.status === "Out of service") {
     reasons.push("Vehicle is unavailable due to current fleet status");
   }
 
