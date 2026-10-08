@@ -35,12 +35,12 @@ function unique(values:readonly string[],value:string,enabled:boolean){return en
 export function JraWorkspace(){
  const reduced=useReducedMotion();
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
- const [selectedOrg,setSelectedOrg]=useState(demoOrganization.id);
+ const [selectedOrg,setSelectedOrg]=usePersistentState("bokang-studio.move-track.jra.selectedOrg.v1",demoOrganization.id);
  const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
  const [records,setRecords]=usePersistentState<JobRiskAssessment[]>(ASSURANCE_STORAGE.jras,[]);
- const [editing,setEditing]=useState<string|null>(null);
- const [current,setCurrent]=useState<JobRiskAssessment|null>(null);
- const [page,setPage]=useState<"job"|"team"|"risks"|"review">("job");
+ const [editing,setEditing]=usePersistentState<string|null>("bokang-studio.move-track.jra.editing.v1",null);
+ const [current,setCurrent]=usePersistentState<JobRiskAssessment|null>("bokang-studio.move-track.jra.working.v1",null);
+ const [page,setPage]=usePersistentState<"job"|"team"|"risks"|"review">("bokang-studio.move-track.jra.tab.v1","job");
  const [peopleSearch,setPeopleSearch]=useState("");
  const [message,setMessage]=useState("");
  const org=orgs.find(o=>o.id===(current?.orgId??selectedOrg))??orgs[0]??demoOrganization;
@@ -67,7 +67,7 @@ export function JraWorkspace(){
   const now=new Date().toISOString();
   const next={...current,status,updatedAt:now,companyNameSnapshot:org.name,logoSnapshot:org.logoDataUrl};
   setRecords(xs=>[next,...xs.filter(r=>r.id!==next.id)]);setCurrent(next);setEditing(next.id);
-  setMessage(status==="DRAFT"?"JRA draft saved in this browser.":"JRA saved as "+status.replaceAll("_"," ")+". This is a simulation only.");
+  setMessage(status==="DRAFT"?"JRA draft saved in this browser.":"JRA saved as "+status.replaceAll("_"," ")+". This is a local simulation only.");
  }
  function submitReview(){
   if(!current)return;
@@ -87,7 +87,7 @@ export function JraWorkspace(){
  const count=records.length;
  return <section aria-label="Job Risk Assessment workspace" style={{display:"grid",gap:13}}>
   <div style={{...shell,background:"#0c1d32",color:"#fff",border:0,display:"flex",gap:13,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
-   <div><div style={{color:"#9cc6ff",fontSize:11,letterSpacing:1.4,fontWeight:900}}>JOB RISK ASSESSMENT · FIELD STUDIO</div><h2 style={{fontSize:26,margin:"6px 0"}}>People. Tasks. Hazards. Controls.</h2><p style={{color:"#cbd5e1",fontSize:12,maxWidth:720,lineHeight:1.65}}>Built for structured team involvement and traceable task-by-task risk evaluation. Microsoft 365 directory fields are modeled but no tenant data is fetched in demo mode.</p></div>
+   <div><div style={{color:"#9cc6ff",fontSize:11,letterSpacing:1.4,fontWeight:900}}>JOB RISK ASSESSMENT · FIELD STUDIO</div><h2 style={{fontSize:26,margin:"6px 0"}}>People. Tasks. Hazards. Controls.</h2><p style={{color:"#cbd5e1",fontSize:12,maxWidth:720,lineHeight:1.65}}>Job details, participants, hazards, risk and control edits autosave to this browser. Microsoft 365 is modeled but disconnected in demo mode.</p></div>
    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
     <button style={{...primary,background:"#fff",color:"#14305b"}} onClick={start}><Plus size={16} style={{display:"inline"}}/> New JRA</button>
     <button style={{...btn,background:"#dbeafe",borderColor:"#dbeafe"}} onClick={startSample}>Load example job</button>
