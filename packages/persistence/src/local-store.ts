@@ -44,6 +44,7 @@ function installStorageEvents(){
 }
 function loadFromStorage(key:string,force=false){
  if(typeof window==="undefined")return;
+ const hadPrevious=cache.has(key);
  const storage=browserStorage();
  if(!storage){health.set(key,{status:"unavailable",error:"Browser storage is unavailable."});notify(key);return;}
  try{
@@ -54,8 +55,8 @@ function loadFromStorage(key:string,force=false){
    try{cache.set(key,{raw,value:JSON.parse(raw)});health.set(key,{status:"ready"});}
    catch{health.set(key,{status:"corrupt",error:"Saved local record is invalid. Export a backup before resetting."});}
   }
-  notify(key);
- }catch{health.set(key,{status:"unavailable",error:"Browser storage could not be read."});notify(key);}
+  if(hadPrevious)notify(key);
+ }catch{health.set(key,{status:"unavailable",error:"Browser storage could not be read."});if(hadPrevious)notify(key);}
 }
 export function getLocalValue<T>(key:string,initial:T):T{
  if(typeof window==="undefined")return initial;
