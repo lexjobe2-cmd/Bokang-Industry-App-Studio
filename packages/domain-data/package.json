@@ -11,7 +11,8 @@
     "./custom-assurance": "./src/custom-assurance.ts",
     "./expanded-assurance": "./src/expanded-assurance.ts",
     "./participation-analytics": "./src/participation-analytics.ts",
-    "./paper-forms": "./src/paper-forms.ts"
+    "./paper-forms": "./src/paper-forms.ts",
+    "./meeting-register": "./src/meeting-register.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
