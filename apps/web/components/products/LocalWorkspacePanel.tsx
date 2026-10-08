@@ -2,6 +2,7 @@
 
 import {useRef,useState} from "react";
 import {Archive,Download,HardDrive,Upload,Trash2,AlertTriangle,ShieldCheck} from "lucide-react";
+import {clearPaperOriginals} from "../../lib/paper-source-store";
 import {
  makeWorkspaceBackup,parseWorkspaceBackup,restoreWorkspaceBackup,clearWorkspaceData,
  MOVE_TRACK_STORAGE_PREFIX,useLocalStorageErrors
@@ -54,12 +55,17 @@ export function LocalWorkspacePanel(){
   }catch(error){setMessage(error instanceof Error?error.message:"Cannot restore the selected backup.");}
   finally{if(inputRef.current)inputRef.current.value="";}
  }
- function erase(){
+ async function erase(){
   if(!window.confirm("Delete all MoveTrack local data in this browser, including custom companies, templates, records, and JRA drafts? This cannot be undone without an exported backup."))return;
   if(!window.confirm("Confirm: permanently clear this browser's MoveTrack workspace?"))return;
   try{
    const count=clearWorkspaceData(window.localStorage);
-   setMessage("Cleared "+count+" local records. Starter demo examples will appear on next load.");
+   try{
+     await clearPaperOriginals();
+     setMessage("Cleared "+count+" workspace records and the locally archived paper scans. Starter demo examples will reappear.");
+   }catch(error){
+     setMessage("Cleared "+count+" workspace records, but the original paper scan archive could not be cleared: "+String(error));
+   }
    setUpdated(v=>v+1);
   }catch(error){setMessage(error instanceof Error?error.message:"Could not clear local data.");}
  }
@@ -79,7 +85,7 @@ export function LocalWorkspacePanel(){
   </div>:null}
   <div style={{...panel,display:"grid",gap:10}}>
    <h3 style={{margin:0,fontSize:17}}>Protect and move your work</h3>
-   <p style={{fontSize:12,color:"#667085",lineHeight:1.6,margin:0}}>Export a versioned JSON backup of your organizations, logos, personnel, custom checklists, work-in-progress forms, JRA assessments and fleet records. Restore it in the same or another browser running this demo.</p>
+   <p style={{fontSize:12,color:"#667085",lineHeight:1.6,margin:0}}>Export a versioned JSON backup of your organizations, logos, personnel, scanned-form structures, work-in-progress forms, meeting registers, JRA assessments and fleet records. Restore it in another browser running this demo. Original photo/PDF source blobs reside separately in this browser's IndexedDB and are NOT included in JSON backups; download original PDFs separately.</p>
    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
     <button style={{...button,display:"inline-flex",gap:8,alignItems:"center"}} onClick={downloadBackup}><Download size={17}/> Export JSON backup</button>
     <button style={{...button,display:"inline-flex",gap:8,alignItems:"center",background:"#eaf2ff",color:"#173764"}} onClick={()=>inputRef.current?.click()}><Upload size={17}/> Import backup</button>
@@ -88,7 +94,7 @@ export function LocalWorkspacePanel(){
   </div>
   <div style={{...panel,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
    <div><strong style={{color:"#b42318"}}>Clear this browser's demo data</strong><p style={{fontSize:12,color:"#667085",margin:"5px 0"}}>Removes all locally stored MoveTrack work, not only test scenarios. Export first.</p></div>
-   <button style={{...button,background:"#fee4e2",color:"#b42318",display:"inline-flex",alignItems:"center",gap:7}} onClick={erase}><Trash2 size={16}/> Clear workspace</button>
+   <button style={{...button,background:"#fee4e2",color:"#b42318",display:"inline-flex",alignItems:"center",gap:7}} onClick={()=>void erase()}><Trash2 size={16}/> Clear workspace</button>
   </div>
   {message?<div role="status" style={{...panel,background:"#eff6ff",color:"#1d4ed8",fontSize:12}}>{message}</div>:null}
   <div style={{...panel,background:"#fffaf0"}}>
