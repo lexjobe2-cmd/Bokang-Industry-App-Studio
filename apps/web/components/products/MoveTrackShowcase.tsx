@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
 import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
+import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
 import {
   botswanaPlaces,
   logisticsJobStates,
@@ -39,7 +40,7 @@ export function MoveTrackShowcase(){
   const [incidents,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
   const [policies,setPolicies]=usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
 
-  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms">("control");
+  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"release">("control");
   const [notice,setNotice]=useState("");
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [client,setClient]=useState("");
@@ -140,16 +141,6 @@ export function MoveTrackShowcase(){
     setNotice("Assignment cancelled. Vehicle requires inspection/pre-start before reuse.");
   }
 
-  function releaseGrounded(assignment:FleetAssignment){
-    const vehicle=fleet.find((item)=>item.id===assignment.vehicleId);
-    if(!vehicle) return;
-    const unresolved=incidents.some((item)=>item.vehicleId===vehicle.id&&item.status!=="Resolved");
-    if(unresolved){setNotice("Resolve open vehicle incidents/defects before corrective release.");return;}
-    setAssignments((current)=>current.map((item)=>item.id===assignment.id?{...item,status:"Awaiting pre-start",prestartId:undefined}:item));
-    setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,status:"Assigned"}:item));
-    setNotice(vehicle.fleetNo+" released after corrective action. A fresh driver pre-start is mandatory before movement.");
-  }
-
   function resolveIncident(id:string){
     const note=(resolutionNotes[id]||"").trim();
     if(!note){setNotice("Document corrective action before resolving the safety/defect record.");return;}
@@ -158,15 +149,6 @@ export function MoveTrackShowcase(){
     }:item));
     setResolutionNotes((current)=>({...current,[id]:""}));
     setNotice("Corrective action recorded and incident resolved.");
-  }
-
-  function recheckVehicleBaseline(vehicle:FleetVehicle){
-    const valid=dateIsCurrent(vehicle.roadworthyExpiry)&&dateIsCurrent(vehicle.extinguisherServiceDue);
-    const unresolved=incidents.some((item)=>item.vehicleId===vehicle.id&&item.status!=="Resolved");
-    if(!valid){setNotice(vehicle.fleetNo+" remains GROUNDED: roadworthiness or extinguisher service record is expired/missing.");return;}
-    if(unresolved){setNotice(vehicle.fleetNo+" remains GROUNDED until all open defects/safety incidents are resolved.");return;}
-    setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,status:"Inspection due"}:item));
-    setNotice(vehicle.fleetNo+" baseline records are valid. Status moved to INSPECTION DUE; a fresh driver pre-start is still required.");
   }
 
   function addJob(){
@@ -178,7 +160,7 @@ export function MoveTrackShowcase(){
   return <section style={{marginTop:28,display:"grid",gap:18}}>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
       {([
-        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["forms","SHE forms"]
+        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["forms","SHE forms"],["release","Repair & release"]
       ] as const).map(([key,label])=><button key={key} onClick={()=>setView(key)} style={{border:"1px solid #bfdbfe",background:view===key?"#1d4ed8":"#fff",color:view===key?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{label}</button>)}
     </div>
 
@@ -206,7 +188,7 @@ export function MoveTrackShowcase(){
             {last?.result==="NO-GO"?<div style={{fontSize:11,color:"#b42318"}}>{last.reasons.join(" · ")}</div>:null}
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {driver?<a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={primaryLink}>Open driver app</a>:null}
-              {assignment.status==="Grounded"?<button onClick={()=>releaseGrounded(assignment)} style={secondaryButton}>Corrective action complete → fresh pre-start</button>:null}
+              {assignment.status==="Grounded"?<button onClick={()=>setView("release")} style={secondaryButton}>Open repair and reinspection workflow</button>:null}
               {assignment.status!=="In use"?<button onClick={()=>cancelAssignment(assignment)} style={{...secondaryButton,color:"#b42318"}}>Cancel assignment</button>:null}
             </div>
           </div>;
@@ -221,7 +203,7 @@ export function MoveTrackShowcase(){
             <div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"#667085"}}>{item.description}</div></div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               <input value={resolutionNotes[item.id]||""} onChange={(e)=>setResolutionNotes((current)=>({...current,[item.id]:e.target.value}))} placeholder="Corrective action / repair completed…" style={{...input,flex:"1 1 280px"}}/>
-              <button onClick={()=>resolveIncident(item.id)} style={secondaryButton}>Resolve with evidence</button>
+              <button onClick={()=>resolveIncident(item.id)} style={secondaryButton}>Resolve with corrective note (demo)</button>
             </div>
           </div>;
         })}
@@ -249,7 +231,7 @@ export function MoveTrackShowcase(){
             <label style={fieldInline}>Extinguisher service due<input type="date" value={vehicle.extinguisherServiceDue==="Not set"?"":vehicle.extinguisherServiceDue} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,extinguisherServiceDue:e.target.value||"Not set"}:item))} style={input}/></label>
             <span>Odometer: <strong>{vehicle.odometerKm.toLocaleString()} km</strong></span>
           </div>
-          {vehicle.status==="No-go"?<button onClick={()=>recheckVehicleBaseline(vehicle)} style={{...secondaryButton,marginTop:12}}>Recheck baseline after corrective action</button>:null}
+          {vehicle.status==="No-go"?<button onClick={()=>setView("release")} style={{...secondaryButton,marginTop:12}}>Recheck baseline after corrective action</button>:null}
         </article>)}
       </div>
     </div>:null}
@@ -334,6 +316,7 @@ export function MoveTrackShowcase(){
     </div>:null}
 
     {view==="forms"?<AssuranceFormsWorkspace />:null}
+    {view==="release"?<FleetReleaseWorkspace />:null}
 
     {view==="analytics"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
       {[
