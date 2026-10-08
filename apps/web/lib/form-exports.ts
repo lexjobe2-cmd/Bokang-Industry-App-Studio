@@ -130,47 +130,10 @@ export async function downloadDocument(doc:ExportDocument,format:DocumentFormat)
  if(format==="csv"){downloadBlob(new Blob([exportCsv(doc)],{type:"text/csv;charset=utf-8"}),filename+".csv");return;}
  if(format==="json"){downloadBlob(new Blob([exportJson(doc)],{type:"application/json"}),filename+".json");return;}
  if(format==="pdf"){
-  const {jsPDF}=await import("jspdf");
-  const pdf=new jsPDF({format:"a4",unit:"mm"});
-  const width=210,margin=17,bottom=280;
-  let y=21;
-  const page=()=>{pdf.addPage();y=20;};
-  const line=(str:string,fontSize=10,bold=false)=>{
-   pdf.setFont("helvetica",bold?"bold":"normal");pdf.setFontSize(fontSize);
-   const wrapped=pdf.splitTextToSize(str.replace(/[^\x20-\x7E\n]/g,"-"),width-2*margin) as string[];
-   for(const piece of wrapped){if(y>bottom)page();pdf.text(piece,margin,y);y+=fontSize*0.47+1.9;}
-  };
-  pdf.setFillColor(17,47,87);pdf.rect(0,0,210,9,"F");
-  line(doc.company,13,true);line(doc.title,18,true);
-  line(doc.reference,10);line(doc.mode.toUpperCase()+" · "+doc.status,10,true);
-  pdf.setTextColor(151,53,28);line(doc.disclaimer,9,true);pdf.setTextColor(28,43,64);
-  y+=4;
-  for(const section of doc.sections){
-   if(y>263)page();
-   pdf.setFillColor(232,240,251);pdf.rect(margin,y-5,176,9,"F");pdf.setTextColor(24,57,103);line(section.title,12,true);
-   y+=2;pdf.setTextColor(28,43,64);
-   for(const row of section.rows){
-    line(row.label+":",9,true);line(row.value||"—",10);y+=1;
-   }
-   y+=3;
-  }
-  const pages=pdf.getNumberOfPages();
-  for(let i=1;i<=pages;i++){pdf.setPage(i);pdf.setFontSize(8);pdf.setTextColor(100,116,139);pdf.text("MoveTrack · Local demo · Page "+i+" of "+pages,margin,290);}
-  downloadBlob(pdf.output("blob"),filename+".pdf");
+  const {renderProfessionalPdf}=await import("./document-pdf");
+  downloadBlob(renderProfessionalPdf(doc),filename+".pdf");
   return;
  }
- const {Document,Packer,Paragraph,TextRun,HeadingLevel}=await import("docx");
- const paragraphs=[
-  new Paragraph({text:doc.company,heading:HeadingLevel.HEADING_2}),
-  new Paragraph({text:doc.title,heading:HeadingLevel.TITLE}),
-  new Paragraph({text:doc.reference+"  |  "+doc.mode.toUpperCase()+"  |  "+doc.status}),
-  new Paragraph({children:[new TextRun({text:doc.disclaimer,bold:true,color:"A33A23"})]}),
-  ...doc.sections.flatMap(section=>[
-   new Paragraph({text:section.title,heading:HeadingLevel.HEADING_2}),
-   ...section.rows.map(row=>new Paragraph({children:[new TextRun({text:row.label+": ",bold:true}),new TextRun({text:row.value||"—"})],spacing:{after:90}}))
-  ])
- ];
- const word=new Document({creator:"MoveTrack AI · local demo",title:doc.title,description:doc.disclaimer,sections:[{children:paragraphs}]});
- const blob=await Packer.toBlob(word);
- downloadBlob(blob,filename+".docx");
+ const {renderProfessionalWord}=await import("./document-word");
+ downloadBlob(await renderProfessionalWord(doc),filename+".docx");
 }
