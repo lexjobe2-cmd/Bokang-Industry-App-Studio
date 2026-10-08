@@ -29,7 +29,7 @@ export type FormEvaluation = {
 export type FormSubmission = {
   id: string; templateId: string; templateVersion: number; templateSnapshot: FormTemplate;
   siteId: string; assetId?: string; workerId?: string; taskId?: string;
-  submittedByUid: string; createdAt: string; submittedAt: string;
+  submittedByUid: string; submittedByPersonId?: string; createdAt: string; submittedAt: string;
   answers: FormAnswers; evidence: readonly EvidencePointer[];
   decision: Exclude<FormEvaluation["decision"], "INCOMPLETE">;
   syncStatus: "PENDING" | "SYNCED" | "FAILED";
@@ -94,7 +94,7 @@ export function evaluateForm(template: FormTemplate, answers: FormAnswers, evide
 }
 export function makeSubmission(args: {
   id: string; template: FormTemplate; answers: FormAnswers; evidence?: readonly EvidencePointer[];
-  siteId: string; assetId?: string; workerId?: string; taskId?: string; actorUid: string; now: string;
+  siteId: string; assetId?: string; workerId?: string; taskId?: string; actorUid: string; actorPersonId?: string; now: string;
 }): FormSubmission {
   if (args.template.status !== "PUBLISHED") throw new Error("Only published template versions can be submitted.");
   if (!args.actorUid.trim()) throw new Error("A verified operator identity is required.");
@@ -106,7 +106,7 @@ export function makeSubmission(args: {
     id:args.id,templateId:args.template.id,templateVersion:args.template.version,
     templateSnapshot:JSON.parse(JSON.stringify(args.template)) as FormTemplate,
     siteId:args.siteId,assetId:args.assetId,workerId:args.workerId,taskId:args.taskId,
-    submittedByUid:args.actorUid,createdAt:args.now,submittedAt:args.now,
+    submittedByUid:args.actorUid,submittedByPersonId:args.actorPersonId,createdAt:args.now,submittedAt:args.now,
     answers:JSON.parse(JSON.stringify(args.answers)) as FormAnswers,
     evidence:JSON.parse(JSON.stringify(args.evidence ?? [])) as EvidencePointer[],
     decision:evaluation.decision as FormSubmission["decision"],syncStatus:"PENDING"
