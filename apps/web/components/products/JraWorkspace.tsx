@@ -12,7 +12,7 @@ import {
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
-import {buildJraDocument} from "../lib/form-exports";
+import {buildJraDocument} from "../../lib/form-exports";
 
 const shell:React.CSSProperties={background:"#fff",border:"1px solid #dde5ee",borderRadius:16,padding:17};
 const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",background:"#fff",color:"#111827",font:"inherit",minHeight:43};
