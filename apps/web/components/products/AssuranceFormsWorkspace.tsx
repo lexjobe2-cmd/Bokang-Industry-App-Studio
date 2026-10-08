@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ClipboardCheck, FileText, ShieldAlert, Users, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, CloudOff } from "lucide-react";
+import { ClipboardCheck, FileText, ShieldAlert, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, CloudOff } from "lucide-react";
+import { useAssuranceIdentity } from "../../lib/firebase-assurance";
 import { usePersistentState } from "@bokang/persistence";
 import {
   starterAssuranceTemplates, evaluateForm, isVisible, makeSubmission,
@@ -22,6 +23,7 @@ function answerText(value:FormAnswer|undefined){return typeof value==="string"||
 
 export function AssuranceFormsWorkspace(){
  const reducedMotion=useReducedMotion();
+ const identity=useAssuranceIdentity();
  const [fleet]=usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
  const [submissions,setSubmissions,hydrated]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
  const [drafts,setDrafts]=usePersistentState<Record<string,FormAnswers>>("bokang-studio.move-track.assurance-drafts.v1",{});
@@ -40,12 +42,13 @@ export function AssuranceFormsWorkspace(){
  function setAnswer(id:string,value:FormAnswer){if(!activeId)return;setDrafts(d=>({...d,[activeId]:{...(d[activeId]??{}),[id]:value}}));}
  function submit(){
   if(!template||!evaluation)return;
+  if(identity.configured&&!identity.user){setNotice("Sign in with Firebase before submitting a form.");return;}
   if(evaluation.missing.length){setNotice("Complete required questions before submitting. Missing: "+evaluation.missing.join(", "));return;}
   try{
     const record=makeSubmission({
       id:"DEMO-FORM-"+crypto.randomUUID(),template,answers,siteId,
       assetId:template.category==="Fleet"?assetId||undefined:undefined,
-      actorUid:"DEMO-UNVERIFIED-USER",now:new Date().toISOString()
+      actorUid:identity.user?.uid??"DEMO-UNVERIFIED-USER",now:new Date().toISOString()
     });
     setSubmissions(current=>[record,...current]);
     setDrafts(current=>({...current,[template.id]:{}}));
@@ -63,6 +66,12 @@ export function AssuranceFormsWorkspace(){
       </div>
       <span style={{border:"1px solid #5a7194",borderRadius:999,padding:"7px 12px",fontSize:11,fontWeight:900,color:"#fef08a"}}>DEMO · LOCAL ONLY</span>
     </div>
+  </div>
+  <div style={{...tile,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+    <div><strong>Identity</strong><p style={{fontSize:12,color:"#667085",margin:"5px 0"}}>
+      {!identity.ready?"Checking Firebase session…":identity.user?"Signed in: "+(identity.user.email||identity.user.uid):identity.configured?"Sign in with Firebase to submit forms":"Firebase is not configured; local demo only"}
+    </p>{identity.error?<p role="alert" style={{color:"#b42318",fontSize:12}}>{identity.error}</p>:null}</div>
+    {identity.configured?(identity.user?<button style={button} onClick={()=>void identity.logout()}>Sign out</button>:<button style={button} onClick={()=>void identity.login()}>Sign in with Google</button>):<span style={{fontSize:11,color:"#b45309"}}>Set Firebase environment variables</span>}
   </div>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
     <button onClick={()=>{setTab("library");setActiveId(null);setNotice("");}} style={{...button,background:tab==="library"?"#172b4d":"#fff",color:tab==="library"?"#fff":"#344054"}}>Template library</button>
@@ -109,13 +118,13 @@ export function AssuranceFormsWorkspace(){
     </AnimatePresence>
     <div style={{...tile,display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
       <button style={button} disabled={sectionIndex===0} onClick={()=>setSectionIndex(x=>Math.max(0,x-1))}>Previous</button>
-      {sectionIndex<template.sections.length-1?<button style={{...button,background:"#172b4d",color:"#fff"}} onClick={()=>setSectionIndex(x=>Math.min(template.sections.length-1,x+1))}>Next section <ChevronRight size={16} style={{display:"inline"}}/></button>:<button style={{...button,background:"#172b4d",color:"#fff",opacity:evaluation.missing.length?0.65:1}} onClick={submit} disabled={!!evaluation.missing.length}>Submit demo form</button>}
+      {sectionIndex<template.sections.length-1?<button style={{...button,background:"#172b4d",color:"#fff"}} onClick={()=>setSectionIndex(x=>Math.min(template.sections.length-1,x+1))}>Next section <ChevronRight size={16} style={{display:"inline"}}/></button>:<button style={{...button,background:"#172b4d",color:"#fff",opacity:evaluation.missing.length?0.65:1}} onClick={submit} disabled={!!evaluation.missing.length||(identity.configured&&!identity.user)}>Submit demo form</button>}
     </div>
     <div style={{...tile,background:evaluation.decision==="NO_GO"?"#fef2f2":evaluation.decision==="INCOMPLETE"?"#f8fafc":"#ecfdf3",display:"flex",alignItems:"start",gap:12}}>
       {evaluation.decision==="NO_GO"?<ShieldAlert size={21} color="#b42318"/>:<CheckCircle2 size={21} color="#157f4e"/>}
       <div><strong>Assessment: {evaluation.decision.replaceAll("_","-")}</strong><p style={{margin:"4px 0",fontSize:12,lineHeight:1.5}}>{evaluation.missing.length?evaluation.missing.length+" required answer(s) / evidence outstanding.":evaluation.criticalFailures.length?"Critical control failed. NO-GO in a controlled workflow.":"Required sections completed; supervisor controls may still apply."}</p></div>
     </div>
-    <p style={{fontSize:11,color:"#b42318",margin:0}}>This form runner saves drafts on this browser. It does not authorize work, ground fleet assets, persist verified signatures or upload evidence.</p>
+    <p style={{fontSize:11,color:"#b42318",margin:0}}>This form runner saves drafts and demo submissions on this browser. Firebase sign-in establishes identity when configured but does not itself authorize work, ground assets, sync Drive files or provide server-backed signatures.</p>
   </div>:null}
   {tab==="records"?<div style={{display:"grid",gap:9}}>
     <div style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#667085"}}><CloudOff size={16}/> Browser-only records · not yet synced with Firebase/Drive</div>
