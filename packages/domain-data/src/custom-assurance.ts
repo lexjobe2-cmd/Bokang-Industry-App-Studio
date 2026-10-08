@@ -22,6 +22,8 @@ export const dictionary={
  {id:"yes_no",label:"Yes / No",purpose:"Confirm permits, attendance, briefings"},
  {id:"pass_fail_na",label:"Pass / Fail / N/A",purpose:"Equipment safety inspection"},
  {id:"risk",label:"5 × 5 risk",purpose:"Likelihood × consequence"},
+ {id:"person",label:"Person (directory)",purpose:"Pick a responsible employee"},
+ {id:"people",label:"Participants (directory)",purpose:"Select multiple employees or contractors"},
  {id:"repeat",label:"Repeating register",purpose:"People, task steps, actions"},
  {id:"signature",label:"Signature placeholder",purpose:"Supervisor sign-off (demo only)"},
  {id:"photo",label:"Photo placeholder",purpose:"Inspections (offline demo)"}
@@ -185,7 +187,8 @@ export function blankHazard():HazardEntry{
 export function assessJra(jra:JobRiskAssessment):{decision:JraDecision;missing:string[];maxResidual:number;highRisks:number;unverifiedControls:number}{
  const missing:string[]=[];let maxResidual=0,highRisks=0,unverifiedControls=0;
  if(!jra.title.trim())missing.push("Job title");if(!jra.jobId.trim())missing.push("Job reference");
- if(!jra.siteId.trim())missing.push("Site");if(!jra.location.trim())missing.push("Work area");
+ if(!jra.siteId.trim())missing.push("Site");
+ if(jra.startDate&&jra.endDate&&jra.endDate<jra.startDate)missing.push("End date must follow the start date");if(!jra.location.trim())missing.push("Work area");
  if(!jra.supervisorId)missing.push("Supervisor");if(!jra.scope.trim())missing.push("Scope of work");
  if(!jra.emergencyPlan.trim())missing.push("Emergency response");
  if(!jra.participants.length)missing.push("At least one participant");
