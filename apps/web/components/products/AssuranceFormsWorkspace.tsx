@@ -10,6 +10,10 @@ import {
   type FormAnswer, type FormAnswers, type FormField, type FormSubmission
 } from "@bokang/domain-data/assurance-forms";
 import { MOVE_TRACK_KEYS, starterFleet, type FleetVehicle, type FleetIncident, type FleetAssignment } from "../../lib/move-track";
+import { CustomFormBuilder } from "./CustomFormBuilder";
+import { JraWorkspace } from "./JraWorkspace";
+import { ASSURANCE_STORAGE,type CustomTemplate } from "@bokang/domain-data/custom-assurance";
+
 
 const tile:React.CSSProperties={background:"#fff",border:"1px solid #dce4ee",borderRadius:17,padding:17};
 const input:React.CSSProperties={width:"100%",padding:"12px 12px",font:"inherit",background:"#fff",color:"#101828",border:"1px solid #cbd5e1",borderRadius:11};
@@ -28,13 +32,16 @@ export function AssuranceFormsWorkspace(){
  const [,setAssignments]=usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
  const [submissions,setSubmissions,hydrated]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
  const [drafts,setDrafts]=usePersistentState<Record<string,FormAnswers>>("bokang-studio.move-track.assurance-drafts.v1",{});
- const [tab,setTab]=useState<"library"|"records">("library");
+ const [tab,setTab]=useState<"library"|"records"|"designer"|"jra">("library");
+ const [customTemplates]=usePersistentState<CustomTemplate[]>(ASSURANCE_STORAGE.templates,[]);
  const [activeId,setActiveId]=useState<string|null>(null);
  const [sectionIndex,setSectionIndex]=useState(0);
  const [siteId,setSiteId]=useState("Jwaneng mine · demo profile");
  const [assetId,setAssetId]=useState("");
  const [notice,setNotice]=useState("");
- const template=starterAssuranceTemplates.find(t=>t.id===activeId);
+ const library=[...starterAssuranceTemplates,...customTemplates.filter(t=>t.status==="PUBLISHED")];
+ const template=library.find(t=>t.id===activeId);
+ const brandedTemplate=customTemplates.find(t=>t.id===activeId);
  const answers=activeId?(drafts[activeId]??{}):{};
  const evaluation=useMemo(()=>template?evaluateForm(template,answers):null,[template,answers]);
  const activeSection=template?.sections[sectionIndex];
@@ -85,22 +92,41 @@ export function AssuranceFormsWorkspace(){
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
     <button onClick={()=>{setTab("library");setActiveId(null);setNotice("");}} style={{...button,background:tab==="library"?"#172b4d":"#fff",color:tab==="library"?"#fff":"#344054"}}>Template library</button>
     <button onClick={()=>setTab("records")} style={{...button,background:tab==="records"?"#172b4d":"#fff",color:tab==="records"?"#fff":"#344054"}}>Submissions ({hydrated?submissions.length:"…" })</button>
+    <button onClick={()=>{setTab("jra");setActiveId(null);}} style={{...button,background:tab==="jra"?"#172b4d":"#fff",color:tab==="jra"?"#fff":"#344054"}}>JRA job studio</button>
+    <button onClick={()=>{setTab("designer");setActiveId(null);}} style={{...button,background:tab==="designer"?"#172b4d":"#fff",color:tab==="designer"?"#fff":"#344054"}}>Create custom form</button>
   </div>
   {notice?<div role="status" style={{padding:13,borderRadius:12,background:"#eff6ff",color:"#1e40af",fontSize:13}}>{notice}</div>:null}
+  {tab==="designer"?<CustomFormBuilder onPublish={openTemplate}/>:null}
+  {tab==="jra"?<JraWorkspace/>:null}
   {tab==="library"&&!template?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(245px,1fr))",gap:12}}>
-    {starterAssuranceTemplates.map(t=><motion.button whileHover={reducedMotion?undefined:{y:-2}} transition={easing} key={t.id} onClick={()=>openTemplate(t.id)}
+    <div style={{...tile,background:"#eff6ff",borderColor:"#93c5fd",display:"grid",gap:10}}>
+      <strong style={{fontSize:17}}>Create a company-branded custom form</strong>
+      <span style={{fontSize:12,color:"#52677d"}}>Build unique checklists for every job, with your own logo, questions and repeatable fields.</span>
+      <button style={{...button,background:"#173764",color:"#fff",justifySelf:"start"}} onClick={()=>setTab("designer")}>Open form designer →</button>
+    </div>
+    <div style={{...tile,background:"#f0fdf4",borderColor:"#86efac",display:"grid",gap:10}}>
+      <strong style={{fontSize:17}}>Start a job risk assessment</strong>
+      <span style={{fontSize:12,color:"#52677d"}}>Assign participants, list task steps, hazards and controls, and calculate residual risks.</span>
+      <button style={{...button,background:"#065f46",color:"#fff",justifySelf:"start"}} onClick={()=>setTab("jra")}>Open JRA studio →</button>
+    </div>
+    {library.map(t=><motion.button whileHover={reducedMotion?undefined:{y:-2}} transition={easing} key={t.id} onClick={()=>openTemplate(t.id)}
        style={{...tile,textAlign:"left",minHeight:154,cursor:"pointer",display:"grid",gap:9}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
        <span style={{fontSize:11,fontWeight:900,color:categories[t.category]?.color}}>{t.category.toUpperCase()}</span>
        <span style={{color:"#667085",fontSize:11}}>v{t.version} · {t.status}</span>
       </div>
       <strong style={{fontSize:17}}>{t.title}</strong>
+      {"companyNameSnapshot" in t && typeof t.companyNameSnapshot==="string"?<span style={{fontSize:11,color:"#1d4ed8"}}>{t.companyNameSnapshot} · Custom</span>:null}
       <span style={{color:"#667085",fontSize:12}}>{t.sections.length} sections · {t.sections.reduce((sum,s)=>sum+s.fields.length,0)} questions</span>
       <span style={{display:"inline-flex",alignItems:"center",gap:6,color:"#1d4ed8",fontWeight:850,fontSize:12}}>Open form <ChevronRight size={16}/></span>
     </motion.button>)}
   </div>:null}
   {tab==="library"&&template&&activeSection&&evaluation?<div style={{display:"grid",gap:13}}>
-    <div style={tile}>
+    <div style={{...tile,borderTop:brandedTemplate?"4px solid "+(brandedTemplate.accent??"#155eef"):undefined}}>
+      {brandedTemplate?<div style={{display:"flex",alignItems:"center",gap:13,marginBottom:14,borderBottom:"1px solid #e2e8f0",paddingBottom:13}}>
+        {brandedTemplate.logoSnapshot?<img src={brandedTemplate.logoSnapshot} alt={brandedTemplate.companyNameSnapshot+" logo"} style={{maxHeight:59,maxWidth:104,objectFit:"contain"}}/>:<div style={{width:54,height:54,borderRadius:9,background:"#dbeafe",display:"grid",placeItems:"center",color:"#173764",fontWeight:900,fontSize:11}}>LOGO</div>}
+        <div><strong style={{fontSize:15}}>{brandedTemplate.companyNameSnapshot}</strong><div style={{fontSize:11,color:"#64748b"}}>{brandedTemplate.referencePrefix} · {brandedTemplate.description}</div></div>
+      </div>:null}
       <button style={{...button,padding:"6px 9px",minHeight:34,fontSize:12}} onClick={()=>setActiveId(null)}><ChevronLeft size={13} style={{display:"inline"}}/> All forms</button>
       <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginTop:12}}>
         <div><p style={{fontSize:11,fontWeight:850,color:categories[template.category]?.color,margin:0}}>{template.category.toUpperCase()} · VERSION {template.version}</p><h3 style={{fontSize:22,margin:"5px 0 2px"}}>{template.title}</h3></div>
