@@ -50,7 +50,7 @@ export function parsePaperText(sourceName:string,rawText:string,confidence:numbe
   if(line.length<4||line.length>230)continue;
   const content=label(line);
   if(content.length<4||/^[._\-=\s]+$/.test(content)||used.has(content.toLowerCase()))continue;
-  const question=/[:?]$/.test(line)||/\b(check|verify|confirm|inspect|condition|status|provided|required|name|date|time|location|shift|signature|reading|reference|registration|contact|department|action|owner|attend|topic|chair|minute|present|absent|safe|working|defect)\b/i.test(line)||/^[\s\[\]☐☑□■•]/.test(line)||/\b(PASS|FAIL|YES|NO|N\/A)\b/i.test(line);
+  const question=/[:?]|_{3,}|\\.{3,}/.test(line)||/\b(check|verify|confirm|inspect|condition|status|provided|required|name|date|time|location|shift|signature|reading|reference|registration|contact|department|action|owner|attend(?:ance|ee|ees)?|topic|chair(?:person)?|facilitator|minutes?|agenda|present|absent|safe|working|defect)\b/i.test(line)||/^[\s\[\]☐☑□■•]/.test(line)||/\b(PASS|FAIL|YES|NO|N\/A)\b/i.test(line);
   if(!question){if(header&&sections.length<14){addSection(content);}continue;}
   used.add(content.toLowerCase());
   const type=fieldType(line);
