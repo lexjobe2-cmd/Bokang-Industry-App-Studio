@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
 import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
+import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
 import {
   botswanaPlaces,
   logisticsJobStates,
@@ -31,7 +32,7 @@ const starterJobs:Job[]=[
   {id:"MT-602",client:"Northside Pharmacy",type:"Local delivery",from:"Gaborone",to:"Tlokweng",driver:"Unassigned",state:"Scheduled"},
 ];
 
-type MoveTrackView = "control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"release";
+type MoveTrackView = "control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"release"|"local-data";
 
 export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrackView}={}){
   const [jobs,setJobs]=usePersistentState<Job[]>("bokang-studio.move-track.jobs.v1",starterJobs);
@@ -162,7 +163,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   return <section style={{marginTop:28,display:"grid",gap:18}}>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
       {([
-        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["forms","SHE forms"],["release","Repair & release"]
+        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["forms","SHE forms"],["release","Repair & release"],["local-data","Local data"]
       ] as const).map(([key,label])=><button key={key} onClick={()=>setView(key)} style={{border:"1px solid #bfdbfe",background:view===key?"#1d4ed8":"#fff",color:view===key?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{label}</button>)}
     </div>
 
@@ -319,6 +320,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
 
     {view==="forms"?<AssuranceFormsWorkspace />:null}
     {view==="release"?<FleetReleaseWorkspace />:null}
+    {view==="local-data"?<LocalWorkspacePanel />:null}
 
     {view==="analytics"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
       {[
