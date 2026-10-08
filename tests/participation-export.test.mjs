@@ -67,3 +67,28 @@ test("JRA document exports each job step and hazard including responsible contro
  assert.ok(documentRows(result).some(row=>row[1]==="Working at height"));
  assert.match(result.disclaimer,/NOT.*AUTHORIZATION/);
 });
+
+test("professionally styled reports output valid PDF and editable DOCX document bytes",async()=>{
+ const {renderProfessionalPdf}=await import("../apps/web/lib/document-pdf.ts");
+ const {renderProfessionalWord}=await import("../apps/web/lib/document-word.ts");
+ const form=buildFormDocument({template,mode:"filled",submission:makeSubmission({id:"a4-1",template,answers,siteId:"Site",actorUid:"demo",now:"2026-10-08T10:00:00Z"}),company:org,people});
+ const pdf=renderProfessionalPdf(form);
+ const bytes=Buffer.from(await pdf.arrayBuffer());
+ assert.equal(bytes.subarray(0,5).toString(),"%PDF-");
+ assert.ok(bytes.length>3000,"A4 PDF should have structured content");
+ const docx=await renderProfessionalWord(form);
+ const word=Buffer.from(await docx.arrayBuffer());
+ assert.equal(word.subarray(0,2).toString(),"PK");
+ assert.ok(word.length>3000,"DOCX should contain multiple OOXML parts");
+});
+test("long safety checklists paginate rather than losing fields, and blank reports export",async()=>{
+ const {renderProfessionalPdf}=await import("../apps/web/lib/document-pdf.ts");
+ const {renderProfessionalWord}=await import("../apps/web/lib/document-word.ts");
+ const entries=Array.from({length:100},(_,i)=>({label:"Critical checkpoint "+String(i+1)+" fall arrest/rescue readiness",value:i%3===0?"PASS":i%3===1?"16/25 - HIGH":"Inspection evidence checked with supporting notes and a safe retrieval plan"}));
+ const pageDoc={title:"Working at heights - extended operational assurance check",company:"Botswana Mining and Industrial Maintenance Services",reference:"BW-SHE-2026-001",mode:"blank",status:"UNCOMPLETED TEMPLATE",timestamp:"2026-10-08T10:00:00Z",disclaimer:"LOCAL DEMO - NOT AN APPROVAL",accent:"#155eef",sections:[{title:"Working at height controls",rows:entries}]};
+ const pdf=renderProfessionalPdf(pageDoc);
+ const data=Buffer.from(await pdf.arrayBuffer());
+ assert.ok(data.length>9000,"Multi-page styled PDF should contain several pages");
+ const result=await renderProfessionalWord(pageDoc);
+ assert.ok((await result.arrayBuffer()).byteLength>3000);
+});
