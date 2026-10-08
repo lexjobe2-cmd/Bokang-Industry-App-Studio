@@ -36,6 +36,7 @@ export function MoveTrackDemoLab(){
  const [,setReinspections,reinspectReady]=usePersistentState<ReinspectionEvidence[]>("bokang-studio.move-track.reinspections.v1",[]);
  const [,setReleases,releasesReady]=usePersistentState<FleetReleaseRecord[]>("bokang-studio.move-track.releases.v1",[]);
  const [active,setActive]=useState<Scenario|null>(null);
+ const [startWorkspace,setStartWorkspace]=useState<"forms"|"paper"|"meetings">("meetings");
  const [notice,setNotice]=useState("");
  const hydrated=[fleetReady,driversReady,assignReady,prestartsReady,incidentsReady,policiesReady,submissionReady,draftsReady,repairReady,reinspectReady,releasesReady].every(Boolean);
  function applyScenario(scenario:Scenario){
@@ -99,6 +100,19 @@ export function MoveTrackDemoLab(){
   </div>
   <div style={{maxWidth:1250,margin:"-24px auto 0",padding:"0 20px",position:"relative",display:"grid",gap:19}}>
    <OrganizationOnboarding/>
+   <section aria-label="Document quick start" style={{...style,display:"grid",gap:12}}>
+    <div><p style={{fontSize:10,letterSpacing:1.4,color:"#2563eb",fontWeight:900,margin:"0 0 5px"}}>STEP 02 · EXISTING PAPER AND MEETINGS</p><h2 style={{fontSize:21,margin:"0 0 7px"}}>Bring your existing documents. Start recording meetings.</h2>
+      <p style={{color:"#64748b",fontSize:12,margin:0}}>Import a company's paper checklist using OCR, or create a digital meeting register straight away. Both generate downloadable blank/filled PDFs and Word files.</p></div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(205px,1fr))",gap:10}}>
+     {[{key:"paper" as const,title:"Scan a paper checklist",description:"Photo or scanned PDF → OCR → review fields → reusable form",color:"#1d4ed8"},
+       {key:"meetings" as const,title:"Meeting registers & minutes",description:"SHE meetings, toolbox talks, attendance, actions and PDF",color:"#047857"},
+       {key:"forms" as const,title:"All SHE forms & JRA",description:"Use our company templates and submitted forms",color:"#7c3aed"}].map(item=>
+       <button key={item.key} style={{...style,textAlign:"left",cursor:"pointer",borderColor:item.color}} onClick={()=>{setStartWorkspace(item.key);document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});}}>
+        <strong style={{display:"block",color:item.color,fontSize:15}}>{item.title} →</strong>
+        <span style={{fontSize:12,color:"#64748b",lineHeight:1.5,display:"block",marginTop:7}}>{item.description}</span>
+       </button>)}
+    </div>
+   </section>
    <OperationalGraphPanel/>
    <section aria-label="Demo scenarios" style={style}>
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
@@ -123,8 +137,8 @@ export function MoveTrackDemoLab(){
       {label:"Open defect reports",value:incidents.filter(i=>i.status!=="Resolved").length,icon:ShieldCheck}
     ].map(item=><div key={item.label} style={style}><item.icon size={17} color="#2563eb"/><strong style={{display:"block",fontSize:26,margin:"7px 0 1px"}}>{hydrated?item.value:"—"}</strong><span style={{fontSize:11,color:"#667085",fontWeight:800}}>{item.label}</span></div>)}
    </section>
-   <section style={{...style,padding:"10px 17px 19px"}}>
-     <MoveTrackShowcase initialView="forms"/>
+   <section id="movetrack-workspaces" style={{...style,padding:"10px 17px 19px",scrollMarginTop:20}}>
+     <MoveTrackShowcase key={startWorkspace} initialView={startWorkspace}/>
    </section>
    <p style={{fontSize:11,color:"#64748b",textAlign:"center",margin:"12px 0"}}>Preview / simulation only. Locally submitted records cannot authorize real work or equipment movement. Designed and developed by Bokang Jobe.</p>
   </div>
