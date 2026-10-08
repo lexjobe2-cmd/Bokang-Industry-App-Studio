@@ -190,13 +190,15 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
         <div style={{display:"flex",gap:16,flexWrap:"wrap",fontSize:12}}>
          <label><input type="checkbox" checked={!!f.required} onChange={e=>patchField(si,fi,{required:e.target.checked})}/> Required</label>
          <label><input type="checkbox" checked={!!f.critical} onChange={e=>patchField(si,fi,{critical:e.target.checked})}/> Critical / NO-GO</label>
-         <label><input type="checkbox" checked={!!f.evidenceOnFail} onChange={e=>patchField(si,fi,{evidenceOnFail:e.target.checked})}/> Evidence on fail (future)</label>
+         <label title="Reserved for future evidence upload integration"><input type="checkbox" disabled checked={false}/> Evidence on fail (cloud phase)</label>
         </div>
         {(f.type==="select"||f.type==="multiselect")?<label style={label}>Options (one per line)<textarea style={{...input,minHeight:83}} value={(f.options??[]).join("\n")} onChange={e=>patchField(si,fi,{options:e.target.value.split("\n").map(s=>s.trim()).filter(Boolean)})}/></label>:null}
         {f.type==="repeat"?<div style={{display:"grid",gap:7}}>
           <strong style={{fontSize:12}}>Repeatable row columns</strong>
           {(f.children??[]).map((child,ci)=><div key={child.id} style={{display:"flex",gap:7}}>
            <input style={{...input,flex:1}} value={child.label} onChange={e=>patchField(si,fi,{children:f.children?.map((c,i)=>i===ci?{...c,label:e.target.value}:c)})}/>
+           <select aria-label={"Column type for "+child.label} style={{...input,width:110}} value={child.type} onChange={e=>patchField(si,fi,{children:f.children?.map((c,i)=>i===ci?{...c,type:e.target.value as AnswerType}:c)})}><option value="text">Text</option><option value="number">Number</option><option value="date">Date</option></select>
+           <label style={{fontSize:10,display:"flex",alignItems:"center",gap:4}}><input type="checkbox" checked={!!child.required} onChange={e=>patchField(si,fi,{children:f.children?.map((c,i)=>i===ci?{...c,required:e.target.checked}:c)})}/> Required</label>
            <button style={{...btn,padding:7}} aria-label="Remove column" onClick={()=>patchField(si,fi,{children:f.children?.filter((_,i)=>i!==ci)})}><Trash2 size={15}/></button>
           </div>)}
           <button style={{...btn,justifySelf:"start"}} onClick={()=>patchField(si,fi,{children:[...(f.children??[]),{id:"c-"+crypto.randomUUID().slice(0,5),label:"New column",type:"text",required:true}]})}>Add repeating column</button>
