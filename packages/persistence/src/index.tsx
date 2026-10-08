@@ -10,8 +10,16 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from "react";
 
+import {
+  getLocalValue,subscribeLocalValue,writeLocalValue,subscribeLocalStatus,getLocalStatuses
+} from "./local-store.ts";
+export {
+  MOVE_TRACK_STORAGE_PREFIX,makeWorkspaceBackup,parseWorkspaceBackup,restoreWorkspaceBackup,
+  clearWorkspaceData,getLocalHealth
+} from "./local-store.ts";
 const PersistenceScopeContext = createContext("");
 
 export function PersistenceScope({
@@ -25,69 +33,34 @@ export function PersistenceScope({
   );
 }
 
+/**
+ * Durable browser-local hook. Writes synchronously before notifying React,
+ * so navigation does not lose changes waiting for an effect.
+ * Existing storage keys and shape remain compatible with prior demo records.
+ */
 export function usePersistentState<T>(
-  key: string,
-  initialValue: T
-): [T, Dispatch<SetStateAction<T>>, boolean] {
-  const scope = useContext(PersistenceScopeContext);
-  const scopedKey = scope ? `${scope}::${key}` : key;
-  const [value, setValue] = useState<T>(initialValue);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(scopedKey);
-      if (raw !== null) setValue(JSON.parse(raw) as T);
-    } catch {
-      // Keep the safe starter value when browser storage is unavailable or malformed.
-    } finally {
-      setHydrated(true);
-    }
-  }, [scopedKey]);
-
-  // Same-tab components do not receive native "storage" events. Broadcast to peers
-  // so a grounded asset and its assignment remain consistent across active screens.
-  useEffect(() => {
-    function apply(raw: string | null) {
-      if (raw === null) return;
-      setValue((current) => {
-        try {
-          if (JSON.stringify(current) === raw) return current;
-          return JSON.parse(raw) as T;
-        } catch { return current; }
-      });
-    }
-    function onLocal(event: Event) {
-      const detail = (event as CustomEvent<{key:string; raw:string}>).detail;
-      if (detail?.key === scopedKey) apply(detail.raw);
-    }
-    function onStorage(event: StorageEvent) {
-      if (event.key === scopedKey) apply(event.newValue);
-    }
-    window.addEventListener("bokang:persistence-updated", onLocal);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("bokang:persistence-updated", onLocal);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, [scopedKey]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    const serialized = JSON.stringify(value);
-    try {
-      // Prevent peer-to-peer rebroadcast loops.
-      if (window.localStorage.getItem(scopedKey) === serialized) return;
-      window.localStorage.setItem(scopedKey, serialized);
-    } catch {
-      // Still notify other mounted components when browser storage is blocked.
-    }
-    window.dispatchEvent(new CustomEvent("bokang:persistence-updated", {
-      detail: {key: scopedKey, raw: serialized}
-    }));
-  }, [hydrated, scopedKey, value]);
-
-  return [value, setValue, hydrated];
+ key:string,initialValue:T
+):[T,Dispatch<SetStateAction<T>>,boolean]{
+ const scope=useContext(PersistenceScopeContext);
+ const scopedKey=scope?`${scope}::${key}`:key;
+ const subscribe=useCallback((listener:()=>void)=>subscribeLocalValue(scopedKey,listener),[scopedKey]);
+ const getSnapshot=useCallback(()=>getLocalValue(scopedKey,initialValue),[scopedKey,initialValue]);
+ const getServerSnapshot=useCallback(()=>initialValue,[initialValue]);
+ const value=useSyncExternalStore(subscribe,getSnapshot,getServerSnapshot);
+ const [activeKey,setActiveKey]=useState("");
+ useEffect(()=>setActiveKey(scopedKey),[scopedKey]);
+ const setter=useCallback<Dispatch<SetStateAction<T>>>((next)=>{
+  const current=getLocalValue(scopedKey,initialValue);
+  const resolved=typeof next==="function"?(next as (prev:T)=>T)(current):next;
+  writeLocalValue(scopedKey,resolved);
+ },[scopedKey,initialValue]);
+ return [value,setter,activeKey===scopedKey];
+}
+/** Minimal health state for showing when localStorage is blocked or full. */
+export function useLocalStorageErrors(){
+ const subscribe=useCallback((listener:()=>void)=>subscribeLocalStatus(listener),[]);
+ const getSnapshot=useCallback(()=>Array.from(getLocalStatuses()).filter(([,v])=>v.status!=="ready").map(([key,v])=>key+": "+(v.error??v.status)).join("\n"),[]);
+ return useSyncExternalStore(subscribe,getSnapshot,()=>"");
 }
 
 export type WorkspaceConnectionState = {
