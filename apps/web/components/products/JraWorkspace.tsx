@@ -10,6 +10,7 @@ import {
  type OrganizationProfile,type PersonRecord,type JobRiskAssessment,type JraTask,type HazardEntry
 } from "@bokang/domain-data/custom-assurance";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
+import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 
 const shell:React.CSSProperties={background:"#fff",border:"1px solid #dde5ee",borderRadius:16,padding:17};
 const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",background:"#fff",color:"#111827",font:"inherit",minHeight:43};
@@ -35,7 +36,7 @@ function unique(values:readonly string[],value:string,enabled:boolean){return en
 export function JraWorkspace(){
  const reduced=useReducedMotion();
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
- const [selectedOrg,setSelectedOrg]=usePersistentState("bokang-studio.move-track.jra.selectedOrg.v1",demoOrganization.id);
+ const [selectedOrg,setSelectedOrg]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
  const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
  const [records,setRecords]=usePersistentState<JobRiskAssessment[]>(ASSURANCE_STORAGE.jras,[]);
  const [editing,setEditing]=usePersistentState<string|null>("bokang-studio.move-track.jra.editing.v1",null);
