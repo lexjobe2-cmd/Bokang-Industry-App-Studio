@@ -18,7 +18,7 @@ import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY,ACTIVE_JOB_REFERENCE_KEY,recipeTemplateId} from "./OperationalGraphPanel";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
-import {buildFormDocument} from "../lib/form-exports";
+import {buildFormDocument} from "../../lib/form-exports";
 
 
 const tile:React.CSSProperties={background:"#fff",border:"1px solid #dce4ee",borderRadius:17,padding:17};
