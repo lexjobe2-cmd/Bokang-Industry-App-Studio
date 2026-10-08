@@ -49,7 +49,7 @@ test("blank, filled and draft documents preserve values and historical template 
  assert.ok(documentRows(blank).some(([label,value])=>label==="Observations"&&value.startsWith("_____")));
  assert.ok(documentRows(draft).some(([label,value])=>label==="Observations"&&value.includes("dangerous")));
  assert.equal(filled.status,"COMPLETE");
- assert.equal(documentRows(filled).find(([label])=>label==="Crew participants")[1],"Neo K");
+ assert.equal(documentRows(filled).find(([label])=>label.startsWith("Crew participants"))[1],"Neo K");
  assert.match(exportJson(filled),/movetrack-document-v1/);
  assert.match(exportCsv(filled),/'=dangerous/);
  assert.match(exportCsv(filled),/"sample"/);
