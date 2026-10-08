@@ -9,7 +9,8 @@
     "./assurance-forms": "./src/assurance-forms.ts",
     "./risk-matrix": "./src/risk-matrix.ts",
     "./custom-assurance": "./src/custom-assurance.ts",
-    "./expanded-assurance": "./src/expanded-assurance.ts"
+    "./expanded-assurance": "./src/expanded-assurance.ts",
+    "./participation-analytics": "./src/participation-analytics.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
