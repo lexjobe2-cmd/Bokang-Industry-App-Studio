@@ -19,7 +19,7 @@ jobs:
           node-version: 22
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm typecheck
-      - run: node --experimental-strip-types --test tests/assurance.test.mjs tests/local-persistence.test.mjs
+      - run: node --experimental-strip-types --test tests/assurance.test.mjs tests/local-persistence.test.mjs tests/participation-export.test.mjs
       - run: python3 scripts/validate_assurance_schema.py
       - run: pnpm build
       - name: Package standalone MoveTrack frontend
