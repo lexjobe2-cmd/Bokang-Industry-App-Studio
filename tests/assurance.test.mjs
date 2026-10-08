@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { evaluateForm, makeSubmission, starterAssuranceTemplates } from "../packages/domain-data/src/assurance-forms.ts";
 import { riskScore, releaseGroundedAsset } from "../packages/domain-data/src/operational-assurance.ts";
 import { chooseStorageTarget } from "../packages/integrations/src/drive-network.ts";
+import { verifyFleetRelease, finalizeFleetRelease } from "../apps/web/lib/fleet-release.ts";
 
 const template = {
  id:"unit-check", version:1, title:"Safety checks",category:"Fleet",status:"PUBLISHED",
@@ -48,4 +49,25 @@ test("Drive target without consent is forbidden",()=>{
 test("starter template library covers fleet, meetings, briefing, JSA, JRA, handover",()=>{
  assert.equal(starterAssuranceTemplates.length,6);
  assert.equal(new Set(starterAssuranceTemplates.map(t=>t.id)).size,6);
+});
+
+test("grounded vehicle cannot be released with open defect",()=>{
+ const vehicle={id:"v1",fleetNo:"LV-01",registration:"B 001 ABC",makeModel:"Hilux",type:"Pickup / LDV",site:"demo",status:"No-go",odometerKm:0,roadworthyExpiry:"2027-12-31",extinguisherServiceDue:"2027-12-31",nextServiceKm:1000};
+ const repair={id:"repair1",vehicleId:"v1",incidentIds:["defect1"],repairedBy:"mechanic",repairNotes:"Brakes changed",evidenceReference:"DEMO-ref",recordedAt:"2026-10-08T08:00:00Z"};
+ const reinspection={id:"inspect1",vehicleId:"v1",inspectionBy:"inspector",verdict:"PASS",checkedControls:["Brakes"],performedAt:"2026-10-08T09:00:00Z"};
+ const params={vehicle,incidents:[{id:"defect1",vehicleId:"v1",status:"Open",severity:"Critical",category:"Defect",description:"Brakes",createdAt:"2026-10-08T07:00:00Z"}],repair,reinspection,approver:"supervisor",baselineCertificatesValid:true,now:"2026-10-08T10:00:00Z"};
+ assert.equal(verifyFleetRelease(params).allowed,false);
+ assert.throws(()=>finalizeFleetRelease(params,"release1"));
+ const cleared={...params,incidents:params.incidents.map(i=>({...i,status:"Resolved"}))};
+ const released=finalizeFleetRelease(cleared,"release1");
+ assert.equal(released.vehicle.status,"Inspection due");
+ assert.equal(released.record.decision,"RELEASED_FOR_PRESTART");
+});
+test("maintenance/inspector/approver cannot self-approve",()=>{
+ const vehicle={id:"v1",status:"No-go"};
+ const repair={id:"r1",vehicleId:"v1",incidentIds:[],repairedBy:"operator",repairNotes:"done",evidenceReference:"proof",recordedAt:"2026-10-08T08:00:00Z"};
+ const reinspection={id:"i1",vehicleId:"v1",inspectionBy:"operator",verdict:"PASS",checkedControls:["Brake"],performedAt:"2026-10-08T09:00:00Z"};
+ const reasons=verifyFleetRelease({vehicle,incidents:[],repair,reinspection,approver:"operator",baselineCertificatesValid:true,now:"2026-10-08T10:00:00Z"}).reasons;
+ assert.ok(reasons.some(reason=>reason.includes("different person")));
+ assert.ok(reasons.some(reason=>reason.includes("cannot approve")));
 });
