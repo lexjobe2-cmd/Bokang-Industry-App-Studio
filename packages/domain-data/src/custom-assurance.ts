@@ -240,7 +240,7 @@ export const templateRecipes:readonly TemplateRecipe[]=[
   {id:"worker",title:"Worker declaration",fields:[q("person","Employee name"),q("shift","Shift"),q("rest","Rest hours in past 24h","number"),q("meds","Medication or fitness concerns","multiline",false)]},
   {id:"check",title:"Fit for duty controls",fields:[{...q("fit","Employee fit for assigned task","yes_no"),critical:true},q("actions","Supervisor mitigation / reassignment","multiline",false)]}]},
  {id:"incident",title:"Incident / Near Miss Investigation",category:"Inspections",description:"Event classification, circumstances, root causes and corrective actions",sections:[
-  {id:"event",title:"Event summary",fields:[q("time","Event date/time","datetime"),q("area","Location"),q("nature","Event description","multiline"),q("severity","Severity","select"),q("persons","People affected","multiline")]},
+  {id:"event",title:"Event summary",fields:[q("time","Event date/time","datetime"),q("area","Location"),q("nature","Event description","multiline"),{...q("severity","Severity","select"),options:["Low","Medium","High","Critical"]},q("persons","People affected","multiline")]},
   {id:"analysis",title:"Investigation",fields:[q("immediate","Immediate actions taken","multiline"),q("causes","Contributing / root causes","multiline"),repeat("corrective","Corrective action register",[["action","Action"],["owner","Owner"],["deadline","Due"]])]}]},
  {id:"handover",title:"Shift Handover and Open Defects",category:"Handover",description:"Transfer plant status, critical risks, defects and unfinished permits",sections:[
   {id:"shift",title:"Shift information",fields:[q("date","Handover time","datetime"),q("outgoing","Outgoing shift lead"),q("incoming","Incoming shift lead")]},
