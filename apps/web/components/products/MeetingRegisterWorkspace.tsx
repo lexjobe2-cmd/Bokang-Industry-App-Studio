@@ -35,7 +35,10 @@ export function MeetingRegisterWorkspace(){
  const members=people.filter(p=>p.orgId===org.id&&p.active);
  const template=useMemo(()=>meetingTemplate(org),[org]);
  const answers=drafts[org.id]??newDraft(org.siteIds[0]??"");
- const patch=(changes:Partial<FormAnswers>)=>setDrafts(old=>({...old,[org.id]:{...(old[org.id]??newDraft(org.siteIds[0]??"")),...changes}}));
+ const patch=(changes:Partial<FormAnswers>)=>setDrafts(old=>{
+  const safe=Object.fromEntries(Object.entries(changes).filter(([,v])=>v!==undefined)) as FormAnswers;
+  return {...old,[org.id]:{...(old[org.id]??newDraft(org.siteIds[0]??"")),...safe}};
+ });
  const text=(key:string,value:string)=>patch({[key]:value});
  const selected=Array.isArray(answers.participants)?answers.participants as string[]:[];
  const attendees=rowValues(answers.attendees),actions=rowValues(answers.actions);
@@ -46,7 +49,7 @@ export function MeetingRegisterWorkspace(){
  const openActions=allActions.filter(a=>String(a.state??"").toLowerCase()!=="closed");
  function listPatch(key:"attendees"|"actions",idx:number,part:Partial<Row>){
   const rows=rowValues(answers[key]);
-  patch({[key]:rows.map((r,i)=>i===idx?{...r,...part}:r)});
+  patch({[key]:rows.map((r,i)=>i===idx?{...r,...(Object.fromEntries(Object.entries(part).filter(([,v])=>v!==undefined)) as Row)}:r)});
  }
  function addRow(key:"attendees"|"actions"){patch({[key]:[...rowValues(answers[key]),key==="attendees"?{attendee_name:"",attendee_company:"",attendee_role:"",attendee_ack:"No"}:{action:"",owner:"",due:"",state:"Open"}]});}
  function removeRow(key:"attendees"|"actions",index:number){patch({[key]:rowValues(answers[key]).filter((_,i)=>i!==index)});}
@@ -107,7 +110,7 @@ export function MeetingRegisterWorkspace(){
     </div>
     <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><strong style={{fontSize:13}}>External/manual attendees ({attendees.length})</strong><button style={btn} onClick={()=>addRow("attendees")}><Plus size={14} style={{display:"inline"}}/> Add person</button></div>
     {attendees.map((r,i)=><div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
-     {[["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]].map(([key,title])=><label key={key} style={label}>{title}<input style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
+     {([["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]] as const).map(([key,title])=><label key={key} style={label}>{title}<input style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
      <label style={label}>Attendance acknowledged (demo)<select style={input} value={textValue(r.attendee_ack)||"No"} onChange={e=>listPatch("attendees",i,{attendee_ack:e.target.value})}><option>No</option><option>Yes (unverified)</option></select></label>
      <button aria-label={"Remove attendee "+(i+1)} style={btn} onClick={()=>removeRow("attendees",i)}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
     </div>)}
@@ -115,7 +118,7 @@ export function MeetingRegisterWorkspace(){
    </div>
    <div style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
     <h3 style={{fontSize:17,margin:0}}><FileText size={18} style={{display:"inline",verticalAlign:"middle"}}/> Agenda and minutes</h3>
-    {[["agenda","Agenda / planned topics *"],["safety_highlights","Safety moment / hazards"],["minutes","Meeting discussions and minutes *"],["decisions","Decisions / resolutions"],["outstanding","Outstanding matters / closeout"]].map(([key,title])=>
+    {([["agenda","Agenda / planned topics *"],["safety_highlights","Safety moment / hazards"],["minutes","Meeting discussions and minutes *"],["decisions","Decisions / resolutions"],["outstanding","Outstanding matters / closeout"]] as const).map(([key,title])=>
       <label key={key} style={label}>{title}<textarea style={{...input,minHeight:85}} value={textValue(answers[key])} onChange={e=>text(key,e.target.value)}/></label>)}
    </div>
    <div style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
