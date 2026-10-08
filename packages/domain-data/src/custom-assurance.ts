@@ -156,6 +156,21 @@ export function makeCustomTemplate(input:{
    identifiers.add(f.id);
   }
  }
+ const fields=input.sections.flatMap(section=>section.fields);
+ const byId=new Map(fields.map(field=>[field.id,field]));
+ for(const field of fields){
+  const dependency=field.visibleWhen?.fieldId;
+  if(!dependency)continue;
+  if(!byId.has(dependency)||dependency===field.id)throw new Error(field.label+" references a missing or self-dependent question");
+  let parent:FormField|undefined=byId.get(dependency);
+  const checked=new Set([field.id]);
+  while(parent?.visibleWhen){
+   const next=parent.visibleWhen.fieldId;
+   if(checked.has(next))throw new Error("Conditional question dependency cycle detected");
+   checked.add(next);
+   parent=byId.get(next);
+  }
+ }
  return {id:input.id,version:input.version??1,title,category:input.category,
   status:input.status??"DRAFT",effectiveDate:input.now.slice(0,10),sections:structuredClone(input.sections),
   siteIds:[],assetClasses:[],organizationId:input.organization.id,
