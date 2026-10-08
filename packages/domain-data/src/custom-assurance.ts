@@ -246,3 +246,37 @@ export const templateRecipes:readonly TemplateRecipe[]=[
   {id:"shift",title:"Shift information",fields:[q("date","Handover time","datetime"),q("outgoing","Outgoing shift lead"),q("incoming","Incoming shift lead")]},
   {id:"outstanding",title:"Items carried over",fields:[repeat("tasks","Incomplete work",[["ref","Job / asset"],["action","Outstanding work"],["owner","Owner"]]),q("grounded","Grounded assets","multiline"),q("hazards","Unresolved hazards","multiline"),check("accepted","Incoming shift understands the open risks",true)]}]}
 ];
+
+/** Rich fictional example suitable for testing risk, crew acknowledgements and mitigation UI. */
+export function sampleBrakeMaintenanceJra(org:OrganizationProfile,people:readonly PersonRecord[],now:string):JobRiskAssessment{
+ const jra=blankJra(org,now);
+ const supervisor=people.find(p=>p.jobTitle.toLowerCase().includes("supervisor"))??people[0];
+ const crew=people.filter(p=>p.id!==supervisor?.id).slice(0,4);
+ jra.title="Haul truck brake repair and function test";
+ jra.reference=org.documentPrefix+"-JRA-DEMO";
+ jra.jobId="WO-DEMO-204";jra.jobType="Breakdown maintenance";
+ jra.location="Haulage maintenance bay 4";
+ jra.scope="Isolate haul truck, inspect brake system, replace defective hose, prove zero energy and functional test under controlled conditions.";
+ jra.method="Inspect → isolate → lock out → replace → inspect → remove isolation under permit → functional test.";
+ jra.emergencyPlan="Stop work, notify control room and follow site emergency plan. Muster at designated workshop muster point.";
+ jra.ppe=["Hard hat","Safety glasses","Safety footwear","Gloves","High-visibility vest"];
+ jra.supervisorId=supervisor?.id??"";
+ jra.participants=crew.map(p=>({personId:p.id,nameSnapshot:p.displayName,role:p.jobTitle,acknowledged:false,manual:p.source==="MANUAL"}));
+ const examples=[
+  {step:"Secure and isolate haul truck",category:"Stored energy / LOTO",hazard:"Unexpected vehicle movement and residual hydraulic pressure",consequence:"Crush injury or injection injury",control:"Park on level ground, apply wheel chocks and isolation locks; verify zero energy.",lh:4,sev:5,rlh:2,rsev:4},
+  {step:"Remove defective brake hose",category:"Pressure systems",hazard:"Residual pressure or line rupture",consequence:"Fluid injection, laceration or eye injury",control:"Depressurise, wear face shield and use appropriate rated tools.",lh:4,sev:4,rlh:2,rsev:3},
+  {step:"Perform controlled brake function test",category:"Vehicle interaction",hazard:"Vehicle moves into people during function test",consequence:"Fatal collision or equipment damage",control:"Barricade testing zone; appoint banksman; test with spotter at safe distance.",lh:5,sev:5,rlh:2,rsev:4}
+ ];
+ jra.tasks=examples.map((item,index)=>{
+  const task=blankJraTask(index+1);task.description=item.step;
+  task.equipment=index===0?["LOTO kit","wheel chocks"]:index===1?["hydraulic fittings","torque wrench"]:["spotter radio","test bay"];
+  const h=blankHazard();h.category=item.category;h.hazard=item.hazard;h.consequence=item.consequence;
+  h.exposedPersonIds=crew.map(p=>p.id);
+  h.controls=[{id:"ctl-"+index,hierarchy:"Engineering",description:item.control,ownerId:crew[index%crew.length]?.id,verified:false}];
+  h.initial={...h.initial,likelihood:item.lh,consequence:item.sev};
+  h.residual={...h.residual,likelihood:item.rlh,consequence:item.rsev};
+  task.hazards=[h];
+  return task;
+ });
+ return jra;
+}
