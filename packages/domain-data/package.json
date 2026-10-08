@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./operational-assurance": "./src/operational-assurance.ts",
     "./assurance-forms": "./src/assurance-forms.ts",
-    "./risk-matrix": "./src/risk-matrix.ts"
+    "./risk-matrix": "./src/risk-matrix.ts",
+    "./custom-assurance": "./src/custom-assurance.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
