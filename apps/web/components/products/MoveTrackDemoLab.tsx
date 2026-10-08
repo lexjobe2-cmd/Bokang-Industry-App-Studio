@@ -18,7 +18,7 @@ const style:React.CSSProperties={border:"1px solid #dce4ef",borderRadius:17,padd
 const scenarios=[
  {key:"assignment" as const,title:"Driver pre-start",desc:"A vehicle is assigned to K. Dube. Complete PASS/FAIL inspections in the driver app.",icon:Truck,color:"#2563eb"},
  {key:"grounded" as const,title:"Grounded equipment",desc:"A critical brake defect blocks release. Record corrective action, repair, reinspection and approval.",icon:AlertTriangle,color:"#b42318"},
- {key:"reset" as const,title:"Reset workspace",desc:"Restore fleet demo data, clear locally created records and start a fresh test.",icon:RotateCcw,color:"#64748b"},
+ {key:"reset" as const,title:"Reset fleet scenario",desc:"Restore sample fleet and clear test inspections. Preserve custom companies, templates and JRA drafts.",icon:RotateCcw,color:"#64748b"},
 ];
 export function MoveTrackDemoLab(){
  const reducedMotion=useReducedMotion();
@@ -38,7 +38,7 @@ export function MoveTrackDemoLab(){
  const hydrated=[fleetReady,driversReady,assignReady,prestartsReady,incidentsReady,policiesReady,submissionReady,draftsReady,repairReady,reinspectReady,releasesReady].every(Boolean);
  function applyScenario(scenario:Scenario){
   if(!hydrated)return;
-  if(scenario==="reset"&&!window.confirm("Reset all locally saved MoveTrack demo inspections, repairs and assignments in this browser?"))return;
+  if(scenario==="reset"&&!window.confirm("Reset demo fleet, assignments, checklists, repairs and incidents? Your custom companies, form designer and JRA drafts will be preserved."))return;
   const now=new Date().toISOString();
   const seededFleet=starterFleet.map(v=>({...v}));
   const seededAssignments:FleetAssignment[]=[];
@@ -77,7 +77,7 @@ export function MoveTrackDemoLab(){
   setRepairs([]);setReinspections([]);setReleases([]);
   setSubmissions([]);setDrafts({});
   setActive(scenario);
-  setNotice(scenario==="grounded"?"Grounded fleet scenario loaded. Open Fleet control, resolve the defect with a note, then use Repair & release.":scenario==="assignment"?"Driver scenario loaded. Open the driver app, complete a pre-start and return to Fleet control to see the result.":"Browser demo data reset.");
+  setNotice(scenario==="grounded"?"Grounded fleet scenario loaded. Open Fleet control, resolve the defect with a note, then use Repair & release.":scenario==="assignment"?"Driver scenario loaded. Open the driver app, complete a pre-start and return to Fleet control to see the result.":"Fleet test data reset. Your custom companies, branded templates, JRA drafts and saved JRA records are preserved.");
  }
  return <main style={{background:"#f3f7fc",minHeight:"100vh",color:"#15233a",paddingBottom:100}}>
   <div style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"34px 20px 46px"}}>
