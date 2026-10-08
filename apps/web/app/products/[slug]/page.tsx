@@ -46,6 +46,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
 
+        {config.slug === "move-track" ? (
+          <section style={{margin:"20px 0",padding:18,border:"1px solid #bfdbfe",borderRadius:18,background:"#eff6ff",display:"flex",gap:14,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
+            <div>
+              <strong style={{fontSize:16,color:"#17345f"}}>Fleet + SHE frontend demo</strong>
+              <p style={{margin:"5px 0 0",color:"#52677d",fontSize:12}}>Try pre-start inspections, meeting registers, JSA/JRA, defects and releases. No sign-in or cloud setup.</p>
+            </div>
+            <Link href="/demo/move-track/assurance" style={{background:"#1d4ed8",color:"#fff",padding:"12px 16px",borderRadius:12,textDecoration:"none",fontSize:13,fontWeight:850}}>
+              Open interactive demo →
+            </Link>
+          </section>
+        ) : null}
+
         <ProductMediaHero config={config} />
 
         <WorkspaceUtilities config={config} />
