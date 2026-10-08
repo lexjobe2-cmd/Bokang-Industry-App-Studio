@@ -11,6 +11,8 @@ import {
 } from "@bokang/domain-data/custom-assurance";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
+import {DocumentDownloadActions} from "./DocumentDownloadActions";
+import {buildJraDocument} from "../lib/form-exports";
 
 const shell:React.CSSProperties={background:"#fff",border:"1px solid #dde5ee",borderRadius:16,padding:17};
 const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",background:"#fff",color:"#111827",font:"inherit",minHeight:43};
@@ -94,6 +96,15 @@ export function JraWorkspace(){
     <button style={{...btn,background:"#dbeafe",borderColor:"#dbeafe"}} onClick={startSample}>Load example job</button>
    </div>
   </div>
+  <div style={{...shell,display:"grid",gap:8}}>
+    <strong style={{fontSize:13}}>Export job risk assessments</strong>
+    <p style={{fontSize:11,color:"#64748b",margin:0}}>Generate an editable Word, PDF, CSV or JSON file. Blank templates, in-progress drafts and saved JRAs can be downloaded without a server.</p>
+    <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+      <span style={{fontSize:11,fontWeight:800}}>Blank JRA:</span>
+      <DocumentDownloadActions document={buildJraDocument(blankJra(org,new Date().toISOString()),persons)} compact/>
+      {current?<><span style={{fontSize:11,fontWeight:800}}>Current {current.status==="DRAFT"?"draft":"assessment"}:</span><DocumentDownloadActions document={buildJraDocument(current,persons)} compact/></>:null}
+    </div>
+  </div>
   {message?<div role="status" style={{...shell,color:"#1e40af",background:"#eff6ff",fontSize:12}}>{message}</div>:null}
   {!current?<div style={{display:"grid",gap:11}}>
    <div style={{...shell,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
@@ -101,7 +112,7 @@ export function JraWorkspace(){
        <select style={{...input,minWidth:220}} value={org.id} onChange={e=>setSelectedOrg(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label><span style={{fontSize:12,color:"#667085"}}>{count} locally saved job records; no sign-in required</span></div><button style={primary} onClick={start}>Create new JRA</button></div>
    {records.filter(r=>r.orgId===org.id).length===0?<div style={{...shell,textAlign:"center",padding:"45px 15px"}}><ClipboardList size={34} color="#94a3b8"/><h3>No JRA saved yet</h3><p style={{color:"#64748b",fontSize:12}}>Start a new assessment, choose workers and build a task-by-task hazard register.</p></div>:records.map(jra=><div key={jra.id} style={{...shell,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center",flexWrap:"wrap"}}>
     <div><Badge>{jra.status.replaceAll("_"," ")}</Badge><h3 style={{fontSize:16,margin:"8px 0 5px"}}>{jra.title||"Untitled assessment"}</h3><span style={{fontSize:12,color:"#667085"}}>{jra.reference} · {jra.jobId} · {jra.tasks.length} steps · {jra.participants.length} people</span></div>
-    <div style={{display:"flex",gap:6}}><button style={btn} onClick={()=>{setCurrent(jra);setSelectedOrg(jra.orgId);setEditing(jra.id);setPage("job");setMessage("");}}>Open</button><button style={btn} onClick={()=>{const newId="JRA-"+crypto.randomUUID();const copy={...structuredClone(jra),id:newId,reference:jra.reference+"-COPY",revision:1,status:"DRAFT" as const,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};setCurrent(copy);setEditing(null);setPage("job");}}>Duplicate</button></div>
+    <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}><DocumentDownloadActions document={buildJraDocument(jra,persons)} compact/><button style={btn} onClick={()=>{setCurrent(jra);setSelectedOrg(jra.orgId);setEditing(jra.id);setPage("job");setMessage("");}}>Open</button><button style={btn} onClick={()=>{const newId="JRA-"+crypto.randomUUID();const copy={...structuredClone(jra),id:newId,reference:jra.reference+"-COPY",revision:1,status:"DRAFT" as const,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};setCurrent(copy);setEditing(null);setPage("job");}}>Duplicate</button></div>
    </div>)}
   </div>:<div style={{display:"grid",gap:13}}>
     <div style={{...shell,borderTop:"4px solid "+org.accent}}>
