@@ -45,13 +45,46 @@ export function usePersistentState<T>(
     }
   }, [scopedKey]);
 
+  // Same-tab components do not receive native "storage" events. Broadcast to peers
+  // so a grounded asset and its assignment remain consistent across active screens.
+  useEffect(() => {
+    function apply(raw: string | null) {
+      if (raw === null) return;
+      setValue((current) => {
+        try {
+          if (JSON.stringify(current) === raw) return current;
+          return JSON.parse(raw) as T;
+        } catch { return current; }
+      });
+    }
+    function onLocal(event: Event) {
+      const detail = (event as CustomEvent<{key:string; raw:string}>).detail;
+      if (detail?.key === scopedKey) apply(detail.raw);
+    }
+    function onStorage(event: StorageEvent) {
+      if (event.key === scopedKey) apply(event.newValue);
+    }
+    window.addEventListener("bokang:persistence-updated", onLocal);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("bokang:persistence-updated", onLocal);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [scopedKey]);
+
   useEffect(() => {
     if (!hydrated) return;
+    const serialized = JSON.stringify(value);
     try {
-      window.localStorage.setItem(scopedKey, JSON.stringify(value));
+      // Prevent peer-to-peer rebroadcast loops.
+      if (window.localStorage.getItem(scopedKey) === serialized) return;
+      window.localStorage.setItem(scopedKey, serialized);
     } catch {
-      // Storage quota/private mode should not make the UI unusable.
+      // Still notify other mounted components when browser storage is blocked.
     }
+    window.dispatchEvent(new CustomEvent("bokang:persistence-updated", {
+      detail: {key: scopedKey, raw: serialized}
+    }));
   }, [hydrated, scopedKey, value]);
 
   return [value, setValue, hydrated];
