@@ -12,7 +12,7 @@ import {
 import { MOVE_TRACK_KEYS, starterFleet, type FleetVehicle, type FleetIncident, type FleetAssignment } from "../../lib/move-track";
 import { CustomFormBuilder } from "./CustomFormBuilder";
 import { JraWorkspace } from "./JraWorkspace";
-import { ASSURANCE_STORAGE,type CustomTemplate } from "@bokang/domain-data/custom-assurance";
+import { ASSURANCE_STORAGE,demoPeople,type CustomTemplate,type PersonRecord } from "@bokang/domain-data/custom-assurance";
 
 
 const tile:React.CSSProperties={background:"#fff",border:"1px solid #dce4ee",borderRadius:17,padding:17};
@@ -34,6 +34,7 @@ export function AssuranceFormsWorkspace(){
  const [drafts,setDrafts]=usePersistentState<Record<string,FormAnswers>>("bokang-studio.move-track.assurance-drafts.v1",{});
  const [tab,setTab]=useState<"library"|"records"|"designer"|"jra">("library");
  const [customTemplates]=usePersistentState<CustomTemplate[]>(ASSURANCE_STORAGE.templates,[]);
+ const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
  const [activeId,setActiveId]=useState<string|null>(null);
  const [sectionIndex,setSectionIndex]=useState(0);
  const [siteId,setSiteId]=useState("Jwaneng mine · demo profile");
@@ -147,7 +148,7 @@ export function AssuranceFormsWorkspace(){
         <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
         {activeSection.description?<p style={{color:"#667085"}}>{activeSection.description}</p>:null}
         <div style={{display:"grid",gap:17,marginTop:22}}>
-          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)}/>)}
+          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={directory} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)}/>)}
         </div>
       </motion.div>
     </AnimatePresence>
@@ -174,9 +175,26 @@ export function AssuranceFormsWorkspace(){
  </section>;
 }
 
-function FieldInput({field,value,onChange}:{field:FormField;value:FormAnswer|undefined;onChange:(value:FormAnswer)=>void}){
+function FieldInput({field,value,onChange,people}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void}){
  const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"#b42318"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"#b42318",background:"#fef2f2",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
  const fieldStyle:React.CSSProperties={display:"grid",gap:8};
+ if(field.type==="person"){
+   return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}>
+    <option value="">Select organization person</option>
+    {people.filter(p=>p.active).map(p=><option key={p.id} value={p.id}>{p.displayName} · {p.jobTitle} · {p.department}</option>)}
+   </select><span style={{fontSize:11,color:"#64748b"}}>From the local organization directory. Microsoft 365 sync is not active.</span></label>;
+ }
+ if(field.type==="people"){
+   const selected=Array.isArray(value)?value as string[]:[];
+   return <div style={fieldStyle}>{label}
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:7}}>
+      {people.filter(p=>p.active).map(p=><button type="button" key={p.id} aria-pressed={selected.includes(p.id)} onClick={()=>onChange(selected.includes(p.id)?selected.filter(v=>v!==p.id):[...selected,p.id])}
+        style={{...button,background:selected.includes(p.id)?"#dbeafe":"white",textAlign:"left",padding:10,fontSize:12}}>
+        <strong>{selected.includes(p.id)?"✓ ":""}{p.displayName}</strong><span style={{display:"block",color:"#64748b",fontSize:10,marginTop:4}}>{p.jobTitle} · {p.department}</span>
+      </button>)}
+    </div><span style={{fontSize:11,color:"#64748b"}}>{selected.length} participant(s) selected. Demo directory only.</span>
+   </div>;
+ }
  if(field.type==="pass_fail_na"||field.type==="yes_no"){
    const opts=field.type==="yes_no"?["YES","NO"]:["PASS","FAIL","NA"];
    return <div style={fieldStyle}>{label}<div style={{display:"grid",gridTemplateColumns:`repeat(${opts.length},minmax(0,1fr))`,gap:8}}>
