@@ -11,8 +11,8 @@ const button:React.CSSProperties={border:"1px solid #cbd5e1",background:"#fff",m
 const primary:React.CSSProperties={...button,border:0,color:"#fff",background:"#174fa8"};
 const card:React.CSSProperties={background:"#fff",border:"1px solid #dae4f0",borderRadius:16,padding:17};
 const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,fontWeight:800,color:"#344054"};
-const initial=()=>({...demoOrganization,id:"",name:"",domain:"",businessUnit:"",siteIds:[],ownerIds:[],logoDataUrl:undefined,logoName:undefined,documentPrefix:"SHE",footer:"Uncontrolled when printed · Operational approval required",accent:"#155eef",source:"MANUAL" as const,industry:"Mining & resources",updatedAt:""});
-type Draft=ReturnType<typeof initial>;
+type Draft=OrganizationProfile & {industry:string};
+const initial=():Draft=>({...demoOrganization,id:"",name:"",domain:"",businessUnit:"",siteIds:[],ownerIds:[],logoDataUrl:undefined,logoName:undefined,documentPrefix:"SHE",footer:"Uncontrolled when printed · Operational approval required",accent:"#155eef",source:"MANUAL" as const,industry:"Mining & resources",updatedAt:""});
 type PersonDraft={name:string;jobTitle:string;email:string;department:string;owner:boolean};
 const emptyMember=():PersonDraft=>({name:"",jobTitle:"",department:"",email:"",owner:false});
 export function OrganizationOnboarding(){
