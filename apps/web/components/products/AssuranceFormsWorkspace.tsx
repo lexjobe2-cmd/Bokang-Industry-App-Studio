@@ -43,6 +43,7 @@ export function AssuranceFormsWorkspace(){
  const library=[...starterAssuranceTemplates,...customTemplates.filter(t=>t.status==="PUBLISHED")];
  const template=library.find(t=>t.id===activeId);
  const brandedTemplate=customTemplates.find(t=>t.id===activeId);
+ const visiblePeople=directory.filter(p=>p.active&&p.orgId===(brandedTemplate?.organizationId??"demo-mining"));
  const answers=activeId?(drafts[activeId]??{}):{};
  const evaluation=useMemo(()=>template?evaluateForm(template,answers):null,[template,answers]);
  const activeSection=template?.sections[sectionIndex];
@@ -148,7 +149,7 @@ export function AssuranceFormsWorkspace(){
         <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
         {activeSection.description?<p style={{color:"#667085"}}>{activeSection.description}</p>:null}
         <div style={{display:"grid",gap:17,marginTop:22}}>
-          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={directory} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)}/>)}
+          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)}/>)}
         </div>
       </motion.div>
     </AnimatePresence>
