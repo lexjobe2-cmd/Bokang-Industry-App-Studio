@@ -138,7 +138,8 @@ export function parseWorkspaceBackup(raw:string):WorkspaceBackup{
 }
 /** Safely write records, rolling back the affected keys if the browser refuses any update. */
 export function restoreWorkspaceBackup(storage:Storage,backup:WorkspaceBackup){
- const items=Object.entries(backup.items);
+ const parsed=parseWorkspaceBackup(JSON.stringify(backup));
+ const items=Object.entries(parsed.items);
  const original=new Map(items.map(([key])=>[key,storage.getItem(key)]));
  const written:string[]=[];
  try{
@@ -154,7 +155,11 @@ export function restoreWorkspaceBackup(storage:Storage,backup:WorkspaceBackup){
  return items.length;
 }
 export function clearWorkspaceData(storage:Storage){
- const keys=Object.keys(ownEntries(storage));
+ const keys:string[]=[];
+ for(let i=0;i<storage.length;i++){
+  const key=storage.key(i);
+  if(key&&safeKey(key))keys.push(key);
+ }
  for(const key of keys)resetLocalKey(key,storage);
  return keys.length;
 }
