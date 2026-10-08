@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ClipboardCheck, FileText, ShieldAlert, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, CloudOff } from "lucide-react";
 import { useAssuranceIdentity } from "../../lib/firebase-assurance";
+import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "@bokang/domain-data/risk-matrix";
 import { usePersistentState } from "@bokang/persistence";
 import {
   starterAssuranceTemplates, evaluateForm, isVisible, makeSubmission,
@@ -191,8 +192,26 @@ function FieldInput({field,value,onChange}:{field:FormField;value:FormAnswer|und
    return <div style={fieldStyle}>{label}<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{(field.options??[]).map(opt=><button key={opt} aria-pressed={selected.includes(opt)} style={{...button,background:selected.includes(opt)?"#dbeafe":"#fff"}} onClick={()=>onChange(selected.includes(opt)?selected.filter(v=>v!==opt):[...selected,opt])}>{opt}</button>)}</div></div>;
  }
  if(field.type==="risk"){
-   const current=typeof value==="number"?value:0;
-   return <div style={fieldStyle}>{label}<label style={{fontSize:12}}>Risk score (1–25)<input type="number" min={1} max={25} step={1} value={current||""} onChange={e=>onChange(e.target.value?Number(e.target.value):null)} style={input}/></label><span style={{fontSize:11,color:current>=17?"#b42318":current>=10?"#b45309":"#667085"}}>{current>=17?"EXTREME — approval required":current>=10?"HIGH — approval required":current>=5?"MEDIUM":current>=1?"LOW":"Enter risk score"}</span></div>;
+   const current:RiskAnswer=(value && typeof value==="object" && !Array.isArray(value) && "likelihood" in value && "consequence" in value) ? value as RiskAnswer : {likelihood:0,consequence:0,matrixId:defaultRiskMatrix.id,matrixVersion:defaultRiskMatrix.version};
+   let result:ReturnType<typeof scoreRisk>|null=null;
+   try{result=scoreRisk(defaultRiskMatrix,current);}catch{}
+   const select=(dimension:"likelihood"|"consequence",labels:readonly string[])=><label style={{...fieldStyle,fontSize:12}}>
+      {dimension==="likelihood"?"Likelihood":"Consequence"}
+      <select style={input} value={current[dimension]||""} onChange={e=>onChange({...current,[dimension]:Number(e.target.value)})}>
+       <option value="">Select</option>{labels.map((name,i)=><option key={name} value={i+1}>{i+1} · {name}</option>)}
+      </select>
+     </label>;
+   return <div style={fieldStyle}>
+     {label}
+     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:10}}>
+      {select("likelihood",defaultRiskMatrix.likelihoodLabels)}
+      {select("consequence",defaultRiskMatrix.consequenceLabels)}
+     </div>
+     <div style={{padding:12,borderRadius:10,background:result?.level==="EXTREME"?"#fef2f2":result?.level==="HIGH"?"#fff7ed":"#f8fafc",fontSize:12}}>
+      <strong>{result?result.score+" / 25 · "+result.level:"Choose likelihood and consequence"}</strong>
+      <div style={{color:result?.requiresApproval?"#b42318":"#667085"}}>{result?.requiresApproval?"High / extreme risk requires separately verified supervisor approval":"Standard 5 × 5 matrix · version "+defaultRiskMatrix.version}</div>
+     </div>
+    </div>;
  }
  if(field.type==="select")return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}><option value="">Select option</option>{(field.options??["Day shift","Night shift"]).map(opt=><option key={opt}>{opt}</option>)}</select></label>;
  if(field.type==="multiline")return <label style={fieldStyle}>{label}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)}/></label>;
