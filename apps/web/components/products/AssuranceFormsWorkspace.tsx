@@ -16,6 +16,9 @@ import { ASSURANCE_STORAGE,demoPeople,demoOrganization,makeCustomTemplate,type C
 import {additionalAssuranceRecipes,workflowLinks} from "@bokang/domain-data/expanded-assurance";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY,ACTIVE_JOB_REFERENCE_KEY,recipeTemplateId} from "./OperationalGraphPanel";
+import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
+import {DocumentDownloadActions} from "./DocumentDownloadActions";
+import {buildFormDocument} from "../lib/form-exports";
 
 
 const tile:React.CSSProperties={background:"#fff",border:"1px solid #dce4ee",borderRadius:17,padding:17};
@@ -38,6 +41,7 @@ export function AssuranceFormsWorkspace(){
  const [tab,setTab]=usePersistentState<"library"|"records"|"designer"|"jra">(ACTIVE_FORMS_TAB_KEY,"library");
  const [customTemplates]=usePersistentState<CustomTemplate[]>(ASSURANCE_STORAGE.templates,[]);
  const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
+ const [actorPersonId,setActorPersonId]=usePersistentState(ACTIVE_PERSON_KEY,"");
  const [activeId,setActiveId]=usePersistentState<string|null>(ACTIVE_WORKFLOW_KEY,null);
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
  const [activeOrgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
@@ -81,7 +85,7 @@ export function AssuranceFormsWorkspace(){
     const record=makeSubmission({
       id:"DEMO-FORM-"+crypto.randomUUID(),template,answers,siteId:siteId||org.siteIds[0]||"Demo site",taskId:jobReference.trim()||undefined,
       assetId:template.category==="Fleet"?assetId||undefined:undefined,
-      actorUid:"LOCAL-DEMO-OPERATOR",now:new Date().toISOString()
+      actorUid:"LOCAL-DEMO-OPERATOR",actorPersonId:actorPersonId||undefined,now:new Date().toISOString()
     });
     setSubmissions(current=>[record,...current]);
     if(template.category==="Fleet"&&assetId&&record.decision==="NO_GO"){
@@ -159,9 +163,22 @@ export function AssuranceFormsWorkspace(){
         <div style={{textAlign:"right"}}><strong>{evaluation.progress}% complete</strong><p style={{fontSize:12,margin:"4px 0",color:"#667085"}}>Step {sectionIndex+1} of {template.sections.length}</p></div>
       </div>
       <div aria-label="Form completion" style={{height:7,borderRadius:20,background:"#e2e8f0",marginTop:12,overflow:"hidden"}}><motion.div initial={false} animate={{width:evaluation.progress+"%"}} transition={easing} style={{height:"100%",background:"#2563eb",borderRadius:20}}/></div>
+      <div style={{display:"grid",gap:10,marginTop:12,padding:12,borderRadius:12,border:"1px solid #bfdbfe",background:"#f8fbff"}}>
+       <strong style={{fontSize:12}}>Document download center · blank or current draft</strong>
+       <p style={{fontSize:11,color:"#64748b",margin:0}}>Download the original unfilled template, or a copy of your in-progress answers before submitting. PDF, editable Word, CSV and JSON.</p>
+       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+         <DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:visiblePeople,jobId:jobReference,site:siteId})} compact/>
+         <DocumentDownloadActions document={buildFormDocument({template,mode:"draft",answers,company:org,people:visiblePeople,jobId:jobReference,site:siteId})} compact/>
+       </div>
+      </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:8,marginTop:15}}>
         <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Operating site
           <select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}>{org.siteIds.map(site=><option key={site}>{site}</option>)}</select>
+        </label>
+        <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Submitted by (local team member)
+          <select style={input} value={visiblePeople.some(p=>p.id===actorPersonId)?actorPersonId:""} onChange={e=>setActorPersonId(e.target.value)}>
+             <option value="">Anonymous demo operator</option>{visiblePeople.map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}
+          </select>
         </label>
         <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Job / work order ID
           <input style={input} value={jobReference} placeholder="WO-2026-001" onChange={e=>setJobReference(e.target.value)}/>
@@ -204,6 +221,7 @@ export function AssuranceFormsWorkspace(){
       <div style={{textAlign:"right",display:"grid",gap:7,justifyItems:"end"}}>
        <strong style={{color:r.decision==="NO_GO"?"#b42318":"#047857"}}>{r.decision}</strong>
        <div style={{color:"#2563eb",fontSize:11}}>SAVED LOCALLY</div>
+       <DocumentDownloadActions document={buildFormDocument({template:r.templateSnapshot,mode:"filled",submission:r,company:org,people:visiblePeople})} compact/>
      </div>
     </div>)}
   </div>:null}
