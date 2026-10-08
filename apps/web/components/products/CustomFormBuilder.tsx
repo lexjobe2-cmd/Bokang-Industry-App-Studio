@@ -40,6 +40,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  const [orgId,setOrgId]=useState(demoOrganization.id);
  const org=orgs.find(o=>o.id===orgId)??orgs[0]??demoOrganization;
  const current=templates.find(t=>t.id===editing);
+ function addOrganization(){const id="org-"+crypto.randomUUID();const created={...structuredClone(demoOrganization),id,name:"New organization",domain:"",businessUnit:"",logoDataUrl:undefined,logoName:undefined,ownerIds:[],source:"MANUAL" as const,updatedAt:new Date().toISOString()};setOrgs(xs=>[...xs,created]);setOrgId(id);setPanel("branding");setNotice("Organization workspace created locally. Add branding and people before publishing.");}
  function patchOrg(patch:Partial<OrganizationProfile>){setOrgs(xs=>xs.map(o=>o.id===org.id?{...o,...patch,updatedAt:new Date().toISOString()}:o));}
  function patchSection(index:number,patch:Partial<FormSection>){setSections(xs=>xs.map((s,i)=>i===index?{...s,...patch}:s));}
  function patchField(si:number,fi:number,patch:Partial<FormField>){setSections(xs=>xs.map((s,i)=>i!==si?s:{...s,fields:s.fields.map((f,j)=>j===fi?{...f,...patch}:f)}));}
@@ -88,7 +89,8 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
   </div>
   {notice?<div role="status" style={{...card,background:"#eff6ff",fontSize:12,color:"#1e40af"}}>{notice}</div>:null}
   {panel==="branding"?<div style={{...card,display:"grid",gap:14}}>
-   <h3 style={{margin:0}}>Organization / controlled document branding</h3>
+   <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><h3 style={{margin:0}}>Organization onboarding / branding</h3><button style={blue} onClick={addOrganization}><Plus size={15} style={{display:"inline"}}/> Add another company</button></div>
+   <label style={label}>Current company<select style={input} value={org.id} onChange={e=>setOrgId(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
     <label style={label}>Company name<input style={input} value={org.name} onChange={e=>patchOrg({name:e.target.value})}/></label>
     <label style={label}>Organization domain<input style={input} value={org.domain} onChange={e=>patchOrg({domain:e.target.value})} placeholder="company.co.bw"/></label>
@@ -115,9 +117,11 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
       </div><button style={{...blue,marginTop:12}} onClick={addPerson}><Plus size={15} style={{display:"inline"}}/> Add company person</button>
     </div>
     <div style={card}><strong>{people.filter(p=>p.orgId===org.id).length} members in {org.name}</strong>
+      <p style={{fontSize:12,color:"#667085"}}>Set organization owners separately from job supervisors. Future Microsoft 365 organization administrators can be mapped to these profiles after tenant authorization; none are fetched now.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:9,marginTop:14}}>
        {people.filter(p=>p.orgId===org.id).map(p=><div key={p.id} style={{padding:12,borderRadius:11,background:"#f8fafc",display:"flex",gap:9,justifyContent:"space-between"}}>
          <div><strong style={{fontSize:12}}>{p.displayName}</strong><p style={{fontSize:11,color:"#667085",margin:"4px 0"}}>{p.jobTitle} · {p.department}</p><span style={{fontSize:10,color:"#2563eb"}}>{p.source.replaceAll("_"," ")}</span></div>
+         <label style={{fontSize:11,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}><input type="checkbox" checked={org.ownerIds.includes(p.id)} onChange={e=>patchOrg({ownerIds:e.target.checked?[...new Set([...org.ownerIds,p.id])]:org.ownerIds.filter(id=>id!==p.id)})}/> Org owner</label>
          <button style={{...btn,padding:7,minHeight:31}} aria-label={"Remove "+p.displayName} onClick={()=>setPeople(xs=>xs.filter(item=>item.id!==p.id))}><Trash2 size={14}/></button>
        </div>)}
       </div>
