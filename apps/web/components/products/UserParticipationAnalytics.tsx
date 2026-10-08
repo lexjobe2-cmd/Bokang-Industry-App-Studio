@@ -6,7 +6,7 @@ import {buildAssuranceAnalytics,type ParticipationItem} from "@bokang/domain-dat
 import {ASSURANCE_STORAGE,demoPeople,demoOrganization,type JobRiskAssessment,type PersonRecord,type OrganizationProfile} from "@bokang/domain-data/custom-assurance";
 import type {FormSubmission} from "@bokang/domain-data/assurance-forms";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
-import {buildFormDocument,buildJraDocument} from "../lib/form-exports";
+import {buildFormDocument,buildJraDocument} from "../../lib/form-exports";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 export const ACTIVE_PERSON_KEY="bokang-studio.move-track.active-person.v1";
 const card:React.CSSProperties={background:"#fff",border:"1px solid #d8e3ef",borderRadius:16,padding:16};
