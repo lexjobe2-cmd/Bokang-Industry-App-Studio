@@ -202,7 +202,8 @@ export function JraWorkspace(){
     {page==="review"?<div style={{display:"grid",gap:13}}>
       <div style={{...shell,background:assessment?.decision==="READY_FOR_DEMO_REVIEW"?"#ecfdf3":"#fff7ed",borderColor:assessment?.decision==="READY_FOR_DEMO_REVIEW"?"#abefc6":"#fed7aa"}}>
        <div style={{display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><strong style={{fontSize:18}}>{assessment?.decision.replaceAll("_"," ")}</strong><p style={{fontSize:12,color:"#667085",margin:"4px 0"}}>{job.tasks.length} job steps · {job.tasks.reduce((n,s)=>n+s.hazards.length,0)} hazards · {job.participants.length} participating people</p></div>
-       <div><Badge color={assessment?.highRisks?"#b42318":"#087f5b"}>{assessment?.highRisks??0} high residual risks</Badge></div></div>
+       <div style={{display:"flex",gap:7,flexWrap:"wrap"}}><Badge color={assessment?.highRisks?"#b42318":"#087f5b"}>{assessment?.highRisks??0} high residual risks</Badge><Badge color={assessment?.unverifiedControls?"#b45309":"#087f5b"}>{assessment?.unverifiedControls??0} controls awaiting verification</Badge></div></div>
+       {assessment?.unverifiedControls?<p style={{fontSize:12,color:"#b45309",margin:"10px 0 0"}}>Confirm each implemented control in Tasks & hazards. An unverified remedy cannot support a demo approval.</p>:null}
        {assessment?.missing.length?<div style={{marginTop:12}}><strong style={{fontSize:12}}>Missing information</strong><ul style={{fontSize:12,color:"#92400e",lineHeight:1.8}}>{assessment.missing.slice(0,24).map((m,i)=><li key={i}>{m}</li>)}</ul></div>:null}
       </div>
       <div style={shell}><h3 style={{marginTop:0}}>Approver / review register</h3>
