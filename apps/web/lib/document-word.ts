@@ -41,12 +41,16 @@ export async function renderProfessionalWord(doc:ExportDocument):Promise<Blob>{
      new Paragraph({children:[normal("CONTROLLED DOCUMENT  |  LOCAL DEMO","D5E5FB",16)],spacing:{after:0}})
    ]})
   ]})]});
+ const details=doc.sections.find(s=>s.title.toLowerCase()==="document information");
+ const detail=(name:string)=>details?.rows.find(row=>row.label.toLowerCase()===name)?.value??"Not specified";
  const meta=new Table({width:{size:100,type:WidthType.PERCENTAGE},borders:{top:{style:BorderStyle.SINGLE,size:5,color:border},bottom:{style:BorderStyle.SINGLE,size:5,color:border},left:{style:BorderStyle.SINGLE,size:5,color:border},right:{style:BorderStyle.SINGLE,size:5,color:border},insideHorizontal:{style:BorderStyle.SINGLE,size:3,color:border},insideVertical:{style:BorderStyle.SINGLE,size:3,color:border}},
    rows:[
     pairRow({label:"Document reference",value:doc.reference},0),
     pairRow({label:"Document type",value:doc.mode==="blank"?"BLANK / UNFILLED":doc.mode==="draft"?"WORKING DRAFT":"RECORDED COPY"},1),
     pairRow({label:"Current state",value:doc.status.replaceAll("_"," ")},2),
-    pairRow({label:"Document date",value:!Number.isNaN(Date.parse(doc.timestamp))?new Date(doc.timestamp).toLocaleDateString("en-GB"):doc.timestamp},3)
+    pairRow({label:"Job / work order",value:detail("work order")},3),
+    pairRow({label:"Work site",value:detail("site")},4),
+    pairRow({label:"Document date",value:!Number.isNaN(Date.parse(doc.timestamp))?new Date(doc.timestamp).toLocaleDateString("en-GB"):doc.timestamp},5)
    ]});
  const body:(Paragraph|Table)[]=[
   masthead,
@@ -62,8 +66,9 @@ export async function renderProfessionalWord(doc:ExportDocument):Promise<Blob>{
   ]})]}),
   new Paragraph({text:" ",spacing:{after:110}})
  ];
- for(let i=0;i<doc.sections.length;i++){
-  const section=doc.sections[i]!;
+ const reportSections=doc.sections.filter(section=>section.title.toLowerCase()!=="document information");
+ for(let i=0;i<reportSections.length;i++){
+  const section=reportSections[i]!;
   body.push(new Paragraph({children:[
     bold(String(i+1).padStart(2,"0")+"    ",accent,19),bold(section.title.toUpperCase(),navy,22)
    ],heading:HeadingLevel.HEADING_2,spacing:{before:240,after:145},keepNext:true}));
