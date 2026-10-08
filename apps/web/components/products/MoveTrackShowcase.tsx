@@ -31,7 +31,9 @@ const starterJobs:Job[]=[
   {id:"MT-602",client:"Northside Pharmacy",type:"Local delivery",from:"Gaborone",to:"Tlokweng",driver:"Unassigned",state:"Scheduled"},
 ];
 
-export function MoveTrackShowcase(){
+type MoveTrackView = "control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"release";
+
+export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrackView}={}){
   const [jobs,setJobs]=usePersistentState<Job[]>("bokang-studio.move-track.jobs.v1",starterJobs);
   const [fleet,setFleet]=usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
   const [drivers,setDrivers]=usePersistentState<FleetDriver[]>(MOVE_TRACK_KEYS.drivers,starterDrivers);
@@ -40,7 +42,7 @@ export function MoveTrackShowcase(){
   const [incidents,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
   const [policies,setPolicies]=usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
 
-  const [view,setView]=useState<"control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"release">("control");
+  const [view,setView]=useState<MoveTrackView>(initialView);
   const [notice,setNotice]=useState("");
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [client,setClient]=useState("");
