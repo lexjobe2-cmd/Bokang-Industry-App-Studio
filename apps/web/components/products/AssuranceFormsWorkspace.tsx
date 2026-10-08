@@ -9,7 +9,7 @@ import {
   starterAssuranceTemplates, evaluateForm, isVisible, makeSubmission,
   type FormAnswer, type FormAnswers, type FormField, type FormSubmission
 } from "@bokang/domain-data/assurance-forms";
-import { MOVE_TRACK_KEYS, starterFleet, type FleetVehicle } from "../../lib/move-track";
+import { MOVE_TRACK_KEYS, starterFleet, type FleetVehicle, type FleetIncident, type FleetAssignment } from "../../lib/move-track";
 
 const tile:React.CSSProperties={background:"#fff",border:"1px solid #dce4ee",borderRadius:17,padding:17};
 const input:React.CSSProperties={width:"100%",padding:"12px 12px",font:"inherit",background:"#fff",color:"#101828",border:"1px solid #cbd5e1",borderRadius:11};
@@ -24,7 +24,9 @@ function answerText(value:FormAnswer|undefined){return typeof value==="string"||
 export function AssuranceFormsWorkspace(){
  const reducedMotion=useReducedMotion();
  const identity=useAssuranceIdentity();
- const [fleet]=usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
+ const [fleet,setFleet]=usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
+ const [,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
+ const [,setAssignments]=usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
  const [submissions,setSubmissions,hydrated]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
  const [drafts,setDrafts]=usePersistentState<Record<string,FormAnswers>>("bokang-studio.move-track.assurance-drafts.v1",{});
  const [tab,setTab]=useState<"library"|"records">("library");
@@ -43,6 +45,7 @@ export function AssuranceFormsWorkspace(){
  function submit(){
   if(!template||!evaluation)return;
   if(identity.configured&&!identity.user){setNotice("Sign in with Firebase before submitting a form.");return;}
+  if(template.category==="Fleet"&&!assetId){setNotice("Select an asset so the inspection is linked to the fleet record.");return;}
   if(evaluation.missing.length){setNotice("Complete required questions before submitting. Missing: "+evaluation.missing.join(", "));return;}
   try{
     const record=makeSubmission({
@@ -51,8 +54,18 @@ export function AssuranceFormsWorkspace(){
       actorUid:identity.user?.uid??"DEMO-UNVERIFIED-USER",now:new Date().toISOString()
     });
     setSubmissions(current=>[record,...current]);
+    if(template.category==="Fleet"&&assetId&&record.decision==="NO_GO"){
+      // Demo-only cross-module update. Backend must atomically enforce this in production.
+      setFleet(current=>current.map(a=>a.id===assetId?{...a,status:"No-go"}:a));
+      setAssignments(current=>current.map(a=>a.vehicleId===assetId&&!["Returned","Cancelled"].includes(a.status)?{...a,status:"Grounded"}:a));
+      setIncidents(current=>[{
+        id:"DEF-"+record.id,vehicleId:assetId,createdAt:record.submittedAt,
+        severity:"Critical",category:"Defect",status:"Open",
+        description:"Critical checklist failure: "+evaluation.criticalFailures.join(", ")
+      },...current]);
+    }
     setDrafts(current=>({...current,[template.id]:{}}));
-    setSectionIndex(0);setTab("records");setNotice("Demo submission recorded locally. PENDING sync — not verified operational authorization.");
+    setSectionIndex(0);setTab("records");setNotice(record.decision==="NO_GO"&&template.category==="Fleet"?"Demo NO-GO: linked fleet asset and assignment grounded; critical defect opened locally. Not production enforced.":"Demo submission recorded locally. PENDING sync — not verified operational authorization.");
   }catch(error){setNotice(error instanceof Error?error.message:String(error));}
  }
  const easing={duration:reducedMotion?0:0.18};
@@ -103,7 +116,7 @@ export function AssuranceFormsWorkspace(){
           <select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}><option>Jwaneng mine · demo profile</option><option>Orapa mine · demo profile</option><option>Gaborone workshop</option></select>
         </label>
         {template.category==="Fleet"?<label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Link to asset
-          <select style={input} value={assetId} onChange={e=>setAssetId(e.target.value)}><option value="">Select asset (optional demo)</option>{fleet.map(a=><option key={a.id} value={a.id}>{a.fleetNo} · {a.makeModel}</option>)}</select>
+          <select style={input} value={assetId} onChange={e=>setAssetId(e.target.value)}><option value="">Select asset (required)</option>{fleet.map(a=><option key={a.id} value={a.id}>{a.fleetNo} · {a.makeModel}</option>)}</select>
         </label>:null}
       </div>
     </div>
