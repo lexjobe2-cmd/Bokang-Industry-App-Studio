@@ -3,11 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
+  "exports": {
+    ".": "./src/index.ts",
+    "./drive-network": "./src/drive-network.ts"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "tsc --noEmit -p tsconfig.json",
     "lint": "tsc --noEmit -p tsconfig.json"
   },
-  "devDependencies": { "typescript": "^5.9.3" }
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }
