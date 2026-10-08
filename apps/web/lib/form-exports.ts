@@ -1,5 +1,5 @@
 import type {FormAnswer,FormAnswers,FormField,FormTemplate,FormSubmission} from "@bokang/domain-data/assurance-forms";
-import type {JobRiskAssessment,OrganizationProfile,PersonRecord} from "@bokang/domain-data/custom-assurance";
+import {blankJra,blankJraTask,blankHazard,type JobRiskAssessment,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {scoreRisk,defaultRiskMatrix,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 
 export type DocumentMode="blank"|"draft"|"filled";
@@ -96,6 +96,16 @@ export function buildJraDocument(jra:JobRiskAssessment,people:readonly PersonRec
  return {title:jra.title||"Job Risk Assessment",company:jra.companyNameSnapshot,reference:jra.reference,mode:jra.status==="DRAFT"?"draft":"filled",
   status:jra.status,timestamp:jra.updatedAt,accent:"#173764",logoDataUrl:jra.logoSnapshot,
   disclaimer:"LOCAL DEMO JOB RISK ASSESSMENT — NOT AN APPROVED WORK PERMIT OR AUTHORIZATION. A demo review flag is not a verified signature.",sections:rows};
+}
+export function buildBlankJraDocument(org:OrganizationProfile,people:readonly PersonRecord[]):ExportDocument{
+ const jra=blankJra(org,"2026-10-08T00:00:00Z");
+ const task=blankJraTask(1);
+ task.hazards=[blankHazard()];
+ jra.tasks=[task];
+ const doc=buildJraDocument(jra,people);
+ return {...doc,mode:"blank",status:"UNCOMPLETED TEMPLATE",sections:doc.sections.map(section=>({
+   ...section,rows:section.rows.map(row=>({...row,value:row.value&&row.value!=="—"&&!/^\s*to\s*$/.test(row.value)?row.value:placeholder}))
+ }))};
 }
 export function documentRows(doc:ExportDocument):string[][]{
  const rows=[["Organization",doc.company],["Title",doc.title],["Reference",doc.reference],["Mode",doc.mode],["Status",doc.status],["Notice",doc.disclaimer]];
