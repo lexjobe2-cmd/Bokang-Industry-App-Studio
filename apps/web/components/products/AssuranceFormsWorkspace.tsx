@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ClipboardCheck, FileText, ShieldAlert, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, CloudOff } from "lucide-react";
-import { useAssuranceIdentity } from "../../lib/firebase-assurance";
 import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "@bokang/domain-data/risk-matrix";
 import { usePersistentState } from "@bokang/persistence";
 import {
@@ -24,7 +23,6 @@ function answerText(value:FormAnswer|undefined){return typeof value==="string"||
 
 export function AssuranceFormsWorkspace(){
  const reducedMotion=useReducedMotion();
- const identity=useAssuranceIdentity();
  const [fleet,setFleet]=usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
  const [,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
  const [,setAssignments]=usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
@@ -36,40 +34,22 @@ export function AssuranceFormsWorkspace(){
  const [siteId,setSiteId]=useState("Jwaneng mine · demo profile");
  const [assetId,setAssetId]=useState("");
  const [notice,setNotice]=useState("");
- const [archivingId,setArchivingId]=useState<string|null>(null);
  const template=starterAssuranceTemplates.find(t=>t.id===activeId);
  const answers=activeId?(drafts[activeId]??{}):{};
  const evaluation=useMemo(()=>template?evaluateForm(template,answers):null,[template,answers]);
  const activeSection=template?.sections[sectionIndex];
  const records=useMemo(()=>submissions.filter(s=>!activeId||s.templateId===activeId),[submissions,activeId]);
- async function archivePersonalDraft(record:FormSubmission){
-  if(!identity.user){setNotice("Firebase sign-in is required to archive a personal record.");return;}
-  setArchivingId(record.id);setNotice("");
-  try{
-   const token=await identity.user.getIdToken();
-   const response=await fetch("/api/assurance/drive/archive",{
-    method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(record)
-   });
-   const result=await response.json() as {error?:string;archived?:boolean;operationalApproval?:boolean};
-   if(!response.ok||!result.archived)throw new Error(result.error??"Drive archival failed");
-   setSubmissions(current=>current.map(s=>s.id===record.id?{...s,syncStatus:"SYNCED" as const}:s));
-   setNotice("Personal archive saved to Google Drive. This is not an operationally approved record.");
-  }catch(e){setSubmissions(current=>current.map(s=>s.id===record.id?{...s,syncStatus:"FAILED" as const}:s));setNotice(e instanceof Error?e.message:"Unable to save to Drive.");}
-  finally{setArchivingId(null);}
- }
-
  function openTemplate(id:string){setActiveId(id);setSectionIndex(0);setNotice("");setTab("library");}
  function setAnswer(id:string,value:FormAnswer){if(!activeId)return;setDrafts(d=>({...d,[activeId]:{...(d[activeId]??{}),[id]:value}}));}
  function submit(){
   if(!template||!evaluation)return;
-  if(identity.configured&&!identity.user){setNotice("Sign in with Firebase before submitting a form.");return;}
   if(template.category==="Fleet"&&!assetId){setNotice("Select an asset so the inspection is linked to the fleet record.");return;}
   if(evaluation.missing.length){setNotice("Complete required questions before submitting. Missing: "+evaluation.missing.join(", "));return;}
   try{
     const record=makeSubmission({
       id:"DEMO-FORM-"+crypto.randomUUID(),template,answers,siteId,
       assetId:template.category==="Fleet"?assetId||undefined:undefined,
-      actorUid:identity.user?.uid??"DEMO-UNVERIFIED-USER",now:new Date().toISOString()
+      actorUid:"LOCAL-DEMO-OPERATOR",now:new Date().toISOString()
     });
     setSubmissions(current=>[record,...current]);
     if(template.category==="Fleet"&&assetId&&record.decision==="NO_GO"){
@@ -83,7 +63,7 @@ export function AssuranceFormsWorkspace(){
       },...current]);
     }
     setDrafts(current=>({...current,[template.id]:{}}));
-    setSectionIndex(0);setTab("records");setNotice(record.decision==="NO_GO"&&template.category==="Fleet"?"Demo NO-GO: linked fleet asset and assignment grounded; critical defect opened locally. Not production enforced.":"Demo submission recorded locally. PENDING sync — not verified operational authorization.");
+    setSectionIndex(0);setTab("records");setNotice(record.decision==="NO_GO"&&template.category==="Fleet"?"Demo NO-GO: linked fleet asset and assignment grounded; critical defect opened locally. Not production enforced.":"Demo form submitted. Saved to this browser only; no account or cloud storage needed.");
   }catch(error){setNotice(error instanceof Error?error.message:String(error));}
  }
  const easing={duration:reducedMotion?0:0.18};
@@ -98,11 +78,9 @@ export function AssuranceFormsWorkspace(){
       <span style={{border:"1px solid #5a7194",borderRadius:999,padding:"7px 12px",fontSize:11,fontWeight:900,color:"#fef08a"}}>DEMO · LOCAL ONLY</span>
     </div>
   </div>
-  <div style={{...tile,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-    <div><strong>Identity</strong><p style={{fontSize:12,color:"#667085",margin:"5px 0"}}>
-      {!identity.ready?"Checking Firebase session…":identity.user?"Signed in: "+(identity.user.email||identity.user.uid):identity.configured?"Sign in with Firebase to submit forms":"Firebase is not configured; local demo only"}
-    </p>{identity.error?<p role="alert" style={{color:"#b42318",fontSize:12}}>{identity.error}</p>:null}</div>
-    {identity.configured?(identity.user?<button style={button} onClick={()=>void identity.logout()}>Sign out</button>:<button style={button} onClick={()=>void identity.login()}>Sign in with Google</button>):<span style={{fontSize:11,color:"#b45309"}}>Set Firebase environment variables</span>}
+  <div style={{...tile,display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",background:"#f0fdf4",borderColor:"#bbf7d0"}}>
+    <div><strong style={{color:"#166534"}}>Demo operator · No sign-in required</strong><p style={{color:"#475569",fontSize:12,margin:"4px 0"}}>All forms and drafts save in this browser. Test freely without external accounts.</p></div>
+    <span style={{background:"#dcfce7",color:"#166534",padding:"7px 10px",borderRadius:999,fontSize:11,fontWeight:850}}>LOCAL STORAGE</span>
   </div>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
     <button onClick={()=>{setTab("library");setActiveId(null);setNotice("");}} style={{...button,background:tab==="library"?"#172b4d":"#fff",color:tab==="library"?"#fff":"#344054"}}>Template library</button>
@@ -149,22 +127,21 @@ export function AssuranceFormsWorkspace(){
     </AnimatePresence>
     <div style={{...tile,display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
       <button style={button} disabled={sectionIndex===0} onClick={()=>setSectionIndex(x=>Math.max(0,x-1))}>Previous</button>
-      {sectionIndex<template.sections.length-1?<button style={{...button,background:"#172b4d",color:"#fff"}} onClick={()=>setSectionIndex(x=>Math.min(template.sections.length-1,x+1))}>Next section <ChevronRight size={16} style={{display:"inline"}}/></button>:<button style={{...button,background:"#172b4d",color:"#fff",opacity:evaluation.missing.length?0.65:1}} onClick={submit} disabled={!!evaluation.missing.length||(identity.configured&&!identity.user)}>Submit demo form</button>}
+      {sectionIndex<template.sections.length-1?<button style={{...button,background:"#172b4d",color:"#fff"}} onClick={()=>setSectionIndex(x=>Math.min(template.sections.length-1,x+1))}>Next section <ChevronRight size={16} style={{display:"inline"}}/></button>:<button style={{...button,background:"#172b4d",color:"#fff",opacity:evaluation.missing.length?0.65:1}} onClick={submit} disabled={!!evaluation.missing.length}>Submit demo form</button>}
     </div>
     <div style={{...tile,background:evaluation.decision==="NO_GO"?"#fef2f2":evaluation.decision==="INCOMPLETE"?"#f8fafc":"#ecfdf3",display:"flex",alignItems:"start",gap:12}}>
       {evaluation.decision==="NO_GO"?<ShieldAlert size={21} color="#b42318"/>:<CheckCircle2 size={21} color="#157f4e"/>}
       <div><strong>Assessment: {evaluation.decision.replaceAll("_","-")}</strong><p style={{margin:"4px 0",fontSize:12,lineHeight:1.5}}>{evaluation.missing.length?evaluation.missing.length+" required answer(s) / evidence outstanding.":evaluation.criticalFailures.length?"Critical control failed. NO-GO in a controlled workflow.":"Required sections completed; supervisor controls may still apply."}</p></div>
     </div>
-    <p style={{fontSize:11,color:"#b42318",margin:0}}>This form runner saves drafts and demo submissions on this browser. Firebase sign-in establishes identity when configured but does not itself authorize work, ground assets, sync Drive files or provide server-backed signatures.</p>
+    <p style={{fontSize:11,color:"#b42318",margin:0}}>This frontend-only demonstration saves drafts and submissions in this browser, and can simulate equipment grounding. No external service, authenticated approval or actual equipment-control integration is active.</p>
   </div>:null}
   {tab==="records"?<div style={{display:"grid",gap:9}}>
-    <div style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#667085"}}><CloudOff size={16}/> Demo records stay in this browser until individually archived to your Google Drive. Archive copies are not safety approvals.</div>
+    <div style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#667085"}}><CloudOff size={16}/> Your completed demo forms remain in this browser. They are not official safety approvals.</div>
     {records.length===0?<div style={tile}>No submitted demonstration forms. Choose a template to start.</div>:records.map(r=><div key={r.id} style={{...tile,display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
       <div><strong>{r.templateSnapshot.title}</strong><p style={{fontSize:12,color:"#667085",margin:"5px 0"}}>{new Date(r.submittedAt).toLocaleString()} · {r.templateId} v{r.templateVersion} · {r.siteId}</p></div>
       <div style={{textAlign:"right",display:"grid",gap:7,justifyItems:"end"}}>
        <strong style={{color:r.decision==="NO_GO"?"#b42318":"#047857"}}>{r.decision}</strong>
-       <div style={{color:r.syncStatus==="SYNCED"?"#087f5b":"#b45309",fontSize:11}}>{r.syncStatus==="SYNCED"?"ARCHIVED TO DRIVE":r.syncStatus==="FAILED"?"ARCHIVE FAILED":"LOCAL ONLY"}</div>
-       {identity.user&&r.syncStatus!=="SYNCED"?<button style={{...button,fontSize:11,padding:"7px 9px",minHeight:34}} disabled={archivingId===r.id} onClick={()=>void archivePersonalDraft(r)}>{archivingId===r.id?"Saving…":"Save to my Drive"}</button>:null}
+       <div style={{color:"#2563eb",fontSize:11}}>SAVED LOCALLY</div>
      </div>
     </div>)}
   </div>:null}
