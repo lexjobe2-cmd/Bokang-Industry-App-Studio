@@ -35,11 +35,28 @@ export function AssuranceFormsWorkspace(){
  const [siteId,setSiteId]=useState("Jwaneng mine · demo profile");
  const [assetId,setAssetId]=useState("");
  const [notice,setNotice]=useState("");
+ const [archivingId,setArchivingId]=useState<string|null>(null);
  const template=starterAssuranceTemplates.find(t=>t.id===activeId);
  const answers=activeId?(drafts[activeId]??{}):{};
  const evaluation=useMemo(()=>template?evaluateForm(template,answers):null,[template,answers]);
  const activeSection=template?.sections[sectionIndex];
  const records=useMemo(()=>submissions.filter(s=>!activeId||s.templateId===activeId),[submissions,activeId]);
+ async function archivePersonalDraft(record:FormSubmission){
+  if(!identity.user){setNotice("Firebase sign-in is required to archive a personal record.");return;}
+  setArchivingId(record.id);setNotice("");
+  try{
+   const token=await identity.user.getIdToken();
+   const response=await fetch("/api/assurance/drive/archive",{
+    method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(record)
+   });
+   const result=await response.json() as {error?:string;archived?:boolean;operationalApproval?:boolean};
+   if(!response.ok||!result.archived)throw new Error(result.error??"Drive archival failed");
+   setSubmissions(current=>current.map(s=>s.id===record.id?{...s,syncStatus:"SYNCED" as const}:s));
+   setNotice("Personal archive saved to Google Drive. This is not an operationally approved record.");
+  }catch(e){setSubmissions(current=>current.map(s=>s.id===record.id?{...s,syncStatus:"FAILED" as const}:s));setNotice(e instanceof Error?e.message:"Unable to save to Drive.");}
+  finally{setArchivingId(null);}
+ }
+
  function openTemplate(id:string){setActiveId(id);setSectionIndex(0);setNotice("");setTab("library");}
  function setAnswer(id:string,value:FormAnswer){if(!activeId)return;setDrafts(d=>({...d,[activeId]:{...(d[activeId]??{}),[id]:value}}));}
  function submit(){
@@ -140,10 +157,14 @@ export function AssuranceFormsWorkspace(){
     <p style={{fontSize:11,color:"#b42318",margin:0}}>This form runner saves drafts and demo submissions on this browser. Firebase sign-in establishes identity when configured but does not itself authorize work, ground assets, sync Drive files or provide server-backed signatures.</p>
   </div>:null}
   {tab==="records"?<div style={{display:"grid",gap:9}}>
-    <div style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#667085"}}><CloudOff size={16}/> Browser-only records · not yet synced with Firebase/Drive</div>
+    <div style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#667085"}}><CloudOff size={16}/> Demo records stay in this browser until individually archived to your Google Drive. Archive copies are not safety approvals.</div>
     {records.length===0?<div style={tile}>No submitted demonstration forms. Choose a template to start.</div>:records.map(r=><div key={r.id} style={{...tile,display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
       <div><strong>{r.templateSnapshot.title}</strong><p style={{fontSize:12,color:"#667085",margin:"5px 0"}}>{new Date(r.submittedAt).toLocaleString()} · {r.templateId} v{r.templateVersion} · {r.siteId}</p></div>
-      <div style={{textAlign:"right"}}><strong style={{color:r.decision==="NO_GO"?"#b42318":"#047857"}}>{r.decision}</strong><div style={{color:"#b45309",fontSize:11}}>PENDING SYNC</div></div>
+      <div style={{textAlign:"right",display:"grid",gap:7,justifyItems:"end"}}>
+       <strong style={{color:r.decision==="NO_GO"?"#b42318":"#047857"}}>{r.decision}</strong>
+       <div style={{color:r.syncStatus==="SYNCED"?"#087f5b":"#b45309",fontSize:11}}>{r.syncStatus==="SYNCED"?"ARCHIVED TO DRIVE":r.syncStatus==="FAILED"?"ARCHIVE FAILED":"LOCAL ONLY"}</div>
+       {identity.user&&r.syncStatus!=="SYNCED"?<button style={{...button,fontSize:11,padding:"7px 9px",minHeight:34}} disabled={archivingId===r.id} onClick={()=>void archivePersonalDraft(r)}>{archivingId===r.id?"Saving…":"Save to my Drive"}</button>:null}
+     </div>
     </div>)}
   </div>:null}
  </section>;
