@@ -9,6 +9,7 @@ import { PharmaDeskShowcase } from "../../../components/products/PharmaDeskShowc
 import { BuildQuoteShowcase } from "../../../components/products/BuildQuoteShowcase";
 import { ExploreBWShowcase } from "../../../components/products/ExploreBWShowcase";
 import { MoveTrackShowcase } from "../../../components/products/MoveTrackShowcase";
+import { OperationalAssurance } from "../../../components/products/OperationalAssurance";
 import { WorkspaceDataShowcase } from "../../../components/shared/WorkspaceDataShowcase";
 import { SharedWorkspaceTools } from "../../../components/SharedWorkspaceTools";
 
@@ -46,7 +47,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         ) : config.slug === "explore-bw" ? (
           <ExploreBWShowcase />
         ) : config.slug === "move-track" ? (
-          <MoveTrackShowcase />
+          <><MoveTrackShowcase /><OperationalAssurance /></>
         ) : (
           <section style={{ marginTop: 28 }}>
             <DashboardGrid>
