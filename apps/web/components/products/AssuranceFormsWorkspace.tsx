@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ClipboardCheck, FileText, ShieldAlert, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, CloudOff } from "lucide-react";
 import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "@bokang/domain-data/risk-matrix";
@@ -12,7 +12,10 @@ import {
 import { MOVE_TRACK_KEYS, starterFleet, type FleetVehicle, type FleetIncident, type FleetAssignment } from "../../lib/move-track";
 import { CustomFormBuilder } from "./CustomFormBuilder";
 import { JraWorkspace } from "./JraWorkspace";
-import { ASSURANCE_STORAGE,demoPeople,type CustomTemplate,type PersonRecord } from "@bokang/domain-data/custom-assurance";
+import { ASSURANCE_STORAGE,demoPeople,demoOrganization,makeCustomTemplate,type CustomTemplate,type PersonRecord,type OrganizationProfile } from "@bokang/domain-data/custom-assurance";
+import {additionalAssuranceRecipes,workflowLinks} from "@bokang/domain-data/expanded-assurance";
+import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
+import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY,ACTIVE_JOB_REFERENCE_KEY,recipeTemplateId} from "./OperationalGraphPanel";
 
 
 const tile:React.CSSProperties={background:"#fff",border:"1px solid #dce4ee",borderRadius:17,padding:17};
@@ -32,22 +35,42 @@ export function AssuranceFormsWorkspace(){
  const [,setAssignments]=usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
  const [submissions,setSubmissions,hydrated]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
  const [drafts,setDrafts]=usePersistentState<Record<string,FormAnswers>>("bokang-studio.move-track.assurance-drafts.v1",{});
- const [tab,setTab]=useState<"library"|"records"|"designer"|"jra">("library");
+ const [tab,setTab]=usePersistentState<"library"|"records"|"designer"|"jra">(ACTIVE_FORMS_TAB_KEY,"library");
  const [customTemplates]=usePersistentState<CustomTemplate[]>(ASSURANCE_STORAGE.templates,[]);
  const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
- const [activeId,setActiveId]=useState<string|null>(null);
+ const [activeId,setActiveId]=usePersistentState<string|null>(ACTIVE_WORKFLOW_KEY,null);
+ const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
+ const [activeOrgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
+ const [jobReference,setJobReference]=usePersistentState(ACTIVE_JOB_REFERENCE_KEY,"WO-DEMO-001");
+ const org=orgs.find(o=>o.id===activeOrgId)??orgs[0]??demoOrganization;
+ const [librarySearch,setLibrarySearch]=useState("");
  const [sectionIndex,setSectionIndex]=useState(0);
  const [siteId,setSiteId]=useState("Jwaneng mine · demo profile");
  const [assetId,setAssetId]=useState("");
  const [notice,setNotice]=useState("");
- const library=[...starterAssuranceTemplates,...customTemplates.filter(t=>t.status==="PUBLISHED")];
+ const recipeTemplates=useMemo(()=>additionalAssuranceRecipes.map(w=>makeCustomTemplate({
+  id:recipeTemplateId(org.id,w.id),organization:org,title:w.title,description:w.trigger,
+  category:w.category,sections:w.sections.map(section=>({...section,fields:[...section.fields]})),
+  status:"PUBLISHED",now:"2026-10-08T00:00:00.000Z"
+ })),[org]);
+ const brandedStarters=useMemo(()=>starterAssuranceTemplates.map(t=>({
+  ...t,organizationId:org.id,companyNameSnapshot:org.name,logoSnapshot:org.logoDataUrl,
+  accent:org.accent,referencePrefix:org.documentPrefix,description:"Core operational form"
+ })),[org]);
+ const library=[...recipeTemplates,...brandedStarters,...customTemplates.filter(t=>t.status==="PUBLISHED"&&t.organizationId===org.id)];
  const template=library.find(t=>t.id===activeId);
- const brandedTemplate=customTemplates.find(t=>t.id===activeId);
- const visiblePeople=directory.filter(p=>p.active&&p.orgId===(brandedTemplate?.organizationId??"demo-mining"));
+ const brandedTemplate=template&&"organizationId" in template?template:null;
+ const visiblePeople=directory.filter(p=>p.active&&p.orgId===org.id);
+ const workflow=additionalAssuranceRecipes.find(w=>recipeTemplateId(org.id,w.id)===activeId);
+ useEffect(()=>{setSectionIndex(0);},[activeId]);
+ useEffect(()=>{setSiteId(org.siteIds[0]??"");},[org.id]);
  const answers=activeId?(drafts[activeId]??{}):{};
  const evaluation=useMemo(()=>template?evaluateForm(template,answers):null,[template,answers]);
  const activeSection=template?.sections[sectionIndex];
- const records=useMemo(()=>submissions.filter(s=>!activeId||s.templateId===activeId),[submissions,activeId]);
+ const records=useMemo(()=>submissions.filter(s=>{
+   const snapshot=s.templateSnapshot as typeof s.templateSnapshot & {organizationId?:string};
+   return (snapshot.organizationId===org.id||(!snapshot.organizationId&&org.id===demoOrganization.id))&&(!activeId||s.templateId===activeId);
+ }),[submissions,activeId,org.id]);
  function openTemplate(id:string){setActiveId(id);setSectionIndex(0);setNotice("");setTab("library");}
  function setAnswer(id:string,value:FormAnswer){if(!activeId)return;setDrafts(d=>({...d,[activeId]:{...(d[activeId]??{}),[id]:value}}));}
  function submit(){
@@ -56,7 +79,7 @@ export function AssuranceFormsWorkspace(){
   if(evaluation.missing.length){setNotice("Complete required questions before submitting. Missing: "+evaluation.missing.join(", "));return;}
   try{
     const record=makeSubmission({
-      id:"DEMO-FORM-"+crypto.randomUUID(),template,answers,siteId,
+      id:"DEMO-FORM-"+crypto.randomUUID(),template,answers,siteId:siteId||org.siteIds[0]||"Demo site",taskId:jobReference.trim()||undefined,
       assetId:template.category==="Fleet"?assetId||undefined:undefined,
       actorUid:"LOCAL-DEMO-OPERATOR",now:new Date().toISOString()
     });
@@ -82,7 +105,7 @@ export function AssuranceFormsWorkspace(){
       <div>
         <div style={{display:"flex",alignItems:"center",gap:9,fontSize:11,fontWeight:850,letterSpacing:1.5,textTransform:"uppercase",color:"#9cc6ff"}}><ClipboardCheck size={16}/> Operational Assurance / Forms</div>
         <h2 style={{margin:"8px 0 5px",fontSize:26}}>One library. Connected safety workflows.</h2>
-        <p style={{margin:0,color:"#cbd5e1",fontSize:13,lineHeight:1.7,maxWidth:670}}>Versioned templates and inspection records, linked to the existing MoveTrack fleet. Demonstration data only.</p>
+        <p style={{margin:0,color:"#cbd5e1",fontSize:13,lineHeight:1.7,maxWidth:670}}>{org.name} · {additionalAssuranceRecipes.length} specialized safety workflows plus built-in and custom forms. Work is stored by company and job on this device.</p>
       </div>
       <span style={{border:"1px solid #5a7194",borderRadius:999,padding:"7px 12px",fontSize:11,fontWeight:900,color:"#fef08a"}}>DEMO · LOCAL ONLY</span>
     </div>
@@ -111,14 +134,15 @@ export function AssuranceFormsWorkspace(){
       <span style={{fontSize:12,color:"#52677d"}}>Assign participants, list task steps, hazards and controls, and calculate residual risks.</span>
       <button style={{...button,background:"#065f46",color:"#fff",justifySelf:"start"}} onClick={()=>setTab("jra")}>Open JRA studio →</button>
     </div>
-    {library.map(t=><motion.button whileHover={reducedMotion?undefined:{y:-2}} transition={easing} key={t.id} onClick={()=>openTemplate(t.id)}
+    <div style={{...tile,display:"grid",gap:6}}><strong>Search company checklists</strong><input aria-label="Search template library" style={input} value={librarySearch} onChange={e=>setLibrarySearch(e.target.value)} placeholder="Working at heights, confined space, scaffold, hazard..."/></div>
+    {library.filter(t=>(t.title+" "+("description" in t?t.description:"")).toLowerCase().includes(librarySearch.toLowerCase())).map(t=><motion.button whileHover={reducedMotion?undefined:{y:-2}} transition={easing} key={t.id} onClick={()=>openTemplate(t.id)}
        style={{...tile,textAlign:"left",minHeight:154,cursor:"pointer",display:"grid",gap:9}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
        <span style={{fontSize:11,fontWeight:900,color:categories[t.category]?.color}}>{t.category.toUpperCase()}</span>
        <span style={{color:"#667085",fontSize:11}}>v{t.version} · {t.status}</span>
       </div>
       <strong style={{fontSize:17}}>{t.title}</strong>
-      {"companyNameSnapshot" in t && typeof t.companyNameSnapshot==="string"?<span style={{fontSize:11,color:"#1d4ed8"}}>{t.companyNameSnapshot} · Custom</span>:null}
+      {"companyNameSnapshot" in t && typeof t.companyNameSnapshot==="string"?<span style={{fontSize:11,color:"#1d4ed8"}}>{t.companyNameSnapshot} · Branded</span>:null}
       <span style={{color:"#667085",fontSize:12}}>{t.sections.length} sections · {t.sections.reduce((sum,s)=>sum+s.fields.length,0)} questions</span>
       <span style={{display:"inline-flex",alignItems:"center",gap:6,color:"#1d4ed8",fontWeight:850,fontSize:12}}>Open form <ChevronRight size={16}/></span>
     </motion.button>)}
@@ -137,13 +161,23 @@ export function AssuranceFormsWorkspace(){
       <div aria-label="Form completion" style={{height:7,borderRadius:20,background:"#e2e8f0",marginTop:12,overflow:"hidden"}}><motion.div initial={false} animate={{width:evaluation.progress+"%"}} transition={easing} style={{height:"100%",background:"#2563eb",borderRadius:20}}/></div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:8,marginTop:15}}>
         <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Operating site
-          <select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}><option>Jwaneng mine · demo profile</option><option>Orapa mine · demo profile</option><option>Gaborone workshop</option></select>
+          <select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}>{org.siteIds.map(site=><option key={site}>{site}</option>)}</select>
+        </label>
+        <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Job / work order ID
+          <input style={input} value={jobReference} placeholder="WO-2026-001" onChange={e=>setJobReference(e.target.value)}/>
         </label>
         {template.category==="Fleet"?<label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Link to asset
           <select style={input} value={assetId} onChange={e=>setAssetId(e.target.value)}><option value="">Select asset (required)</option>{fleet.map(a=><option key={a.id} value={a.id}>{a.fleetNo} · {a.makeModel}</option>)}</select>
         </label>:null}
       </div>
     </div>
+    {workflow&&workflowLinks(workflow.id).length?<div style={{...tile,display:"grid",gap:8,background:"#f8fafc"}}>
+      <strong style={{fontSize:13}}>Connected risk-control workflows</strong>
+      <p style={{fontSize:11,color:"#667085",margin:0}}>These are related checklists for the same work package, not proof of authorization.</p>
+      <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+       {workflowLinks(workflow.id).map(id=><button key={id} style={{...button,fontSize:11,padding:"7px 10px",minHeight:34}} onClick={()=>openTemplate(recipeTemplateId(org.id,id))}>{additionalAssuranceRecipes.find(w=>w.id===id)?.title??id}</button>)}
+      </div>
+     </div>:null}
     <AnimatePresence mode="wait">
       <motion.div key={activeSection.id} initial={reducedMotion?false:{opacity:0,y:7}} animate={{opacity:1,y:0}} exit={reducedMotion?undefined:{opacity:0,y:-7}} transition={easing} style={tile}>
         <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
