@@ -10,7 +10,7 @@ export type AnalyticsData={
  total:number;forms:number;jras:number;peopleInvolved:number;withParticipants:number;
  noGo:number;reviewNeeded:number;completed:number;drafts:number;participated:number;
  categories:{name:string;count:number}[];sites:{name:string;count:number}[];
- months:{month:string;count:number}[];roles:{role:string;count:number}[];
+ months:{name:string;count:number}[];roles:{role:string;count:number}[];
  topPeople:{id:string;name:string;count:number}[];items:ParticipationItem[];
 };
 
