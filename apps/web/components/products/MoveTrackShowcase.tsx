@@ -5,6 +5,7 @@ import { usePersistentState } from "@bokang/persistence";
 import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
 import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
+import { UserParticipationAnalytics } from "./UserParticipationAnalytics";
 import {
   botswanaPlaces,
   logisticsJobStates,
@@ -322,7 +323,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
     {view==="release"?<FleetReleaseWorkspace />:null}
     {view==="local-data"?<LocalWorkspacePanel />:null}
 
-    {view==="analytics"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
+    {view==="analytics"?<div style={{display:"grid",gap:15}}><UserParticipationAnalytics/><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
       {[
         ["Fleet compliance",fleet.length?Math.round(((fleet.length-control.grounded-control.due)/fleet.length)*100)+"%":"—"],
         ["GO pre-starts",prestarts.filter((item)=>item.result==="GO").length],
@@ -331,7 +332,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
         ["Vehicles in use",control.inUse],
         ["Active assignments",activeAssignments.length]
       ].map(([label,value])=><article key={String(label)} style={panel}><div style={{fontSize:11,color:"#667085",fontWeight:850}}>{label}</div><strong style={{fontSize:28}}>{value}</strong></article>)}
-    </div>:null}
+    </div></div>:null}
   </section>;
 }
 
