@@ -1,3 +1,5 @@
+import { miningPrestartChecks } from "@bokang/domain-data";
+
 export type FleetVehicleStatus =
   | "Available"
   | "Assigned"
@@ -197,19 +199,13 @@ export function evaluatePrestart(args: {
   const reasons: string[] = [];
   const { checks, criticalChecks, vehicle, driver } = args;
 
-  // Fail closed when a critical control is missing from a submitted record.\n  for (const item of criticalChecks) {\n    if (checks[item] !== "pass") reasons.push(item + " must explicitly PASS");\n  }\n  if (Object.keys(checks).length === 0) reasons.push("Inspection answers are missing");\n\n  for (const [item, result] of Object.entries(checks)) {
-    const critical = criticalChecks.some((criticalItem) => criticalItem === item);
-    if (critical && result !== "pass") {
-      reasons.push(item + " must explicitly PASS");
-      continue;
-    }
-    if (!critical && result === "unset") {
-      reasons.push(item + " is incomplete");
-      continue;
-    }
-    if (result === "fail") {
-      reasons.push(item + " failed");
-    }
+  const requiredChecks = new Set<string>([...miningPrestartChecks, ...criticalChecks]);
+  for (const item of requiredChecks) {
+    const result = checks[item];
+    const critical = criticalChecks.includes(item);
+    if (critical && result !== "pass") reasons.push(item + " must explicitly PASS");
+    else if (!critical && (!result || result === "unset")) reasons.push(item + " is incomplete");
+    else if (result === "fail") reasons.push(item + " failed");
   }
 
   if (!driver.siteAuthorised) reasons.push("Driver is not site-authorised");
