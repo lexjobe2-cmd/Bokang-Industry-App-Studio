@@ -88,3 +88,74 @@ test("risk calculations are derived from likelihood and consequence, not typed s
  assert.equal(evaluateForm(jra,draft).decision,"REVIEW");
  assert.equal(evaluateForm(jra,{...draft,residual:{...risk,likelihood:0}}).decision,"INCOMPLETE");
 });
+
+import {
+ dictionary,makeCustomTemplate,nextPublishedVersion,mapGraphUser,mapGraphOrganization,
+ demoOrganization,demoPeople,blankJra,blankJraTask,blankHazard,assessJra,canSimulateApproval
+} from "../packages/domain-data/src/custom-assurance.ts";
+
+test("custom form library accepts dynamically branded and repeatable field sets",()=>{
+ const org={...demoOrganization,logoDataUrl:"data:image/png;base64,ZmFrZQ==",name:"Demo Contractor"};
+ const sections=[{id:"crew",title:"Crew",fields:[
+   {id:"attendees",label:"Register",type:"repeat",required:true,children:[
+    {id:"name",label:"Name",type:"text",required:true},
+    {id:"role",label:"Job role",type:"text",required:true}
+   ]},
+   {id:"inspection",label:"Critical permit",type:"pass_fail_na",critical:true,required:true}
+ ]}];
+ const t=makeCustomTemplate({id:"custom-1",organization:org,title:"Site JSA briefing",category:"Safety",description:"Field checks",sections,now:"2026-10-08T12:00:00Z",status:"PUBLISHED"});
+ assert.equal(t.companyNameSnapshot,"Demo Contractor");
+ assert.equal(t.logoSnapshot,org.logoDataUrl);
+ assert.equal(evaluateForm(t,{attendees:[{name:"Person A",role:"Operator"}],inspection:"PASS"}).decision,"COMPLETE");
+ assert.equal(evaluateForm(t,{attendees:[{name:"",role:"Operator"}],inspection:"PASS"}).decision,"INCOMPLETE");
+ const submitted=makeSubmission({id:"form1",template:t,answers:{attendees:[{name:"Person A",role:"Operator"}],inspection:"PASS"},siteId:"mine",actorUid:"demo",now:"2026-10-08T12:00:00Z"});
+ assert.equal(submitted.templateSnapshot.companyNameSnapshot,"Demo Contractor");
+ org.name="Changed branding";
+ assert.equal(submitted.templateSnapshot.companyNameSnapshot,"Demo Contractor");
+ const next=nextPublishedVersion(t,"2026-10-09T08:00:00Z");
+ assert.equal(next.version,2);
+ assert.equal(t.version,1);
+});
+test("template builder rejects duplicate field keys and choice questions with no values",()=>{
+ const args={id:"custom1",organization:demoOrganization,title:"Routine inspection",category:"Inspections",description:"",now:"2026-10-08T12:00:00Z",sections:[{id:"1",title:"Part A",fields:[{id:"duplicate",label:"A",type:"text"},{id:"duplicate",label:"B",type:"text"}]}]};
+ assert.throws(()=>makeCustomTemplate(args),/unique identifiers/);
+ assert.throws(()=>makeCustomTemplate({...args,sections:[{id:"1",title:"Part A",fields:[{id:"choice",label:"Select",type:"select",options:[]}]}]}),/requires options/);
+});
+test("Microsoft Graph user and organization metadata map into company dictionary without API call",()=>{
+ const user=mapGraphUser({id:"abc123",displayName:"Demo User",mail:"demo@company.invalid",department:"Mining",jobTitle:"Operator"},demoOrganization.id);
+ assert.equal(user.source,"MICROSOFT_365");
+ assert.equal(user.jobTitle,"Operator");
+ const org=mapGraphOrganization({id:"tenant1",displayName:"Example Owner",verifiedDomains:[{name:"example.invalid",isDefault:true}]},"2026-10-08T00:00:00Z");
+ assert.equal(org.domain,"example.invalid");
+ assert.equal(org.name,"Example Owner");
+ assert.equal(dictionary.hierarchyOfControls.length,5);
+});
+test("rich JRA demands people, hazard controls and valid initial/residual risk",()=>{
+ const now="2026-10-08T13:00:00Z";
+ const jra=blankJra(demoOrganization,now);
+ jra.title="Brake maintenance";jra.jobId="WO-81";jra.scope="Replace worn brakes";
+ jra.location="Workshop bay 4";jra.supervisorId=demoPeople[1].id;
+ jra.emergencyPlan="Call site emergency and isolate workshop";
+ jra.participants=[{personId:demoPeople[2].id,nameSnapshot:demoPeople[2].displayName,role:"Operator",acknowledged:true,manual:false}];
+ const task=blankJraTask(1);task.description="Isolate vehicle";
+ const hazard=blankHazard();hazard.hazard="Unexpected movement";hazard.consequence="Crush injury";
+ hazard.exposedPersonIds=[demoPeople[2].id];
+ hazard.controls=[{id:"c1",hierarchy:"Engineering",description:"Lockout and wheel chocks",ownerId:demoPeople[2].id,verified:true}];
+ hazard.initial={likelihood:4,consequence:5,matrixId:"standard-5x5",matrixVersion:1};
+ hazard.residual={likelihood:1,consequence:3,matrixId:"standard-5x5",matrixVersion:1};
+ task.hazards=[hazard];jra.tasks=[task];
+ assert.deepEqual(assessJra(jra).missing,[]);
+ assert.equal(assessJra(jra).decision,"READY_FOR_DEMO_REVIEW");
+ jra.reviewerId=demoPeople[0].id;
+ assert.equal(canSimulateApproval(jra),true);
+ jra.reviewerId=jra.supervisorId;
+ assert.equal(canSimulateApproval(jra),false);
+ jra.reviewerId=demoPeople[0].id;
+ jra.participants[0].acknowledged=false;
+ assert.equal(canSimulateApproval(jra),false);
+ hazard.residual.likelihood=5;
+ assert.equal(assessJra(jra).decision,"REVIEW_REQUIRED");
+ assert.equal(canSimulateApproval(jra),false);
+ hazard.controls=[];
+ assert.ok(assessJra(jra).missing.some(v=>v.includes("mitigation")));
+});
