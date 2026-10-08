@@ -1,4 +1,4 @@
-import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "./risk-matrix";
+import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "./risk-matrix.ts";
 
 /**
  * Versioned, configuration-driven operational forms.
