@@ -6,7 +6,7 @@ import {Plus,Trash2,Users,ShieldAlert,ClipboardList,CheckCircle2,FileText,Search
 import {usePersistentState} from "@bokang/persistence";
 import {
  ASSURANCE_STORAGE,dictionary,demoPeople,demoOrganization,
- blankJra,blankJraTask,blankHazard,assessJra,canSimulateApproval,
+ blankJra,blankJraTask,blankHazard,assessJra,canSimulateApproval,sampleBrakeMaintenanceJra,
  type OrganizationProfile,type PersonRecord,type JobRiskAssessment,type JraTask,type HazardEntry
 } from "@bokang/domain-data/custom-assurance";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
@@ -35,6 +35,7 @@ function unique(values:readonly string[],value:string,enabled:boolean){return en
 export function JraWorkspace(){
  const reduced=useReducedMotion();
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
+ const [selectedOrg,setSelectedOrg]=useState(demoOrganization.id);
  const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
  const [records,setRecords]=usePersistentState<JobRiskAssessment[]>(ASSURANCE_STORAGE.jras,[]);
  const [editing,setEditing]=useState<string|null>(null);
@@ -42,11 +43,12 @@ export function JraWorkspace(){
  const [page,setPage]=useState<"job"|"team"|"risks"|"review">("job");
  const [peopleSearch,setPeopleSearch]=useState("");
  const [message,setMessage]=useState("");
- const org=orgs[0]??demoOrganization;
+ const org=orgs.find(o=>o.id===(current?.orgId??selectedOrg))??orgs[0]??demoOrganization;
  const job=current??blankPlaceholder;
  const assessment=current?assessJra(current):null;
  const persons=directory.filter(p=>p.orgId===org.id&&p.active);
  const filtered=persons.filter(p=>[p.displayName,p.jobTitle,p.department,p.employeeNumber,p.email].some(v=>(v??"").toLowerCase().includes(peopleSearch.toLowerCase())));
+ function startSample(){const now=new Date().toISOString();setCurrent(sampleBrakeMaintenanceJra(org,persons,now));setEditing(null);setPage("team");setMessage("Example work package loaded. Explore the team roster, task hazards and mitigation measures; replace the fictional details as needed.");}
  function start(){
   const now=new Date().toISOString();setCurrent(blankJra(org,now));setEditing(null);setPage("job");setMessage("JRA draft started. Choose a team, add job steps and evaluate each hazard.");
  }
@@ -86,21 +88,26 @@ export function JraWorkspace(){
  return <section aria-label="Job Risk Assessment workspace" style={{display:"grid",gap:13}}>
   <div style={{...shell,background:"#0c1d32",color:"#fff",border:0,display:"flex",gap:13,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
    <div><div style={{color:"#9cc6ff",fontSize:11,letterSpacing:1.4,fontWeight:900}}>JOB RISK ASSESSMENT · FIELD STUDIO</div><h2 style={{fontSize:26,margin:"6px 0"}}>People. Tasks. Hazards. Controls.</h2><p style={{color:"#cbd5e1",fontSize:12,maxWidth:720,lineHeight:1.65}}>Built for structured team involvement and traceable task-by-task risk evaluation. Microsoft 365 directory fields are modeled but no tenant data is fetched in demo mode.</p></div>
-   <button style={{...primary,background:"#fff",color:"#14305b"}} onClick={start}><Plus size={16} style={{display:"inline"}}/> New JRA</button>
+   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+    <button style={{...primary,background:"#fff",color:"#14305b"}} onClick={start}><Plus size={16} style={{display:"inline"}}/> New JRA</button>
+    <button style={{...btn,background:"#dbeafe",borderColor:"#dbeafe"}} onClick={startSample}>Load example job</button>
+   </div>
   </div>
   {message?<div role="status" style={{...shell,color:"#1e40af",background:"#eff6ff",fontSize:12}}>{message}</div>:null}
   {!current?<div style={{display:"grid",gap:11}}>
-   <div style={{...shell,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><div><h3 style={{margin:"0 0 4px"}}>Saved job risk assessments</h3><span style={{fontSize:12,color:"#667085"}}>{count} local job records; no sign-in required</span></div><button style={primary} onClick={start}>Create new JRA</button></div>
+   <div style={{...shell,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+     <div><h3 style={{margin:"0 0 4px"}}>Saved job risk assessments</h3><label style={{...label,marginTop:8}}>Organization
+       <select style={{...input,minWidth:220}} value={org.id} onChange={e=>setSelectedOrg(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label></div><div style={{display:"none"}}>Saved job risk assessments</div><div><h3 style={{display:"none"}}>Saved job risk assessments</h3><span style={{fontSize:12,color:"#667085"}}>{count} local job records; no sign-in required</span></div><button style={primary} onClick={start}>Create new JRA</button></div>
    {records.length===0?<div style={{...shell,textAlign:"center",padding:"45px 15px"}}><ClipboardList size={34} color="#94a3b8"/><h3>No JRA saved yet</h3><p style={{color:"#64748b",fontSize:12}}>Start a new assessment, choose workers and build a task-by-task hazard register.</p></div>:records.map(jra=><div key={jra.id} style={{...shell,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center",flexWrap:"wrap"}}>
     <div><Badge>{jra.status.replaceAll("_"," ")}</Badge><h3 style={{fontSize:16,margin:"8px 0 5px"}}>{jra.title||"Untitled assessment"}</h3><span style={{fontSize:12,color:"#667085"}}>{jra.reference} · {jra.jobId} · {jra.tasks.length} steps · {jra.participants.length} people</span></div>
-    <div style={{display:"flex",gap:6}}><button style={btn} onClick={()=>{setCurrent(jra);setEditing(jra.id);setPage("job");setMessage("");}}>Open</button><button style={btn} onClick={()=>{const newId="JRA-"+crypto.randomUUID();const copy={...structuredClone(jra),id:newId,reference:jra.reference+"-COPY",revision:1,status:"DRAFT" as const,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};setCurrent(copy);setEditing(null);setPage("job");}}>Duplicate</button></div>
+    <div style={{display:"flex",gap:6}}><button style={btn} onClick={()=>{setCurrent(jra);setSelectedOrg(jra.orgId);setEditing(jra.id);setPage("job");setMessage("");}}>Open</button><button style={btn} onClick={()=>{const newId="JRA-"+crypto.randomUUID();const copy={...structuredClone(jra),id:newId,reference:jra.reference+"-COPY",revision:1,status:"DRAFT" as const,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};setCurrent(copy);setEditing(null);setPage("job");}}>Duplicate</button></div>
    </div>)}
   </div>:<div style={{display:"grid",gap:13}}>
     <div style={{...shell,borderTop:"4px solid "+org.accent}}>
      <div style={{display:"flex",gap:13,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}>
       <div style={{display:"flex",gap:12,alignItems:"center"}}>
-       {org.logoDataUrl?<img src={org.logoDataUrl} alt={org.name+" logo"} style={{maxHeight:65,maxWidth:105,objectFit:"contain"}}/>:<div style={{width:55,height:55,borderRadius:10,display:"grid",placeItems:"center",background:"#dbeafe",color:"#1849a9",fontWeight:900}}>LOGO</div>}
-       <div><strong style={{fontSize:15}}>{org.name}</strong><div style={{fontSize:11,color:"#667085"}}>{job.reference} · v{job.revision} · {job.status.replaceAll("_"," ")}</div></div>
+       {job.logoSnapshot?<img src={job.logoSnapshot} alt={job.companyNameSnapshot+" logo"} style={{maxHeight:65,maxWidth:105,objectFit:"contain"}}/>:<div style={{width:55,height:55,borderRadius:10,display:"grid",placeItems:"center",background:"#dbeafe",color:"#1849a9",fontWeight:900}}>LOGO</div>}
+       <div><strong style={{fontSize:15}}>{job.companyNameSnapshot}</strong><div style={{fontSize:11,color:"#667085"}}>{job.reference} · v{job.revision} · {job.status.replaceAll("_"," ")}</div></div>
       </div>
       <button style={btn} onClick={()=>{setCurrent(null);setMessage("");}}>← Back to JRA library</button>
      </div>
@@ -174,10 +181,11 @@ export function JraWorkspace(){
            <div><strong style={{fontSize:12}}>Initial risk — without additional controls</strong><div style={{marginTop:7}}><RiskChooser value={hazard.initial} onChange={risk=>changeHazard(step.id,hazard.id,h=>({...h,initial:risk}))}/></div></div>
            <div style={{borderTop:"1px solid #e2e8f0",paddingTop:12}}>
             <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:12}}>Remedies / preventive controls</strong><button style={{...btn,fontSize:11,padding:"7px 9px",minHeight:33}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:[...h.controls,{id:"ctrl-"+crypto.randomUUID(),hierarchy:dictionary.hierarchyOfControls[2],description:"",verified:false}]}))}><Plus size={13} style={{display:"inline"}}/> Add control</button></div>
-            {hazard.controls.map(control=><div key={control.id} style={{display:"grid",gridTemplateColumns:"minmax(120px,0.65fr) minmax(170px,2fr) minmax(110px,0.6fr) auto",gap:7,marginTop:8}}>
+            {hazard.controls.map(control=><div key={control.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:7,marginTop:8}}>
              <select aria-label="Hierarchy of control" style={input} value={control.hierarchy} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,hierarchy:e.target.value}:c)}))}>{dictionary.hierarchyOfControls.map(v=><option key={v}>{v}</option>)}</select>
              <input aria-label="Control or remedy" style={input} value={control.description} placeholder="Install physical isolation" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,description:e.target.value}:c)}))}/>
              <select aria-label="Responsible person" style={input} value={control.ownerId??""} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,ownerId:e.target.value}:c)}))}><option value="">Owner</option>{job.participants.map(p=><option key={p.personId} value={p.personId}>{p.nameSnapshot}</option>)}</select>
+             <label style={{fontSize:11,display:"flex",gap:4,alignItems:"center"}}><input type="checkbox" checked={control.verified} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,verified:e.target.checked}:c)}))}/> Verified</label>
              <button aria-label="Delete control" style={{...btn,padding:7}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.filter(c=>c.id!==control.id)}))}><Trash2 size={15}/></button>
             </div>)}
            </div>
