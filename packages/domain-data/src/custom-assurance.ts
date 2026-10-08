@@ -37,7 +37,7 @@ export const dictionary={
 };
 export type DirectorySource=(typeof dictionary.sources)[number];
 export type OrganizationProfile={
- id:string; name:string; domain:string; businessUnit:string; siteIds:string[];
+ id:string; name:string; domain:string; businessUnit:string; industry?:string; siteIds:string[];
  accent:string; logoDataUrl?:string; logoName?:string;
  documentPrefix:string; footer:string; ownerIds:string[];
  source:DirectorySource; updatedAt:string;
