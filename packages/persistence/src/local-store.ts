@@ -145,7 +145,7 @@ export function restoreWorkspaceBackup(storage:Storage,backup:WorkspaceBackup){
  }catch(error){
   for(const key of written){
    const old=original.get(key);
-   try{if(old===null)storage.removeItem(key);else storage.setItem(key,old);}catch{}
+   try{if(old==null)storage.removeItem(key);else storage.setItem(key,old);}catch{}
   }
   throw new Error("Storage refused the backup. Existing data has been preserved where possible.",{cause:error});
  }
