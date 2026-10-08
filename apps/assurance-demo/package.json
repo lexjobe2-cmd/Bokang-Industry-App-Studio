@@ -17,7 +17,9 @@
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.468.0",
     "docx": "^9.8.1",
-    "jspdf": "^4.2.1"
+    "jspdf": "^4.2.1",
+    "tesseract.js": "^6.0.1",
+    "pdfjs-dist": "^5.4.149"
   },
   "devDependencies": {
     "@types/react": "^19.1.16",
