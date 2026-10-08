@@ -22,6 +22,15 @@ jobs:
       - run: node --experimental-strip-types --test tests/assurance.test.mjs tests/local-persistence.test.mjs tests/participation-export.test.mjs
       - run: python3 scripts/validate_assurance_schema.py
       - run: pnpm build
+      - name: Render report quality samples (PDF and Word)
+        run: node --experimental-strip-types scripts/render-document-samples.mjs
+      - name: Package sample reports for visual QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: movetrack-document-examples
+          path: build/report-fixtures
+          if-no-files-found: error
+          retention-days: 14
       - name: Package standalone MoveTrack frontend
         uses: actions/upload-artifact@v4
         with:
