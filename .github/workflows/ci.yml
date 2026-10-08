@@ -20,4 +20,5 @@ jobs:
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm typecheck
       - run: node --experimental-strip-types --test tests/assurance.test.mjs
+      - run: python3 scripts/validate_assurance_schema.py
       - run: pnpm build
