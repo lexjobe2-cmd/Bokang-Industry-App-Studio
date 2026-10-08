@@ -7,6 +7,7 @@ import {ASSURANCE_STORAGE,demoOrganization,demoPeople,makeCustomTemplate,type Cu
 import {type FormCategory,type FormField,type FormSection,type FormTemplate} from "@bokang/domain-data/assurance-forms";
 import {detectPaperCategory,parsePaperText,validatePaperSections,type PaperExtraction} from "@bokang/domain-data/paper-forms";
 import {readPaperDocument,acceptedPaperFile,downloadSourcePdf,type PaperProgress} from "../../lib/paper-ocr";
+import {savePaperOriginal,getPaperOriginal,deletePaperOriginal} from "../../lib/paper-source-store";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {buildFormDocument} from "../../lib/form-exports";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
@@ -42,6 +43,7 @@ export function PaperToDigitalWorkspace(){
   return ()=>URL.revokeObjectURL(next);
  },[file]);
  const visibleDraft=draft?.orgId===org.id?draft:null;
+ useEffect(()=>{if(!visibleDraft?.id)return;let cancelled=false;getPaperOriginal(visibleDraft.id,org.id).then(saved=>{if(!cancelled&&saved)setFile(saved);}).catch(()=>{});return ()=>{cancelled=true;};},[visibleDraft?.id,org.id]);
  const template:FormTemplate|null=visibleDraft?{id:visibleDraft.id,version:1,title:visibleDraft.title,category:visibleDraft.category,
   status:"DRAFT",effectiveDate:new Date().toISOString().slice(0,10),siteIds:[],assetClasses:[],sections:visibleDraft.sections}:null;
  const fieldCount=visibleDraft?.sections.reduce((sum,s)=>sum+s.fields.length,0)??0;
@@ -55,7 +57,12 @@ export function PaperToDigitalWorkspace(){
    const parsed=await readPaperDocument(file,setProgress);
    const next:PaperDraft={...parsed,id:"paper-"+crypto.randomUUID(),kind:parsed.kind,category:detectPaperCategory(parsed.kind),orgId:org.id};
    setDraft(next);
-   setMessage("OCR text was extracted. Compare every field against the original scan, especially safety-critical checks, signatures and dates.");
+   try{
+    await savePaperOriginal(next.id,org.id,file);
+    setMessage("OCR text and original scan archived in this browser. Compare every field with the source, especially safety controls and names.");
+   }catch(e){
+    setMessage("OCR text is saved, but the original could not be archived on this device: "+(e instanceof Error?e.message:String(e))+". Keep a copy of the original yourself.");
+   }
   }catch(e){setMessage(e instanceof Error?e.message:"Could not read this paper document.");}
   finally{setBusy(false);}
  }
@@ -83,7 +90,10 @@ export function PaperToDigitalWorkspace(){
    if(publish){setActive(fresh.id);setTab("library");}
   }catch(e){setMessage(e instanceof Error?e.message:"Form validation failed.");}
  }
- function reset(){if(window.confirm("Discard this paper import? Previously published forms stay saved.")){setDraft(null);setFile(null);setProgress(null);setMessage("");}}
+ function reset(){if(window.confirm("Discard this paper import and its locally archived original? Previously published forms stay saved.")){
+   if(visibleDraft?.id)void deletePaperOriginal(visibleDraft.id).catch(()=>{});
+   setDraft(null);setFile(null);setProgress(null);setMessage("");
+  }}
  return <section aria-label="Paper to digital OCR studio" style={{display:"grid",gap:15}}>
   <div style={{...root,background:"linear-gradient(105deg,#0c213d,#15548b)",color:"#fff",border:0,padding:22}}>
    <div style={{display:"flex",gap:11,alignItems:"center"}}><ScanText size={27} color="#bfdbfe"/><div>
@@ -91,7 +101,7 @@ export function PaperToDigitalWorkspace(){
     <h2 style={{fontSize:24,margin:0}}>Use the checklist your company already has.</h2>
    </div></div>
    <p style={{fontSize:12,lineHeight:1.7,color:"#cbd5e1",maxWidth:850,margin:"13px 0 0"}}>
-    Import a photograph or scanned PDF, extract printed text, rebuild editable questions, review them against the original, and generate new blank/filled branded PDFs or Word documents. The source file stays on this device; only reviewed text and form structure are saved locally.</p>
+    Import a photograph or scanned PDF, extract printed text, rebuild editable questions, review them against the original, and generate new blank/filled branded PDFs or Word documents. The original file is archived in your browser for comparison; the extracted fields are saved locally.</p>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:13}}>
    <div style={{...root,display:"grid",gap:11,alignContent:"start"}}>
@@ -160,6 +170,6 @@ export function PaperToDigitalWorkspace(){
    <p style={{fontSize:11,color:"#64748b",margin:0}}>The generated PDF/Word reproduces the reviewed questions and sections in MoveTrack's controlled layout. An exact pixel-for-pixel copy of the original is only available through “Export unchanged source PDF” while the source file is still selected.</p>
   </div>:null}
   {message?<p role="status" style={{padding:13,background:"#eff6ff",color:"#1e40af",borderRadius:12,fontSize:12}}>{message}</p>:null}
-  <div style={{...root,background:"#f8fafc",fontSize:11,color:"#64748b"}}>Free/open-source OCR: text-bearing PDF pages are extracted directly; scanned pages and photos use Tesseract.js. The first OCR run may download English recognition files. There is no server upload in this prototype. Never treat OCR-derived safety checks as verified until a qualified person reviews them.</div>
+  <div style={{...root,background:"#f8fafc",fontSize:11,color:"#64748b"}}>Free/open-source OCR: text-bearing PDF pages are extracted directly; scanned pages and photos use Tesseract.js. The first OCR run may download English recognition files. The original scan archive uses local IndexedDB and is not included in the JSON workspace backup. There is no server upload in this prototype. Never treat OCR-derived safety checks as verified until a qualified person reviews them.</div>
  </section>;
 }
