@@ -56,8 +56,8 @@ export function AssuranceFormsWorkspace(){
     setSubmissions(current=>[record,...current]);
     if(template.category==="Fleet"&&assetId&&record.decision==="NO_GO"){
       // Demo-only cross-module update. Backend must atomically enforce this in production.
-      setFleet(current=>current.map(a=>a.id===assetId?{...a,status:"No-go"}:a));
-      setAssignments(current=>current.map(a=>a.vehicleId===assetId&&!["Returned","Cancelled"].includes(a.status)?{...a,status:"Grounded"}:a));
+      setFleet(current=>current.map(a=>a.id===assetId?{...a,status:"No-go" as const}:a));
+      setAssignments(current=>current.map(a=>a.vehicleId===assetId&&!["Returned","Cancelled"].includes(a.status)?{...a,status:"Grounded" as const}:a));
       setIncidents(current=>[{
         id:"DEF-"+record.id,vehicleId:assetId,createdAt:record.submittedAt,
         severity:"Critical",category:"Defect",status:"Open",
