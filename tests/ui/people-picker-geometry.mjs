@@ -51,6 +51,20 @@ try{
   if(result.exceptionDetails)throw Error("Browser evaluation failed: "+JSON.stringify(result.exceptionDetails));
   return result.result?.value;
  }
+ async function ensureTheme(desired){
+  // Local persistence hydrates after initial render. Never accept a transient default
+  // theme as proof the requested palette has been applied.
+  await sleep(220);
+  const actual=await evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')");
+  if(actual!==desired){
+   const label=desired==="dark"?"Switch to dark mode":"Switch to light mode";
+   const clicked=await evaluate("(()=>{const b=document.querySelector('button[aria-label="+JSON.stringify(label)+"]');if(!b)return false;b.click();return true;})()");
+   assert.ok(clicked,"Missing theme toggle for "+desired);
+  }
+  await waitFor(()=>evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')==="+JSON.stringify(desired)),"actual stable "+desired+" theme");
+  await sleep(240);
+  assert.equal(await evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')"),desired,"Theme changed unexpectedly during hydration");
+ }
  await send("Page.enable");
  await send("Runtime.enable");
  const checks=[];
@@ -65,9 +79,7 @@ try{
   await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:width<900});
   await send("Page.navigate",{url:base+"/app/meetings"});
   await waitFor(()=>evaluate("!!document.querySelector('.movetrack-root button[aria-haspopup=\"listbox\"]')"),"meeting editor people picker");
-  const mode=theme==="dark"?"Switch to dark mode":"Switch to light mode";
-  await evaluate("document.querySelector('button[aria-label="+JSON.stringify(mode)+"]')?.click()");
-  await waitFor(()=>evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')==="+JSON.stringify(theme)),"theme "+theme);
+  await ensureTheme(theme);
   await evaluate("document.querySelector('.movetrack-root button[aria-haspopup=\"listbox\"]')?.click()");
   await waitFor(()=>evaluate("document.querySelectorAll('.movetrack-person-option').length>=2"),"employee rows");
   const result=await evaluate(String.raw`(()=>{
@@ -134,9 +146,7 @@ try{
    await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:width<900});
    await send("Page.navigate",{url:base+"/app/meetings"});
    await waitFor(()=>evaluate("!!document.querySelector('select[aria-label=\"Meeting mobile step\"],.movetrack-task-outline')"),"meeting navigation");
-   const mode=theme==="dark"?"Switch to dark mode":"Switch to light mode";
-   await evaluate("document.querySelector('button[aria-label="+JSON.stringify(mode)+"]')?.click()");
-   await waitFor(()=>evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')==="+JSON.stringify(theme)),"meeting theme");
+   await ensureTheme(theme);
    if(width<1024){
     await evaluate(String.raw`(()=>{
      const sel=document.querySelector('select[aria-label="Meeting mobile step"]');
@@ -170,7 +180,7 @@ try{
     assert.ok(control.contrast>=4.5,JSON.stringify({width,height,theme,control}));
     assert.ok(control.classes.includes("movetrack-ui-button"),JSON.stringify({width,height,theme,control}));
    }
-   console.log("MEETING BUTTON CONTRAST PASSED",JSON.stringify({width,height,theme,controls:contrastCheck}));
+   console.log("MEETING BUTTON CONTRAST PASSED",JSON.stringify({width,height,theme,actualTheme:await evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')"),controls:contrastCheck}));
    if(width===390&&theme==="dark"){
     const screenshot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
     await writeFile("ui-geometry-meeting-agenda-dark.png",Buffer.from(screenshot.data,"base64"));
@@ -203,12 +213,7 @@ try{
    for(const route of routePaths){
     await send("Page.navigate",{url:base+route});
     await waitFor(()=>evaluate("!!document.querySelector('.movetrack-root')"),"workspace "+route);
-    const current=await evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')");
-    if(current!==theme){
-     const desired=theme==="dark"?"Switch to dark mode":"Switch to light mode";
-     await evaluate("document.querySelector('button[aria-label="+JSON.stringify(desired)+"]')?.click()");
-    }
-    await sleep(200);
+    await ensureTheme(theme);
     const metrics=await evaluate(scanExpression);
     const item={route,width,requestedTheme:theme,...metrics};
     entryResults.push(item);
