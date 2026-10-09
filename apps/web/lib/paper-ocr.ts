@@ -1,4 +1,6 @@
 import {parsePaperText,type PaperExtraction} from "@bokang/domain-data/paper-forms";
+import {proposePaperControls,mergePaperLayout,type PaperLine,type VisualMark,type PdfWidget} from "@bokang/domain-data/paper-layout";
+import {canvasPaperShapes} from "./paper-shapes";
 export type PaperProgress={phase:string;percent:number};
 const MAX_BYTES=12*1024*1024,MAX_PAGES=5;
 export function acceptedPaperFile(file:Pick<File,"name"|"size"|"type">){
@@ -20,17 +22,44 @@ function normalizeCanvas(source:HTMLImageElement|HTMLCanvasElement|ImageBitmap){
  ctx.drawImage(source,0,0,canvas.width,canvas.height);
  return canvas;
 }
+type LineBox={text:string;bbox?:{x0:number;y0:number;x1:number;y1:number};confidence?:number};
+function ocrLines(data:unknown,page:number):PaperLine[]{
+ const object=data as {blocks?:Array<{paragraphs?:Array<{lines?:LineBox[]}>}>};
+ return (object.blocks??[]).flatMap(b=>b.paragraphs??[]).flatMap(p=>p.lines??[])
+  .filter(l=>l.bbox&&l.text.trim()).map(l=>({page,text:l.text,x:l.bbox!.x0,y:l.bbox!.y0,
+    width:Math.max(1,l.bbox!.x1-l.bbox!.x0),height:Math.max(1,l.bbox!.y1-l.bbox!.y0),confidence:l.confidence}));
+}
+function positionedPdfLines(items:readonly unknown[],viewport:{transform:number[];scale:number;height:number},pdfjs:{Util:{transform:(a:number[],b:number[])=>number[]}},page:number):PaperLine[]{
+ const rows:PaperLine[]=[];
+ for(const item of items){
+  const t=item as {str?:string;transform?:number[];width?:number;height?:number};
+  if(!t.str?.trim()||!t.transform)continue;
+  const tr=pdfjs.Util.transform(viewport.transform,t.transform);
+  const height=Math.max(8,(t.height??9)*viewport.scale),y=tr[5]-height;
+  const width=Math.max(2,(t.width??t.str.length*6)*viewport.scale);
+  const match=rows.find(x=>Math.abs(x.y-y)<Math.max(4,height*.44));
+  if(match){
+   if(tr[4]<match.x){match.text=t.str+" "+match.text;match.width=Math.max(match.width,match.x+match.width-tr[4]);match.x=tr[4];}
+   else{const gap=tr[4]-(match.x+match.width);match.text+=(gap>2?" ":"")+t.str;match.width=Math.max(match.width,tr[4]+width-match.x);}
+   match.height=Math.max(match.height,height);
+  }else rows.push({text:t.str,page,x:tr[4],y,width,height});
+ }
+ return rows.sort((a,b)=>a.y-b.y||a.x-b.x);
+}
 async function textFromImage(file:File,progress:(value:PaperProgress)=>void){
  const image=await createImageBitmap(file);
  try{
   const canvas=normalizeCanvas(image);
+  const marks=canvasPaperShapes(canvas,1);
   const {createWorker}=await import("tesseract.js");
-  progress({phase:"Loading English OCR language model (first use may require internet)",percent:15});
+  progress({phase:"Loading OCR language model and reading form geometry",percent:15});
   const worker=await createWorker("eng",1,{logger:(event:{status?:string;progress?:number})=>{
-   if(event.status==="recognizing text")progress({phase:"Reading characters from scanned image",percent:25+Math.round((event.progress??0)*67)});
+   if(event.status==="recognizing text")progress({phase:"Reading paper labels and their positions",percent:25+Math.round((event.progress??0)*65)});
   }});
-  try{const result=await worker.recognize(canvas);return {text:result.data.text,confidence:result.data.confidence};}
-  finally{await worker.terminate();}
+  try{
+   const recognized=await worker.recognize(canvas,{}, {blocks:true});
+   return {text:recognized.data.text,confidence:recognized.data.confidence,marks,lines:ocrLines(recognized.data,1)};
+  }finally{await worker.terminate();}
  }finally{image.close();}
 }
 async function textFromPdf(file:File,progress:(value:PaperProgress)=>void){
@@ -38,48 +67,65 @@ async function textFromPdf(file:File,progress:(value:PaperProgress)=>void){
  pdfjs.GlobalWorkerOptions.workerSrc=new URL("pdfjs-dist/build/pdf.worker.min.mjs",import.meta.url).toString();
  const data=new Uint8Array(await file.arrayBuffer());
  const loading=pdfjs.getDocument({data});
- const doc=await loading.promise;
- const limit=Math.min(MAX_PAGES,doc.numPages);
- const collected:string[]=[];
+ const doc=await loading.promise,limit=Math.min(MAX_PAGES,doc.numPages);
+ const collected:string[]=[],allLines:PaperLine[]=[],allMarks:VisualMark[]=[],allWidgets:PdfWidget[]=[];
  let confidenceSum=0,ocrPages=0;
  let worker:Awaited<ReturnType<typeof import("tesseract.js")["createWorker"]>>|null=null;
  try{
   for(let i=1;i<=limit;i++){
-   progress({phase:"Reading PDF page "+i+" of "+limit,percent:Math.round(8+65*(i-1)/limit)});
-   const page=await doc.getPage(i);
+   progress({phase:"Reading PDF page "+i+" of "+limit,percent:Math.round(8+70*(i-1)/limit)});
+   const page=await doc.getPage(i),viewport=page.getViewport({scale:1.65});
    const content=await page.getTextContent();
-   const digital=content.items.map(item=>"str" in item?item.str:"").join(" ").trim();
-   if(digital.length>=65){collected.push(digital);continue;}
-   const viewport=page.getViewport({scale:1.8});
-   const canvas=document.createElement("canvas");
-   canvas.width=Math.round(viewport.width);canvas.height=Math.round(viewport.height);
-   const ctx=canvas.getContext("2d");
-   if(!ctx)throw Error("Unable to render this scanned PDF page.");
-   await page.render({canvas,canvasContext:ctx,viewport}).promise;
-   if(!worker){
-    const {createWorker}=await import("tesseract.js");
-    progress({phase:"Preparing OCR for scanned PDF pages",percent:20});
-    worker=await createWorker("eng");
+   const digital=positionedPdfLines(content.items,viewport,pdfjs,i);
+   const text=digital.map(l=>l.text).join("\n").trim();
+   const annotations=await page.getAnnotations({intent:"display"});
+   for(const annotation of annotations){
+    const a=annotation as typeof annotation&{fieldType?:string;fieldName?:string;alternativeText?:string;checkBox?:boolean;radioButton?:boolean;combo?:boolean;options?:Array<{displayValue?:string;exportValue?:string}>;rect?:number[]};
+    if(!a.fieldType||!a.rect)continue;
+    const mapped=a.fieldType==="Btn"?(a.radioButton?"radio":"checkbox"):a.fieldType==="Sig"?"signature":a.fieldType==="Ch"?"select":"text";
+    const [x1,y1,x2,y2]=viewport.convertToViewportRectangle(a.rect);
+    allWidgets.push({page:i,kind:mapped,label:a.alternativeText||a.fieldName||"",
+      choices:a.options?.map(o=>o.displayValue??o.exportValue??"").filter(Boolean),
+      x:Math.min(x1,x2),y:Math.min(y1,y2),width:Math.abs(x2-x1),height:Math.abs(y2-y1)});
    }
-   const res=await worker.recognize(normalizeCanvas(canvas));
-   collected.push(res.data.text);
-   confidenceSum+=res.data.confidence;ocrPages++;
+   // Render digital pages as well, because checkboxes and ruled tables are often vector drawings.
+   const canvas=document.createElement("canvas");
+   canvas.width=Math.max(1,Math.round(viewport.width));canvas.height=Math.max(1,Math.round(viewport.height));
+   const ctx=canvas.getContext("2d",{willReadFrequently:true});
+   if(!ctx)throw Error("Unable to render this PDF page.");
+   await page.render({canvas,canvasContext:ctx,viewport}).promise;
+   allMarks.push(...canvasPaperShapes(canvas,i));
+   if(text.length>=65){
+    collected.push(text);allLines.push(...digital);
+   }else{
+    if(!worker){
+     const {createWorker}=await import("tesseract.js");
+     progress({phase:"Preparing printed page OCR",percent:20});
+     worker=await createWorker("eng");
+    }
+    const recognized=await worker.recognize(normalizeCanvas(canvas),{}, {blocks:true});
+    collected.push(recognized.data.text);
+    allLines.push(...ocrLines(recognized.data,i));
+    confidenceSum+=recognized.data.confidence;ocrPages++;
+   }
    canvas.width=0;canvas.height=0;
   }
  }finally{await worker?.terminate();await doc.destroy();}
  if(limit<doc.numPages)collected.push("\nNOTE: Only "+limit+" of "+doc.numPages+" source pages processed. Split longer documents.");
- return {text:collected.join("\n\n"),confidence:ocrPages?confidenceSum/ocrPages:null,pages:limit,truncated:limit<doc.numPages};
+ return {text:collected.join("\n\n"),confidence:ocrPages?confidenceSum/ocrPages:null,
+  pages:limit,truncated:limit<doc.numPages,lines:allLines,marks:allMarks,widgets:allWidgets};
 }
 export async function readPaperDocument(file:File,progress:(v:PaperProgress)=>void):Promise<PaperExtraction>{
  const kind=acceptedPaperFile(file);
- let result:{text:string;confidence:number|null;pages?:number;truncated?:boolean};
- progress({phase:"Opening original source document",percent:5});
- if(kind==="pdf")result=await textFromPdf(file,progress);
- else result={...await textFromImage(file,progress),pages:1};
- progress({phase:"Proposing editable questions and section headings",percent:95});
- const parsed=parsePaperText(file.name,result.text,result.confidence,result.pages??1);
+ progress({phase:"Opening source document",percent:5});
+ const result=kind==="pdf"?await textFromPdf(file,progress):{...await textFromImage(file,progress),pages:1,truncated:false,widgets:[] as PdfWidget[]};
+ progress({phase:"Converting detected boxes, choices, lines and PDF widgets into editable form components",percent:95});
+ const parsed=parsePaperText(file.name,result.text,result.confidence,result.pages);
+ const elements=proposePaperControls(result.lines,result.marks,result.widgets);
+ const combined=mergePaperLayout(parsed,elements);
+ parsed.sections=combined.sections;parsed.warnings=combined.warnings;parsed.elements=combined.elements;parsed.summary=combined.summary;
  if(result.truncated)parsed.warnings.push("The PDF contains more than five pages. Upload each portion separately to avoid missing check items.");
- progress({phase:"Ready for human review",percent:100});
+ progress({phase:"Review the reconstructed form UI against the original",percent:100});
  return parsed;
 }
 export async function downloadSourcePdf(file:File){
