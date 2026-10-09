@@ -12,6 +12,12 @@ on:
       - "tests/movetrack-adaptive-content.test.mjs"
       - "apps/web/components/products/MeetingRegisterWorkspace.tsx"
       - "apps/web/components/products/MoveTrackThemeStyles.tsx"
+      - "apps/web/components/products/MoveTrackUIControls.tsx"
+      - "apps/web/components/products/JraWorkspace.tsx"
+      - "apps/web/components/products/PaperToDigitalWorkspace.tsx"
+      - "apps/web/components/products/AssuranceFormsWorkspace.tsx"
+      - "apps/web/components/products/MoveTrackShowcase.tsx"
+      - "tests/movetrack-native-control-contrast.test.mjs"
       - "tests/ui/people-picker-geometry.mjs"
       - ".github/workflows/movetrack-ui-geometry.yml"
   workflow_dispatch:
