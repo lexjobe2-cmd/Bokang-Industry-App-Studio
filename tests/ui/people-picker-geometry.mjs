@@ -109,7 +109,7 @@ try{
  const scanExpression=[
   "(()=>{",
   "const vw=document.documentElement.clientWidth;",
-  "const visible=e=>e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden;",
+  "const visible=e=>e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';",
   "const elements=[...document.querySelectorAll('main,nav,section,article,button,input,select,textarea')].filter(visible);",
   "const outside=elements.filter(e=>{const r=e.getBoundingClientRect();return r.right>vw+2||r.left< -2;}).slice(0,8).map(e=>({kind:e.tagName,label:(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,55)}));",
   "const narrow=elements.filter(e=>['INPUT','SELECT','TEXTAREA'].includes(e.tagName)&&e.getBoundingClientRect().width<90).slice(0,8).map(e=>({kind:e.tagName,label:e.getAttribute('aria-label')||e.getAttribute('placeholder')||'',width:Math.round(e.getBoundingClientRect().width)}));",
