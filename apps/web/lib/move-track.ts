@@ -1,7 +1,7 @@
 import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import type {LocalEvidenceImage} from "./image-evidence";
 import type {LocalAssetDocument} from "./vehicle-documents";
-import {driverEligibilityReasons,type DriverCredentialExpiry} from "./driver-competency.ts";
+import {driverEligibilityReasons,type DriverCredentialExpiry,type DriverCredentialEvidenceLinks,type DriverCompetencyHistoryEntry} from "./driver-competency.ts";
 import { miningPrestartChecks } from "@bokang/domain-data";
 
 export type FleetVehicleStatus =
@@ -43,6 +43,8 @@ export type FleetDriver = {
   status: DriverStatus;
   documents?: LocalAssetDocument[];
   competencyExpiry?: DriverCredentialExpiry;
+  competencyEvidence?: DriverCredentialEvidenceLinks;
+  competencyHistory?: DriverCompetencyHistoryEntry[];
   personId?: string; // Optional stable organization directory reference; never a safety authorization.
   authorizationReview?:{signedAt:string;signature:SignatureEvidence};
 };
