@@ -58,6 +58,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   const [incidents,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
   const [policies,setPolicies]=usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
   const [orgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
+  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
+  const currentOrg=orgs.find(o=>o.id===orgId)??orgs[0]??demoOrganization;
   const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
   const [customTemplates]=usePersistentState<CustomTemplate[]>(ASSURANCE_STORAGE.templates,[]);
   const [forms]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
@@ -97,6 +99,10 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   const [assignDriver,setAssignDriver]=useState("");
   const [assignJob,setAssignJob]=useState("");
   const [assignSite,setAssignSite]=useState("Jwaneng mine · demo profile");
+  useEffect(()=>{
+    const site=orgs.find(o=>o.id===orgId)?.siteIds[0];
+    if(site){setVehicleDraft(v=>({...v,site}));setAssignSite(site);}
+  },[orgId]);
 
   const activeAssignments=assignments.filter((item)=>!["Returned","Cancelled"].includes(item.status));
   const control=useMemo(()=>({
@@ -351,12 +357,18 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     </div>:null}
 
     {view==="fleet"?<div style={{display:"grid",gap:14}}>
-      <section style={panel}><h2 style={{marginTop:0}}>Onboard fleet vehicle</h2><div style={formGrid}>
+      <section style={panel}><h2 style={{marginTop:0}}>Onboard fleet vehicle</h2>
+       <p style={{fontSize:12,color:"#64748b"}}>Choose from company work sites and common vehicle details; only asset identity and verified expiry dates require direct entry.</p>
+       <div style={formGrid}>
         <Field label="Fleet number"><input value={vehicleDraft.fleetNo} onChange={(e)=>setVehicleDraft((c)=>({...c,fleetNo:e.target.value}))} style={input} placeholder="LV-031"/></Field>
         <Field label="Registration"><input value={vehicleDraft.registration} onChange={(e)=>setVehicleDraft((c)=>({...c,registration:e.target.value}))} style={input} placeholder="B 000 ABC"/></Field>
-        <Field label="Make / model"><input value={vehicleDraft.makeModel} onChange={(e)=>setVehicleDraft((c)=>({...c,makeModel:e.target.value}))} style={input} placeholder="Toyota Hilux"/></Field>
+        <Field label="Make / model"><input list="movetrack-vehicle-models" value={vehicleDraft.makeModel} onChange={(e)=>setVehicleDraft((c)=>({...c,makeModel:e.target.value}))} style={input} placeholder="Choose or type model"/>
+          <datalist id="movetrack-vehicle-models">{[...new Set([...fleet.map(v=>v.makeModel),"Toyota Hilux","Toyota Land Cruiser","Isuzu D-Max","Ford Ranger","Tipper truck","Rigid dump truck","Articulated dump truck"])].map(model=><option value={model} key={model}/>)}</datalist>
+         </Field>
         <Field label="Type"><select value={vehicleDraft.type} onChange={(e)=>setVehicleDraft((c)=>({...c,type:e.target.value}))} style={input}>{miningVehicleTypes.map((item)=><option key={item}>{item}</option>)}</select></Field>
-        <Field label="Operating site"><input value={vehicleDraft.site} onChange={(e)=>setVehicleDraft((c)=>({...c,site:e.target.value}))} style={input}/></Field>
+        <Field label="Operating site"><input list="movetrack-work-sites" value={vehicleDraft.site} onChange={(e)=>setVehicleDraft(c=>({...c,site:e.target.value}))} style={input}/>
+          <datalist id="movetrack-work-sites">{[...new Set([...currentOrg.siteIds,...policies.map(p=>p.name)])].map(site=><option value={site} key={site}/>)}</datalist>
+         </Field>
         <Field label="Roadworthy expiry"><input type="date" value={vehicleDraft.roadworthyExpiry} onChange={(e)=>setVehicleDraft((c)=>({...c,roadworthyExpiry:e.target.value}))} style={input}/></Field>
         <Field label="Extinguisher service due"><input type="date" value={vehicleDraft.extinguisherServiceDue} onChange={(e)=>setVehicleDraft((c)=>({...c,extinguisherServiceDue:e.target.value}))} style={input}/></Field>
       </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></section>
@@ -378,8 +390,12 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
     {view==="drivers"?<div style={{display:"grid",gap:14}}>
       <section style={panel}><h2 style={{marginTop:0}}>Onboard driver</h2><div style={formGrid}>
-        <Field label="Driver name"><input value={driverDraft.name} onChange={(e)=>setDriverDraft((c)=>({...c,name:e.target.value}))} style={input}/></Field>
-        <Field label="Phone"><input value={driverDraft.phone} onChange={(e)=>setDriverDraft((c)=>({...c,phone:e.target.value}))} style={input}/></Field>
+        <Field label="Driver name"><input value={driverDraft.name} onChange={(e)=>setDriverDraft((c)=>({...c,name:e.target.value}))} style={input} placeholder="Choose a worker or type a name"/>
+         <select aria-label="Choose driver from company directory" defaultValue="" style={{...input,marginTop:7,width:"100%"}} onChange={e=>{const person=directory.find(p=>p.id===e.target.value);if(person)setDriverDraft(d=>({...d,name:person.displayName}));}}>
+          <option value="">Choose from {currentOrg.name} directory…</option>
+          {directory.filter(p=>p.orgId===orgId&&p.active).map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}
+         </select></Field>
+        <Field label="Phone"><input type="tel" autoComplete="tel" value={driverDraft.phone} onChange={(e)=>setDriverDraft((c)=>({...c,phone:e.target.value}))} style={input}/></Field>
         <Field label="Licence / reference"><input value={driverDraft.licenceNo} onChange={(e)=>setDriverDraft((c)=>({...c,licenceNo:e.target.value}))} style={input}/></Field>
       </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(270px,1fr))",gap:12}}>
@@ -470,7 +486,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
     {view==="jobs"?<div style={{display:"grid",gap:12}}>
       <section style={panel}><h2 style={{marginTop:0}}>New logistics job</h2><div style={formGrid}>
-        <Field label="Client"><input value={client} onChange={(e)=>setClient(e.target.value)} style={input}/></Field>
+        <Field label="Client"><input list="movetrack-clients" value={client} onChange={(e)=>setClient(e.target.value)} style={input} placeholder="Choose a recent client or type another"/>
+         <datalist id="movetrack-clients">{[...new Set(jobs.map(j=>j.client))].map(item=><option key={item} value={item}/>)}</datalist></Field>
         <Field label="Job type"><select value={jobType} onChange={(e)=>setJobType(e.target.value as typeof jobType)} style={input}>{logisticsJobTypes.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="From"><select value={from} onChange={(e)=>setFrom(e.target.value as typeof from)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="To"><select value={to} onChange={(e)=>setTo(e.target.value as typeof to)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
