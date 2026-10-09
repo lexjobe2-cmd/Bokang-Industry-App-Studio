@@ -67,7 +67,10 @@ test("search pagination and tolerant spelling work for any new provider without 
  const data=workspaceIndex([provider("dynamic-evs",Array.from({length:67},(_,i)=>({
   uuid:"ev-"+i,title:"Scaffolding inspection "+i,description:"Document / bay "+i,site:"Botswana-Zone-"+i})))]);
  assert.equal(searchDocuments(data,"scaffolding",{limit:15}).length,15);
- assert.equal(searchDocuments(data,"scaffolding",{limit:15,offset:15})[0].id,"ev-15");
+ const page1=searchDocuments(data,"scaffolding",{limit:15});
+ const page2=searchDocuments(data,"scaffolding",{limit:15,offset:15});
+ assert.equal(page2.length,15);
+ assert.ok(page2.every(hit=>!page1.some(other=>other.id===hit.id)),"Each page should contain a different relevant result");
  assert.equal(searchDocuments(data,"scafolding",{limit:15}).length,15);
  assert.equal(searchDocuments(data,"botswana zone 33")[0].id,"ev-33");
  assert.equal(searchDocuments(data,"scaffolding",{source:"unknown"}).length,0);
