@@ -1,5 +1,8 @@
 "use client";
 import {DesktopModalDisclosure} from "./DesktopModal";
+import {MultiImageEvidence} from "./MultiImageEvidence";
+import {OrganizationOnboarding} from "./OrganizationOnboarding";
+import type {LocalEvidenceImage} from "../../lib/image-evidence";
 
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { usePersistentState } from "@bokang/persistence";
@@ -86,9 +89,23 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   const [siteSignatures,setSiteSignatures]=useState<Record<string,SignatureEvidence|null>>({});
   const [localView,setLocalView]=useState<MoveTrackView>(initialView);
   const view=selectedView??localView;
+  // The admin workbench reuses the existing screens and persistence; no duplicate models.
+  const [adminArea,setAdminArea]=useState<MoveTrackView|"overview"|"company">("overview");
+  const adminMode=view==="admin";
+  const contentView=adminMode?adminArea:view;
   const [visited,setVisited]=useState<Set<MoveTrackView>>(()=>new Set([initialView]));
-  useEffect(()=>{setVisited(current=>current.has(view)?current:new Set([...current,view]));},[view]);
-  function setView(next:MoveTrackView){setLocalView(next);onViewChange?.(next);}
+  useEffect(()=>{
+    if(contentView==="overview"||contentView==="company")return;
+    setVisited(current=>current.has(contentView)?current:new Set([...current,contentView]));
+  },[contentView]);
+  function setView(next:MoveTrackView){
+    if(adminMode&&next!=="admin"){setAdminArea(next);return;}
+    setLocalView(next);onViewChange?.(next);
+  }
+  function openAdminArea(next:MoveTrackView|"company"){
+    setAdminArea(next);
+    if(!adminMode){setLocalView("admin");onViewChange?.("admin");}
+  }
   useEffect(()=>{if(!selectedView)setLocalView(initialView);},[initialView,selectedView]);
   const [notice,setNotice]=useState("");
   useEffect(()=>{setNotice("");},[view]);
@@ -105,6 +122,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     site:"Jwaneng mine · demo profile",roadworthyExpiry:"",extinguisherServiceDue:""
   });
   const [driverDraft,setDriverDraft]=useState({name:"",phone:"",licenceNo:""});
+  const [vehiclePhotos,setVehiclePhotos]=useState<LocalEvidenceImage[]>([]);
   const [assignVehicle,setAssignVehicle]=useState("");
   const [assignDriver,setAssignDriver]=useState("");
   const [assignJob,setAssignJob]=useState("");
@@ -225,9 +243,11 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       fleetNo:vehicleDraft.fleetNo.trim(),registration:vehicleDraft.registration.trim(),
       makeModel:vehicleDraft.makeModel.trim(),type:vehicleDraft.type,site:vehicleDraft.site,
       status:"Inspection due",odometerKm:0,roadworthyExpiry:vehicleDraft.roadworthyExpiry||"Not set",
-      extinguisherServiceDue:vehicleDraft.extinguisherServiceDue||"Not set",nextServiceKm:10000
+      extinguisherServiceDue:vehicleDraft.extinguisherServiceDue||"Not set",nextServiceKm:10000,
+      images:vehiclePhotos
     };
     setFleet((current)=>[next,...current]);
+    setVehiclePhotos([]);
     setVehicleDraft({fleetNo:"",registration:"",makeModel:"",type:"Light vehicle / SUV",site:"Jwaneng mine · demo profile",roadworthyExpiry:"",extinguisherServiceDue:""});
     setNotice(next.fleetNo+" onboarded. It remains INSPECTION DUE until a compliant driver pre-start clears it.");
   }
@@ -315,7 +335,38 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
 
-    {view==="control"?<div style={{display:"grid",gap:14}}>
+    {view==="admin"?<section aria-label="Admin workspace" style={{...panel,display:"grid",gap:13,borderColor:"#93c5fd"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
+       <div><p style={{fontSize:11,color:"#1d4ed8",fontWeight:900,letterSpacing:1.2,margin:0}}>ADMIN · LOCAL DEMONSTRATION</p>
+        <h2 style={{fontSize:22,margin:"6px 0"}}>{adminArea==="overview"?"Organization administration":adminArea==="company"?"Company management":adminArea==="fleet"?"Vehicle onboarding & asset media":adminArea==="drivers"?"Driver onboarding":adminArea==="workforce"?"Employee directory":adminArea==="sites"?"Site policies":adminArea==="forms"?"Form & template management":"Manage "+adminArea}</h2>
+        <p style={{fontSize:12,color:"#64748b",margin:0}}>Set up and manage every organizational workspace here. This frontend uses local demo access, not verified admin authentication.</p></div>
+       {adminArea!=="overview"?<button type="button" onClick={()=>setAdminArea("overview")} style={secondaryButton}>← All admin tools</button>:null}
+      </div>
+      {adminArea==="overview"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:9}}>
+       {([
+        ["company","Company & branding","Set up organization, sites and identity"],
+        ["fleet","Vehicles & photos","Onboard vehicles and manage image evidence"],
+        ["drivers","Drivers & competency","Onboard drivers, review local training flags"],
+        ["workforce","Workforce directory","Maintain team and participant records"],
+        ["sites","Site safety rules","Review critical site checklists and controls"],
+        ["assign","Assignments","Manage dispatch and equipment allocations"],
+        ["jobs","Jobs & work orders","Create and manage operational jobs"],
+        ["forms","Forms & templates","Design branded forms, JSA and JRA"],
+        ["meetings","Meeting registers","Meeting records, attendance and apologies"],
+        ["paper","Paper to digital","Convert scanned documents into templates"],
+        ["release","Defects & release","Repair evidence and reinspection"],
+        ["analytics","Management analytics","Review recorded operational activity"],
+        ["local-data","Data & backups","Export, restore and review local data"],
+        ["settings","Settings & support","Local preferences and guidance"]
+       ] as const).map(([area,title,description])=><button type="button" key={area} onClick={()=>setAdminArea(area)} style={{...panel,cursor:"pointer",textAlign:"left",minHeight:87,borderColor:"#c6d9f3"}}>
+        <strong style={{display:"block",fontSize:13}}>{title} →</strong><span style={{display:"block",fontSize:11,color:"#64748b",marginTop:7}}>{description}</span>
+       </button>)}
+      </div>:null}
+      {adminArea==="fleet"?<p style={{fontSize:12,color:"#1d4ed8",margin:0}}>Only the Admin workspace exposes vehicle creation, certificate editing and asset photo changes. Photos are device-local and do not establish authorization.</p>:null}
+     </section>:null}
+    {view==="admin"&&adminArea==="company"?<OrganizationOnboarding/>:null}
+
+    {contentView==="control"?<div style={{display:"grid",gap:14}}>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,150px),1fr))",gap:10}}>
         {[
           ["Available",control.available],["Assigned",control.assigned],["In use",control.inUse],
@@ -350,6 +401,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           const vehicle=fleet.find((x)=>x.id===item.vehicleId);
           return <div key={item.id} style={{padding:"10px 0",borderBottom:"1px solid #fee2e2",display:"grid",gap:8}}>
             <div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"#667085"}}>{item.description}</div></div>
+            <MultiImageEvidence label="Defect / incident photos" images={item.images??[]} onChange={images=>setIncidents(current=>current.map(row=>row.id===item.id?{...row,images}:row))}/>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               <input value={resolutionNotes[item.id]||""} onChange={(e)=>{setResolutionNotes((current)=>({...current,[item.id]:e.target.value}));setIncidentSignatures(current=>({...current,[item.id]:undefined}));}} placeholder="Corrective action / repair completed…" style={{...input,flex:"1 1 280px"}}/>
               <label style={{display:"grid",gap:4,fontSize:11,fontWeight:850}}>Reviewing supervisor
@@ -369,8 +421,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       </section>
     </div>:null}
 
-    {view==="fleet"?<div style={{display:"grid",gap:14}}>
-      <DesktopModalDisclosure title="Add fleet vehicle"><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:10}}>Onboard fleet vehicle</h2>
+    {contentView==="fleet"?<div style={{display:"grid",gap:14}}>
+      {adminMode?<DesktopModalDisclosure title="Add fleet vehicle"><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:10}}>Onboard fleet vehicle</h2>
        <p style={{fontSize:12,color:"#64748b"}}>Choose from company work sites and common vehicle details; only asset identity and verified expiry dates require direct entry.</p>
        <div className="movetrack-fleet-entry" style={formGrid}>
         <Field label="Fleet number"><input value={vehicleDraft.fleetNo} onChange={(e)=>setVehicleDraft((c)=>({...c,fleetNo:e.target.value}))} style={input} placeholder="LV-031"/></Field>
@@ -384,16 +436,19 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
          </Field>
         <Field label="Roadworthy expiry"><input type="date" value={vehicleDraft.roadworthyExpiry} onChange={(e)=>setVehicleDraft((c)=>({...c,roadworthyExpiry:e.target.value}))} style={input}/></Field>
         <Field label="Extinguisher service due"><input type="date" value={vehicleDraft.extinguisherServiceDue} onChange={(e)=>setVehicleDraft((c)=>({...c,extinguisherServiceDue:e.target.value}))} style={input}/></Field>
+       <MultiImageEvidence label="Vehicle onboarding photos" images={vehiclePhotos} onChange={setVehiclePhotos}/>
       </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></section></DesktopModalDisclosure>
+      :<div style={{...panel,fontSize:12}}>Vehicle records are visible here. Onboarding and vehicle editing are handled in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("fleet")}>Admin → Vehicles</button>.</div>}
 
       <div className="movetrack-fleet-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
         {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid #fecaca":"1px solid #dbeafe"}}>
           <div className="movetrack-fleet-card-heading" style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
           <div style={{fontSize:12,color:"#667085",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
           <div style={{fontSize:11,color:"#667085",marginTop:3}}>{vehicle.site}</div>
+          <div style={{marginTop:10}}><MultiImageEvidence label="Vehicle photos and documents" images={vehicle.images??[]} readOnly={!adminMode} onChange={images=>setFleet(current=>current.map(item=>item.id===vehicle.id?{...item,images}:item))}/></div>
           <div style={{display:"grid",gap:8,marginTop:12,fontSize:11}}>
-            <label style={fieldInline}>Roadworthy expiry<input type="date" value={vehicle.roadworthyExpiry==="Not set"?"":vehicle.roadworthyExpiry} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,roadworthyExpiry:e.target.value||"Not set"}:item))} style={input}/></label>
-            <label style={fieldInline}>Extinguisher service due<input type="date" value={vehicle.extinguisherServiceDue==="Not set"?"":vehicle.extinguisherServiceDue} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,extinguisherServiceDue:e.target.value||"Not set"}:item))} style={input}/></label>
+            <label style={fieldInline}>Roadworthy expiry<input type="date" disabled={!adminMode} value={vehicle.roadworthyExpiry==="Not set"?"":vehicle.roadworthyExpiry} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,roadworthyExpiry:e.target.value||"Not set"}:item))} style={input}/></label>
+            <label style={fieldInline}>Extinguisher service due<input type="date" disabled={!adminMode} value={vehicle.extinguisherServiceDue==="Not set"?"":vehicle.extinguisherServiceDue} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,extinguisherServiceDue:e.target.value||"Not set"}:item))} style={input}/></label>
             <span>Odometer: <strong>{vehicle.odometerKm.toLocaleString()} km</strong></span>
           </div>
           {vehicle.status==="No-go"?<button onClick={()=>setView("release")} style={{...secondaryButton,marginTop:12}}>Recheck baseline after corrective action</button>:null}
@@ -401,8 +456,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       </div>
     </div>:null}
 
-    {view==="drivers"?<div style={{display:"grid",gap:14}}>
-      <DesktopModalDisclosure title="Add driver" mobileExpanded><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:0}}>Onboard driver</h2><div style={formGrid}>
+    {contentView==="drivers"?<div style={{display:"grid",gap:14}}>
+      {adminMode?<DesktopModalDisclosure title="Add driver" mobileExpanded><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:0}}>Onboard driver</h2><div style={formGrid}>
         <Field label="Driver name"><input value={driverDraft.name} onChange={(e)=>setDriverDraft((c)=>({...c,name:e.target.value}))} style={input} placeholder="Choose a worker or type a name"/>
          <select aria-label="Choose driver from company directory" defaultValue="" style={{...input,marginTop:7,width:"100%"}} onChange={e=>{const person=directory.find(p=>p.id===e.target.value);if(person)setDriverDraft(d=>({...d,name:person.displayName}));}}>
           <option value="">Choose from {currentOrg.name} directory…</option>
@@ -411,6 +466,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Phone"><input type="tel" autoComplete="tel" value={driverDraft.phone} onChange={(e)=>setDriverDraft((c)=>({...c,phone:e.target.value}))} style={input}/></Field>
         <Field label="Licence / reference"><input value={driverDraft.licenceNo} onChange={(e)=>setDriverDraft((c)=>({...c,licenceNo:e.target.value}))} style={input}/></Field>
       </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section></DesktopModalDisclosure>
+      :<div style={{...panel,fontSize:12}}>Onboard company drivers under <button type="button" style={secondaryButton} onClick={()=>openAdminArea("drivers")}>Admin → Drivers</button>.</div>}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
         {drivers.map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
@@ -419,7 +475,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             {([
               ["siteAuthorised","Site driving authorisation"],["openPitPermit","Site/open-pit permit"],
               ["firstAid","First-aid training"],["defensiveDriving","Defensive driving"]
-            ] as const).map(([key,label])=><label key={key} style={{display:"flex",justifyContent:"space-between",gap:10,fontSize:12}}><span>{label}</span><input type="checkbox" checked={(authorizationDrafts[driver.id]??driver)[key]} onChange={e=>editDriverAuthorization(driver,key,e.target.checked)}/></label>)}
+            ] as const).map(([key,label])=><label key={key} style={{display:"flex",justifyContent:"space-between",gap:10,fontSize:12}}><span>{label}</span><input type="checkbox" disabled={!adminMode} checked={(authorizationDrafts[driver.id]??driver)[key]} onChange={e=>editDriverAuthorization(driver,key,e.target.checked)}/></label>)}
           </div>
           {authorizationDrafts[driver.id]?<div style={{display:"grid",gap:9,padding:"12px 0",borderTop:"1px solid #dbe4ef",marginTop:10}}>
             <p style={{fontSize:11,color:"#b45309",margin:0}}>Pending changes are not active until locally acknowledged by a supervisor.</p>
@@ -439,7 +495,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     </div>:null}
 
     
-    {view==="sites"?<div style={{display:"grid",gap:12}}>
+    {contentView==="sites"?<div style={{display:"grid",gap:12}}>
       <section style={panel}>
         <p style={{margin:0,color:"#1d4ed8",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Site policy profiles</p>
         <h2 style={{marginBottom:6}}>Configure what a driver must satisfy before GO.</h2>
@@ -484,7 +540,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       </article>)}
     </div>:null}
 
-    {view==="assign"?<section style={panel}>
+    {contentView==="assign"?<section style={panel}>
       <p style={{margin:0,color:"#1d4ed8",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Dispatch</p>
       <h2 style={{marginBottom:6}}>Assign driver + vehicle</h2>
       <p style={{fontSize:12,color:"#667085",lineHeight:1.6}}>Assignment does not clear the vehicle. The driver's pre-start must return GO before they can take it.</p>
@@ -497,7 +553,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <button onClick={createAssignment} style={primaryButton}>Assign and require driver pre-start</button>
     </section>:null}
 
-    {view==="jobs"?<div style={{display:"grid",gap:12}}>
+    {contentView==="jobs"?<div style={{display:"grid",gap:12}}>
       <DesktopModalDisclosure title="New logistics job" mobileExpanded><section style={panel}><h2 style={{marginTop:0}}>New logistics job</h2><div style={formGrid}>
         <Field label="Client"><input list="movetrack-clients" value={client} onChange={(e)=>setClient(e.target.value)} style={input} placeholder="Choose a recent client or type another"/>
          <datalist id="movetrack-clients">{[...new Set(jobs.map(j=>j.client))].map(item=><option key={item} value={item}/>)}</datalist></Field>
@@ -508,16 +564,16 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
-    <div hidden={view!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace /></Suspense>:null}</div>
-    <div hidden={view!=="meetings"}>{visited.has("meetings")?<Suspense fallback={<p role="status">Loading meeting workspace…</p>}><MeetingRegisterWorkspace /></Suspense>:null}</div>
-    <div hidden={view!=="paper"}>{visited.has("paper")?<Suspense fallback={<p role="status">Loading document workspace…</p>}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></Suspense>:null}</div>
-    {view==="release"?<FleetReleaseWorkspace />:null}
-    {view==="local-data"?<LocalWorkspacePanel />:null}
-    {view==="workforce"?<WorkforceDirectoryWorkspace/>:null}
-    {view==="profile"?<MoveTrackLocalProfile/>:null}
-    {view==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}
+    <div hidden={contentView!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace /></Suspense>:null}</div>
+    <div hidden={contentView!=="meetings"}>{visited.has("meetings")?<Suspense fallback={<p role="status">Loading meeting workspace…</p>}><MeetingRegisterWorkspace /></Suspense>:null}</div>
+    <div hidden={contentView!=="paper"}>{visited.has("paper")?<Suspense fallback={<p role="status">Loading document workspace…</p>}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></Suspense>:null}</div>
+    {contentView==="release"?<FleetReleaseWorkspace />:null}
+    {contentView==="local-data"?<LocalWorkspacePanel />:null}
+    {contentView==="workforce"?<WorkforceDirectoryWorkspace/>:null}
+    {contentView==="profile"?<MoveTrackLocalProfile/>:null}
+    {contentView==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}
 
-    {view==="analytics"?<div style={{display:"grid",gap:15}}><UserParticipationAnalytics/><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:12}}>
+    {contentView==="analytics"?<div style={{display:"grid",gap:15}}><UserParticipationAnalytics/><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:12}}>
       {[
         ["Fleet compliance",fleet.length?Math.round(((fleet.length-control.grounded-control.due)/fleet.length)*100)+"%":"—"],
         ["GO pre-starts",prestarts.filter((item)=>item.result==="GO").length],
