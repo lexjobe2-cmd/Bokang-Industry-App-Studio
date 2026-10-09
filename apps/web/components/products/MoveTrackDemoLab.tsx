@@ -12,13 +12,14 @@ import {
 import { type FormSubmission, type FormAnswers } from "@bokang/domain-data/assurance-forms";
 import { type RepairEvidence, type ReinspectionEvidence, type FleetReleaseRecord } from "../../lib/fleet-release";
 import { MoveTrackShowcase } from "./MoveTrackShowcase";
+import {MoveTrackAppShellNav} from "./MoveTrackAppShellNav";
 import { OrganizationOnboarding } from "./OrganizationOnboarding";
 import { OperationalGraphPanel } from "./OperationalGraphPanel";
 import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
 import type {MoveTrackView} from "./MoveTrackWorkspaceNav";
 import {MoveTrackThemeStyles} from "./MoveTrackThemeStyles";
 import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
-import {Sun,Moon,LifeBuoy,LayoutDashboard,BarChart3,Home,Search,FileCheck2} from "lucide-react";
+import {LifeBuoy,LayoutDashboard,BarChart3} from "lucide-react";
 
 type Scenario="assignment"|"grounded"|"reset";
 const style:React.CSSProperties={border:"1px solid #dce4ef",borderRadius:17,padding:17,background:"#fff"};
@@ -42,7 +43,18 @@ export function MoveTrackDemoLab(){
  const [,setReinspections,reinspectReady]=usePersistentState<ReinspectionEvidence[]>("bokang-studio.move-track.reinspections.v1",[]);
  const [,setReleases,releasesReady]=usePersistentState<FleetReleaseRecord[]>("bokang-studio.move-track.releases.v1",[]);
  const [active,setActive]=useState<Scenario|null>(null);
- const [startWorkspace,setStartWorkspace]=useState<MoveTrackView>("meetings");
+ const [startWorkspace,setStartWorkspace]=usePersistentState<MoveTrackView>("bokang-studio.move-track.navigation.view.v1","control");
+ const [atHome,setAtHome]=useState(true);
+ function goWorkspace(next:MoveTrackView,scroll=true){
+  setStartWorkspace(next);setAtHome(false);
+  if(scroll)window.requestAnimationFrame(()=>document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"}));
+ }
+ function goHome(){setAtHome(true);window.scrollTo({top:0,behavior:reducedMotion?"auto":"smooth"});}
+ function findSearch(){
+  document.getElementById("movetrack-global-search")?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"});
+  window.requestAnimationFrame(()=>document.querySelector<HTMLInputElement>('[aria-label="Search MoveTrack records"]')?.focus({preventScroll:true}));
+ }
+ function jumpTo(id:string){document.getElementById(id)?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"});}
  const [notice,setNotice]=useState("");
  const hydrated=[fleetReady,driversReady,assignReady,prestartsReady,incidentsReady,policiesReady,submissionReady,draftsReady,repairReady,reinspectReady,releasesReady].every(Boolean);
  function applyScenario(scenario:Scenario){
@@ -89,20 +101,16 @@ export function MoveTrackDemoLab(){
   setActive(scenario);
   setNotice(scenario==="grounded"?"Grounded fleet scenario loaded. Open Fleet control, resolve the defect with a note, then use Repair & release.":scenario==="assignment"?"Driver scenario loaded. Open the driver app, complete a pre-start and return to Fleet control to see the result.":"Fleet test data reset. Signed non-fleet forms, meeting records, custom companies, form drafts and JRAs were preserved.");
  }
- return <main className="movetrack-root" data-theme={theme} style={{background:theme==="dark"?"#081323":"#f3f7fc",minHeight:"100vh",color:theme==="dark"?"#edf4fe":"#15233a",paddingBottom:100}}><MoveTrackThemeStyles/>
-  <div style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"34px 20px 46px"}}>
+ return <main className="movetrack-root" data-theme={theme} style={{background:theme==="dark"?"#081323":"#f3f7fc",minHeight:"100vh",color:theme==="dark"?"#edf4fe":"#15233a",paddingBottom:100}}>
+  <MoveTrackThemeStyles/>
+  <MoveTrackAppShellNav activeView={startWorkspace} atHome={atHome} onHome={goHome} onSearch={findSearch}
+   onNavigate={goWorkspace} onCompany={()=>jumpTo("movetrack-onboarding")} onWorkflow={()=>jumpTo("movetrack-workflow-graph")}
+   theme={theme} onToggleTheme={()=>setTheme(theme==="dark"?"light":"dark")}/>
+  <div className="movetrack-hero" style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"26px 20px 42px"}}>
    <div style={{maxWidth:1250,margin:"0 auto"}}>
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-      <a href="/products/move-track" style={{color:"#a9d3ff",fontWeight:800,fontSize:12,textDecoration:"none"}}>← MoveTrack AI / App Studio</a>
-      <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap"}}>
-       <button type="button" aria-label={theme==="dark"?"Enable light mode":"Enable dark mode"} onClick={()=>setTheme(theme==="dark"?"light":"dark")}
-         style={{display:"flex",gap:5,alignItems:"center",padding:"9px 11px",borderRadius:10,border:"1px solid #7190af",background:"#173764",color:"#fff",fontWeight:850,cursor:"pointer"}}>
-         {theme==="dark"?<Sun size={16}/>:<Moon size={16}/>} {theme==="dark"?"Light":"Dark"} mode
-       </button>
-       <button type="button" onClick={()=>{setStartWorkspace("settings");document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});}}
-         style={{display:"flex",gap:5,alignItems:"center",padding:"9px 11px",borderRadius:10,border:"1px solid #7190af",background:"#173764",color:"#fff",fontWeight:850,cursor:"pointer"}}><LifeBuoy size={16}/> Help & settings</button>
-       <span style={{padding:"8px 11px",border:"1px solid #647d9b",borderRadius:999,fontSize:11,fontWeight:900,letterSpacing:1}}>FRONTEND DEMO · NO SIGN-IN</span>
-      </div>
+    <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+      <span style={{fontSize:11,color:"#a9d3ff",fontWeight:850}}>WORKPLACE SAFETY  /  FLEET INTELLIGENCE</span>
+      <span style={{padding:"7px 10px",border:"1px solid #6481a4",borderRadius:999,fontSize:10,fontWeight:850,letterSpacing:.7}}>LOCAL DEMO · NO SIGN-IN</span>
     </div>
     <p style={{color:"#93c5fd",letterSpacing:1.8,fontSize:11,fontWeight:900,textTransform:"uppercase",margin:"28px 0 8px"}}>Bokang Industry App Studio / MoveTrack AI</p>
     <h1 style={{fontSize:"clamp(30px,5vw,49px)",maxWidth:850,lineHeight:1.08,margin:"0 0 12px"}}>Fleet + SHE Operational Assurance</h1>
@@ -113,8 +121,8 @@ export function MoveTrackDemoLab(){
     </div>
    </div>
   </div>
-  <div style={{maxWidth:1250,margin:"-24px auto 0",padding:"0 20px",position:"relative",display:"grid",gap:19}}>
-   <OrganizationOnboarding/>
+  <div className="movetrack-content" style={{maxWidth:1250,margin:"-24px auto 0",padding:"0 20px",position:"relative",display:"grid",gap:19}}>
+   <section id="movetrack-onboarding" style={{scrollMarginTop:85}}><OrganizationOnboarding/></section>
    <section aria-label="Workspace quick access" style={{...style,display:"grid",gap:12}}>
     <div><p style={{fontSize:10,color:"#2563eb",fontWeight:900,letterSpacing:1.2,margin:0}}>YOUR MOVE TRACK WORKSPACE</p>
      <h2 style={{fontSize:21,margin:"5px 0"}}>What would you like to do?</h2>
@@ -125,7 +133,7 @@ export function MoveTrackDemoLab(){
         {key:"forms",title:"SHE forms & risk",desc:"Signatures, JRA, checklists",icon:ShieldCheck},
         {key:"analytics",title:"People & insights",desc:"Participation and safety trends",icon:BarChart3},
         {key:"settings",title:"Support & settings",desc:"Privacy, terms, FAQ, theme",icon:LifeBuoy}] as const).map(item=>
-       <button type="button" key={item.key} onClick={()=>{setStartWorkspace(item.key);document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});}}
+       <button type="button" key={item.key} onClick={()=>{goWorkspace(item.key);}}
          style={{...style,textAlign:"left",cursor:"pointer",display:"flex",gap:11,alignItems:"start",borderColor:"#b6cde8"}}>
          <item.icon size={20} color="#2563eb"/><span><strong style={{display:"block",fontSize:14}}>{item.title}</strong><small style={{display:"block",fontSize:11,color:"#64748b",marginTop:4}}>{item.desc}</small></span>
        </button>)}
@@ -138,14 +146,14 @@ export function MoveTrackDemoLab(){
      {[{key:"paper" as const,title:"Scan a paper checklist",description:"Photo or scanned PDF → OCR → review fields → reusable form",color:"#1d4ed8"},
        {key:"meetings" as const,title:"Meeting registers & minutes",description:"SHE meetings, toolbox talks, attendance, actions and PDF",color:"#047857"},
        {key:"forms" as const,title:"All SHE forms & JRA",description:"Use our company templates and submitted forms",color:"#7c3aed"}].map(item=>
-       <button key={item.key} style={{...style,textAlign:"left",cursor:"pointer",borderColor:item.color}} onClick={()=>{setStartWorkspace(item.key);document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});}}>
+       <button key={item.key} style={{...style,textAlign:"left",cursor:"pointer",borderColor:item.color}} onClick={()=>{goWorkspace(item.key);}}>
         <strong style={{display:"block",color:item.color,fontSize:15}}>{item.title} →</strong>
         <span style={{fontSize:12,color:"#64748b",lineHeight:1.5,display:"block",marginTop:7}}>{item.description}</span>
        </button>)}
     </div>
    </section>
-   <GlobalWorkspaceSearch onNavigate={(view)=>setStartWorkspace(view)}/>
-   <OperationalGraphPanel/>
+   <GlobalWorkspaceSearch onNavigate={(view)=>goWorkspace(view)}/>
+   <section id="movetrack-workflow-graph" style={{scrollMarginTop:85}}><OperationalGraphPanel onOpenWorkflow={()=>goWorkspace("forms")}/></section>
    <section aria-label="Demo scenarios" style={style}>
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
       <div><p style={{fontSize:11,fontWeight:900,letterSpacing:1.3,color:"#2563eb",textTransform:"uppercase",margin:0}}>Quick start</p><h2 style={{fontSize:21,margin:"4px 0"}}>Choose a test scenario</h2><p style={{fontSize:12,color:"#64748b",margin:0}}>Each scenario loads connected demo records into the same fleet and driver app.</p></div>
@@ -169,29 +177,11 @@ export function MoveTrackDemoLab(){
       {label:"Open defect reports",value:incidents.filter(i=>i.status!=="Resolved").length,icon:ShieldCheck}
     ].map(item=><div key={item.label} style={style}><item.icon size={17} color="#2563eb"/><strong style={{display:"block",fontSize:26,margin:"7px 0 1px"}}>{hydrated?item.value:"—"}</strong><span style={{fontSize:11,color:"#667085",fontWeight:800}}>{item.label}</span></div>)}
    </section>
-   <section id="movetrack-workspaces" style={{...style,padding:"10px 17px 19px",scrollMarginTop:20}}>
-     <MoveTrackShowcase key={startWorkspace} initialView={startWorkspace}/>
+   <section id="movetrack-workspaces" className="movetrack-workspace-surface" style={{...style,padding:"10px 17px 19px",scrollMarginTop:83}}>
+     <MoveTrackShowcase initialView={startWorkspace} selectedView={startWorkspace} onViewChange={(view)=>goWorkspace(view,false)}/>
    </section>
-   <p style={{fontSize:11,color:"#64748b",textAlign:"center",margin:"12px 0"}}>Preview / simulation only. Locally submitted records cannot authorize real work or equipment movement. Designed and developed by Bokang Jobe. <button type="button" style={{marginLeft:10,border:0,background:"transparent",textDecoration:"underline",cursor:"pointer",font:"inherit",color:"#2563eb"}} onClick={()=>{setStartWorkspace("settings");document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});}}>Support · Privacy · Terms · FAQ</button></p>
+   <p style={{fontSize:11,color:"#64748b",textAlign:"center",margin:"12px 0"}}>Preview / simulation only. Locally submitted records cannot authorize real work or equipment movement. Designed and developed by Bokang Jobe. <button type="button" style={{marginLeft:10,border:0,background:"transparent",textDecoration:"underline",cursor:"pointer",font:"inherit",color:"#2563eb"}} onClick={()=>{goWorkspace("settings");}}>Support · Privacy · Terms · FAQ</button></p>
   </div>
-  <nav className="movetrack-mobile-dock" aria-label="MoveTrack mobile quick actions">
-   {([{key:"home",label:"Home",icon:Home},
-      {key:"search",label:"Search",icon:Search},
-      {key:"forms",label:"SHE forms",icon:FileCheck2},
-      {key:"analytics",label:"Insights",icon:BarChart3}] as const).map(action=>
-    <button type="button" key={action.key} onClick={()=>{
-      if(action.key==="home"){window.scrollTo({top:0,behavior:"smooth"});return;}
-      if(action.key==="search"){
-       document.getElementById("movetrack-global-search")?.scrollIntoView({behavior:"smooth",block:"start"});
-       document.querySelector<HTMLInputElement>('[aria-label="Search MoveTrack records"]')?.focus({preventScroll:true});
-       return;
-      }
-      setStartWorkspace(action.key);
-      document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});
-    }} aria-label={action.label} style={{display:"grid",justifyItems:"center",alignContent:"center",gap:4,background:"transparent",
-      border:0,color:startWorkspace===action.key?"#1d4ed8":"#536b86",minHeight:51,minWidth:59,fontSize:10,fontWeight:800,cursor:"pointer"}}>
-     <action.icon size={22} strokeWidth={2.1}/>{action.label}
-    </button>)}
-  </nav>
+
  </main>;
 }
