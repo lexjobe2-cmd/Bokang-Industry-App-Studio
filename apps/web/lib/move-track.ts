@@ -1,6 +1,7 @@
 import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import type {LocalEvidenceImage} from "./image-evidence";
 import type {LocalAssetDocument} from "./vehicle-documents";
+import {driverEligibilityReasons,type DriverCredentialExpiry} from "./driver-competency.ts";
 import { miningPrestartChecks } from "@bokang/domain-data";
 
 export type FleetVehicleStatus =
@@ -41,6 +42,7 @@ export type FleetDriver = {
   defensiveDriving: boolean;
   status: DriverStatus;
   documents?: LocalAssetDocument[];
+  competencyExpiry?: DriverCredentialExpiry;
   personId?: string; // Optional stable organization directory reference; never a safety authorization.
   authorizationReview?:{signedAt:string;signature:SignatureEvidence};
 };
@@ -184,11 +186,13 @@ export const starterDrivers: FleetDriver[] = [
   {
     id:"DRV-001", name:"K. Dube", phone:"+267 71 100 001",
     licenceNo:"DL-DEMO-101", siteAuthorised:true, openPitPermit:true,
+    competencyExpiry:{licence:"2027-10-30",siteAuthorisation:"2027-10-30",openPitPermit:"2027-10-30",firstAid:"2027-10-30",defensiveDriving:"2027-10-30"},
     firstAid:true, defensiveDriving:true, status:"Available"
   },
   {
     id:"DRV-002", name:"L. Moagi", phone:"+267 72 100 002",
     licenceNo:"DL-DEMO-102", siteAuthorised:true, openPitPermit:false,
+    competencyExpiry:{licence:"2027-09-30",siteAuthorisation:"2027-09-30",firstAid:"2027-09-30",defensiveDriving:"2027-09-30"},
     firstAid:true, defensiveDriving:true, status:"Available"
   },
 ];
@@ -220,10 +224,10 @@ export function evaluatePrestart(args: {
     else if (result === "fail") reasons.push(item + " failed");
   }
 
-  if (!driver.siteAuthorised) reasons.push("Driver is not site-authorised");
-  if (args.requireOpenPitPermit && !driver.openPitPermit) reasons.push("Required site driving permit is missing");
-  if (args.requireFirstAid && !driver.firstAid) reasons.push("Required first-aid training is missing");
-  if (args.requireDefensiveDriving && !driver.defensiveDriving) reasons.push("Required defensive-driving training is missing");
+  reasons.push(...driverEligibilityReasons(driver,{
+    requireOpenPitPermit:args.requireOpenPitPermit,requireFirstAid:args.requireFirstAid,
+    requireDefensiveDriving:args.requireDefensiveDriving
+  }));
   if (!dateIsCurrent(vehicle.roadworthyExpiry)) reasons.push("Roadworthiness record is expired or missing");
   if (!dateIsCurrent(vehicle.extinguisherServiceDue)) reasons.push("Fire extinguisher service date is expired or missing");
   if (vehicle.status === "No-go" || vehicle.status === "Maintenance" || vehicle.status === "Out of service") {
