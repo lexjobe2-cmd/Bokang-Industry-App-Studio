@@ -5,6 +5,9 @@ export type PaperExtraction={sourceName:string;pages:number;rawText:string;confi
 const meaningful=(s:string)=>s.replace(/[\t\r]+/g," ").replace(/\s+/g," ").trim();
 const label=(s:string)=>meaningful(s.replace(/^[\s0-9]+[.):-]\s*/,"").replace(/^[\[\]☐☑□■•*✓]+\s*/g,"").replace(/[\s._:：-]+$/g,""));
 function fieldType(s:string):FormField["type"]{
+ if(/\b(attendees|participants|crew members|staff attending|apologies|absent staff|people present)\b/i.test(s))return "people";
+ if(/\b(chairperson|facilitator|meeting chair|site supervisor|independent reviewer|responsible employee|approved by|action owner)\b/i.test(s))return "person";
+ if(/\b(signature|signatory|signed by|sign.off|acknowledgement signature)\b/i.test(s))return "signature";
  if(/\b(pass\s*[/|-]\s*fail|fail\s*[/|-]\s*pass|good\s*[/|-]\s*bad|p\s*[/|]\s*f\s*[/|]\s*na)\b/i.test(s))return "pass_fail_na";
  if(/\b(yes\s*[/|-]\s*no|y\s*[/|]\s*n)\b/i.test(s))return "yes_no";
  if(/\b(risk\s*(score|rating)|likelihood\s*[×x*]\s*consequence|severity\s*[×x*]\s*likelihood)\b/i.test(s))return "risk";
@@ -84,4 +87,29 @@ export function validatePaperSections(sections:FormSection[]){
 /** A graphical suggestion is not an authorized form question until explicitly source-reviewed. */
 export function unreviewedPaperFields(sections:readonly FormSection[]){
  return sections.flatMap(s=>s.fields).filter(f=>f.source && f.source.reviewed!==true);
+}
+
+/** A scanned source can suggest a form, but ambiguous answer choices must be
+ * resolved before publishing. A single confirmation cannot make generic
+ * "Option 1" OCR choices meaningful for operational use.
+ */
+export function paperPublicationIssues(sections:readonly FormSection[]):string[]{
+ const issues:string[]=[];
+ for(const section of sections){
+  for(const field of section.fields){
+   if(field.source&&field.source.reviewed!==true)issues.push(field.label+": compare detected UI with the original source");
+   if(["radio","multiselect","select"].includes(field.type)){
+    const values=(field.options??[]).map(v=>v.trim()).filter(Boolean);
+    if(values.length<2)issues.push(field.label+": add at least two real choices");
+    if(values.some(v=>/^option\s*\d+$/i.test(v)))issues.push(field.label+": replace placeholder choices with the words printed on the source");
+    if(new Set(values.map(v=>v.toLowerCase())).size!==values.length)issues.push(field.label+": remove duplicate choices");
+   }
+   if(field.type==="repeat"){
+    if(!(field.children?.length))issues.push(field.label+": review the columns in the detected register");
+    if(field.children?.some(c=>!c.label.trim()||/^new column$/i.test(c.label)))issues.push(field.label+": name all table columns");
+   }
+   if(/^(review and replace|new question|unlabeled pdf input)/i.test(field.label.trim()))issues.push(field.label+": enter the source question label");
+  }
+ }
+ return [...new Set(issues)];
 }
