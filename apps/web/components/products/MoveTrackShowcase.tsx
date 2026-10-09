@@ -318,6 +318,12 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       setNotice(driver.name+" does not yet satisfy the selected site's driver authorisation/training policy.");
       return;
     }
+    if(driver.personId){
+      const worker=directory.find(person=>person.id===driver.personId&&person.orgId===orgId);
+      if(!worker||!worker.active){
+        setNotice(driver.name+" is linked to an inactive or missing company workforce identity. Update their directory record before dispatch.");return;
+      }
+    }
     if(driver.status!=="Available"){setNotice(driver.name+" is not currently available.");return;}
     if(activeAssignments.some((item)=>item.vehicleId===vehicle.id||item.driverId===driver.id)){
       setNotice("The selected vehicle or driver already has an active assignment.");return;
@@ -528,7 +534,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         {drivers.map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
           <div style={{fontSize:11,color:"#667085",marginTop:4}}>{driver.licenceNo} · {driver.phone||"No phone"}</div>
-          {driver.personId?<small style={{display:"block",marginTop:5,color:"#64748b"}}>Linked worker: {directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.displayName??"Directory identity unavailable"}</small>:null}
+          {driver.personId?<small style={{display:"block",marginTop:5,color:directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"#64748b":"#b42318"}}>Linked worker: {directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.displayName??"Directory identity unavailable"}{directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"":" · Not active — no new assignments"}</small>:null}
           {(()=>{
             const current=activeAssignments.filter(a=>a.driverId===driver.id);
             const history=assignments.filter(a=>a.driverId===driver.id).slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
@@ -541,7 +547,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
               {adminMode?<button type="button" style={{...secondaryButton,minHeight:44,marginTop:4}} onClick={()=>setView("assign")}>Open assignments</button>:null}
             </div>;
           })()}
-          <VehicleDocuments label="Driver documents" readOnly={!adminMode} documents={driver.documents??[]} onChange={documents=>setDrivers(current=>current.map(item=>item.id===driver.id?{...item,documents}:item))}/>
+          {adminMode?<VehicleDocuments label="Driver documents" documents={driver.documents??[]} onChange={documents=>setDrivers(current=>current.map(item=>item.id===driver.id?{...item,documents}:item))}/>:null}
           {adminMode?<button type="button" style={{...secondaryButton,marginTop:11,minHeight:44}} onClick={()=>beginDriverEdit(driver)}>Edit driver profile</button>:null}
           <div style={{display:"grid",gap:7,marginTop:12}}>
             {([
@@ -549,7 +555,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
               ["firstAid","First-aid training"],["defensiveDriving","Defensive driving"]
             ] as const).map(([key,label])=><label key={key} style={{display:"flex",justifyContent:"space-between",gap:10,fontSize:12}}><span>{label}</span><input type="checkbox" disabled={!adminMode} checked={(authorizationDrafts[driver.id]??driver)[key]} onChange={e=>editDriverAuthorization(driver,key,e.target.checked)}/></label>)}
           </div>
-          {authorizationDrafts[driver.id]?<div style={{display:"grid",gap:9,padding:"12px 0",borderTop:"1px solid #dbe4ef",marginTop:10}}>
+          {adminMode&&authorizationDrafts[driver.id]?<div style={{display:"grid",gap:9,padding:"12px 0",borderTop:"1px solid #dbe4ef",marginTop:10}}>
             <p style={{fontSize:11,color:"#b45309",margin:0}}>Pending changes are not active until locally acknowledged by a supervisor.</p>
             <SignatureApprovalTray label="Supervisor review driver access" description="Examine the licence, medical and training evidence outside the app before capturing this unverified demo review."
               value={authorizationSignatures[driver.id]??null} onChange={sig=>setAuthorizationSignatures(xs=>({...xs,[driver.id]:sig}))}
