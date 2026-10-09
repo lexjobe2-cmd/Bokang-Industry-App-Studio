@@ -145,8 +145,8 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
       onChange={e=>{const next=e.target.files?.[0]??null;if(!next)return;try{acceptedPaperFile(next);setFile(next);setProgress(null);setMessage("");}catch(err){setMessage(String(err));e.target.value="";}}}/>
     </label>
     <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>
-     <button style={primary} disabled={!file||busy} onClick={()=>void read()}><ScanText size={16} style={{display:"inline",verticalAlign:"middle"}}/> {busy?"Reading source…":"Extract & detect fields"}</button>
-     {file?<button style={btn} onClick={()=>void downloadSourcePdf(file).catch(e=>setMessage(String(e)))}>Export unchanged source PDF</button>:null}
+     <button className="movetrack-ui-button" data-mt-variant="primary" style={primary} disabled={!file||busy} onClick={()=>void read()}><ScanText size={16} style={{display:"inline",verticalAlign:"middle"}}/> {busy?"Reading source…":"Extract & detect fields"}</button>
+     {file?<button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>void downloadSourcePdf(file).catch(e=>setMessage(String(e)))}>Export unchanged source PDF</button>:null}
     </div>
     {progress?<div role="status" style={{display:"grid",gap:6}}><span style={{fontSize:11,color:"var(--mt-muted,#475569)"}}>{progress.phase} ({progress.percent}%)</span>
      <div style={{background:"var(--mt-surface-soft,#dbeafe)",height:7,borderRadius:9,overflow:"hidden"}}><div style={{width:progress.percent+"%",height:7,background:"#2563eb"}}/></div></div>:null}
@@ -168,11 +168,11 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
      <label style={label}>Form name<input style={input} value={visibleDraft.title} onChange={e=>patch({title:e.target.value})}/></label>
      <label style={label}>Document type<select style={input} value={visibleDraft.category} onChange={e=>patch({category:e.target.value as FormCategory})}>{kinds.map(k=><option key={k}>{k}</option>)}</select></label>
      {visibleDraft.warnings.map((w,i)=><p key={i} style={{padding:"9px 10px",fontSize:11,color:"var(--mt-warning,#915b16)",background:"var(--mt-surface-soft,#fffbeb)",borderRadius:9,margin:0}}><AlertTriangle size={13} style={{display:"inline",verticalAlign:"middle"}}/> {w}</p>)}
-     <button style={{...btn,justifySelf:"start"}} onClick={()=>setRawOpen(!rawOpen)}>{rawOpen?"Hide":"Review / correct"} raw OCR text</button>
+     <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}} onClick={()=>setRawOpen(!rawOpen)}>{rawOpen?"Hide":"Review / correct"} raw OCR text</button>
      {rawOpen?<div style={{display:"grid",gap:7}}>
        <OperationalTextAssist value={visibleDraft.rawText}/>
        <textarea aria-label="Recognized source text" style={{...input,minHeight:190,fontFamily:"monospace",fontSize:12}} value={visibleDraft.rawText} onChange={e=>patch({rawText:e.target.value})}/>
-       <button style={btn} onClick={reparse}><RefreshCw size={13} style={{display:"inline"}}/> Re-detect questions from edited text</button>
+       <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={reparse}><RefreshCw size={13} style={{display:"inline"}}/> Re-detect questions from edited text</button>
       </div>:null}
     </>}
    </div>
@@ -181,19 +181,19 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
    <div hidden={stage!==1} style={{display:"grid",gap:12}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap",alignItems:"center"}}>
     <div><h3 style={{fontSize:18,margin:"0 0 3px"}}>3 · Reconstruct and review UI components</h3><p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Drag-free editing works on mobile. Match the paper headings and add missing columns/questions manually.</p></div>
-    <button style={btn} onClick={()=>patch({sections:[...visibleDraft.sections,{id:"ocr-section-"+crypto.randomUUID().slice(0,7),title:"New section",fields:[{id:"ocr-"+crypto.randomUUID().slice(0,6),label:"New question",type:"text",required:false}]}]})}><Plus size={16} style={{display:"inline"}}/> Add section</button>
+    <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>patch({sections:[...visibleDraft.sections,{id:"ocr-section-"+crypto.randomUUID().slice(0,7),title:"New section",fields:[{id:"ocr-"+crypto.randomUUID().slice(0,6),label:"New question",type:"text",required:false}]}]})}><Plus size={16} style={{display:"inline"}}/> Add section</button>
    </div>
    {visibleDraft.sections.map((section,index)=><motion.div key={section.id} initial={reduced?false:{opacity:0,y:5}} animate={{opacity:1,y:0}} style={{border:"1px solid #dbe5ef",borderRadius:12,overflow:"hidden"}}>
     <div style={{padding:11,display:"flex",gap:9,flexWrap:"wrap",alignItems:"center",background:"var(--mt-surface-soft,#edf4ff)"}}>
      <strong style={{fontSize:12,color:"var(--mt-link,#1d4ed8)"}}>{String(index+1).padStart(2,"0")}</strong>
      <input aria-label="Section heading" style={{...input,flex:"1 1 200px",fontWeight:850}} value={section.title} onChange={e=>editSection(section.id,s=>({...s,title:e.target.value}))}/>
-     <button style={btn} aria-label="Remove section" onClick={()=>patch({sections:visibleDraft.sections.filter(s=>s.id!==section.id)})}><Trash2 size={16}/></button>
+     <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} aria-label="Remove section" onClick={()=>patch({sections:visibleDraft.sections.filter(s=>s.id!==section.id)})}><Trash2 size={16}/></button>
     </div>
     <div style={{padding:12,display:"grid",gap:8}}>
      {section.fields.map((f,i)=><div key={f.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:9,alignItems:"center",padding:10,border:"1px solid #e2e8f0",borderRadius:10,background:f.source?.reviewed?"var(--mt-surface-soft,#f0fdf4)":"var(--mt-surface,#fff)"}}>
       <input aria-label={"Question "+(i+1)} style={input} value={f.label} onChange={e=>editField(section.id,f.id,v=>({...v,label:e.target.value}))}/>
       <select aria-label={"Input type "+(i+1)} style={input} value={f.type} onChange={e=>editField(section.id,f.id,v=>({...v,type:e.target.value as FormField["type"]}))}>{typeOptions.map(t=><option key={t} value={t}>{t.replaceAll("_"," / ")}</option>)}</select>
-      <button style={btn} aria-label="Remove question" onClick={()=>editSection(section.id,s=>({...s,fields:s.fields.filter(x=>x.id!==f.id)}))}><Trash2 size={15}/></button>
+      <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} aria-label="Remove question" onClick={()=>editSection(section.id,s=>({...s,fields:s.fields.filter(x=>x.id!==f.id)}))}><Trash2 size={15}/></button>
       {f.source?<label style={{fontSize:11,color:f.source.reviewed?"var(--mt-success,#047857)":"var(--mt-warning,#b45309)",gridColumn:"1 / -1",display:"flex",gap:8,alignItems:"center"}}>
        <input type="checkbox" checked={!!f.source.reviewed} onChange={e=>editField(section.id,f.id,v=>({...v,source:v.source?{...v.source,reviewed:e.target.checked}:undefined}))}/>
        {f.source.reviewed?"Checked against source":"Needs source review"} · Page {f.source.page} · {Math.round(f.source.confidence*100)}% detection confidence · {f.source.kind.replaceAll("-"," ")}
@@ -205,20 +205,20 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
         <strong style={{fontSize:11}}>Detected table columns</strong>
         {(f.children??[]).map((child,ci)=><div key={child.id} className="movetrack-paper-column-editor">
           <input style={input} aria-label={"Register column "+(ci+1)} value={child.label} onChange={e=>editField(section.id,f.id,v=>({...v,children:v.children?.map((c,j)=>j===ci?{...c,label:e.target.value}:c)}))}/>
-          <button style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:v.children?.filter((_,j)=>j!==ci)}))}>Remove</button>
+          <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:v.children?.filter((_,j)=>j!==ci)}))}>Remove</button>
          </div>)}
-        <button style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:[...(v.children??[]),{id:"column-"+crypto.randomUUID().slice(0,6),label:"New column",type:"text",required:false}]}))}>Add table column</button>
+        <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:[...(v.children??[]),{id:"column-"+crypto.randomUUID().slice(0,6),label:"New column",type:"text",required:false}]}))}>Add table column</button>
       </div>:null}
       <label style={{fontSize:11,color:"var(--mt-muted,#475569)",display:"flex",gap:6,alignItems:"center",gridColumn:"1 / -1"}}><input type="checkbox" checked={!!f.required} onChange={e=>editField(section.id,f.id,v=>({...v,required:e.target.checked}))}/> Required response</label>
       {(f.type==="pass_fail_na"||f.type==="yes_no")?<label style={{fontSize:11,color:"var(--mt-danger,#b42318)",display:"flex",gap:6,alignItems:"center",gridColumn:"1 / -1"}}><input type="checkbox" checked={!!f.critical} onChange={e=>editField(section.id,f.id,v=>({...v,critical:e.target.checked}))}/> Critical safety check (FAIL / NO → NO-GO)</label>:null}
      </div>)}
-     <button style={{...btn,justifySelf:"start"}} onClick={()=>editSection(section.id,s=>({...s,fields:[...s.fields,{id:"ocr-"+crypto.randomUUID().slice(0,7),label:"New question",type:"text",required:false}]}))}><Plus size={14} style={{display:"inline"}}/> Add missing question</button>
+     <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}} onClick={()=>editSection(section.id,s=>({...s,fields:[...s.fields,{id:"ocr-"+crypto.randomUUID().slice(0,7),label:"New question",type:"text",required:false}]}))}><Plus size={14} style={{display:"inline"}}/> Add missing question</button>
     </div>
    </motion.div>)}
    <div style={{...root,display:"grid",gap:10,background:"var(--mt-surface-soft,#f8fbff)"}}>
     <div style={{display:"flex",gap:8,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
       <div><strong>Live form element preview</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"4px 0"}}>Test the reconstructed checkboxes, radio choices and text fields before creating a reusable template.</p></div>
-      <button style={btn} onClick={()=>setPreview(v=>!v)}>{preview?"Hide preview":"Preview reconstructed UI"}</button>
+      <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>setPreview(v=>!v)}>{preview?"Hide preview":"Preview reconstructed UI"}</button>
     </div>
     {preview?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,230px),1fr))",gap:10}}>
       {visibleDraft.sections.flatMap(sec=>sec.fields.map(field=><div key={field.id} style={{padding:12,background:"var(--mt-surface,#fff)",border:"1px solid #dde7f2",borderRadius:10,display:"grid",gap:8}}>
@@ -237,22 +237,22 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
     </div>:null}
    <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
      <strong>{unreviewedPaperFields(visibleDraft.sections).length} detected controls awaiting review</strong>
-     <button style={btn} onClick={reviewAll}>Mark reviewed after source check</button>
-     {adminMode?<button style={btn} onClick={handoff}>Continue in full custom form designer →</button>:null}
+     <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={reviewAll}>Mark reviewed after source check</button>
+     {adminMode?<button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={handoff}>Continue in full custom form designer →</button>:null}
    </div>
-   <button type="button" style={primary} onClick={()=>setStage(2)}>Next: Save / publish →</button>
+   <button type="button" className="movetrack-ui-button" data-mt-variant="primary" style={primary} onClick={()=>setStage(2)}>Next: Save / publish →</button>
    </div>
    <div hidden={stage!==2} style={{display:"grid",gap:12}}>
    <h3 style={{margin:0}}>Save your reviewed template</h3>
    <p style={{fontSize:13,margin:0}}>{visibleDraft.title} · {fieldCount} fields · {unreviewedPaperFields(visibleDraft.sections).length} awaiting source review</p>
    {paperPublicationIssues(visibleDraft.sections).length?<p role="alert" style={{fontSize:12,color:"var(--mt-warning,#b45309)"}}>Review & edit must resolve {paperPublicationIssues(visibleDraft.sections).length} issue(s) before publishing. A draft can still be saved.</p>:null}
-   <button type="button" style={btn} onClick={()=>setStage(1)}>← Back to review & edit</button>
+   <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>setStage(1)}>← Back to review & edit</button>
    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",padding:"11px 0"}}>
     <strong style={{fontSize:12}}>4 · Save or publish the reconstructed form</strong>
     {template?<DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:people.filter(p=>p.orgId===org.id)})}/>:null}
-    {adminMode?<button style={btn} onClick={()=>create(false)}><Save size={15} style={{display:"inline"}}/> Save reusable draft</button>:null}
-    {adminMode?<button style={primary} onClick={()=>create(true)}><CheckCircle2 size={15} style={{display:"inline"}}/> Publish to SHE Forms</button>:null}
-    <button style={btn} onClick={reset}>Start over</button>
+    {adminMode?<button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>create(false)}><Save size={15} style={{display:"inline"}}/> Save reusable draft</button>:null}
+    {adminMode?<button className="movetrack-ui-button" data-mt-variant="primary" style={primary} onClick={()=>create(true)}><CheckCircle2 size={15} style={{display:"inline"}}/> Publish to SHE Forms</button>:null}
+    <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={reset}>Start over</button>
    </div>
    <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>The generated PDF/Word reproduces the reviewed questions and sections in MoveTrack's controlled layout. An exact pixel-for-pixel copy of the original is only available through “Export unchanged source PDF” while the source file is still selected.</p>
    </div>
