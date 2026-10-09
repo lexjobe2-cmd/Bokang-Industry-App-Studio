@@ -15,6 +15,7 @@ import { MoveTrackShowcase } from "./MoveTrackShowcase";
 import { OrganizationOnboarding } from "./OrganizationOnboarding";
 import { OperationalGraphPanel } from "./OperationalGraphPanel";
 import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
+import type {MoveTrackView} from "./MoveTrackWorkspaceNav";
 import {MoveTrackThemeStyles} from "./MoveTrackThemeStyles";
 import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
 import {Sun,Moon,LifeBuoy,LayoutDashboard,BarChart3} from "lucide-react";
@@ -41,7 +42,7 @@ export function MoveTrackDemoLab(){
  const [,setReinspections,reinspectReady]=usePersistentState<ReinspectionEvidence[]>("bokang-studio.move-track.reinspections.v1",[]);
  const [,setReleases,releasesReady]=usePersistentState<FleetReleaseRecord[]>("bokang-studio.move-track.releases.v1",[]);
  const [active,setActive]=useState<Scenario|null>(null);
- const [startWorkspace,setStartWorkspace]=useState<"forms"|"paper"|"meetings"|"settings"|"control"|"analytics">("meetings");
+ const [startWorkspace,setStartWorkspace]=useState<MoveTrackView>("meetings");
  const [notice,setNotice]=useState("");
  const hydrated=[fleetReady,driversReady,assignReady,prestartsReady,incidentsReady,policiesReady,submissionReady,draftsReady,repairReady,reinspectReady,releasesReady].every(Boolean);
  function applyScenario(scenario:Scenario){
