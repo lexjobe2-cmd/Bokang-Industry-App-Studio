@@ -3,7 +3,7 @@ import {credentialKeys,credentialLabels,credentialEnabled,credentialDateStatus,t
 import {siteCredentialRequirements,type DriverComplianceSummary} from "./driver-compliance.ts";
 
 /** Plain-text browser exports. No PDF bytes, signatures, personal phone numbers or backend calls. */
-export type SupervisorActionPriority="Immediate"|"Due within 30 days"|"Evidence review";
+export type SupervisorActionPriority="Immediate"|"Due within 30 days"|"Evidence review"|"Record review";
 export type SupervisorRenewalAction={
  driverId:string;driverName:string;site:string;
  credential:DriverCredentialKey;priority:SupervisorActionPriority;issue:string;
@@ -52,7 +52,7 @@ export function driverComplianceCsv(summary:DriverComplianceSummary,drivers:read
    ...credentialKeys.flatMap(key=>[driver?.competencyExpiry?.[key]??"",driver?supportingPdf(driver,key):""])];
  }));
 }
-const priorityOrder:Record<SupervisorActionPriority,number>={"Immediate":0,"Due within 30 days":1,"Evidence review":2};
+const priorityOrder:Record<SupervisorActionPriority,number>={"Immediate":0,"Due within 30 days":1,"Evidence review":2,"Record review":3};
 /** One non-mutating supervisor action per distinct deficiency, not a claim of certificate validation. */
 export function buildSupervisorRenewalActions(input:{
  summary:DriverComplianceSummary;drivers:readonly FleetDriver[];
@@ -80,11 +80,15 @@ export function buildSupervisorRenewalActions(input:{
     actions.push({...common,priority:"Immediate",issue:"Required qualification not authorised",
      action:"Confirm qualification and complete independent supervisor review before dispatch"});
    }else if(enabled&&state==="expired"){
-    actions.push({...common,priority:"Immediate",issue:"Expired qualification",
-     action:"Renew with issuing authority, attach PDF evidence and record reviewed expiry"});
+    actions.push({...common,priority:needed?"Immediate":"Record review",issue:"Expired qualification",
+     action:needed?"Renew with issuing authority, attach PDF evidence and record reviewed expiry before dispatch":
+      "Review optional recorded qualification and arrange renewal when applicable"});
    }else if(needed&&state==="missing"){
     actions.push({...common,priority:"Immediate",issue:"Required expiry date missing",
      action:"Obtain verified expiry date, attach supporting PDF and capture supervisor review"});
+   }else if(enabled&&state==="missing"){
+    actions.push({...common,priority:"Record review",issue:"Optional recorded expiry date missing",
+     action:"Confirm whether this competency is still held and update the renewal record"});
    }else if(enabled&&state==="due"){
     actions.push({...common,priority:"Due within 30 days",issue:"Renewal approaching",
      action:"Arrange renewal and replace supporting evidence before expiry"});
