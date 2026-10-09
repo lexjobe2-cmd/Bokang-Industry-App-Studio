@@ -78,15 +78,15 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
    {bodyText("For assistance with company onboarding, fleet inspections, custom forms, signatures, PDF downloads or accessibility, contact the developer. This frontend does not host a ticket server; the action below opens your email app.")}
    <a href={"mailto:"+email} style={{fontSize:14,fontWeight:850,color:"var(--mt-link,#2563eb)",display:"inline-flex",gap:8,alignItems:"center"}}><Mail size={17}/>{email}</a>
    <label style={{fontSize:12,fontWeight:800,display:"grid",gap:5}}>What do you need help with?
-    <select className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,textAlign:"left"}} value={topic} onChange={e=>setTopic(e.target.value)}>
+    <select className="movetrack-ui-field" style={{...btn,textAlign:"left"}} value={topic} onChange={e=>setTopic(e.target.value)}>
       {["Product feedback","Company onboarding","Fleet and safety workflow","Digital signatures","Document export","Data and privacy request","Report a technical problem","Commercial enquiry"].map(t=><option key={t}>{t}</option>)}
     </select>
    </label>
    <label style={{fontSize:12,fontWeight:800,display:"grid",gap:5}}>Reference or affected form (optional)
-     <input className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,textAlign:"left",fontWeight:400}} value={reference} onChange={e=>setReference(e.target.value)} placeholder="e.g. WORK-452 / JRA-1"/>
+     <input className="movetrack-ui-field" style={{...btn,textAlign:"left",fontWeight:400}} value={reference} onChange={e=>setReference(e.target.value)} placeholder="e.g. WORK-452 / JRA-1"/>
    </label>
    <label style={{fontSize:12,fontWeight:800,display:"grid",gap:5}}>Describe your question
-     <textarea className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,textAlign:"left",fontWeight:400,minHeight:125}} value={details} onChange={e=>setDetails(e.target.value)} placeholder="What were you trying to do? What happened?"/>
+     <textarea className="movetrack-ui-field" style={{...btn,textAlign:"left",fontWeight:400,minHeight:125}} value={details} onChange={e=>setDetails(e.target.value)} placeholder="What were you trying to do? What happened?"/>
    </label>
    <button className="movetrack-ui-button" data-mt-variant="primary" style={{...btn,background:"#1d4ed8",color:"#fff",justifySelf:"start"}} onClick={composeMail}><Mail size={16} style={{display:"inline",verticalAlign:"middle"}}/> Compose support email</button>
    <small style={{color:"var(--mt-warning,#a16207)"}}>Opens your device's email app. No message is sent automatically. Do not include confidential injury information, passwords, signatures or personal IDs in the message.</small>
