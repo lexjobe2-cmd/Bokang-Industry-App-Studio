@@ -165,8 +165,8 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
        <strong style={{fontSize:18,color:"var(--mt-link,#174fa8)"}}>{item.value}</strong><div style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}>{item.label}</div>
       </div>)}
      </div>:null}
-     <label style={label}>Form name<input style={input} value={visibleDraft.title} onChange={e=>patch({title:e.target.value})}/></label>
-     <label style={label}>Document type<select style={input} value={visibleDraft.category} onChange={e=>patch({category:e.target.value as FormCategory})}>{kinds.map(k=><option key={k}>{k}</option>)}</select></label>
+     <label style={label}>Form name<input className="movetrack-ui-field" style={input} value={visibleDraft.title} onChange={e=>patch({title:e.target.value})}/></label>
+     <label style={label}>Document type<select className="movetrack-ui-field" style={input} value={visibleDraft.category} onChange={e=>patch({category:e.target.value as FormCategory})}>{kinds.map(k=><option key={k}>{k}</option>)}</select></label>
      {visibleDraft.warnings.map((w,i)=><p key={i} style={{padding:"9px 10px",fontSize:11,color:"var(--mt-warning,#915b16)",background:"var(--mt-surface-soft,#fffbeb)",borderRadius:9,margin:0}}><AlertTriangle size={13} style={{display:"inline",verticalAlign:"middle"}}/> {w}</p>)}
      <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}} onClick={()=>setRawOpen(!rawOpen)}>{rawOpen?"Hide":"Review / correct"} raw OCR text</button>
      {rawOpen?<div style={{display:"grid",gap:7}}>
@@ -199,12 +199,12 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
        {f.source.reviewed?"Checked against source":"Needs source review"} · Page {f.source.page} · {Math.round(f.source.confidence*100)}% detection confidence · {f.source.kind.replaceAll("-"," ")}
       </label>:null}
       {(f.type==="radio"||f.type==="select"||f.type==="multiselect")?<label style={{...label,gridColumn:"1 / -1"}}>Choice labels (one per line)
-       <textarea style={{...input,minHeight:72}} value={(f.options??[]).join("\n")} onChange={e=>editField(section.id,f.id,v=>({...v,options:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)}))}/>
+       <textarea className="movetrack-ui-field" style={{...input,minHeight:72}} value={(f.options??[]).join("\n")} onChange={e=>editField(section.id,f.id,v=>({...v,options:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)}))}/>
       </label>:null}
       {f.type==="repeat"?<div style={{gridColumn:"1 / -1",display:"grid",gap:6}}>
         <strong style={{fontSize:11}}>Detected table columns</strong>
         {(f.children??[]).map((child,ci)=><div key={child.id} className="movetrack-paper-column-editor">
-          <input style={input} aria-label={"Register column "+(ci+1)} value={child.label} onChange={e=>editField(section.id,f.id,v=>({...v,children:v.children?.map((c,j)=>j===ci?{...c,label:e.target.value}:c)}))}/>
+          <input className="movetrack-ui-field" style={input} aria-label={"Register column "+(ci+1)} value={child.label} onChange={e=>editField(section.id,f.id,v=>({...v,children:v.children?.map((c,j)=>j===ci?{...c,label:e.target.value}:c)}))}/>
           <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:v.children?.filter((_,j)=>j!==ci)}))}>Remove</button>
          </div>)}
         <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:[...(v.children??[]),{id:"column-"+crypto.randomUUID().slice(0,6),label:"New column",type:"text",required:false}]}))}>Add table column</button>
@@ -225,9 +225,9 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
         <strong style={{fontSize:12}}>{field.label}</strong>
         {field.type==="checkbox"?<label style={{fontSize:12}}><input type="checkbox" checked={previewValues[field.id]===true} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.checked}))}/> Check</label>:
         field.type==="radio"||field.type==="multiselect"?<div style={{display:"grid",gap:4}}>{(field.options??["Option 1","Option 2"]).map(choice=><label key={choice} style={{fontSize:12}}><input type={field.type==="radio"?"radio":"checkbox"} name={field.id} checked={field.type==="radio"?previewValues[field.id]===choice:Array.isArray(previewValues[field.id])&&(previewValues[field.id] as string[]).includes(choice)} onChange={()=>setPreviewValues(v=>({...v,[field.id]:field.type==="radio"?choice:(Array.isArray(v[field.id])&&(v[field.id] as string[]).includes(choice)?(v[field.id] as string[]).filter(x=>x!==choice):[...(Array.isArray(v[field.id])?v[field.id] as string[]:[]),choice])}))}/> {choice}</label>)}</div>:
-        field.type==="pass_fail_na"||field.type==="yes_no"?<select style={input} value={String(previewValues[field.id]??"")} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.value}))}><option value="">Choose</option>{(field.type==="yes_no"?(field.options??["YES","NO"]):["PASS","FAIL","NA"]).map(x=><option key={x}>{x}</option>)}</select>:
+        field.type==="pass_fail_na"||field.type==="yes_no"?<select className="movetrack-ui-field" style={input} value={String(previewValues[field.id]??"")} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.value}))}><option value="">Choose</option>{(field.type==="yes_no"?(field.options??["YES","NO"]):["PASS","FAIL","NA"]).map(x=><option key={x}>{x}</option>)}</select>:
         field.type==="repeat"?<small style={{color:"var(--mt-muted,#64748b)"}}>Repeating table with {(field.children??[]).length} editable columns</small>:
-        <input style={input} type={field.type==="date"?"date":field.type==="number"?"number":"text"} placeholder="Type a sample answer" value={String(previewValues[field.id]??"")} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.value}))}/>}
+        <input className="movetrack-ui-field" style={input} type={field.type==="date"?"date":field.type==="number"?"number":"text"} placeholder="Type a sample answer" value={String(previewValues[field.id]??"")} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.value}))}/>}
       </div>))}</div>:null}
    </div>
    {paperPublicationIssues(visibleDraft.sections).length>0?<div style={{border:"1px solid #f6d6a9",borderRadius:11,background:"var(--mt-surface-soft,#fffbeb)",padding:12,display:"grid",gap:5}}>
