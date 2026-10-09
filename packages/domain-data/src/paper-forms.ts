@@ -80,3 +80,8 @@ export function validatePaperSections(sections:FormSection[]){
  }
  return true;
 }
+
+/** A graphical suggestion is not an authorized form question until explicitly source-reviewed. */
+export function unreviewedPaperFields(sections:readonly FormSection[]){
+ return sections.flatMap(s=>s.fields).filter(f=>f.source && f.source.reviewed!==true);
+}
