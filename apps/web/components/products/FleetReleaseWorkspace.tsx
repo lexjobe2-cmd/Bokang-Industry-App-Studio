@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
 import { ShieldAlert, Wrench, ClipboardCheck, CheckCircle2, FileCheck2 } from "lucide-react";
+import {SignatureCapture} from "./SignatureCapture";
+import {type SignatureEvidence,isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import {
   MOVE_TRACK_KEYS, starterFleet, dateIsCurrent,
   type FleetVehicle, type FleetIncident, type FleetAssignment
@@ -31,6 +33,7 @@ export function FleetReleaseWorkspace(){
  const [verified,setVerified]=useState<string[]>([]);
  const [verdict,setVerdict]=useState<"PASS"|"FAIL">("FAIL");
  const [approver,setApprover]=useState("");
+ const [releaseSignature,setReleaseSignature]=useState<SignatureEvidence|null>(null);
  const [notice,setNotice]=useState("");
  const grounded=fleet.filter(v=>v.status==="No-go");
  const vehicle=grounded.find(v=>v.id===chosen)??grounded[0];
@@ -66,16 +69,17 @@ export function FleetReleaseWorkspace(){
  }
  function release(){
   if(!vehicle)return;
+  if(!isSignatureEvidence(releaseSignature)||releaseSignature.signerName.trim().toLowerCase()!==approver.trim().toLowerCase()){setNotice("Capture the named supervisor\u0027s local drawn acknowledgement first. This does not verify identity or authorize workplace release.");return;}
   const now=new Date().toISOString();
   try{
    const result=finalizeFleetRelease({
     vehicle,assignment,incidents,repair,reinspection,approver:approver.trim(),
     baselineCertificatesValid:dateIsCurrent(vehicle.roadworthyExpiry)&&dateIsCurrent(vehicle.extinguisherServiceDue),now
    },crypto.randomUUID());
-   setReleases(current=>[result.record,...current]);
+   setReleases(current=>[{...result.record,localReviewerSignature:releaseSignature},...current]);
    setFleet(current=>current.map(v=>v.id===vehicle.id?result.vehicle:v));
    if(result.assignment)setAssignments(current=>current.map(a=>a.id===result.assignment?.id?result.assignment!:a));
-   setChosen("");setNotice("Demo release-to-reinspection completed. Vehicle remains INSPECTION DUE until a new driver pre-start.");
+   setChosen("");setReleaseSignature(null);setNotice("Demo release-to-reinspection completed. Vehicle remains INSPECTION DUE until a new driver pre-start.");
   }catch(e){setNotice(e instanceof Error?e.message:"Release blocked.");}
  }
  return <section style={{display:"grid",gap:13,marginTop:20}}>
@@ -116,11 +120,13 @@ export function FleetReleaseWorkspace(){
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><FileCheck2 size={19}/> 3 · Supervisor review</h3>
        <label style={{display:"grid",gap:6,fontSize:12,marginBottom:12}}>Approving supervisor<input style={input} value={approver} onChange={e=>setApprover(e.target.value)} placeholder="Independent supervisor"/></label>
+       <SignatureCapture compact value={releaseSignature} onChange={setReleaseSignature}
+        defaultSignerName={approver} scope={"Local fleet release review "+(vehicle?.fleetNo??"")} role="Supervisor" intent="review"/>
        <div style={{padding:11,borderRadius:10,background:"#f8fafc",fontSize:12}}>
         <strong>{assessment?.allowed?"Ready for simulated release":"Release blocked"}</strong>
         <ul style={{paddingLeft:18,margin:"8px 0"}}>{assessment?.reasons.map((reason,i)=><li key={i}>{reason}</li>)}</ul>
        </div>
-       <button onClick={release} disabled={!assessment?.allowed} style={{...btn,marginTop:12,opacity:assessment?.allowed?1:0.55}}>Authorize release to pre-start (demo)</button>
+       <button onClick={release} disabled={!assessment?.allowed||!isSignatureEvidence(releaseSignature)||releaseSignature.signerName.trim().toLowerCase()!==approver.trim().toLowerCase()} style={{...btn,marginTop:12,opacity:assessment?.allowed?1:0.55}}>Authorize release to pre-start (demo)</button>
        <p style={{color:"#667085",fontSize:11}}>Never returns equipment directly to operational GO.</p>
       </section>
     </div>
