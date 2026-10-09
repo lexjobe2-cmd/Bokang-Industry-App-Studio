@@ -1,5 +1,6 @@
 import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import type {LocalEvidenceImage} from "./image-evidence";
+import type {LocalAssetDocument} from "./vehicle-documents";
 import { miningPrestartChecks } from "@bokang/domain-data";
 
 export type FleetVehicleStatus =
@@ -26,6 +27,7 @@ export type FleetVehicle = {
   extinguisherServiceDue: string;
   nextServiceKm: number;
   images?: LocalEvidenceImage[];
+  documents?: LocalAssetDocument[];
 };
 
 export type FleetDriver = {
