@@ -594,6 +594,23 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] :is([style^="color: #98a2b3"],[style*="; color: #98a2b3"],[style*=";color: #98a2b3"]),
 .movetrack-root[data-theme="dark"] :is([style^="color: rgb(152, 162, 179)"],[style*="; color: rgb(152, 162, 179)"],[style*=";color: rgb(152, 162, 179)"]) {color:var(--mt-muted) !important;}
 
+/* Theme transitions preserve legibility during light/dark changes rather than leaving mixed styles.
+   Avoid transitions for reduced-motion users. */
+.movetrack-root,
+.movetrack-root :where(.movetrack-desktop-modal,.movetrack-workspace-switcher,.movetrack-task-outline,
+ .movetrack-task-inspector,.movetrack-task-mobile-summary,.movetrack-nav-drawer,
+ article,section,button,select,input,textarea) {
+ transition-property:background-color,color,border-color;
+ transition-duration:180ms;
+ transition-timing-function:ease-out;
+}
+@media(prefers-reduced-motion:reduce){
+ .movetrack-root,
+ .movetrack-root :where(.movetrack-desktop-modal,.movetrack-workspace-switcher,.movetrack-task-outline,
+ .movetrack-task-inspector,.movetrack-task-mobile-summary,.movetrack-nav-drawer,
+ article,section,button,select,input,textarea) {transition-duration:0ms;}
+}
+
 /* Theme tokens also keep common secondary action labels visible on dark cards. */
 .movetrack-root[data-theme="dark"] :is(.movetrack-task-mobile-nav,.movetrack-task-mobile-summary) {color:var(--mt-ink);}
 
