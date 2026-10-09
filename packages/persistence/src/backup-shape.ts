@@ -32,6 +32,35 @@ function validCompetencyDates(value:unknown):boolean{
   return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===date;
  });
 }
+
+function validCredentialEvidence(value:unknown,documents:unknown):boolean{
+ if(!record(value)||Object.keys(value).length>5)return false;
+ const ids=new Set(Array.isArray(documents)?documents.filter(record).map(doc=>doc.id):[]);
+ return Object.entries(value).every(([key,id])=>credentialFields.has(key)&&typeof id==='string'&&id.length>0&&id.length<=128&&ids.has(id));
+}
+function validCredentialHistory(value:unknown):boolean{
+ if(!Array.isArray(value)||value.length>80)return false;
+ const ids=new Set<string>();
+ return value.every(event=>{
+  if(!record(event)||typeof event.id!=='string'||!event.id||event.id.length>128||ids.has(event.id))return false;
+  ids.add(event.id);
+  if(typeof event.credential!=='string'||!credentialFields.has(event.credential))return false;
+  for(const key of ['previousExpiry','newExpiry'] as const){
+   const expiry=event[key];
+   if(typeof expiry!=='string'||(expiry!==''&&!validCompetencyDates({licence:expiry})))return false;
+  }
+  for(const key of ['documentId','previousDocumentId'] as const){
+   const id=event[key];
+   if(id!==undefined&&(typeof id!=='string'||!id||id.length>128))return false;
+  }
+  if(event.documentName!==undefined&&(typeof event.documentName!=='string'||event.documentName.length>120))return false;
+  for(const key of ['previousAuthorised','newAuthorised'] as const){
+   if(event[key]!==undefined&&typeof event[key]!=='boolean')return false;
+  }
+  return typeof event.reviewedAt==='string'&&event.reviewedAt.length<=64&&Number.isFinite(Date.parse(event.reviewedAt))
+    &&typeof event.reviewerName==='string'&&event.reviewerName.length>0&&event.reviewerName.length<=120;
+ });
+}
 export function validateBackupShape(key:string,value:unknown){
  const name=key.replace(/^bokang-studio\.move-track\./,'');
  if(arrays.has(name)&&(!Array.isArray(value)||!value.every(record)))throw Error('Invalid record collection: '+key);
@@ -46,6 +75,8 @@ export function validateBackupShape(key:string,value:unknown){
    if(item.documents!==undefined&&!validVehicleDocuments(item.documents))throw Error('Invalid or oversized fleet/driver PDF documents: '+key);
    if(name==='drivers.v2'&&item.personId!==undefined&&(typeof item.personId!=='string'||item.personId.length>128))throw Error('Invalid driver directory reference: '+key);
    if(name==='drivers.v2'&&item.competencyExpiry!==undefined&&!validCompetencyDates(item.competencyExpiry))throw Error('Invalid driver competency expiry dates: '+key);
+   if(name==='drivers.v2'&&item.competencyEvidence!==undefined&&!validCredentialEvidence(item.competencyEvidence,item.documents))throw Error('Invalid or missing linked driver competency PDFs: '+key);
+   if(name==='drivers.v2'&&item.competencyHistory!==undefined&&!validCredentialHistory(item.competencyHistory))throw Error('Invalid driver competency renewal history: '+key);
   }
  }
  if(name==='fleet.v2'||name==='drivers.v2'){
