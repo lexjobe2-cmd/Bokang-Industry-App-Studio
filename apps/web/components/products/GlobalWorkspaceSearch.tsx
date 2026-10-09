@@ -71,7 +71,7 @@ export function GlobalWorkspaceSearch({onNavigate,compact=false}:{
   document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});
  }
  const site=companies.find(x=>x.id===orgId)?.name??"selected company";
- return <section aria-label="Search all MoveTrack data" style={{display:"grid",gap:10,padding:compact?14:19,
+ return <section id="movetrack-global-search" aria-label="Search all MoveTrack data" style={{display:"grid",gap:10,padding:compact?14:19,
    border:"1px solid #c6d7ec",borderRadius:17,background:"#fff"}}>
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:12,flexWrap:"wrap"}}>
    <div><p style={{fontSize:10,letterSpacing:1.2,color:"#2563eb",fontWeight:900,margin:"0 0 5px"}}>UNIFIED WORKSPACE SEARCH</p>
