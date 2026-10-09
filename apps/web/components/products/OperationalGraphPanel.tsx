@@ -13,7 +13,7 @@ export const ACTIVE_JOB_REFERENCE_KEY="bokang-studio.move-track.active-job.v1";
 export const recipeTemplateId=(orgId:string,workflowId:string)=>"op-"+orgId+"-"+workflowId;
 const card:React.CSSProperties={border:"1px solid #dbe5f2",borderRadius:15,background:"#fff",padding:15};
 const btn:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:10,padding:"9px 12px",background:"#fff",cursor:"pointer",fontWeight:800,color:"#193756",minHeight:43};
-export function OperationalGraphPanel(){
+export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void}={}){
  const reduced=useReducedMotion();
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
  const [orgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
@@ -34,7 +34,7 @@ export function OperationalGraphPanel(){
   (r.title+" "+r.trigger+" "+r.criticalControls.join(" ")).toLowerCase().includes(search.toLowerCase())),[area,search]);
  const completed=additionalAssuranceRecipes.filter(w=>statusFor(w.id)==="COMPLETE").length;
  function openWorkflow(id:string){
-  setActive(recipeTemplateId(org.id,id));setTab("library");
+  setActive(recipeTemplateId(org.id,id));setTab("library");onOpenWorkflow?.();
   document.querySelector('[aria-label="Operational forms"]')?.scrollIntoView({behavior:"smooth",block:"start"});
  }
  return <section aria-label="Operational workflow graph" style={{display:"grid",gap:12}}>
