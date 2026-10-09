@@ -52,3 +52,14 @@ test("driver return defect can attach photo evidence",()=>{
  assert.match(source,/Return defect and damage photos/);
  assert.match(source,/images:returnPhotos/);
 });
+
+test("admin-only form and OCR template publishing preserve worker reading and inspection access",()=>{
+ const forms=readFileSync(new URL("../apps/web/components/products/AssuranceFormsWorkspace.tsx",import.meta.url),"utf8");
+ const paper=readFileSync(new URL("../apps/web/components/products/PaperToDigitalWorkspace.tsx",import.meta.url),"utf8");
+ const operations=readFileSync(new URL("../apps/web/components/products/MoveTrackShowcase.tsx",import.meta.url),"utf8");
+ assert.match(forms,/adminMode\?<CustomFormBuilder/);
+ assert.match(paper,/if\(!adminMode\).*Template saving and publishing/);
+ assert.match(paper,/if\(!adminMode\).*Custom form designer/);
+ assert.match(operations,/adminMode\?<button onClick=\{createAssignment\}/);
+ assert.match(operations,/adminMode=\{adminMode\}/);
+});
