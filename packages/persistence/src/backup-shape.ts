@@ -13,6 +13,16 @@ function validEvidencePhotos(value:unknown):boolean{
   &&typeof item.dataUrl==='string'&&item.dataUrl.length<=140000
   &&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(item.dataUrl));
 }
+function validVehicleDocuments(value:unknown):boolean{
+ if(!Array.isArray(value)||value.length>4)return false;
+ return value.every(item=>record(item)
+  &&typeof item.id==='string'&&item.id.length>0&&item.id.length<=128
+  &&typeof item.name==='string'&&item.name.length<=120&&item.name.toLowerCase().endsWith('.pdf')
+  &&item.mimeType==='application/pdf'
+  &&typeof item.addedAt==='string'&&item.addedAt.length<=64
+  &&typeof item.dataUrl==='string'&&item.dataUrl.length<=350000
+  &&/^data:application\/pdf;base64,JVBERi0[A-Za-z0-9+/=]*$/.test(item.dataUrl));
+}
 export function validateBackupShape(key:string,value:unknown){
  const name=key.replace(/^bokang-studio\.move-track\./,'');
  if(arrays.has(name)&&(!Array.isArray(value)||!value.every(record)))throw Error('Invalid record collection: '+key);
@@ -20,6 +30,11 @@ export function validateBackupShape(key:string,value:unknown){
  if(evidenceCollections.has(name)){
   for(const item of value as Record<string,unknown>[]){
    if(item.images!==undefined&&!validEvidencePhotos(item.images))throw Error('Invalid or oversized photo evidence: '+key);
+  }
+ }
+ if(name==='fleet.v2'){
+  for(const item of value as Record<string,unknown>[]){
+   if(item.documents!==undefined&&!validVehicleDocuments(item.documents))throw Error('Invalid or oversized fleet PDF documents: '+key);
   }
  }
  if(name==='fleet.v2'||name==='drivers.v2'){
