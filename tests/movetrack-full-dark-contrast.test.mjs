@@ -79,3 +79,28 @@ test("both desktop and mobile retain dark mode toggle and independent Admin shor
  assert.match(theme,/data-theme="dark"/);
  assert.match(theme,/Electronic signature capture/);
 });
+
+test("Admin Fleet and driver compliance use paired semantic colors in both themes",()=>{
+ const compliance=component("DriverComplianceOverview");
+ const competency=component("DriverCompetencyPanel");
+ const fleet=component("MoveTrackShowcase");
+ const expectedBadges=[
+  'text:"var(--mt-danger,#a51d2d)",background:"var(--mt-danger-bg,#fef3f2)"',
+  'text:"var(--mt-muted,#516078)",background:"var(--mt-surface-soft,#f1f5f9)"',
+  'text:"var(--mt-success,#087454)",background:"var(--mt-success-bg,#ecfdf3)"'
+ ];
+ for(const badge of expectedBadges)assert.ok(compliance.includes(badge),"Theme-aware compliance badge missing: "+badge);
+ assert.ok(competency.includes('missing:"var(--mt-danger,#a51d2d)"'));
+ assert.ok(competency.includes('due:"var(--mt-warning,#905a09)"'));
+ assert.ok(competency.includes('current:"var(--mt-success,#087454)"'));
+ assert.ok(compliance.includes('const border="var(--mt-border,#dbe5ef)"'));
+ assert.ok(fleet.includes('borderColor:"var(--mt-border,#c6d9f3)"'));
+ assert.ok(fleet.includes('borderColor:"var(--mt-warning,#fde68a)"'));
+ assert.ok(fleet.includes('vehicle.status==="No-go"?"1px solid var(--mt-danger,#fecaca)"'));
+ // Actual dark surfaces used by the matching CSS tokens; no white-on-white or navy-on-navy.
+ const pairs=[
+  ["#ffabb5","#40212d"],["#becee2","#1d344f"],["#86efc0","#173f35"],
+  ["#a51d2d","#fef3f2"],["#516078","#f1f5f9"],["#087454","#ecfdf3"]
+ ];
+ for(const [fg,bg] of pairs)assert.ok(contrast(fg,bg)>=4.5,fg+" on "+bg+" = "+contrast(fg,bg).toFixed(2));
+});
