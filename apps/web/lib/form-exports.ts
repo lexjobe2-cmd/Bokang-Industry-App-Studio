@@ -27,6 +27,10 @@ function textValue(value:unknown,people:readonly PersonRecord[],field?:FormField
 }
 function fieldRows(field:FormField,answer:FormAnswer|undefined,mode:DocumentMode,people:readonly PersonRecord[]):DocumentRow[]{
  if(field.type!=="repeat"){
+  if(field.type==="photo"||field.type==="document"){
+   const items=mode==="blank"?[]:Array.isArray(answer)?answer.filter(v=>typeof v==="string"&&v.startsWith("data:")):typeof answer==="string"&&answer.startsWith("data:")?[answer]:[];
+   return [{label:field.label+(field.required?" *":""),value:mode==="blank"?placeholder:items.length?items.length+" local "+(field.type==="photo"?"photo(s)":"document(s)")+" attached · originals in browser record, not embedded in this report":mode==="filled"?"—":placeholder}];
+  }
   const sig=mode==="blank"?undefined:isSignatureEvidence(answer)?answer:undefined;
   return [{label:field.label+(field.required?" *":""),value:mode==="blank"?placeholder:textValue(answer,people,field)||(mode==="filled"?"—":placeholder),signature:sig}];
  }

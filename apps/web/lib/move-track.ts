@@ -78,6 +78,7 @@ export type PrestartRecord = {
   result: "GO" | "NO-GO";
   reasons: string[];
   notes: string;
+  images?: LocalEvidenceImage[];
 };
 
 export type FleetSitePolicy = {

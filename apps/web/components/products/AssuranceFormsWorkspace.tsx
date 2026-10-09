@@ -12,6 +12,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ClipboardCheck, FileText, ShieldAlert, ChevronRight, ChevronLeft, Plus, Trash2, CheckCircle2, CloudOff } from "lucide-react";
 import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "@bokang/domain-data/risk-matrix";
 import { usePersistentState } from "@bokang/persistence";
+import {MultiImageEvidence} from "./MultiImageEvidence";
 import {
   starterAssuranceTemplates, evaluateForm, isVisible, makeSubmission,
   type FormAnswer, type FormAnswers, type FormField, type FormSubmission
@@ -307,7 +308,15 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
      intent={field.signerFieldId?"review":field.label.toLowerCase().includes("review")?"review":"acknowledgement"}/>
      {field.signerFieldId&&!reviewerPersonId?<small style={{color:"#b45309"}}>Select the responsible reviewer before signing.</small>:null}
    </div>;
- if(field.type==="photo"||field.type==="document")return <div style={fieldStyle}>
+ if(field.type==="photo"){
+   const photos=(Array.isArray(value)?value:typeof value==="string"?[value]:[])
+     .filter((entry):entry is string=>typeof entry==="string"&&entry.startsWith("data:image/"));
+   return <div style={fieldStyle}>{label}<MultiImageEvidence label={field.label+" photos"}
+    images={photos.map((dataUrl,index)=>({id:String(index),name:"Photo "+(index+1),dataUrl,addedAt:""}))}
+    onChange={images=>onChange(images.map(image=>image.dataUrl))}/>
+   </div>;
+ }
+ if(field.type==="document")return <div style={fieldStyle}>
    {label}
    <input type="file" accept={field.type==="photo"?"image/png,image/jpeg,image/webp":"application/pdf,image/png,image/jpeg,image/webp"} style={{...input,padding:9}} onChange={event=>{
      const file=event.target.files?.[0];

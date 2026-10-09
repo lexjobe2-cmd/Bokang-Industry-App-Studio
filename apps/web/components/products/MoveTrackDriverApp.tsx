@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {Home,Truck,ClipboardCheck,AlertTriangle,UserRound,Menu,X,ChevronRight,ArrowLeft} from "lucide-react";
 import { usePersistentState } from "@bokang/persistence";
+import {MultiImageEvidence} from "./MultiImageEvidence";
+import type {LocalEvidenceImage} from "../../lib/image-evidence";
 import { miningCriticalChecks, miningPrestartChecks } from "@bokang/domain-data";
 import {
   MOVE_TRACK_KEYS,
@@ -60,6 +62,9 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
   const [returnDefect,setReturnDefect] = useState(false);
   const [returnNotes,setReturnNotes] = useState("");
   const [incidentText,setIncidentText] = useState("");
+  const [incidentPhotos,setIncidentPhotos]=useState<LocalEvidenceImage[]>([]);
+  const [prestartPhotos,setPrestartPhotos]=useState<LocalEvidenceImage[]>([]);
+  const [returnPhotos,setReturnPhotos]=useState<LocalEvidenceImage[]>([]);
   const [notice,setNotice] = useState("");
 
   const driver = drivers.find((item)=>item.id===driverId);
@@ -99,7 +104,7 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
       checks,
       result:evaluated.result,
       reasons:evaluated.reasons,
-      notes:notes.trim()
+      notes:notes.trim(),images:prestartPhotos
     };
     setPrestarts((current)=>[record,...current]);
     setAssignments((current)=>current.map((item)=>item.id===activeAssignment.id?{
@@ -120,9 +125,10 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
         severity:"High",
         category:"Safety",
         description:"Pre-start NO-GO: "+evaluated.reasons.join("; "),
-        status:"Open"
+        status:"Open",images:prestartPhotos
       },...current]);
     }
+    setPrestartPhotos([]);
     setNotice(evaluated.result==="GO"
       ? vehicle.fleetNo+" is compliant with this demo site pre-start and cleared to take."
       : vehicle.fleetNo+" is GROUNDED: "+evaluated.reasons.join("; "));
@@ -161,13 +167,13 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
       setIncidents((current)=>[{
         id:"INC-"+Date.now(),vehicleId:vehicle.id,driverId:driver.id,assignmentId:activeAssignment.id,
         createdAt:new Date().toISOString(),severity:"Medium",category:"Defect",
-        description:returnNotes.trim()||"Defect reported during vehicle return",status:"Open"
+        description:returnNotes.trim()||"Defect reported during vehicle return",status:"Open",images:returnPhotos
       },...current]);
     }
     setNotice(returnDefect
       ? vehicle.fleetNo+" returned with a defect and placed INSPECTION DUE."
       : vehicle.fleetNo+" returned and available.");
-    setReturnOdometer(""); setReturnDefect(false); setReturnNotes(""); setTab("home");
+    setReturnOdometer(""); setReturnDefect(false); setReturnNotes(""); setReturnPhotos([]); setTab("home");
   }
 
   function addIncident(){
@@ -175,9 +181,9 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
     setIncidents((current)=>[{
       id:"INC-"+Date.now(),vehicleId:vehicle.id,driverId:driver.id,assignmentId:activeAssignment?.id,
       createdAt:new Date().toISOString(),severity:"Medium",category:"Safety",
-      description:incidentText.trim(),status:"Open"
+      description:incidentText.trim(),status:"Open",images:incidentPhotos
     },...current]);
-    setIncidentText(""); setNotice("Incident/defect logged for "+vehicle.fleetNo+".");
+    setIncidentText(""); setIncidentPhotos([]); setNotice("Incident/defect logged for "+vehicle.fleetNo+".");
   }
 
   if(!driver){
@@ -255,6 +261,7 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
        {["Requires maintenance inspection","Defect reported to supervisor","Retest needed after repair","Additional remarks"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:notes===text?"#dbeafe":"#fff",padding:"8px 10px",borderRadius:9,fontSize:11,fontWeight:750}} onClick={()=>setNotes(text==="Additional remarks"?"":text)}>{text}</button>)}
       </div>
       <textarea value={notes} onChange={(e)=>setNotes(e.target.value)} placeholder="Defects / notes / corrective action required" style={{...input,minHeight:90}}/>
+      <MultiImageEvidence label="Pre-start inspection photos" images={prestartPhotos} onChange={setPrestartPhotos}/>
       <button onClick={submitPrestart} style={primary}>Submit pre-start</button>
     </section>:null}
 
@@ -265,9 +272,10 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
        {["Brake response abnormal","Fluid or fuel leak observed","Tyre or wheel damage","Unsafe access or pedestrian interaction","Unusual vibration or noise","Near miss reported"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:incidentText===text?"#fff7ed":"#fff",borderRadius:9,padding:"9px 10px",fontSize:11}} onClick={()=>setIncidentText(current=>current?current+"; "+text:text)}>{text}</button>)}
        </div>
        <textarea value={incidentText} onChange={(e)=>setIncidentText(e.target.value)} placeholder="Describe what you saw, the location and any immediate action…" style={{...input,width:"100%",minHeight:90}}/>
+       <MultiImageEvidence label="Incident and defect photographs" images={incidentPhotos} onChange={setIncidentPhotos}/>
        <button onClick={addIncident} style={{...primary,marginTop:10}}>Submit observed report</button>
       </article>
-      {incidents.filter((item)=>item.driverId===driver.id).map((item)=><article key={item.id} style={card}><div style={{display:"flex",justifyContent:"space-between"}}><strong>{item.category}</strong><span style={{fontSize:11,fontWeight:850}}>{item.status}</span></div><div style={{fontSize:12,color:"#667085",marginTop:5}}>{item.description}</div><div style={{fontSize:10,color:"#98a2b3",marginTop:5}}>{new Date(item.createdAt).toLocaleString()}</div></article>)}
+      {incidents.filter((item)=>item.driverId===driver.id).map((item)=><article key={item.id} style={card}><div style={{display:"flex",justifyContent:"space-between"}}><strong>{item.category}</strong><span style={{fontSize:11,fontWeight:850}}>{item.status}</span></div><div style={{fontSize:12,color:"#667085",marginTop:5}}>{item.description}</div><div style={{fontSize:10,color:"#98a2b3",marginTop:5}}>{new Date(item.createdAt).toLocaleString()}</div><MultiImageEvidence label="Attached report photos" images={item.images??[]} readOnly/></article>)}
     </section>:null}
 
     {tab==="profile"?<section style={{marginTop:18,...card}}><h2 style={{marginTop:0}}>Driver profile</h2><Info label="Site authorised" value={driver.siteAuthorised?"Yes":"No"}/><Info label="Open-pit permit" value={driver.openPitPermit?"Yes":"No"}/><Info label="First-aid training" value={driver.firstAid?"Yes":"No"}/><Info label="Defensive driving" value={driver.defensiveDriving?"Yes":"No"}/></section>:null}
