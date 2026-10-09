@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
 import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
+import {SignatureApprovalTray} from "./SignatureApprovalTray";
+import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
 import {MoveTrackWorkspaceNav,type MoveTrackView} from "./MoveTrackWorkspaceNav";
 import {MoveTrackHelpCenter} from "./MoveTrackHelpCenter";
@@ -51,6 +53,8 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   const [view,setView]=useState<MoveTrackView>(initialView);
   const [notice,setNotice]=useState("");
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
+  const [incidentSignatures,setIncidentSignatures]=useState<Record<string,SignatureEvidence|undefined>>({});
+  const [incidentSupervisors,setIncidentSupervisors]=useState<Record<string,string>>({});
   const [client,setClient]=useState("");
   const [jobType,setJobType]=useState<(typeof logisticsJobTypes)[number]>("Local delivery");
   const [from,setFrom]=useState<(typeof botswanaPlaces)[number]>("Gaborone");
@@ -152,8 +156,11 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   function resolveIncident(id:string){
     const note=(resolutionNotes[id]||"").trim();
     if(!note){setNotice("Document corrective action before resolving the safety/defect record.");return;}
+    const signature=incidentSignatures[id];
+    const supervisor=(incidentSupervisors[id]??"").trim();
+    if(!isSignatureEvidence(signature)||!supervisor||signature.signerName.trim().toLowerCase()!==supervisor.toLowerCase()||signature.scope!=="Incident "+id+" · corrective action: "+note){setNotice("A supervisor must review this exact corrective action and capture a local drawn acknowledgement before marking the defect resolved.");return;}
     setIncidents((current)=>current.map((item)=>item.id===id?{
-      ...item,status:"Resolved",resolutionNote:note,resolvedAt:new Date().toISOString()
+      ...item,status:"Resolved",resolutionNote:note,resolvedAt:new Date().toISOString(),reviewSignature:signature
     }:item));
     setResolutionNotes((current)=>({...current,[id]:""}));
     setNotice("Corrective action recorded and incident resolved.");
@@ -206,8 +213,18 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
           return <div key={item.id} style={{padding:"10px 0",borderBottom:"1px solid #fee2e2",display:"grid",gap:8}}>
             <div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"#667085"}}>{item.description}</div></div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              <input value={resolutionNotes[item.id]||""} onChange={(e)=>setResolutionNotes((current)=>({...current,[item.id]:e.target.value}))} placeholder="Corrective action / repair completed…" style={{...input,flex:"1 1 280px"}}/>
-              <button onClick={()=>resolveIncident(item.id)} style={secondaryButton}>Resolve with corrective note (demo)</button>
+              <input value={resolutionNotes[item.id]||""} onChange={(e)=>{setResolutionNotes((current)=>({...current,[item.id]:e.target.value}));setIncidentSignatures(current=>({...current,[item.id]:undefined}));}} placeholder="Corrective action / repair completed…" style={{...input,flex:"1 1 280px"}}/>
+              <label style={{display:"grid",gap:4,fontSize:11,fontWeight:850}}>Reviewing supervisor
+                <input style={{...input,minWidth:155}} value={incidentSupervisors[item.id]??""}
+                  placeholder="Supervisor name" onChange={e=>{setIncidentSupervisors(current=>({...current,[item.id]:e.target.value}));setIncidentSignatures(current=>({...current,[item.id]:undefined}));}}/>
+               </label>
+              <SignatureApprovalTray label="Review corrective action & sign" role="Defect reviewing supervisor" intent="review"
+                disabled={!resolutionNotes[item.id]?.trim()||!incidentSupervisors[item.id]?.trim()}
+                value={incidentSignatures[item.id]??null} defaultSignerName={incidentSupervisors[item.id]??""}
+                scope={"Incident "+item.id+" · corrective action: "+(resolutionNotes[item.id]??"").trim()}
+                onChange={signature=>setIncidentSignatures(current=>({...current,[item.id]:signature??undefined}))}/>
+              <button onClick={()=>resolveIncident(item.id)} disabled={!isSignatureEvidence(incidentSignatures[item.id])}
+                style={{...secondaryButton,opacity:isSignatureEvidence(incidentSignatures[item.id])?1:.6}}>Resolve reviewed defect (demo)</button>
             </div>
           </div>;
         })}
