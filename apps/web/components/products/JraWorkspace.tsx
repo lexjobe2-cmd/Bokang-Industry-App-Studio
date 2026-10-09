@@ -21,8 +21,8 @@ import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
 import {buildJraDocument,buildBlankJraDocument} from "../../lib/form-exports";
 
 const shell:React.CSSProperties={background:"#fff",border:"1px solid #dde5ee",borderRadius:16,padding:17};
-const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",background:"#fff",color:"#111827",font:"inherit",minHeight:43};
-const btn:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:10,padding:"10px 12px",background:"#fff",color:"#172b4d",fontWeight:800,minHeight:43,cursor:"pointer"};
+const input:React.CSSProperties={width:"100%",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:10,padding:"11px 12px",background:"var(--mt-surface-soft,#fff)",color:"var(--mt-ink,#172b46)",font:"inherit",minHeight:44};
+const btn:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:10,padding:"10px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",fontWeight:800,minHeight:44,cursor:"pointer"};
 const primary:React.CSSProperties={...btn,background:"#163866",color:"#fff",borderColor:"#163866"};
 const label:React.CSSProperties={fontSize:12,fontWeight:800,display:"grid",gap:6};
 function Badge({children,color="#1d4ed8"}:{children:React.ReactNode;color?:string}){return <span style={{fontSize:10,background:color+"13",color,padding:"5px 8px",borderRadius:7,fontWeight:900}}>{children}</span>;}
