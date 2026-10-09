@@ -19,6 +19,7 @@ import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance
 import {MoveTrackHelpCenter} from "./MoveTrackHelpCenter";
 import { UserParticipationAnalytics } from "./UserParticipationAnalytics";
 import { PaperToDigitalWorkspace } from "./PaperToDigitalWorkspace";
+import {MoveTrackLocalProfile} from "./MoveTrackLocalProfile";
 import { MeetingRegisterWorkspace } from "./MeetingRegisterWorkspace";
 import {
   botswanaPlaces,
@@ -500,6 +501,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     <div hidden={view!=="paper"}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></div>
     {view==="release"?<FleetReleaseWorkspace />:null}
     {view==="local-data"?<LocalWorkspacePanel />:null}
+    {view==="profile"?<MoveTrackLocalProfile/>:null}
     {view==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}
 
     {view==="analytics"?<div style={{display:"grid",gap:15}}><UserParticipationAnalytics/><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>

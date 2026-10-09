@@ -44,7 +44,7 @@ export function MoveTrackAppShellNav({
  function openMenu(){setMenuOpen(true);}
  function press(destination:PrimaryDestination){
   if(destination==="home"){home();return;}
-  if(destination==="profile"){navigate("settings");return;}
+  if(destination==="profile"){navigate("profile");return;}
   navigate(destination);
  }
  useEffect(()=>{
@@ -89,7 +89,7 @@ export function MoveTrackAppShellNav({
 
   <nav style={keyboardOpen?{display:"none"}:undefined} className="movetrack-mobile-dock" aria-label="MoveTrack mobile primary navigation">
    {destinations.map(item=>{
-    const active=item.key==="home"?atHome:item.key==="profile"?!atHome&&activeView==="settings":!atHome&&activeView===item.key;
+    const active=item.key==="home"?atHome:item.key==="profile"?!atHome&&activeView==="profile":!atHome&&(item.key==="forms"?["forms","meetings","paper"].includes(activeView):item.key==="fleet"?["control","fleet","drivers","sites","assign","jobs","release"].includes(activeView):activeView===item.key);
     return <button type="button" key={item.key} className={active?"movetrack-dock-action is-active":"movetrack-dock-action"} aria-current={active?"page":undefined} onClick={()=>press(item.key)}>
      <item.icon size={24} strokeWidth={active?2.6:1.95}/>
      <span>{item.label}</span>

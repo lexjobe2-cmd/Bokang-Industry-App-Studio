@@ -44,6 +44,7 @@ export function MoveTrackDemoLab(){
  const [,setReleases,releasesReady]=usePersistentState<FleetReleaseRecord[]>("bokang-studio.move-track.releases.v1",[]);
  const [active,setActive]=useState<Scenario|null>(null);
  const [startWorkspace,setStartWorkspace]=usePersistentState<MoveTrackView>("bokang-studio.move-track.navigation.view.v1","control");
+ const [workflowsOpen,setWorkflowsOpen]=useState(false);
  const [atHome,setAtHome]=useState(true);
  function goWorkspace(next:MoveTrackView,scroll=true){
   setStartWorkspace(next);setAtHome(false);
@@ -107,7 +108,7 @@ export function MoveTrackDemoLab(){
  return <main className="movetrack-root" data-theme={theme} style={{background:theme==="dark"?"#081323":"#f3f7fc",minHeight:"100vh",color:theme==="dark"?"#edf4fe":"#15233a",paddingBottom:100}}>
   <MoveTrackThemeStyles/>
   <MoveTrackAppShellNav activeView={startWorkspace} atHome={atHome} onHome={goHome} onSearch={findSearch}
-   onNavigate={goWorkspace} onCompany={()=>{setAtHome(true);jumpTo("movetrack-onboarding");}} onWorkflow={()=>{setAtHome(true);jumpTo("movetrack-workflow-graph");}}
+   onNavigate={goWorkspace} onCompany={()=>{setAtHome(true);jumpTo("movetrack-onboarding");}} onWorkflow={()=>{setAtHome(true);setWorkflowsOpen(true);jumpTo("movetrack-workflow-graph");}}
    theme={theme} onToggleTheme={()=>setTheme(theme==="dark"?"light":"dark")}/>
   <div style={{display:atHome?"contents":"none"}}><div className="movetrack-hero" style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"26px 20px 42px"}}>
    <div style={{maxWidth:1250,margin:"0 auto"}}>
@@ -137,7 +138,7 @@ export function MoveTrackDemoLab(){
         {key:"meetings",title:"New meeting",desc:"Attendance, apologies and actions",icon:ClipboardCheck},
         {key:"release",title:"Report / review defect",desc:"Grounding, repair and reinspection",icon:AlertTriangle},
         {key:"assign",title:"View assigned work",desc:"Drivers, equipment and dispatch",icon:Truck},
-        {key:"analytics",title:"View my participation",desc:"Meeting attendance and safety trends",icon:BarChart3},
+        {key:"profile",title:"View my participation",desc:"Meeting attendance and safety trends",icon:BarChart3},
         {key:"settings",title:"Support & settings",desc:"Privacy, terms, FAQ, theme",icon:LifeBuoy}] as const).map(item=>
        <button type="button" key={item.key} onClick={()=>{goWorkspace(item.key);}}
          style={{...style,textAlign:"left",cursor:"pointer",display:"flex",gap:11,alignItems:"start",borderColor:"#b6cde8"}}>
@@ -159,7 +160,7 @@ export function MoveTrackDemoLab(){
     </div>
    </section>
    <GlobalWorkspaceSearch onNavigate={(view)=>goWorkspace(view)}/>
-   <section id="movetrack-workflow-graph" style={{scrollMarginTop:85}}><OperationalGraphPanel onOpenWorkflow={()=>goWorkspace("forms")}/></section>
+   <section id="movetrack-workflow-graph" style={{...style,scrollMarginTop:85}}><details open={workflowsOpen} onToggle={e=>setWorkflowsOpen(e.currentTarget.open)}><summary style={{cursor:"pointer",minHeight:44,fontWeight:850}}>Explore 21 safety workflows</summary><OperationalGraphPanel onOpenWorkflow={()=>goWorkspace("forms")}/></details></section>
    <details style={style}><summary style={{cursor:"pointer",minHeight:44,fontWeight:850}}>Demo scenarios and test data</summary><section aria-label="Demo scenarios">
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
       <div><p style={{fontSize:11,fontWeight:900,letterSpacing:1.3,color:"#2563eb",textTransform:"uppercase",margin:0}}>Quick start</p><h2 style={{fontSize:21,margin:"4px 0"}}>Choose a test scenario</h2><p style={{fontSize:12,color:"#64748b",margin:0}}>Each scenario loads connected demo records into the same fleet and driver app.</p></div>

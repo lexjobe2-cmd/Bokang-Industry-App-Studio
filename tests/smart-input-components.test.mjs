@@ -38,4 +38,6 @@ test('mobile dock exposes five requested destinations with Fleet active and a se
  assert.ok(dock);assert.equal((dock.match(/<button/g)||[]).length,5);
  for(const label of ['Home','Fleet','Forms','Analytics','Profile'])assert.ok(dock.includes('>'+label+'</span>'));
  assert.match(dock,/aria-current="page"/);assert.match(html,/aria-label="Open navigation menu"/);
+ const profile=renderToStaticMarkup(React.createElement(MoveTrackAppShellNav,{activeView:'profile',atHome:false,onHome:noop,onSearch:noop,onNavigate:noop,onCompany:noop,onWorkflow:noop,theme:'light',onToggleTheme:noop}));
+ assert.match(profile,/aria-current="page"[^>]*>[\s\S]*?<span>Profile<\/span>/);
 });

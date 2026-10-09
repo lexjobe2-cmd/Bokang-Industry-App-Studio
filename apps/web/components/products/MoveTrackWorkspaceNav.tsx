@@ -1,11 +1,12 @@
 "use client";
-import {LayoutDashboard,Activity,ClipboardCheck,UsersRound,FileScan,Truck,HardHat,MapPinned,CalendarCheck,BriefcaseBusiness,ShieldCheck,Database,Settings2} from "lucide-react";
+import {LayoutDashboard,Activity,ClipboardCheck,UsersRound,FileScan,Truck,HardHat,MapPinned,CalendarCheck,BriefcaseBusiness,ShieldCheck,Database,Settings2,UserRound} from "lucide-react";
 
-export type MoveTrackView="control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"meetings"|"paper"|"release"|"local-data"|"settings";
+export type MoveTrackView="control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"meetings"|"paper"|"release"|"local-data"|"settings"|"profile";
 export const navigationGroups=[
  {id:"overview",label:"Overview",items:[
   {view:"control",label:"Control center",description:"What needs attention",icon:LayoutDashboard},
-  {view:"analytics",label:"Analytics",description:"Workforce and SHE insights",icon:Activity}]},
+  {view:"analytics",label:"Analytics",description:"Workforce and SHE insights",icon:Activity},
+  {view:"profile",label:"My profile & participation",description:"Local worker activity and actions",icon:UserRound}]},
  {id:"safety",label:"Safety & people",items:[
   {view:"forms",label:"SHE forms & JRA",description:"Checklists, risk and signatures",icon:ClipboardCheck},
   {view:"meetings",label:"Meetings & registers",description:"Attendance and minutes",icon:UsersRound},
