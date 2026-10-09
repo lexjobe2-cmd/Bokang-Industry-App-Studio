@@ -21,7 +21,7 @@ export function SignatureApprovalTray({value,onChange,scope,role="Supervisor",in
   closeRef.current?.focus();
   const onKey=(e:KeyboardEvent)=>{if(e.key==="Escape"){e.preventDefault();setOpen(false);}if(e.key==="Tab"){
    const root=document.getElementById("movetrack-signing-tray");
-   const targets=[...root?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')??[]];
+   const targets=Array.from(root?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')??[]);
    if(!targets.length)return;
    const first=targets[0]!,last=targets[targets.length-1]!;
    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
