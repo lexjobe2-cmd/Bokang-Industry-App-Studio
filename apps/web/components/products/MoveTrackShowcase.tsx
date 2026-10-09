@@ -1,5 +1,7 @@
 "use client";
-import {DesktopModalDisclosure} from "./DesktopModal";
+import {DesktopModal,DesktopModalDisclosure} from "./DesktopModal";
+import {VehicleDocuments} from "./VehicleDocuments";
+import {editableDetails,updateVehicleDetails,type VehicleDetails} from "../../lib/fleet-vehicle-admin";
 import {MultiImageEvidence} from "./MultiImageEvidence";
 import {OrganizationOnboarding} from "./OrganizationOnboarding";
 import type {LocalEvidenceImage} from "../../lib/image-evidence";
@@ -123,6 +125,22 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   });
   const [driverDraft,setDriverDraft]=useState({name:"",phone:"",licenceNo:""});
   const [vehiclePhotos,setVehiclePhotos]=useState<LocalEvidenceImage[]>([]);
+  const [editingVehicleId,setEditingVehicleId]=useState<string|null>(null);
+  const [editDetails,setEditDetails]=useState<VehicleDetails|null>(null);
+  function beginVehicleEdit(vehicle:FleetVehicle){
+    setEditingVehicleId(vehicle.id);
+    setEditDetails(editableDetails(vehicle));
+    setNotice("");
+  }
+  function saveVehicleEdit(){
+    if(!editingVehicleId||!editDetails)return;
+    try{
+      const updated=updateVehicleDetails(fleet,editingVehicleId,editDetails,assignments);
+      setFleet(updated);
+      setEditingVehicleId(null);setEditDetails(null);
+      setNotice("Vehicle details saved on this browser. Changing site/type/certificates never grants a GO clearance.");
+    }catch(error){setNotice(error instanceof Error?error.message:"Vehicle update failed.");}
+  }
   const [assignVehicle,setAssignVehicle]=useState("");
   const [assignDriver,setAssignDriver]=useState("");
   const [assignJob,setAssignJob]=useState("");
@@ -445,15 +463,35 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           <div className="movetrack-fleet-card-heading" style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
           <div style={{fontSize:12,color:"#667085",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
           <div style={{fontSize:11,color:"#667085",marginTop:3}}>{vehicle.site}</div>
-          <div style={{marginTop:10}}><MultiImageEvidence label="Vehicle photos and documents" images={vehicle.images??[]} readOnly={!adminMode} onChange={images=>setFleet(current=>current.map(item=>item.id===vehicle.id?{...item,images}:item))}/></div>
-          <div style={{display:"grid",gap:8,marginTop:12,fontSize:11}}>
-            <label style={fieldInline}>Roadworthy expiry<input type="date" disabled={!adminMode} value={vehicle.roadworthyExpiry==="Not set"?"":vehicle.roadworthyExpiry} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,roadworthyExpiry:e.target.value||"Not set"}:item))} style={input}/></label>
-            <label style={fieldInline}>Extinguisher service due<input type="date" disabled={!adminMode} value={vehicle.extinguisherServiceDue==="Not set"?"":vehicle.extinguisherServiceDue} onChange={(e)=>setFleet((current)=>current.map((item)=>item.id===vehicle.id?{...item,extinguisherServiceDue:e.target.value||"Not set"}:item))} style={input}/></label>
+          <div style={{marginTop:10}}><MultiImageEvidence label="Vehicle photo gallery" images={vehicle.images??[]} readOnly={!adminMode} onChange={images=>setFleet(current=>current.map(item=>item.id===vehicle.id?{...item,images}:item))}/></div>
+          <VehicleDocuments readOnly={!adminMode} documents={vehicle.documents??[]} onChange={documents=>setFleet(current=>current.map(item=>item.id===vehicle.id?{...item,documents}:item))}/>
+          <div style={{display:"grid",gap:6,marginTop:12,fontSize:11}}>
+            <span>Roadworthy expiry: <strong>{vehicle.roadworthyExpiry}</strong></span>
+            <span>Fire extinguisher service due: <strong>{vehicle.extinguisherServiceDue}</strong></span>
             <span>Odometer: <strong>{vehicle.odometerKm.toLocaleString()} km</strong></span>
           </div>
+          {adminMode?<button type="button" style={{...secondaryButton,marginTop:12,minHeight:44}} onClick={()=>beginVehicleEdit(vehicle)}>Edit vehicle details</button>:null}
           {vehicle.status==="No-go"?<button onClick={()=>setView("release")} style={{...secondaryButton,marginTop:12}}>Recheck baseline after corrective action</button>:null}
         </article>)}
       </div>
+      {adminMode?<DesktopModal title="Edit vehicle details" open={Boolean(editingVehicleId&&editDetails)} onClose={()=>{setEditingVehicleId(null);setEditDetails(null);}}>
+       {editDetails?<div style={{...panel,display:"grid",gap:13}}>
+        <p style={{fontSize:12,color:"#64748b",margin:0}}>Edit the existing asset record. Status, odometer, photos, and incident history are retained. Active assignments prevent safety-critical identity changes.</p>
+        <div style={formGrid}>
+         <Field label="Fleet number"><input aria-label="Edit fleet number" style={input} value={editDetails.fleetNo} onChange={event=>setEditDetails(current=>current?{...current,fleetNo:event.target.value}:current)}/></Field>
+         <Field label="Registration"><input aria-label="Edit registration" style={input} value={editDetails.registration} onChange={event=>setEditDetails(current=>current?{...current,registration:event.target.value}:current)}/></Field>
+         <Field label="Make / model"><input aria-label="Edit make model" style={input} value={editDetails.makeModel} onChange={event=>setEditDetails(current=>current?{...current,makeModel:event.target.value}:current)}/></Field>
+         <Field label="Vehicle type"><select aria-label="Edit vehicle type" style={input} value={editDetails.type} onChange={event=>setEditDetails(current=>current?{...current,type:event.target.value}:current)}>{[...new Set([editDetails.type,...miningVehicleTypes])].map(type=><option key={type}>{type}</option>)}</select></Field>
+         <Field label="Operating site"><input aria-label="Edit operating site" list="movetrack-admin-sites" style={input} value={editDetails.site} onChange={event=>setEditDetails(current=>current?{...current,site:event.target.value}:current)}/><datalist id="movetrack-admin-sites">{[...new Set([...currentOrg.siteIds,...policies.map(policy=>policy.name)])].map(site=><option value={site} key={site}/>)}</datalist></Field>
+         <Field label="Roadworthy expiry"><input aria-label="Edit roadworthy expiry" type="date" style={input} value={editDetails.roadworthyExpiry==="Not set"?"":editDetails.roadworthyExpiry} onChange={event=>setEditDetails(current=>current?{...current,roadworthyExpiry:event.target.value||"Not set"}:current)}/></Field>
+         <Field label="Extinguisher service due"><input aria-label="Edit extinguisher due" type="date" style={input} value={editDetails.extinguisherServiceDue==="Not set"?"":editDetails.extinguisherServiceDue} onChange={event=>setEditDetails(current=>current?{...current,extinguisherServiceDue:event.target.value||"Not set"}:current)}/></Field>
+        </div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:9}}>
+         <button type="button" style={{...primaryButton,marginTop:0,minHeight:44}} onClick={saveVehicleEdit}>Save vehicle details</button>
+         <button type="button" style={{...secondaryButton,minHeight:44}} onClick={()=>{setEditingVehicleId(null);setEditDetails(null);}}>Cancel</button>
+        </div>
+       </div>:null}
+      </DesktopModal>:null}
     </div>:null}
 
     {contentView==="drivers"?<div style={{display:"grid",gap:14}}>
