@@ -42,6 +42,16 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] [aria-label="Electronic signature capture"] canvas {background:#fff !important;}
 .movetrack-root[data-theme="dark"] [aria-label="Electronic signature capture"] canvas + p {color:#334155 !important;}
 .movetrack-root[data-theme="dark"] a:not([style*="color:"]) {color:#a4caff;}
+.movetrack-mobile-dock {display:none;}
+@media (max-width: 760px) {
+ .movetrack-mobile-dock {display:flex;justify-content:space-around;position:fixed;bottom:0;left:0;right:0;
+  z-index:70;background:rgba(255,255,255,.97);border-top:1px solid #d5e0ed;
+  box-shadow:0 -8px 24px rgba(16,42,75,.08);padding:6px 5px calc(8px + env(safe-area-inset-bottom));}
+ .movetrack-root[data-theme="dark"] .movetrack-mobile-dock {background:rgba(12,27,46,.97);border-color:#36516f;}
+ .movetrack-root[data-theme="dark"] .movetrack-mobile-dock button {color:#cbdcf2 !important;}
+ .movetrack-mobile-dock button:focus-visible {outline:2px solid #2563eb;outline-offset:2px;border-radius:8px;}
+ #movetrack-global-search,#movetrack-workspaces {scroll-margin-top:16px;}
+}
 @media (max-width: 640px) {
  .movetrack-root [aria-label="MoveTrack workspace navigation"] {padding:11px !important;}
  .movetrack-root [aria-label="MoveTrack workspace navigation"] > div:nth-child(2) {grid-template-columns: repeat(2,minmax(0,1fr)) !important;}
