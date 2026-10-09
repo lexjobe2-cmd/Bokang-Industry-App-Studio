@@ -19,7 +19,8 @@
     "./organization-directory": "./src/organization-directory.ts",
     "./form-assist": "./src/form-assist.ts",
     "./repeatable-register": "./src/repeatable-register.ts",
-    "./operational-nlp": "./src/operational-nlp.ts"
+    "./operational-nlp": "./src/operational-nlp.ts",
+    "./workspace-layout": "./src/workspace-layout.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",

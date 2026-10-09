@@ -14,7 +14,7 @@ import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/si
 import {RepeatableRowActions} from "./RepeatableRowActions";
 import {moveRegisterRow,duplicateRegisterRow} from "@bokang/domain-data/repeatable-register";
 import {OperationalTextAssist} from "./OperationalTextAssist";
-import {WorkspaceSteps} from "./WorkspaceSteps";
+import {TaskWorkspace,useDesktopWorkspace} from "./TaskWorkspace";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 
 const box:React.CSSProperties={background:"#fff",border:"1px solid #dbe4ee",padding:17,borderRadius:15};
@@ -30,6 +30,10 @@ const newDraft=(site:string,type:MeetingType="SHE committee meeting"):FormAnswer
  meeting_site:site,participants:[],attendees:[],apology_person_ids:[],apology_details:[],apology_entries:[],apologies:"",agenda:"",minutes:"",decisions:"",actions:[]
 });
 export function MeetingRegisterWorkspace(){
+ const desktop=useDesktopWorkspace();
+ const [personFocus,setPersonFocus]=useState("");
+ const [apologyFocus,setApologyFocus]=useState("");
+ const [actionFocus,setActionFocus]=useState(0);
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
  const [orgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
  const [people]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
@@ -133,17 +137,17 @@ export function MeetingRegisterWorkspace(){
  }
  const grid={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,215px),1fr))",gap:10} as React.CSSProperties;
  return <section aria-label="Meeting registers" style={{display:"grid",gap:14}}>
-  <div style={{...box,background:"linear-gradient(110deg,#102642,#19568b)",color:"#fff",border:0,padding:22}}>
+  <div hidden={page==="draft"} style={{...box,background:"linear-gradient(110deg,#102642,#19568b)",color:"#fff",border:0,padding:22}}>
    <p style={{fontSize:11,fontWeight:900,letterSpacing:1.4,color:"#bfdbfe",margin:"0 0 7px"}}>COMPANY SHE · MEETING REGISTERS</p>
    <h2 style={{fontSize:25,margin:"0 0 9px"}}>Attendance, minutes and accountable actions.</h2>
    <p style={{fontSize:12,color:"#dbeafe",lineHeight:1.7,margin:0}}>Create toolbox talks, shift briefings, SHE committee registers and contractor meetings for {org.name}. Every record saves locally, contributes to participation analytics and exports in PDF, Word, CSV and JSON.</p>
   </div>
   <nav className="movetrack-step-nav" aria-label="Meeting workspace pages"><button type="button" aria-current={page==="draft"?"step":undefined} onClick={()=>{setPage("draft");setEditing(true);}}>Edit meeting</button><button type="button" aria-current={page==="records"?"step":undefined} onClick={()=>setPage("records")}>Saved records ({records.length})</button></nav>
-  <section style={box} aria-label="Recurring meeting series">
+  <details style={box} aria-label="Recurring meeting series"><summary style={{fontWeight:800,minHeight:44}}>Departmental meeting series</summary>
    <h3 style={{margin:"0 0 8px"}}>Departmental meeting series</h3><p style={{fontSize:12}}>Monthly, weekly or quarterly continuity. Start the next occurrence from a saved series, review previous minutes and track open actions.</p>
    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{seriesHeads.map(r=><button type="button" key={String(r.answers.meeting_series_id)} style={btn} onClick={()=>startOccurrence(r)}>Next: {textValue(r.answers.meeting_series_name)} · {textValue(r.answers.meeting_department)}</button>)}</div>
    {!seriesHeads.length?<p style={{fontSize:12}}>Enable a recurring series in Meeting details, then save its first meeting.</p>:null}
-  </section>
+  </details>
   <div hidden={page!=="records"} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:9}}>
    {[["Meeting registers",records.length],["People on company directory",members.length],["Registered attendees",records.reduce((a,r)=>a+(Array.isArray(r.answers.participants)?r.answers.participants.length:0)+rowValues(r.answers.attendees).length,0)],["Apologies / absent",records.reduce((sum,r)=>sum+meetingAttendanceCounts(r.answers).absent,0)],["Open action items",openActions.length],["Attendance rate",meetingMetrics.attendanceRate===null?"—":meetingMetrics.attendanceRate+"%"],["Apologies received",meetingMetrics.apologies],["Overdue actions",meetingMetrics.overdue]].map(([name,n])=><div key={String(name)} style={box}><strong style={{fontSize:26,color:"#174b87"}}>{n}</strong><p style={{margin:"6px 0 0",fontWeight:800,color:"#64748b",fontSize:11}}>{name}</p></div>)}
   </div>
@@ -155,11 +159,12 @@ export function MeetingRegisterWorkspace(){
    </div>
    <DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:members})} compact/>
   </div>
-  {editing?<div hidden={page!=="draft"} id="meeting-editor" style={{...box,display:"grid",gap:16,scrollMarginTop:80}}>
-   <WorkspaceSteps label="Meeting creation steps" steps={["Details","Attendance","Minutes","Actions","Review"]} step={step} onChange={goStep}/>
+  {editing?<div hidden={page!=="draft"}><TaskWorkspace title="Meeting" steps={["Details","Attendance","Minutes","Actions","Review"]} current={step} onChange={goStep}
+    summary={<><strong>{textValue(answers.meeting_title)||"New meeting"}</strong><p>{textValue(answers.meeting_date)} · {org.name}</p>{answers.meeting_series_id?<p>{textValue(answers.meeting_series_name)} · {textValue(answers.meeting_department)} · {textValue(answers.meeting_cadence)}</p>:null}<strong>{attendance.present} present · {attendance.absent} absent</strong><p>{actions.length} actions · Draft autosaves locally</p><details><summary>Draft exports</summary><DocumentDownloadActions document={buildFormDocument({template,mode:"draft",answers,company:org,people:members})} compact/></details><p>Attendance and drawn acknowledgements remain unverified.</p></>}>
+   <div id="meeting-editor" style={{...box,display:"grid",gap:16,scrollMarginTop:80}}>
    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
     <h3 style={{fontSize:19,margin:0}}>Create meeting register</h3>
-    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><DocumentDownloadActions document={buildFormDocument({template,mode:"draft",answers,company:org,people:members})} compact/><button style={btn} onClick={()=>{if(window.confirm("Clear this meeting draft? Saved records will remain.")){patch(newDraft(org.siteIds[0]??""));goStep(0);}}}>Clear draft</button></div>
+    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={btn} onClick={()=>{if(window.confirm("Clear this meeting draft? Saved records will remain.")){patch(newDraft(org.siteIds[0]??""));goStep(0);}}}>Clear draft</button></div>
    </div>
    <div hidden={step!==0} style={grid}>
     <label style={label}>Meeting title *<input style={input} value={textValue(answers.meeting_title)} placeholder="Weekly SHE committee" onChange={e=>text("meeting_title",e.target.value)}/></label>
@@ -193,12 +198,13 @@ export function MeetingRegisterWorkspace(){
      <p style={{fontSize:11,color:"#64748b",margin:"0 0 4px"}}>{selected.length} present from {members.length} active people in {org.name}.</p>
      {previousMeeting?<button type="button" style={{...btn,padding:"7px 10px",minHeight:36,fontSize:11}} onClick={reuseMeetingPeople}>Reuse previous meeting crew</button>:null}
     </div>
-    {attendanceDetails.map((r,i)=><div key={String(r.person_id)} style={{...box,display:"grid",gap:9}}>
+    {desktop&&attendanceDetails.length?<label style={label}>Edit attendee details<select style={input} value={attendanceDetails.some(r=>r.person_id===personFocus)?personFocus:String(attendanceDetails[0]?.person_id??"")} onChange={e=>setPersonFocus(e.target.value)}>{attendanceDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.attendance_status)}</option>)}</select></label>:null}
+    {attendanceDetails.map((r,i)=>(!desktop||r.person_id===(attendanceDetails.some(row=>row.person_id===personFocus)?personFocus:attendanceDetails[0]?.person_id))?<div key={String(r.person_id)} style={{...box,display:"grid",gap:9}}>
      <strong>{textValue(r.person_name)}</strong><small>{[r.department,r.job_title].filter(Boolean).join(" · ")}</small>
      <div style={grid}><label style={label}>Attendance status<select style={input} value={textValue(r.attendance_status)||"Present"} onChange={e=>listPatch("attendance_details",i,{attendance_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
       <label style={label}>Arrival time<input type="time" style={input} value={textValue(r.arrival_time)} onChange={e=>listPatch("attendance_details",i,{arrival_time:e.target.value})}/></label>
       <label style={label}>Departure time<input type="time" style={input} value={textValue(r.departure_time)} onChange={e=>listPatch("attendance_details",i,{departure_time:e.target.value})}/></label></div>
-    </div>)}
+    </div>:null)}
     <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><strong style={{fontSize:13}}>External/manual attendees ({attendees.length})</strong><button style={btn} onClick={()=>addRow("attendees")}><Plus size={14} style={{display:"inline"}}/> Add person</button></div>
     {attendees.map((r,i)=><div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
      {([["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]] as const).map(([key,title])=><label key={key} style={label}>{title}<input style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
@@ -217,7 +223,8 @@ export function MeetingRegisterWorkspace(){
        label="Select staff who apologized or are absent"
        placeholder="Find absent colleagues"
        value={apologyIds} onChange={ids=>choosePresence("absent",ids)}/>
-     {apologyDetails.map((r,i)=><div key={String(r.person_id??i)} style={{...box,display:"grid",gap:9,background:"#fff",padding:12}}>
+     {desktop&&apologyDetails.length?<label style={label}>Edit apology details<select style={input} value={apologyDetails.some(r=>r.person_id===apologyFocus)?apologyFocus:String(apologyDetails[0]?.person_id??"")} onChange={e=>setApologyFocus(e.target.value)}>{apologyDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.absence_status)}</option>)}</select></label>:null}
+     {apologyDetails.map((r,i)=>(!desktop||r.person_id===(apologyDetails.some(row=>row.person_id===apologyFocus)?apologyFocus:apologyDetails[0]?.person_id))?<div key={String(r.person_id??i)} style={{...box,display:"grid",gap:9,background:"#fff",padding:12}}>
        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:9}}>
         <strong style={{fontSize:12}}>{members.find(p=>p.id===r.person_id)?.displayName??textValue(r.person_name)}</strong>
         <button type="button" aria-label={"Remove absent person "+(i+1)} style={{...btn,minHeight:33,padding:"5px 9px"}} onClick={()=>choosePresence("absent",apologyIds.filter(id=>id!==r.person_id))}><Trash2 size={15}/></button>
@@ -229,7 +236,7 @@ export function MeetingRegisterWorkspace(){
         <label style={label}>Reason (optional category)<select style={input} value={textValue(r.absence_reason)||"Not specified"} onChange={e=>listPatch("apology_details",i,{absence_reason:e.target.value})}>{apologyReasonOptions.map(option=><option key={option}>{option}</option>)}</select></label>
        </div>
        <label style={label}>Notes (optional)<input style={input} value={textValue(r.absence_note)} onChange={e=>listPatch("apology_details",i,{absence_note:e.target.value})} placeholder="Additional context only if needed"/></label>
-      </div>)}
+      </div>:null)}
      <div style={{display:"flex",justifyContent:"space-between",gap:9,alignItems:"center",flexWrap:"wrap"}}>
       <strong style={{fontSize:12}}>External / contractor apologies ({externalApologies.length})</strong>
       <button type="button" style={btn} onClick={()=>addRow("apology_entries")}><Plus size={15} style={{display:"inline",verticalAlign:"middle"}}/> Add person</button>
@@ -280,7 +287,8 @@ export function MeetingRegisterWorkspace(){
     </div>
     <p style={{fontSize:11,color:"#64748b",margin:0}}>Assign staff by searching the company directory, or enter an external owner. Carried-forward items stay open and require a fresh due date.</p>
     {actions.length===0?<p style={{fontSize:12,color:"#64748b",margin:0}}>No actions recorded yet. Add an action with its responsible owner, due date and status when necessary.</p>:null}
-    {actions.map((r,i)=><div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
+    {desktop&&actions.length?<table className="movetrack-compact-table" aria-label="Desktop meeting action register"><thead><tr><th>Action</th><th>Status</th><th>Edit</th></tr></thead><tbody>{actions.map((r,i)=><tr key={String(r.action_id??i)}><td>{textValue(r.action)||"New action"}</td><td>{textValue(r.state)||"Open"}</td><td><button type="button" style={btn} onClick={()=>setActionFocus(i)} aria-label={"Edit action "+(i+1)}>Edit</button></td></tr>)}</tbody></table>:null}
+    {actions.map((r,i)=>(!desktop||i===Math.min(actionFocus,actions.length-1))?<div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
      <label style={label}>Action description *<input style={input} value={textValue(r.action)} onChange={e=>listPatch("actions",i,{action:e.target.value})}/></label>
      <div style={{display:"grid",gap:7}}>
       <OrganizationPeopleComboBox people={members} orgId={org.id} label="Accountable employee"
@@ -299,7 +307,7 @@ export function MeetingRegisterWorkspace(){
      <label style={label}>Due date<input type="date" style={input} value={textValue(r.due)} onChange={e=>listPatch("actions",i,{due:e.target.value})}/></label>
      <label style={label}>Status<select style={input} value={textValue(r.state)||"Open"} onChange={e=>listPatch("actions",i,{state:e.target.value})}><option>Open</option><option>In progress</option><option>Closed</option></select></label>
      <RepeatableRowActions index={i} count={actions.length} onRemove={()=>removeRow("actions",i)} onMove={direction=>patch({actions:moveRegisterRow(actions,i,direction)})} onDuplicate={()=>patch({actions:duplicateRegisterRow(actions,i,["action_id","origin_meeting_id","previous_due","carried_from","nlp_reviewed","state"])})}/>
-    </div>)}
+    </div>:null)}
     <div style={grid}><label style={label}>Next review / meeting<input type="date" style={input} value={textValue(answers.next_meeting)} onChange={e=>text("next_meeting",e.target.value)}/></label><label style={label}>Prepared by<input style={input} value={textValue(answers.prepared_by)} onChange={e=>text("prepared_by",e.target.value)}/></label></div>
    </div>
    <section hidden={step!==4} aria-label="Review meeting" style={{display:"grid",gap:12}}>
@@ -322,7 +330,7 @@ export function MeetingRegisterWorkspace(){
    </div>
    </section>
    <div className="movetrack-step-footer"><button type="button" disabled={step===0} onClick={()=>goStep(step-1)}>Previous</button><span style={{fontSize:12,alignSelf:"center"}}>Step {step+1} of 5 · Autosaved locally</span>{step<4?<button type="button" onClick={()=>goStep(step+1)}>Next: {["Details","Attendance","Minutes","Actions","Review"][step+1]}</button>:null}</div>
-  </div>:<div hidden={page!=="draft"} style={{...box,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+  </div></TaskWorkspace></div>:<div hidden={page!=="draft"} style={{...box,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
     <p style={{fontSize:12,color:"#475569",margin:0}}>Meeting saved. Start a new register or reopen the unsent draft.</p>
     <button style={primary} onClick={()=>{patch(newDraft(org.siteIds[0]??""));setEditing(true);setPage("draft");goStep(0);setMessage("");}}><Plus size={15} style={{display:"inline"}}/> New meeting</button>
    </div>}

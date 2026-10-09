@@ -57,3 +57,12 @@ test('text assistance uses an explicit local-analysis button and cannot auto-app
  const html=renderToStaticMarkup(React.createElement(OperationalTextAssist,{value:'Naledi must inspect brakes tomorrow',onAction:()=>{throw Error('must not apply automatically')}}));
  assert.match(html,/type="button"/);assert.match(html,/Analyze text locally/);assert.ok(!html.includes('Add to editable action register'));
 });
+
+const {TaskWorkspaceView}=load('../apps/web/components/products/TaskWorkspace.tsx');
+for(const desktop of [true,false])test(`task workspace uses distinct ${desktop?'desktop outline':'mobile step picker'} with exactly one editor`,()=>{
+ const html=renderToStaticMarkup(React.createElement(TaskWorkspaceView,{desktop,title:'Meeting',steps:['Details','Attendance'],current:1,onChange:noop,summary:React.createElement('p',null,'Saved draft')},React.createElement('input',{name:'only-editor',defaultValue:'Preserved answer'})));
+ assert.equal((html.match(/name="only-editor"/g)||[]).length,1);
+ assert.match(html,/Preserved answer/);
+ if(desktop){assert.match(html,/Meeting desktop sections/);assert.match(html,/Meeting desktop summary/);assert.ok(!html.includes('Meeting mobile step'));assert.equal((html.match(/aria-current="step"/g)||[]).length,1);}
+ else{assert.match(html,/Meeting mobile step/);assert.match(html,/<details/);assert.ok(!html.includes('Meeting desktop sections'));}
+});

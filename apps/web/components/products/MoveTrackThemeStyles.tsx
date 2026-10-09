@@ -43,6 +43,34 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] [aria-label="Electronic signature capture"] canvas + p {color:#334155 !important;}
 .movetrack-root[data-theme="dark"] a:not([style*="color:"]) {color:#a4caff;}
 
+/* Desktop workbench and mobile guided views share data, not screen structure. */
+.movetrack-task-workspace {display:grid;gap:16px;align-items:start;min-width:0;}
+.movetrack-task-workspace.is-desktop {grid-template-columns:180px minmax(0,1fr) 220px;}
+.movetrack-task-workspace.is-desktop:not(:has(.movetrack-task-inspector)) {grid-template-columns:200px minmax(0,1fr);}
+.movetrack-task-outline,.movetrack-task-inspector {position:sticky;top:84px;background:#fff;border:1px solid #dbe5ef;border-radius:13px;padding:13px;min-width:0;}
+.movetrack-task-outline p {font-size:11px;color:#64748b;}
+.movetrack-task-outline nav {display:grid;gap:6px;max-height:65dvh;overflow-y:auto;}
+.movetrack-task-outline button {display:flex;align-items:center;gap:8px;text-align:left;border:0;border-radius:8px;background:#f8fafc;color:#315479;min-height:44px;padding:9px;width:100%;font:inherit;font-size:12px;cursor:pointer;}
+.movetrack-task-outline button[aria-current=step] {background:#1d4ed8;color:#fff;}
+.movetrack-task-outline button span {font-size:10px;opacity:.75;}
+.movetrack-task-editor {min-width:0;display:grid;gap:12px;}
+.movetrack-task-inspector {font-size:12px;display:grid;gap:12px;max-height:calc(100dvh - 105px);overflow-y:auto;}
+.movetrack-task-mobile-nav {display:grid;gap:10px;padding:12px;border:1px solid #dbe5ef;background:#fff;border-radius:12px;}
+.movetrack-task-mobile-nav label {display:grid;gap:5px;font-size:12px;}
+.movetrack-task-mobile-nav select {width:100%;min-height:44px;padding:10px;border:1px solid #cbd5e1;border-radius:9px;}
+.movetrack-task-mobile-summary {padding:12px;background:#fff;border:1px solid #dbe5ef;border-radius:12px;}
+.movetrack-task-mobile-summary summary {min-height:44px;cursor:pointer;font-weight:750;}
+.movetrack-desktop-fields {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+.movetrack-mobile-fields {display:grid;gap:15px;}
+.movetrack-field-wide {grid-column:1 / -1;}
+.movetrack-compact-table {width:100%;border-collapse:collapse;background:#fff;font-size:12px;}
+.movetrack-compact-table :is(th,td) {padding:11px 12px;border-bottom:1px solid #e2e8f0;text-align:left;}
+.movetrack-compact-table th {background:#f0f6ff;font-size:11px;}
+.movetrack-root[data-theme=dark] :is(.movetrack-task-outline,.movetrack-task-inspector,.movetrack-task-mobile-nav,.movetrack-task-mobile-summary,.movetrack-compact-table) {background:#14253b;border-color:#38506b;}
+.movetrack-root[data-theme=dark] .movetrack-task-outline button {background:#203652;color:#ebf4ff;}
+.movetrack-root[data-theme=dark] .movetrack-task-outline button[aria-current=step] {background:#285ab0;}
+.movetrack-root[data-theme=dark] .movetrack-compact-table th {background:#203652;}
+
 /* Responsive app shell: a real mobile dock, compact workspace header and one menu on every screen. */
 .movetrack-root { width:100%;min-width:0; }
 .movetrack-root [hidden] {display:none !important;}

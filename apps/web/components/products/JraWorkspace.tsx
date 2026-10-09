@@ -1,4 +1,5 @@
 "use client";
+import {useDesktopWorkspace} from "./TaskWorkspace";
 import {OperationalTextAssist} from "./OperationalTextAssist";
 
 import {useMemo,useState} from "react";
@@ -42,6 +43,9 @@ function RiskChooser({value,onChange}:{value:RiskAnswer;onChange:(risk:RiskAnswe
 function unique(values:readonly string[],value:string,enabled:boolean){return enabled?[...new Set([...values,value])]:values.filter(v=>v!==value);}
 export function JraWorkspace(){
  const reduced=useReducedMotion();
+ const desktop=useDesktopWorkspace();
+ const [taskFocus,setTaskFocus]=useState(0);
+ const [hazardFocus,setHazardFocus]=useState(0);
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
  const [selectedOrg,setSelectedOrg]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
  const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
@@ -74,7 +78,7 @@ export function JraWorkspace(){
    }:revised;
   });
  }
- function addTask(){patch({tasks:[...job.tasks,blankJraTask(job.tasks.length+1)]});setPage("risks");}
+ function addTask(){setTaskFocus(job.tasks.length);setHazardFocus(0);patch({tasks:[...job.tasks,blankJraTask(job.tasks.length+1)]});setPage("risks");}
  function updateTask(id:string,fn:(task:JraTask)=>JraTask){patch({tasks:job.tasks.map(s=>s.id===id?fn(s):s)});}
  function changeHazard(stepId:string,hazardId:string,fn:(hazard:HazardEntry)=>HazardEntry){
   updateTask(stepId,step=>({...step,hazards:step.hazards.map(h=>h.id===hazardId?fn(h):h)}));
@@ -198,7 +202,8 @@ export function JraWorkspace(){
     {page==="risks"?<div style={{display:"grid",gap:12}}>
       <div style={{...shell,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><h3 style={{margin:"0 0 4px"}}>Job steps · hazard register</h3><p style={{fontSize:12,color:"#667085",margin:0}}>For every activity, identify exposed people, consequences, controls and initial/residual risk.</p></div><button style={primary} onClick={addTask}><Plus size={16} style={{display:"inline"}}/> Add job step</button></div>
       {job.tasks.length===0?<div style={{...shell,textAlign:"center",padding:39}}><HardHat color="#94a3b8" size={34}/><p style={{fontSize:13}}>No steps yet. Add each task performed during this work.</p></div>:null}
-      {job.tasks.map((step,index)=><motion.section initial={reduced?false:{opacity:0,y:6}} animate={{opacity:1,y:0}} key={step.id} style={shell}>
+      <label style={label}>{desktop?"Task workbench · choose a task":"Current job step"}<select style={input} value={Math.min(taskFocus,Math.max(0,job.tasks.length-1))} onChange={e=>{setTaskFocus(Number(e.target.value));setHazardFocus(0);}}>{job.tasks.map((task,i)=><option key={task.id} value={i}>{i+1}. {task.description||"New task"} · {task.hazards.length} hazards</option>)}</select></label>
+      {job.tasks.map((step,index)=>index===Math.min(taskFocus,Math.max(0,job.tasks.length-1))?<motion.section initial={reduced?false:{opacity:0,y:6}} animate={{opacity:1,y:0}} key={step.id} style={shell}>
         <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
          <h3 style={{margin:0,fontSize:16}}>Step {index+1}</h3><button style={{...btn,color:"#b42318"}} onClick={()=>patch({tasks:job.tasks.filter(t=>t.id!==step.id).map((s,i)=>({...s,sequence:i+1}))})}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
         </div>
@@ -210,7 +215,9 @@ export function JraWorkspace(){
         </div>
         <OperationalTextAssist value={step.description} people={persons}/>
         <div style={{display:"grid",gap:10,marginTop:14}}>
+         <label style={label}>Edit hazard<select style={input} value={Math.min(hazardFocus,Math.max(0,step.hazards.length-1))} onChange={e=>setHazardFocus(Number(e.target.value))}>{step.hazards.map((h,i)=><option key={h.id} value={i}>{i+1}. {h.hazard||"New hazard"}</option>)}</select></label>
          {step.hazards.map((hazard,hi)=>{
+           if(hi!==Math.min(hazardFocus,Math.max(0,step.hazards.length-1)))return null;
           let residual:ReturnType<typeof scoreRisk>|null=null;try{residual=scoreRisk(defaultRiskMatrix,hazard.residual);}catch{}
           return <div key={hazard.id} style={{background:"#f8fafc",border:"1px solid #dce4ec",borderRadius:13,padding:13,display:"grid",gap:11}}>
            <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:13}}>Hazard {hi+1}</strong><button style={{...btn,padding:7,minHeight:33,color:"#b42318"}} aria-label="Remove hazard" onClick={()=>updateTask(step.id,t=>({...t,hazards:t.hazards.filter(h=>h.id!==hazard.id)}))}><Trash2 size={15}/></button></div>
@@ -249,10 +256,10 @@ export function JraWorkspace(){
            </div>
           </div>;
          })}
-         <button style={{...btn,justifySelf:"start"}} onClick={()=>updateTask(step.id,t=>({...t,hazards:[...t.hazards,blankHazard()]}))}><Plus size={15} style={{display:"inline"}}/> Add hazard to this step</button>
+         <button style={{...btn,justifySelf:"start"}} onClick={()=>{setHazardFocus(step.hazards.length);updateTask(step.id,t=>({...t,hazards:[...t.hazards,blankHazard()]}));}}><Plus size={15} style={{display:"inline"}}/> Add hazard to this step</button>
          <p style={{fontSize:11,color:"#64748b",margin:0}}>Suggested hazards and proposed controls are text-entry aids only. Each exposure, risk score and actual control verification still needs individual assessment and review.</p>
         </div>
-      </motion.section>)}
+      </motion.section>:null)}
       <button style={{...primary,justifySelf:"end"}} onClick={()=>setPage("review")}>Next · Review risk assessment →</button>
     </div>:null}
     {page==="review"?<div style={{display:"grid",gap:13}}>

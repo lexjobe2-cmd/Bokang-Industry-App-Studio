@@ -1,4 +1,6 @@
 "use client";
+import {TaskWorkspace,useDesktopWorkspace} from "./TaskWorkspace";
+import {focusedFieldPage} from "@bokang/domain-data/workspace-layout";
 import {OperationalTextAssist} from "./OperationalTextAssist";
 import {QuickChoice,SmartMultiSelect,SearchableAssetPicker} from "./SmartFormInputs";
 import {RepeatableRowActions} from "./RepeatableRowActions";
@@ -42,6 +44,10 @@ function answerText(value:FormAnswer|undefined){return typeof value==="string"||
 
 export function AssuranceFormsWorkspace(){
  const reducedMotion=useReducedMotion();
+ const desktop=useDesktopWorkspace();
+ const [fieldAnchors,setFieldAnchors]=usePersistentState<Record<string,string>>("bokang-studio.move-track.form-field-anchors.v1",{});
+ const [libraryPage,setLibraryPage]=useState(0);
+ const [libraryCategory,setLibraryCategory]=useState("All");
  const [fleet,setFleet]=usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
  const [,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
  const [,setAssignments]=usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
@@ -82,6 +88,13 @@ export function AssuranceFormsWorkspace(){
  const signatureScopePrefix=template?template.title+" / "+(jobReference.trim()||"no job reference")+" / "+(siteId||org.siteIds[0]||"unknown site")+" / "+org.id:"";
  const evaluation=useMemo(()=>template?evaluateForm(template,answers,[],signatureScopePrefix):null,[template,answers,signatureScopePrefix]);
  const activeSection=template?.sections[sectionIndex];
+ const visibleFields=activeSection?.fields.filter(f=>isVisible(f,answers))??[];
+ const anchorKey=(activeId??"")+":"+(activeSection?.id??"");
+ const fieldPage=focusedFieldPage(visibleFields,fieldAnchors[anchorKey]??"",desktop);
+ function focusField(id:string){setFieldAnchors(old=>({...old,[anchorKey]:id}));}
+ const filteredLibrary=library.filter(t=>(libraryCategory==="All"||t.category===libraryCategory)&&(t.title+" "+("description" in t?t.description:"")).toLowerCase().includes(librarySearch.toLowerCase()));
+ const pageSize=desktop?8:6,libraryPages=Math.max(1,Math.ceil(filteredLibrary.length/pageSize)),safeLibraryPage=Math.min(libraryPage,libraryPages-1);
+ const libraryItems=filteredLibrary.slice(safeLibraryPage*pageSize,(safeLibraryPage+1)*pageSize);
  const records=useMemo(()=>submissions.filter(s=>{
    const snapshot=s.templateSnapshot as typeof s.templateSnapshot & {organizationId?:string};
    return (snapshot.organizationId===org.id||(!snapshot.organizationId&&org.id===demoOrganization.id))&&(!activeId||s.templateId===activeId);
@@ -139,7 +152,7 @@ export function AssuranceFormsWorkspace(){
  }
  const easing={duration:reducedMotion?0:0.18};
  return <section aria-label="Operational forms" style={{display:"grid",gap:16,marginTop:16}}>
-  <div style={{...tile,background:"#0b1930",color:"#fff",border:0}}>
+  <div hidden={!!template&&tab==="library"} style={{...tile,background:"#0b1930",color:"#fff",border:0}}>
     <div style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"start",flexWrap:"wrap"}}>
       <div>
         <div style={{display:"flex",alignItems:"center",gap:9,fontSize:11,fontWeight:850,letterSpacing:1.5,textTransform:"uppercase",color:"#9cc6ff"}}><ClipboardCheck size={16}/> Operational Assurance / Forms</div>
@@ -149,7 +162,7 @@ export function AssuranceFormsWorkspace(){
       <span style={{border:"1px solid #5a7194",borderRadius:999,padding:"7px 12px",fontSize:11,fontWeight:900,color:"#fef08a"}}>DEMO · LOCAL ONLY</span>
     </div>
   </div>
-  <div style={{...tile,display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",background:"#f0fdf4",borderColor:"#bbf7d0"}}>
+  <div hidden={!!template&&tab==="library"} style={{...tile,display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",background:"#f0fdf4",borderColor:"#bbf7d0"}}>
     <div><strong style={{color:"#166534"}}>Demo operator · No sign-in required</strong><p style={{color:"#475569",fontSize:12,margin:"4px 0"}}>All forms and drafts save in this browser. Test freely without external accounts.</p></div>
     <span style={{background:"#dcfce7",color:"#166534",padding:"7px 10px",borderRadius:999,fontSize:11,fontWeight:850}}>LOCAL STORAGE</span>
   </div>
@@ -162,95 +175,44 @@ export function AssuranceFormsWorkspace(){
   {notice?<div role="status" style={{padding:13,borderRadius:12,background:"#eff6ff",color:"#1e40af",fontSize:13}}>{notice}</div>:null}
   {tab==="designer"?<CustomFormBuilder onPublish={openTemplate}/>:null}
   {tab==="jra"?<JraWorkspace/>:null}
-  {tab==="library"&&!template?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,245px),1fr))",gap:12}}>
-    <div style={{...tile,background:"#eff6ff",borderColor:"#93c5fd",display:"grid",gap:10}}>
-      <strong style={{fontSize:17}}>Create a company-branded custom form</strong>
-      <span style={{fontSize:12,color:"#52677d"}}>Build unique checklists for every job, with your own logo, questions and repeatable fields.</span>
-      <button style={{...button,background:"#173764",color:"#fff",justifySelf:"start"}} onClick={()=>setTab("designer")}>Open form designer →</button>
-    </div>
-    <div style={{...tile,background:"#f0fdf4",borderColor:"#86efac",display:"grid",gap:10}}>
-      <strong style={{fontSize:17}}>Start a job risk assessment</strong>
-      <span style={{fontSize:12,color:"#52677d"}}>Assign participants, list task steps, hazards and controls, and calculate residual risks.</span>
-      <button style={{...button,background:"#065f46",color:"#fff",justifySelf:"start"}} onClick={()=>setTab("jra")}>Open JRA studio →</button>
-    </div>
-    <div style={{...tile,display:"grid",gap:6}}><strong>Search company checklists</strong><input aria-label="Search template library" style={input} value={librarySearch} onChange={e=>setLibrarySearch(e.target.value)} placeholder="Working at heights, confined space, scaffold, hazard..."/></div>
-    {library.filter(t=>(t.title+" "+("description" in t?t.description:"")).toLowerCase().includes(librarySearch.toLowerCase())).map(t=><motion.button whileHover={reducedMotion?undefined:{y:-2}} transition={easing} key={t.id} onClick={()=>openTemplate(t.id)}
-       style={{...tile,textAlign:"left",minHeight:154,cursor:"pointer",display:"grid",gap:9}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
-       <span style={{fontSize:11,fontWeight:900,color:categories[t.category]?.color}}>{t.category.toUpperCase()}</span>
-       <span style={{color:"#667085",fontSize:11}}>v{t.version} · {t.status}</span>
-      </div>
-      <strong style={{fontSize:17}}>{t.title}</strong>
-      {"companyNameSnapshot" in t && typeof t.companyNameSnapshot==="string"?<span style={{fontSize:11,color:"#1d4ed8"}}>{t.companyNameSnapshot} · Branded</span>:null}
-      <span style={{color:"#667085",fontSize:12}}>{t.sections.length} sections · {t.sections.reduce((sum,s)=>sum+s.fields.length,0)} questions</span>
-      <span style={{display:"inline-flex",alignItems:"center",gap:6,color:"#1d4ed8",fontWeight:850,fontSize:12}}>Open form <ChevronRight size={16}/></span>
-    </motion.button>)}
-  </div>:null}
+  {tab==="library"&&!template?<section style={{display:"grid",gap:12}} aria-label="Template collection">
+   <div style={{...tile,display:"flex",gap:10,flexWrap:"wrap",alignItems:"end"}}>
+    <label style={{display:"grid",gap:6,flex:"1 1 250px",fontSize:12,fontWeight:800}}>Search company checklists<input aria-label="Search template library" style={input} value={librarySearch} onChange={e=>{setLibrarySearch(e.target.value);setLibraryPage(0);}} placeholder="Find an inspection, permit or briefing"/></label>
+    <label style={{display:"grid",gap:6,fontSize:12,fontWeight:800}}>Category<select style={input} value={libraryCategory} onChange={e=>{setLibraryCategory(e.target.value);setLibraryPage(0);}}>{["All",...Object.keys(categories)].map(c=><option key={c}>{c}</option>)}</select></label>
+   </div>
+   {desktop?<table className="movetrack-compact-table" aria-label="Desktop template library"><thead><tr><th>Template</th><th>Category</th><th>Revision</th><th>Structure</th><th>Open</th></tr></thead><tbody>{libraryItems.map(t=><tr key={t.id}><td><strong>{t.title}</strong></td><td>{t.category}</td><td>v{t.version}</td><td>{t.sections.length} sections · {t.sections.reduce((n,sec)=>n+sec.fields.length,0)} fields</td><td><button style={button} onClick={()=>openTemplate(t.id)} aria-label={"Open "+t.title}>Open</button></td></tr>)}</tbody></table>:<div style={{display:"grid",gap:10}}>{libraryItems.map(t=><button key={t.id} style={{...tile,textAlign:"left",display:"grid",gap:7,cursor:"pointer"}} onClick={()=>openTemplate(t.id)}><small>{t.category} · v{t.version}</small><strong>{t.title}</strong><span>{t.sections.length} sections · Start form →</span></button>)}</div>}
+   {!libraryItems.length?<p>No matching templates.</p>:null}
+   <div className="movetrack-step-footer"><button disabled={safeLibraryPage===0} onClick={()=>setLibraryPage(safeLibraryPage-1)}>Previous templates</button><span>Page {safeLibraryPage+1} of {libraryPages} · {filteredLibrary.length} templates</span><button disabled={safeLibraryPage>=libraryPages-1} onClick={()=>setLibraryPage(safeLibraryPage+1)}>Next templates</button></div>
+  </section>:null}
   {tab==="library"&&template&&activeSection&&evaluation?<div style={{display:"grid",gap:13}}>
-    <div style={{...tile,borderTop:brandedTemplate?"4px solid "+(brandedTemplate.accent??"#155eef"):undefined}}>
-      {brandedTemplate?<div style={{display:"flex",alignItems:"center",gap:13,marginBottom:14,borderBottom:"1px solid #e2e8f0",paddingBottom:13}}>
-        {brandedTemplate.logoSnapshot?<img src={brandedTemplate.logoSnapshot} alt={brandedTemplate.companyNameSnapshot+" logo"} style={{maxHeight:59,maxWidth:104,objectFit:"contain"}}/>:<div style={{width:54,height:54,borderRadius:9,background:"#dbeafe",display:"grid",placeItems:"center",color:"#173764",fontWeight:900,fontSize:11}}>LOGO</div>}
-        <div><strong style={{fontSize:15}}>{brandedTemplate.companyNameSnapshot}</strong><div style={{fontSize:11,color:"#64748b"}}>{brandedTemplate.referencePrefix} · {brandedTemplate.description}</div></div>
-      </div>:null}
-      <button style={{...button,padding:"6px 9px",minHeight:34,fontSize:12}} onClick={()=>setActiveId(null)}><ChevronLeft size={13} style={{display:"inline"}}/> All forms</button>
-      <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginTop:12}}>
-        <div><p style={{fontSize:11,fontWeight:850,color:categories[template.category]?.color,margin:0}}>{template.category.toUpperCase()} · VERSION {template.version}</p><h3 style={{fontSize:22,margin:"5px 0 2px"}}>{template.title}</h3></div>
-        <div style={{textAlign:"right"}}><strong>{evaluation.progress}% complete</strong><p style={{fontSize:12,margin:"4px 0",color:"#667085"}}>Step {sectionIndex+1} of {template.sections.length}</p></div>
-      </div>
-      <div aria-label="Form completion" style={{height:7,borderRadius:20,background:"#e2e8f0",marginTop:12,overflow:"hidden"}}><motion.div initial={false} animate={{width:evaluation.progress+"%"}} transition={easing} style={{height:"100%",background:"#2563eb",borderRadius:20}}/></div>
-      <div style={{display:"grid",gap:10,marginTop:12,padding:12,borderRadius:12,border:"1px solid #bfdbfe",background:"#f8fbff"}}>
-       <strong style={{fontSize:12}}>Document download center · blank or current draft</strong>
-       <p style={{fontSize:11,color:"#64748b",margin:0}}>Download the original unfilled template, or a copy of your in-progress answers before submitting. PDF, editable Word, CSV and JSON.</p>
-       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-         <DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:visiblePeople,jobId:jobReference,site:siteId})} compact/>
-         <DocumentDownloadActions document={buildFormDocument({template,mode:"draft",answers,company:org,people:visiblePeople,jobId:jobReference,site:siteId})} compact/>
-       </div>
-      </div>
-      <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",marginTop:12,padding:"10px 12px",background:"#f0f7ff",border:"1px solid #bfdbfe",borderRadius:11}}>
-        <strong style={{fontSize:12,flex:"1 1 190px"}}>Faster form entry</strong>
-        <button type="button" style={{...button,padding:"8px 10px",minHeight:37,fontSize:11}} onClick={()=>setFastEntryOpen(v=>!v)} aria-pressed={fastEntryOpen}>{fastEntryOpen?"Hide":"Show"} quick answers</button>
-        {priorRecords.length?<button type="button" style={{...button,padding:"8px 10px",minHeight:37,fontSize:11}} onClick={reusePreviousCrew}>Reuse previous crew only</button>:null}
-        <span style={{fontSize:11,color:"#475569"}}>Suggestions are optional. Critical controls, risk scores, sign-offs and permits are never pre-checked.</span>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,120px),1fr))",gap:8,marginTop:15}}>
-        <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Operating site
-          <select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}>{org.siteIds.map(site=><option key={site}>{site}</option>)}</select>
-        </label>
-        <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Submitted by (local team member)
-          <select style={input} value={visiblePeople.some(p=>p.id===actorPersonId)?actorPersonId:""} onChange={e=>setActorPersonId(e.target.value)}>
-             <option value="">Anonymous demo operator</option>{visiblePeople.map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}
-          </select>
-        </label>
-        <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Job / work order ID
-          <input style={input} value={jobReference} placeholder="WO-2026-001" onChange={e=>setJobReference(e.target.value)}/>
-        </label>
-        {template.category==="Fleet"?<SearchableAssetPicker assets={fleet} value={assetId} onChange={setAssetId}/>:null}
-      </div>
-    </div>
-    {workflow&&workflowLinks(workflow.id).length?<div style={{...tile,display:"grid",gap:8,background:"#f8fafc"}}>
-      <strong style={{fontSize:13}}>Connected risk-control workflows</strong>
-      <p style={{fontSize:11,color:"#667085",margin:0}}>These are related checklists for the same work package, not proof of authorization.</p>
-      <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-       {workflowLinks(workflow.id).map(id=><button key={id} style={{...button,fontSize:11,padding:"7px 10px",minHeight:34}} onClick={()=>openTemplate(recipeTemplateId(org.id,id))}>{additionalAssuranceRecipes.find(w=>w.id===id)?.title??id}</button>)}
-      </div>
-     </div>:null}
+    <div style={{...tile,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center",flexWrap:"wrap",padding:12}}><div><small>{org.name} · v{template.version}</small><h3 style={{margin:"5px 0"}}>{template.title}</h3></div><strong>{evaluation.progress}% complete</strong><button style={button} onClick={()=>setActiveId(null)}>← All forms</button></div>
+    <TaskWorkspace title="Complete form" steps={template.sections.map(sec=>sec.title)} current={sectionIndex} onChange={setSectionIndex}
+      tools={<p style={{fontSize:11}}>Draft autosaves on this browser.</p>}
+      summary={<><strong>Assessment: {evaluation.decision.replaceAll("_","-")}</strong><p>{evaluation.missing.length} required answers / evidence outstanding</p><strong>{org.name}</strong>
+       <label>Operating site<select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}>{org.siteIds.map(site=><option key={site}>{site}</option>)}</select></label>
+       <label>Submitted by<select aria-label="Submitted by (local team member)" style={input} value={visiblePeople.some(p=>p.id===actorPersonId)?actorPersonId:""} onChange={e=>setActorPersonId(e.target.value)}><option value="">Anonymous demo operator</option>{visiblePeople.map(p=><option value={p.id} key={p.id}>{p.displayName}</option>)}</select></label>
+       <label>Job / work order ID<input style={input} value={jobReference} onChange={e=>setJobReference(e.target.value)}/></label>
+       {template.category==="Fleet"?<SearchableAssetPicker assets={fleet} value={assetId} onChange={setAssetId}/>:null}
+       <details><summary>Document exports</summary><p>Blank template</p><DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:visiblePeople,jobId:jobReference,site:siteId})} compact/><p>Current draft</p><DocumentDownloadActions document={buildFormDocument({template,mode:"draft",answers,company:org,people:visiblePeople,jobId:jobReference,site:siteId})} compact/></details>
+       <button style={button} aria-pressed={fastEntryOpen} onClick={()=>setFastEntryOpen(v=>!v)}>{fastEntryOpen?"Hide":"Show"} quick answers</button>
+       {priorRecords.length?<button style={button} onClick={reusePreviousCrew}>Reuse previous crew</button>:null}
+       {workflow&&workflowLinks(workflow.id).length?<details><summary>Related workflows</summary>{workflowLinks(workflow.id).map(id=><button key={id} style={button} onClick={()=>openTemplate(recipeTemplateId(org.id,id))}>{additionalAssuranceRecipes.find(w=>w.id===id)?.title??id}</button>)}</details>:null}
+      </>}>
     <AnimatePresence mode="wait">
       <motion.div key={activeSection.id} initial={reducedMotion?false:{opacity:0,y:7}} animate={{opacity:1,y:0}} exit={reducedMotion?undefined:{opacity:0,y:-7}} transition={easing} style={tile}>
         <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
         {activeSection.description?<p style={{color:"#667085"}}>{activeSection.description}</p>:null}
-        <div style={{display:"grid",gap:17,marginTop:22}}>
-          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={signatureScopePrefix} fastEntry={fastEntryOpen} reviewerPersonId={f.signerFieldId&&typeof answers[f.signerFieldId]==="string"?answers[f.signerFieldId] as string:undefined}/>)}
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:12}}><span style={{fontSize:12}}>{desktop?"Question group":"Question"} {fieldPage.page} of {fieldPage.pages}</span>{desktop?<select aria-label="Jump to question" value={visibleFields[fieldPage.index]?.id??""} onChange={e=>focusField(e.target.value)}>{visibleFields.map((f,i)=><option key={f.id} value={f.id}>{i+1}. {f.label}{evaluation.missing.some(id=>id===f.id||id.startsWith(f.id+":"))?" · Required answer missing":""}</option>)}</select>:null}</div>
+        <div className={desktop?"movetrack-desktop-fields":"movetrack-mobile-fields"} style={{marginTop:16}}>
+          {fieldPage.items.map(f=><div key={f.id} className={["repeat","multiline","signature","risk","people"].includes(f.type)?"movetrack-field-wide":""}><FieldInput field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={signatureScopePrefix} fastEntry={fastEntryOpen} reviewerPersonId={f.signerFieldId&&typeof answers[f.signerFieldId]==="string"?answers[f.signerFieldId] as string:undefined}/></div>)}
         </div>
       </motion.div>
     </AnimatePresence>
     <div style={{...tile,display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
-      <button style={button} disabled={sectionIndex===0} onClick={()=>setSectionIndex(x=>Math.max(0,x-1))}>Previous</button>
-      {sectionIndex<template.sections.length-1?<button style={{...button,background:"#172b4d",color:"#fff"}} onClick={()=>setSectionIndex(x=>Math.min(template.sections.length-1,x+1))}>Next section <ChevronRight size={16} style={{display:"inline"}}/></button>:<button style={{...button,background:"#172b4d",color:"#fff",opacity:evaluation.missing.length?0.65:1}} onClick={submit} disabled={!!evaluation.missing.length}>Submit demo form</button>}
+      <button style={button} disabled={sectionIndex===0&&fieldPage.start===0} onClick={()=>fieldPage.start>0?focusField(fieldPage.previous):setSectionIndex(x=>Math.max(0,x-1))}>Previous</button>
+      {fieldPage.next?<button style={button} onClick={()=>focusField(fieldPage.next)}>Next {desktop?"questions":"question"}</button>:sectionIndex<template.sections.length-1?<button style={{...button,background:"#172b4d",color:"#fff"}} onClick={()=>setSectionIndex(x=>Math.min(template.sections.length-1,x+1))}>Next section <ChevronRight size={16} style={{display:"inline"}}/></button>:<button style={{...button,background:"#172b4d",color:"#fff",opacity:evaluation.missing.length?0.65:1}} onClick={submit} disabled={!!evaluation.missing.length}>Submit demo form</button>}
     </div>
-    <div style={{...tile,background:evaluation.decision==="NO_GO"?"#fef2f2":evaluation.decision==="INCOMPLETE"?"#f8fafc":"#ecfdf3",display:"flex",alignItems:"start",gap:12}}>
-      {evaluation.decision==="NO_GO"?<ShieldAlert size={21} color="#b42318"/>:<CheckCircle2 size={21} color="#157f4e"/>}
-      <div><strong>Assessment: {evaluation.decision.replaceAll("_","-")}</strong><p style={{margin:"4px 0",fontSize:12,lineHeight:1.5}}>{evaluation.missing.length?evaluation.missing.length+" required answer(s) / evidence outstanding.":evaluation.criticalFailures.length?"Critical control failed. NO-GO in a controlled workflow.":"Required sections completed; supervisor controls may still apply."}</p></div>
-    </div>
+    </TaskWorkspace>
     <p style={{fontSize:11,color:"#b42318",margin:0}}>This frontend-only demonstration saves drafts and submissions in this browser, and can simulate equipment grounding. No external service, authenticated approval or actual equipment-control integration is active.</p>
   </div>:null}
   {tab==="records"?<div style={{display:"grid",gap:9}}>
