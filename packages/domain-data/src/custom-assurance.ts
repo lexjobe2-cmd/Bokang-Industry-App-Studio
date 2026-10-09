@@ -1,3 +1,4 @@
+import type {SignatureEvidence} from "./signature-evidence.ts";
 import type { FormCategory, FormField, FormSection, FormTemplate } from "./assurance-forms.ts";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "./risk-matrix.ts";
 
@@ -48,7 +49,7 @@ export type PersonRecord={
  employeeNumber?:string; active:boolean;
 };
 export type ParticipantAssignment={
- personId:string; nameSnapshot:string; role:string; acknowledged:boolean; manual:boolean; acknowledgedAt?:string;
+ personId:string; nameSnapshot:string; role:string; acknowledged:boolean; manual:boolean; acknowledgedAt?:string;signature?:SignatureEvidence;
 };
 export type HazardEntry={
  id:string; category:string; hazard:string; consequence:string; exposedPersonIds:string[];
@@ -68,7 +69,7 @@ export type JobRiskAssessment={
  status:"DRAFT"|"IN_REVIEW"|"REVIEW_REQUIRED"|"APPROVED_DEMO"|"CLOSED";
  participants:ParticipantAssignment[]; tasks:JraTask[];
  scope:string; method:string; ppe:string[]; emergencyPlan:string; permits:string[];
- reviewerId:string; reviewerNote:string; reviewedAt?:string;
+ reviewerId:string; reviewerNote:string; reviewedAt?:string;reviewSignature?:SignatureEvidence;
 };
 export type CustomTemplate = FormTemplate & {
  organizationId:string; companyNameSnapshot:string; logoSnapshot?:string; accent?:string;
