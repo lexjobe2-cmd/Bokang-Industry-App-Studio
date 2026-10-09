@@ -164,7 +164,7 @@ const starterAssuranceBase:readonly FormTemplate[]=[
 const supervisedCore=new Set(["meeting-register","toolbox-brief","jsa","jra","shift-handover"]);
 export const starterAssuranceTemplates:readonly FormTemplate[]=starterAssuranceBase.map(template=>
   !supervisedCore.has(template.id)?template:{
-    ...template,version:2,
+    ...template,version:template.id==="meeting-register"?3:2,
     sections:[...template.sections,{
       id:"supervisor-signoff",title:"Supervisor verification & handback",description:"Drawn acknowledgement from the selected reviewing supervisor (local demo only).",
       fields:[
