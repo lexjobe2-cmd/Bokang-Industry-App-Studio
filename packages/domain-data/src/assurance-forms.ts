@@ -15,6 +15,7 @@ export type FormField = {
   id: string; label: string; type: AnswerType; required?: boolean; critical?: boolean;
   options?: readonly string[]; visibleWhen?: ConditionalVisibility;
   evidenceOnFail?: boolean; helperText?: string; children?: readonly FormField[];
+  signerFieldId?:string; // Supervisor/reviewer person field matched to drawn local evidence.
 };
 export type FormSection = { id: string; title: string; description?: string; fields: readonly FormField[] };
 export type FormTemplate = {
@@ -60,14 +61,18 @@ export function isAnswered(field: FormField, value: FormAnswer | undefined) {
   if (typeof value==="string")return value.trim().length>0;
   return true;
 }
-export function evaluateForm(template: FormTemplate, answers: FormAnswers, evidence: readonly EvidencePointer[] = []): FormEvaluation {
+export function evaluateForm(template: FormTemplate, answers: FormAnswers, evidence: readonly EvidencePointer[] = [], signatureScopePrefix?:string): FormEvaluation {
   const active = template.sections.flatMap(s => s.fields).filter(f => isVisible(f, answers));
   const missing: string[] = [];
   const criticalFailures: string[] = [];
   let completed = 0;
   for (const f of active) {
     const value = answers[f.id];
-    const answered = isAnswered(f,value);
+    const signed=isSignatureEvidence(value);
+    const selectedReviewer=f.signerFieldId?answers[f.signerFieldId]:undefined;
+    const answered = isAnswered(f,value) && (!f.signerFieldId ||
+      (signed&&typeof selectedReviewer==="string"&&selectedReviewer.length>0&&value.signerPersonId===selectedReviewer&&value.intent==="review")) &&
+      (f.type!=="signature"||!signatureScopePrefix||(signed&&value.scope===signatureScopePrefix+" / "+f.label));
     if (answered) completed++;
     if (f.required && !answered) missing.push(f.id);
     const failed = f.type === "pass_fail_na" ? value === "FAIL" : f.type === "yes_no" ? value === "NO" : false;
@@ -96,12 +101,12 @@ export function evaluateForm(template: FormTemplate, answers: FormAnswers, evide
 }
 export function makeSubmission(args: {
   id: string; template: FormTemplate; answers: FormAnswers; evidence?: readonly EvidencePointer[];
-  siteId: string; assetId?: string; workerId?: string; taskId?: string; actorUid: string; actorPersonId?: string; now: string;
+  siteId: string; assetId?: string; workerId?: string; taskId?: string; actorUid: string; actorPersonId?: string; now: string; signatureScopePrefix?:string;
 }): FormSubmission {
   if (args.template.status !== "PUBLISHED") throw new Error("Only published template versions can be submitted.");
   if (!args.actorUid.trim()) throw new Error("A verified operator identity is required.");
   if (args.template.siteIds.length && !args.template.siteIds.includes(args.siteId)) throw new Error("Template not applicable to site.");
-  const evaluation = evaluateForm(args.template,args.answers,args.evidence);
+  const evaluation = evaluateForm(args.template,args.answers,args.evidence,args.signatureScopePrefix);
   if (evaluation.missing.length) throw new Error("Required answers or evidence missing: " + evaluation.missing.join(", "));
   // Snapshot prevents later template revisions from changing historical records.
   return {
