@@ -25,7 +25,10 @@ function linkedPeople(fields:readonly FormField[],answers:FormAnswers,people:rea
  for(const f of fields){
   const v:FormAnswer|undefined=answers[f.id];
   if(f.type==="person"&&typeof v==="string")add(v,/review|approv/i.test(f.label)?"Reviewer":/supervis/i.test(f.label)?"Supervisor":"Responsible person");
-  if(f.type==="people"&&Array.isArray(v))for(const id of v)if(typeof id==="string")add(id,"Participant");
+  // Being absent/apologizing is not the same as participating in the meeting.
+  // Preserve the absent people in the meeting snapshot for reporting, but exclude them here.
+  if(f.type==="people"&&Array.isArray(v)&&!/apolog|absen/i.test(f.id+" "+f.label))
+   for(const id of v)if(typeof id==="string")add(id,"Participant");
   if(f.type!=="repeat"||!Array.isArray(v)||!/attend|register|participant|crew|sign.in/i.test(f.label))continue;
   for(const entry of v){
    if(!entry||Array.isArray(entry)||typeof entry!=="object")continue;
