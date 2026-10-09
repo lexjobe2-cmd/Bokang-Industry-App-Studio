@@ -142,6 +142,10 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
       setNotice("A GO pre-start is required before taking the vehicle.");
       return;
     }
+    if(driver.authorizationReview&&Date.parse(driver.authorizationReview.signedAt)>Date.parse(lastPrestart.createdAt)){
+      setNotice("Driver competency or authorisations changed after the GO pre-start. Complete a new pre-start before taking the vehicle.");
+      return;
+    }
     const policy=policies.find(item=>item.name===activeAssignment.site);
     const reasons=driverEligibilityReasons(driver,{
       requireOpenPitPermit:policy?.requireOpenPitPermit??activeAssignment.site.toLowerCase().includes("mine"),
