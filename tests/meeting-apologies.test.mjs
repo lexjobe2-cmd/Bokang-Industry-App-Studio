@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {meetingTemplate,updateMeetingAttendance,meetingAttendanceCounts,validateMeetingInput} from "../packages/domain-data/src/meeting-register.ts";
+import {meetingTemplate,updateMeetingAttendance,meetingAttendanceCounts,validateMeetingInput,carryForwardMeetingActions} from "../packages/domain-data/src/meeting-register.ts";
 import {demoOrganization,demoPeople} from "../packages/domain-data/src/custom-assurance.ts";
 import {starterAssuranceTemplates,makeSubmission} from "../packages/domain-data/src/assurance-forms.ts";
 import {buildAssuranceAnalytics} from "../packages/domain-data/src/participation-analytics.ts";
@@ -64,4 +64,35 @@ test("meeting blocks contradictory or incomplete apology submissions",()=>{
  assert.throws(()=>validateMeetingInput({...base,participants:[first.id],apology_person_ids:[first.id]}),/both present and absent/);
  assert.throws(()=>validateMeetingInput({...base,apology_person_ids:[second.id]}),/attendance status/);
  assert.throws(()=>validateMeetingInput({...base,apology_entries:[{apology_name:""}]}),/person's name/);
+});
+
+test("unresolved meeting actions carry forward without stale due dates or false ownership",()=>{
+ const current={actions:[{action:"Inspect harness anchor points",owner:"Sam",due:"2026-10-13",state:"Open"}],
+   participants:[first.id],apology_person_ids:[second.id],chair_signature:sig,minutes:"Current minutes"};
+ const previous={actions:[
+  {action:"Inspect harness anchor points",owner:first.displayName,state:"Open"},
+  {action:"Close out fire extinguishers",owner:second.displayName,owner_person_id:second.id,due:"2026-10-08",state:"In progress"},
+  {action:"Completed housekeeping",owner:third.displayName,due:"2026-10-07",state:"Closed"},
+  {action:"Update permit register",owner:"External contractor",state:"Open",due:"2026-10-08"}
+ ],participants:[second.id],chair_signature:{...sig,signerName:"Previous chair"},minutes:"Old notes"};
+ const {rows,added}=carryForwardMeetingActions(current,previous,[first,second,third]);
+ assert.equal(added,2);
+ assert.equal(rows.length,3);
+ assert.equal(rows[1].owner_person_id,second.id);
+ assert.equal(rows[1].owner,second.displayName);
+ assert.equal(rows[1].due,"");
+ assert.equal(rows[1].state,"Open");
+ assert.equal(rows[2].owner_person_id,"");
+ assert.equal(rows[2].owner,"External contractor");
+ assert.deepEqual(current.participants,[first.id],"Current attendance is unchanged");
+ assert.deepEqual(current.apology_person_ids,[second.id],"Current apologies are unchanged");
+ assert.equal(current.minutes,"Current minutes");
+ assert.equal(current.actions.length,1,"Carry-forward never mutates original records");
+ const again=carryForwardMeetingActions({actions:rows},previous,[first,second]);
+ assert.equal(again.added,0,"Repeated import does not create duplicate actions");
+});
+test("ambiguous legacy owner names remain manual, not silently linked to employees",()=>{
+ const prior={actions:[{action:"Verify scaffolds",owner:"Sam Dube",state:"Open"}]};
+ const result=carryForwardMeetingActions({},prior,[{id:"one",displayName:"Sam Dube"},{id:"two",displayName:"Sam Dube"}]);
+ assert.equal(result.rows[0].owner_person_id,"");
 });
