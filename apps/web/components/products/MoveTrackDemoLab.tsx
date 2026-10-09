@@ -189,7 +189,7 @@ export function MoveTrackDemoLab(){
       setStartWorkspace(action.key);
       document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});
     }} aria-label={action.label} style={{display:"grid",justifyItems:"center",alignContent:"center",gap:4,background:"transparent",
-      border:0,color:(startWorkspace===action.key&&action.key!=="home")?"#1d4ed8":"#536b86",minHeight:51,minWidth:59,fontSize:10,fontWeight:800,cursor:"pointer"}}>
+      border:0,color:startWorkspace===action.key?"#1d4ed8":"#536b86",minHeight:51,minWidth:59,fontSize:10,fontWeight:800,cursor:"pointer"}}>
      <action.icon size={22} strokeWidth={2.1}/>{action.label}
     </button>)}
   </nav>
