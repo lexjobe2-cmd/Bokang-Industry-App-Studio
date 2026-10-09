@@ -32,9 +32,10 @@ export function validateBackupShape(key:string,value:unknown){
    if(item.images!==undefined&&!validEvidencePhotos(item.images))throw Error('Invalid or oversized photo evidence: '+key);
   }
  }
- if(name==='fleet.v2'){
+ if(name==='fleet.v2'||name==='drivers.v2'){
   for(const item of value as Record<string,unknown>[]){
-   if(item.documents!==undefined&&!validVehicleDocuments(item.documents))throw Error('Invalid or oversized fleet PDF documents: '+key);
+   if(item.documents!==undefined&&!validVehicleDocuments(item.documents))throw Error('Invalid or oversized fleet/driver PDF documents: '+key);
+   if(name==='drivers.v2'&&item.personId!==undefined&&(typeof item.personId!=='string'||item.personId.length>128))throw Error('Invalid driver directory reference: '+key);
   }
  }
  if(name==='fleet.v2'||name==='drivers.v2'){
