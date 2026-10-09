@@ -78,7 +78,7 @@ test("UI binds expiry review signature and guards both dispatch and checkout",()
  const panel=readFileSync(new URL("../apps/web/components/products/DriverCompetencyPanel.tsx",import.meta.url),"utf8");
  assert.match(admin,/driverEligibilityReasons\(driver,/);
  assert.match(admin,/driverScope\(driver,authorizationDrafts\[driver.id\]!\)/);
- assert.match(admin,/competencyExpiry,authorizationReview:/);
+ assert.match(admin,/applyReviewedDriverCompetency\(\{/);
  assert.match(admin,/credentialKeys.map\(key=>key\+":"\+/);
  assert.match(driverApp,/driverEligibilityReasons\(driver,/);
  assert.match(driverApp,/Cannot start shift; qualifications or vehicle validity changed/);
