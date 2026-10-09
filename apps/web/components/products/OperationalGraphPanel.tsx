@@ -11,8 +11,8 @@ export const ACTIVE_WORKFLOW_KEY="bokang-studio.move-track.assurance.active-temp
 export const ACTIVE_FORMS_TAB_KEY="bokang-studio.move-track.assurance.active-tab.v1";
 export const ACTIVE_JOB_REFERENCE_KEY="bokang-studio.move-track.active-job.v1";
 export const recipeTemplateId=(orgId:string,workflowId:string)=>"op-"+orgId+"-"+workflowId;
-const card:React.CSSProperties={border:"1px solid #dbe5f2",borderRadius:15,background:"#fff",padding:15};
-const btn:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:10,padding:"9px 12px",background:"#fff",cursor:"pointer",fontWeight:800,color:"#193756",minHeight:43};
+const card:React.CSSProperties={border:"1px solid var(--mt-border,#dbe5f2)",borderRadius:15,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#193756)",padding:15};
+const btn:React.CSSProperties={border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:10,padding:"9px 12px",background:"var(--mt-surface,#fff)",cursor:"pointer",fontWeight:800,color:"var(--mt-ink,#193756)",minHeight:44};
 export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void}={}){
  const reduced=useReducedMotion();
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
@@ -71,7 +71,7 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
      {active?<div style={{borderTop:"1px solid #e2e8f0",paddingTop:9,display:"grid",gap:7}}>
       <strong style={{fontSize:12}}>Critical assurance checklist</strong>
       {workflow.criticalControls.map((c,i)=><span style={{display:"flex",gap:7,color:"#475569",fontSize:11}} key={i}><ShieldAlert size={13} color="#c2781b"/>{c}</span>)}
-      {related.length?<><strong style={{fontSize:12,marginTop:8}}>Connected workflows</strong><div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{related.map(id=><button key={id} style={{...btn,fontSize:10,padding:"6px 8px",minHeight:30}} onClick={()=>{setSearch("");setArea("All areas");setExpanded(id);}}>{additionalAssuranceRecipes.find(w=>w.id===id)?.title??id} <span style={{color:"#2563eb"}}>· {statusFor(id)==="COMPLETE"?"done":"open"}</span></button>)}</div></>:null}
+      {related.length?<><strong style={{fontSize:12,marginTop:8}}>Connected workflows</strong><div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{related.map(id=><button key={id} style={{...btn,fontSize:10,padding:"6px 8px",minHeight:30}} onClick={()=>{setSearch("");setArea("All areas");setExpanded(id);}}>{additionalAssuranceRecipes.find(w=>w.id===id)?.title??id} <span style={{color:"var(--mt-link,#2563eb)"}}>· {statusFor(id)==="COMPLETE"?"done":"open"}</span></button>)}</div></>:null}
      </div>:null}
      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:"auto"}}>
       <button style={{...btn,flex:"1 1 auto",background:"#174fa8",color:"#fff",borderColor:"#174fa8"}} onClick={()=>openWorkflow(workflow.id)}>Open checklist <ArrowRight size={14} style={{display:"inline",verticalAlign:"middle"}}/></button>
