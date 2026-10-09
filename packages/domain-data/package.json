@@ -12,7 +12,8 @@
     "./expanded-assurance": "./src/expanded-assurance.ts",
     "./participation-analytics": "./src/participation-analytics.ts",
     "./paper-forms": "./src/paper-forms.ts",
-    "./meeting-register": "./src/meeting-register.ts"
+    "./meeting-register": "./src/meeting-register.ts",
+    "./signature-evidence": "./src/signature-evidence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
