@@ -90,7 +90,7 @@ export function JraWorkspace(){
  function approveDemo(){
   if(!current)return;
   if(!canSimulateApproval(current)){setMessage("Cannot mark ready: complete controls, resolve high residual risks, acknowledge all participants and choose an independent reviewer.");return;}
-  if(!isSignatureEvidence(current.reviewSignature)||current.reviewSignature.signerPersonId!==current.reviewerId){
+  if(!isSignatureEvidence(current.reviewSignature)||current.reviewSignature.signerPersonId!==current.reviewerId||current.reviewSignature.intent!=="review"||current.reviewSignature.scope!==(current.reference||current.title||"JRA independent review")){
    setMessage("Capture a drawn local acknowledgement from the selected independent reviewer first. This does not establish legal identity or authorize work.");setPage("review");return;
   }
   patch({status:"APPROVED_DEMO",reviewedAt:new Date().toISOString()});
@@ -250,7 +250,7 @@ export function JraWorkspace(){
       </div>
       <div style={{...shell,display:"flex",gap:10,justifyContent:"space-between",flexWrap:"wrap"}}>
        <button style={btn} onClick={()=>save("DRAFT")}>Save editable draft</button>
-       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={primary} onClick={submitReview}>Save for review</button><button style={{...primary,background:"#087f5b",borderColor:"#087f5b",opacity:canSimulateApproval(job)?1:0.5}} disabled={!canSimulateApproval(job)||!isSignatureEvidence(job.reviewSignature)||job.reviewSignature.signerPersonId!==job.reviewerId} onClick={approveDemo}>Mark reviewed (demo)</button></div>
+       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={primary} onClick={submitReview}>Save for review</button><button style={{...primary,background:"#087f5b",borderColor:"#087f5b",opacity:canSimulateApproval(job)?1:0.5}} disabled={!canSimulateApproval(job)||!isSignatureEvidence(job.reviewSignature)||job.reviewSignature.signerPersonId!==job.reviewerId||job.reviewSignature.intent!=="review"||job.reviewSignature.scope!==(job.reference||job.title||"JRA independent review")} onClick={approveDemo}>Mark reviewed (demo)</button></div>
       </div>
     </div>:null}
     {page!=="review"?<div style={{...shell,display:"flex",justifyContent:"flex-end"}}><button style={btn} onClick={()=>save("DRAFT")}>Save draft</button></div>:null}
