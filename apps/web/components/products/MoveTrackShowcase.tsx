@@ -4,6 +4,7 @@ import {VehicleDocuments} from "./VehicleDocuments";
 import {editableDetails,updateVehicleDetails,type VehicleDetails} from "../../lib/fleet-vehicle-admin";
 import {editableDriverDetails,updateDriverDetails,type DriverDetails} from "../../lib/driver-admin";
 import {DriverCompetencyPanel} from "./DriverCompetencyPanel";
+import {DriverComplianceOverview} from "./DriverComplianceOverview";
 import {applyReviewedDriverCompetency,credentialAlerts,credentialKeys,driverEligibilityReasons,type DriverCredentialExpiry,type DriverCredentialEvidenceLinks,type DriverCredentialKey} from "../../lib/driver-competency";
 import {MultiImageEvidence} from "./MultiImageEvidence";
 import {OrganizationOnboarding} from "./OrganizationOnboarding";
@@ -98,6 +99,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   const view=selectedView??localView;
   // The admin workbench reuses the existing screens and persistence; no duplicate models.
   const [adminArea,setAdminArea]=useState<MoveTrackView|"overview"|"company">("overview");
+  const [focusedDriverId,setFocusedDriverId]=useState<string|null>(null);
   const adminMode=view==="admin";
   const contentView=adminMode?adminArea:view;
   const [visited,setVisited]=useState<Set<MoveTrackView>>(()=>new Set([initialView]));
@@ -438,6 +440,10 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       </div>:null}
       {adminArea==="fleet"?<p style={{fontSize:12,color:"#1d4ed8",margin:0}}>Only the Admin workspace exposes vehicle creation, certificate editing and asset photo changes. Photos are device-local and do not establish authorization.</p>:null}
      </section>:null}
+    {view==="admin"&&adminArea==="overview"?<DriverComplianceOverview
+      drivers={drivers} assignments={assignments} directory={directory} orgId={orgId}
+      sites={currentOrg.siteIds} policies={policies}
+      onManageDriver={id=>{setFocusedDriverId(id);setAdminArea("drivers");}}/>:null}
     {view==="admin"&&adminArea==="company"?<OrganizationOnboarding/>:null}
 
     {contentView==="control"?<div style={{display:"grid",gap:14}}>
@@ -578,8 +584,12 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           </div>;
         })()}
       </section>:null}
+      {adminMode&&focusedDriverId?<div style={{...panel,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+        <strong style={{fontSize:12}}>Showing selected driver from the compliance overview</strong>
+        <button type="button" style={{...secondaryButton,minHeight:44}} onClick={()=>setFocusedDriverId(null)}>Show all drivers</button>
+      </div>:null}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
-        {drivers.map((driver)=><article key={driver.id} style={panel}>
+        {(adminMode&&focusedDriverId?drivers.filter(driver=>driver.id===focusedDriverId):drivers).map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
           <div style={{fontSize:11,color:"#667085",marginTop:4}}>{driver.licenceNo} · {driver.phone||"No phone"}</div>
           {driver.personId?<small style={{display:"block",marginTop:5,color:directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"#64748b":"#b42318"}}>Linked worker: {directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.displayName??"Directory identity unavailable"}{directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"":" · Not active — no new assignments"}</small>:null}
