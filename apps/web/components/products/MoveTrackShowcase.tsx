@@ -127,19 +127,20 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   const [vehiclePhotos,setVehiclePhotos]=useState<LocalEvidenceImage[]>([]);
   const [editingVehicleId,setEditingVehicleId]=useState<string|null>(null);
   const [editDetails,setEditDetails]=useState<VehicleDetails|null>(null);
+  const [vehicleEditError,setVehicleEditError]=useState("");
   function beginVehicleEdit(vehicle:FleetVehicle){
     setEditingVehicleId(vehicle.id);
     setEditDetails(editableDetails(vehicle));
-    setNotice("");
+    setVehicleEditError("");setNotice("");
   }
   function saveVehicleEdit(){
     if(!editingVehicleId||!editDetails)return;
     try{
       const updated=updateVehicleDetails(fleet,editingVehicleId,editDetails,assignments);
       setFleet(updated);
-      setEditingVehicleId(null);setEditDetails(null);
+      setEditingVehicleId(null);setEditDetails(null);setVehicleEditError("");
       setNotice("Vehicle details saved on this browser. Changing site/type/certificates never grants a GO clearance.");
-    }catch(error){setNotice(error instanceof Error?error.message:"Vehicle update failed.");}
+    }catch(error){setVehicleEditError(error instanceof Error?error.message:"Vehicle update failed.");}
   }
   const [assignVehicle,setAssignVehicle]=useState("");
   const [assignDriver,setAssignDriver]=useState("");
@@ -477,6 +478,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       {adminMode?<DesktopModal title="Edit vehicle details" open={Boolean(editingVehicleId&&editDetails)} onClose={()=>{setEditingVehicleId(null);setEditDetails(null);}}>
        {editDetails?<div style={{...panel,display:"grid",gap:13}}>
         <p style={{fontSize:12,color:"#64748b",margin:0}}>Edit the existing asset record. Status, odometer, photos, and incident history are retained. Active assignments prevent safety-critical identity changes.</p>
+        {vehicleEditError?<p role="alert" style={{fontSize:12,color:"#b42318",margin:0}}>{vehicleEditError}</p>:null}
         <div style={formGrid}>
          <Field label="Fleet number"><input aria-label="Edit fleet number" style={input} value={editDetails.fleetNo} onChange={event=>setEditDetails(current=>current?{...current,fleetNo:event.target.value}:current)}/></Field>
          <Field label="Registration"><input aria-label="Edit registration" style={input} value={editDetails.registration} onChange={event=>setEditDetails(current=>current?{...current,registration:event.target.value}:current)}/></Field>
