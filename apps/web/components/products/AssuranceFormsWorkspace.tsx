@@ -262,6 +262,16 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId}:{field:
     </div><span style={{fontSize:11,color:"#64748b"}}>{selected.length} participant(s) selected. Demo directory only.</span>
    </div>;
  }
+ if(field.type==="checkbox")return <label style={{...fieldStyle,display:"flex",alignItems:"center",gap:11,padding:"12px 13px",border:"1px solid #cbd5e1",borderRadius:11,background:value===true?"#eff6ff":"#fff"}}>
+   <input type="checkbox" style={{width:21,height:21,accentColor:"#1d4ed8",flexShrink:0}} checked={value===true} onChange={e=>onChange(e.target.checked)} />
+   {label}
+  </label>;
+ if(field.type==="radio")return <fieldset style={{...fieldStyle,border:"1px solid #e2e8f0",borderRadius:12,padding:11}}>
+  <legend style={{padding:"0 7px"}}>{label}</legend>
+  <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>{(field.options??["Option 1","Option 2"]).map(opt=><label key={opt} style={{display:"flex",alignItems:"center",gap:8,padding:"9px 11px",borderRadius:9,background:value===opt?"#eff6ff":"#f8fafc",cursor:"pointer",fontSize:12}}>
+    <input type="radio" name={field.id} checked={value===opt} onChange={()=>onChange(opt)} />{opt}
+  </label>)}</div>
+ </fieldset>;
  if(field.type==="pass_fail_na"||field.type==="yes_no"){
    const opts=field.type==="yes_no"?["YES","NO"]:["PASS","FAIL","NA"];
    return <div style={fieldStyle}>{label}<div style={{display:"grid",gridTemplateColumns:`repeat(${opts.length},minmax(0,1fr))`,gap:8}}>
