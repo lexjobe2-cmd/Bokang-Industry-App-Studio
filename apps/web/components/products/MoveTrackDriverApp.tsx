@@ -5,10 +5,12 @@ import {Home,Truck,ClipboardCheck,AlertTriangle,UserRound,Menu,X,ChevronRight,Ar
 import { usePersistentState } from "@bokang/persistence";
 import {MultiImageEvidence} from "./MultiImageEvidence";
 import type {LocalEvidenceImage} from "../../lib/image-evidence";
+import {credentialAlerts,driverEligibilityReasons} from "../../lib/driver-competency";
 import { miningCriticalChecks, miningPrestartChecks } from "@bokang/domain-data";
 import {
   MOVE_TRACK_KEYS,
   evaluatePrestart,
+  dateIsCurrent,
   starterDrivers,
   starterFleet,
   starterPolicies,
@@ -136,8 +138,20 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
   }
 
   function startVehicle(){
-    if(!driver || !activeAssignment || !vehicle || activeAssignment.status!=="Cleared"){
+    if(!driver || !activeAssignment || !vehicle || activeAssignment.status!=="Cleared"||lastPrestart?.result!=="GO"){
       setNotice("A GO pre-start is required before taking the vehicle.");
+      return;
+    }
+    const policy=policies.find(item=>item.name===activeAssignment.site);
+    const reasons=driverEligibilityReasons(driver,{
+      requireOpenPitPermit:policy?.requireOpenPitPermit??activeAssignment.site.toLowerCase().includes("mine"),
+      requireFirstAid:policy?.requireFirstAid??false,requireDefensiveDriving:policy?.requireDefensiveDriving??false
+    });
+    if(!dateIsCurrent(vehicle.roadworthyExpiry)||!dateIsCurrent(vehicle.extinguisherServiceDue)||["No-go","Maintenance","Out of service"].includes(vehicle.status)){
+      reasons.push("Vehicle statutory/service evidence is missing, expired or grounded");
+    }
+    if(reasons.length){
+      setNotice("Cannot start shift; qualifications or vehicle validity changed since pre-start: "+reasons.join("; ")+". Contact Admin → Drivers and complete a new pre-start.");
       return;
     }
     setAssignments((current)=>current.map((item)=>item.id===activeAssignment.id?{...item,status:"In use",startedAt:new Date().toISOString()}:item));
@@ -278,7 +292,20 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
       {incidents.filter((item)=>item.driverId===driver.id).map((item)=><article key={item.id} style={card}><div style={{display:"flex",justifyContent:"space-between"}}><strong>{item.category}</strong><span style={{fontSize:11,fontWeight:850}}>{item.status}</span></div><div style={{fontSize:12,color:"#667085",marginTop:5}}>{item.description}</div><div style={{fontSize:10,color:"#98a2b3",marginTop:5}}>{new Date(item.createdAt).toLocaleString()}</div><MultiImageEvidence label="Attached report photos" images={item.images??[]} readOnly/></article>)}
     </section>:null}
 
-    {tab==="profile"?<section style={{marginTop:18,...card}}><h2 style={{marginTop:0}}>Driver profile</h2><Info label="Site authorised" value={driver.siteAuthorised?"Yes":"No"}/><Info label="Open-pit permit" value={driver.openPitPermit?"Yes":"No"}/><Info label="First-aid training" value={driver.firstAid?"Yes":"No"}/><Info label="Defensive driving" value={driver.defensiveDriving?"Yes":"No"}/></section>:null}
+    {tab==="profile"?<section style={{marginTop:18,...card}}><h2 style={{marginTop:0}}>Driver profile</h2>
+     <Info label="Licence / reference" value={driver.licenceNo}/>
+     <Info label="Site authorised" value={driver.siteAuthorised?"Yes":"No"}/>
+     <Info label="Open-pit permit" value={driver.openPitPermit?"Yes":"No"}/>
+     <Info label="First-aid training" value={driver.firstAid?"Yes":"No"}/>
+     <Info label="Defensive driving" value={driver.defensiveDriving?"Yes":"No"}/>
+     <div aria-label="Driver credential expiry reminders" style={{display:"grid",gap:8,marginTop:13}}>
+      <strong style={{fontSize:13}}>Credentials & renewal reminders</strong>
+      {credentialAlerts(driver).map(alert=><div key={alert.key} style={{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap",fontSize:12}}>
+       <span>{alert.label} · {alert.date||"Expiry missing"}</span>
+       <strong style={{color:alert.state==="current"?"#047857":alert.state==="due"?"#9a670a":"#b42318"}}>{alert.state==="current"?"Current":alert.state==="due"?"Due in "+alert.daysRemaining+" days":alert.state==="expired"?"Expired":"Missing"}</strong>
+      </div>)}
+      <small style={{color:"#64748b"}}>Updates are managed in the Admin workspace. This is local demo evidence, not official certification.</small>
+     </div></section>:null}
 
     <nav aria-label="Driver mobile primary navigation" style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"min(720px,100%)",background:"rgba(255,255,255,.97)",borderTop:"1px solid #dbe4ef",boxShadow:"0 -6px 18px rgba(15,36,68,.09)",display:"grid",gridTemplateColumns:"repeat(5,minmax(0,1fr))",padding:"8px 6px calc(9px + env(safe-area-inset-bottom))",zIndex:50,backdropFilter:"blur(14px)"}}>
       {driverTabs.map(item=><button type="button" key={item.key} aria-current={tab===item.key?"page":undefined} onClick={()=>selectTab(item.key)}
