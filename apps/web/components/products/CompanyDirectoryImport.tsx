@@ -48,7 +48,7 @@ export function CompanyDirectoryImport({org,people,setPeople}:{
     <span style={{background:"var(--mt-surface-soft,#eaf3ff)",color:"var(--mt-link,#1d4ed8)",padding:9,borderRadius:12}}><UsersRound size={22}/></span>
     <div><strong style={{fontSize:14}}>Organization people directory</strong><div style={{color:"var(--mt-muted,#64748b)",fontSize:11,marginTop:3}}>{count} active local people · departments, cities, email and UPN</div></div>
    </div>
-   <button type="button" aria-expanded={open} onClick={()=>setOpen(v=>!v)} style={{...btn,display:"flex",gap:6,alignItems:"center"}}>Import staff directory <ChevronDown size={16}/></button>
+   <button type="button" className="movetrack-company-import" aria-expanded={open} onClick={()=>setOpen(v=>!v)} style={{...btn,display:"flex",gap:6,alignItems:"center"}}>Import staff directory <ChevronDown size={16}/></button>
   </div>
   <DesktopModal title="Import staff directory" open={open} onClose={()=>setOpen(false)}><div style={{borderTop:"1px solid #e2e8f0",paddingTop:12,display:"grid",gap:11}}>
    <p style={{fontSize:12,color:"var(--mt-muted,#475569)",margin:0,lineHeight:1.6}}>Bring a company-authorized employee CSV and immediately make staff searchable in all participant, chairperson, supervisor and responsible-person pickers. Column names such as <strong>DisplayName, Mail, UserPrincipalName, Department, JobTitle, City, OfficeLocation and EmployeeId</strong> are recognized.</p>
