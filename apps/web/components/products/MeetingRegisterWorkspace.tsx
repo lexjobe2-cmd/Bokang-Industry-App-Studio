@@ -181,7 +181,7 @@ export function MeetingRegisterWorkspace(){
     <div style={{border:"1px solid #bfdbfe",borderRadius:14,background:"#f0f6ff",padding:15,display:"grid",gap:12}}>
      <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"start",flexWrap:"wrap"}}>
       <div><strong style={{fontSize:15,color:"#143b66"}}>Apologies & absent persons</strong>
-       <p style={{fontSize:12,color:"#53647e",margin:"5px 0 0"}}>Use the searchable company people picker, like Power Apps. Select several people at once; no need to retype names, job titles or departments.</p>
+       <p style={{fontSize:12,color:"#53647e",margin:"5px 0 0"}}>Use the searchable company people picker. Select several people at once; no need to retype names, job titles or departments.</p>
       </div>
       <span style={{background:"#dbeafe",color:"#1e40af",borderRadius:999,padding:"6px 10px",fontSize:11,fontWeight:850}}>{attendance.absent} absent / {attendance.present} present</span>
      </div>

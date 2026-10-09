@@ -9,7 +9,7 @@ const ts=rootRequire('typescript'),React=require('react'),{renderToStaticMarkup}
 function load(path){
  const source=readFileSync(new URL(path,import.meta.url),'utf8');
  const code=ts.transpileModule(source,{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS}}).outputText;
- const module={exports:{}};vm.runInNewContext(code,{require,module,exports:module.exports});return module.exports;
+ const module={exports:{}};vm.runInNewContext(code,{require:(name)=>name==="./MoveTrackWorkspaceNav"?load("../apps/web/components/products/MoveTrackWorkspaceNav.tsx"):require(name),module,exports:module.exports});return module.exports;
 }
 const {QuickChoice,SmartMultiSelect,SearchableAssetPicker}=load('../apps/web/components/products/SmartFormInputs.tsx');
 const {RepeatableRowActions}=load('../apps/web/components/products/RepeatableRowActions.tsx');
@@ -29,4 +29,13 @@ test('row movement boundaries disable unavailable actions and preserve explicit 
 test('asset picker searches fleet and retains selected asset identity',()=>{
  const html=renderToStaticMarkup(React.createElement(SearchableAssetPicker,{assets:[{id:'truck-1',fleetNo:'DT-001',makeModel:'Dump truck'}],value:'truck-1',onChange:noop}));
  assert.match(html,/aria-label="Search fleet assets"/);assert.match(html,/value="truck-1" selected=""/);
+});
+
+const {MoveTrackAppShellNav}=load('../apps/web/components/products/MoveTrackAppShellNav.tsx');
+test('mobile dock exposes five requested destinations with Fleet active and a separate hamburger',()=>{
+ const html=renderToStaticMarkup(React.createElement(MoveTrackAppShellNav,{activeView:'fleet',atHome:false,onHome:noop,onSearch:noop,onNavigate:noop,onCompany:noop,onWorkflow:noop,theme:'light',onToggleTheme:noop}));
+ const dock=html.match(/<nav[^>]*aria-label="MoveTrack mobile primary navigation"[^>]*>(.*?)<\/nav>/)?.[1];
+ assert.ok(dock);assert.equal((dock.match(/<button/g)||[]).length,5);
+ for(const label of ['Home','Fleet','Forms','Analytics','Profile'])assert.ok(dock.includes('>'+label+'</span>'));
+ assert.match(dock,/aria-current="page"/);assert.match(html,/aria-label="Open navigation menu"/);
 });

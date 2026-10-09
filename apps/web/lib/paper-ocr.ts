@@ -1,5 +1,5 @@
 import {parsePaperText,type PaperExtraction} from "@bokang/domain-data/paper-forms";
-import {proposePaperControls,mergePaperLayout,type PaperLine,type VisualMark,type PdfWidget} from "@bokang/domain-data/paper-layout";
+import {proposePaperControls,mergePaperLayout,filterNativeTextGlyphMarks,type PaperLine,type VisualMark,type PdfWidget} from "@bokang/domain-data/paper-layout";
 import {canvasPaperShapes} from "./paper-shapes";
 export type PaperProgress={phase:string;percent:number};
 const MAX_BYTES=12*1024*1024,MAX_PAGES=5;
@@ -98,7 +98,8 @@ async function textFromPdf(file:File,progress:(value:PaperProgress)=>void){
    const ctx=canvas.getContext("2d",{willReadFrequently:true});
    if(!ctx)throw Error("Unable to render this PDF page.");
    await page.render({canvas,canvasContext:ctx,viewport}).promise;
-   allMarks.push(...canvasPaperShapes(canvas,i));
+   const glyphRuns=content.items.flatMap(item=>positionedPdfLines([item],viewport,pdfjs,i));
+   allMarks.push(...filterNativeTextGlyphMarks(glyphRuns,canvasPaperShapes(canvas,i)));
    if(text.length>=65){
     collected.push(text);allLines.push(...digital);
    }else{

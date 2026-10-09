@@ -47,3 +47,21 @@ test('new meeting attendance and apologies render real PDF and editable Word pac
  assert.equal(pdf.subarray(0,4).toString(),'%PDF');assert.equal(word.subarray(0,2).toString(),'PK');
  assert.ok(pdf.length>3000);assert.ok(word.length>3000);
 });
+
+test('native PDF glyphs cannot masquerade as radio controls; YES/NO/N/A remains one choice',async()=>{
+ const {filterNativeTextGlyphMarks,inferQuestionType}=await import('../packages/domain-data/src/paper-layout.ts');
+ const runs=[{page:1,text:'Inspector: ___________',x:10,y:10,width:100,height:15}];
+ const glyph={page:1,kind:'radio',x:20,y:12,width:10,height:11,confidence:.86};
+ const realBox={page:1,kind:'checkbox',x:130,y:12,width:12,height:12,confidence:.86};
+ const rule={page:1,kind:'underline',x:60,y:20,width:50,height:2,confidence:.63};
+ assert.deepEqual(filterNativeTextGlyphMarks(runs,[glyph,realBox,rule]),[realBox,rule]);
+ assert.deepEqual(inferQuestionType('Clear access? YES / NO / N/A'),{type:'yes_no',options:['YES','NO','NA']});
+});
+
+test('required repeating checkboxes and critical failures cannot be bypassed by populated rows',async()=>{
+ const {evaluateForm}=await import('../packages/domain-data/src/assurance-forms.ts');
+ const template={id:'r',version:1,title:'Repeating checks',category:'Safety',status:'PUBLISHED',sections:[{id:'s',title:'Rows',fields:[{id:'items',label:'Check register',type:'repeat',children:[{id:'confirmed',label:'Reviewed',type:'checkbox',required:true},{id:'brakes',label:'Critical brakes',type:'pass_fail_na',critical:true}]}]}]};
+ assert.equal(evaluateForm(template,{items:[{confirmed:false,brakes:'PASS'}]}).decision,'INCOMPLETE');
+ assert.equal(evaluateForm(template,{items:[{confirmed:true,brakes:'FAIL'}]}).decision,'NO_GO');
+ assert.equal(evaluateForm(template,{items:[{confirmed:true,brakes:'PASS'}]}).decision,'COMPLETE');
+});

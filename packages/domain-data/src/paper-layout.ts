@@ -12,7 +12,7 @@ export type DetectedElement={
 };
 export type LayoutProposal={elements:DetectedElement[];sections:FormSection[];summary:{checkbox:number;radio:number;text:number;signature:number;table:number;fields:number};warnings:string[]};
 
-const clean=(text:string)=>text.replace(/[☐☑□✓◯○●•]/g," ").replace(/\[\s*[xX]?\s*\]/g," ").replace(/\b(?:PASS\s*\/\s*FAIL\s*\/\s*N\/?A|YES\s*\/\s*NO)\b/gi," ").replace(/[_\.]{3,}/g," ").replace(/\s+/g," ").replace(/^[\s:;|\-]+|[\s:;|\-]+$/g,"").trim();
+const clean=(text:string)=>text.replace(/[☐☑□✓◯○●•]/g," ").replace(/\[\s*[xX]?\s*\]/g," ").replace(/\b(?:PASS\s*\/\s*FAIL\s*\/\s*N\/?A|YES\s*\/\s*NO(?:\s*\/\s*N\/?A)?)\b/gi," ").replace(/[_\.]{3,}/g," ").replace(/\s+/g," ").replace(/^[\s:;|\-]+|[\s:;|\-]+$/g,"").trim();
 const norm=(s:string)=>clean(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const center=(r:SourceRect)=>r.y+r.height/2;
 const overlap=(a:SourceRect,b:SourceRect)=>Math.max(0,Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
@@ -20,7 +20,7 @@ const types=new Set<FormField["type"]>(["checkbox","radio","yes_no","pass_fail_n
 export function inferQuestionType(text:string,markKinds:readonly VisualMark["kind"][]=[]):{type:FormField["type"];options?:string[]} {
  const s=text.trim();
  if(/\b(pass\s*[/|\-]\s*fail|pass\s+fail|p\s*\/\s*f\s*\/\s*n\/?a)\b/i.test(s))return {type:"pass_fail_na"};
- if(/\b(yes\s*[/|\-]\s*no|yes\s+no|y\s*\/\s*n)\b/i.test(s))return {type:"yes_no"};
+ if(/\b(yes\s*[/|\-]\s*no|yes\s+no|y\s*\/\s*n)\b/i.test(s))return {type:"yes_no",...(/\b(?:N\/?A|not applicable)\b/i.test(s)?{options:["YES","NO","NA"]}:{})};
  if(/\b(signature|signed by|authorised signature|sign off|initials of approver)\b/i.test(s))return {type:"signature"};
  if(/\b(date|expires|expiry)\b/i.test(s)&&!/updated/i.test(s))return {type:"date"};
  if(/\b(quantity|volume|amount|odometer|measurement|reading|height\s*\(m\)|weight\s*\(kg\)|total count)\b/i.test(s))return {type:"number"};
@@ -33,6 +33,13 @@ export function inferQuestionType(text:string,markKinds:readonly VisualMark["kin
  if(markKinds.length===1)return {type:"checkbox"};
  if(/\bselect one|choose one/i.test(s))return {type:"radio",options:["Option 1","Option 2"]};
  return {type:"text"};
+}
+/** Native PDF text bounds identify printed glyphs (O, D, 0) that resemble radio circles.
+ * Keep underline writing areas and shapes outside text, plus explicitly printed box symbols. */
+export function filterNativeTextGlyphMarks(runs:readonly PaperLine[],marks:readonly VisualMark[]){
+ return marks.filter(mark=>mark.kind==="underline"||!runs.some(run=>run.page===mark.page&&
+  !/[☐☑□◯○]|\[\s*[xX]?\s*\]|\(\s*\)/.test(run.text)&&
+  mark.x>=run.x-2&&mark.y>=run.y-2&&mark.x+mark.width<=run.x+run.width+2&&mark.y+mark.height<=run.y+run.height+2));
 }
 function nearest(lines:readonly PaperLine[],mark:SourceRect,page:number){
  const viable=lines.filter(l=>l.page===page).map(l=>{

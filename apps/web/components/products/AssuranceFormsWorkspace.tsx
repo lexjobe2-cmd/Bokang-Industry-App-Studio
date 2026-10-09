@@ -290,7 +290,7 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
   </label>)}</div>
  </fieldset>;
  if(field.type==="pass_fail_na"||field.type==="yes_no"){
-   const opts=field.type==="yes_no"?["YES","NO"]:["PASS","FAIL","NA"];
+   const opts=field.type==="yes_no"?(field.options??["YES","NO"]):["PASS","FAIL","NA"];
    return <div style={fieldStyle}>{label}<QuickChoice options={opts} value={typeof value==="string"?value:""} onChange={onChange}/></div>;
  }
  if(field.type==="repeat"){

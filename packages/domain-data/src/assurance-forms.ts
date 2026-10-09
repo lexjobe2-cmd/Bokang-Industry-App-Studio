@@ -42,7 +42,7 @@ export function isVisible(field: FormField, answers: FormAnswers) {
   if (!field.visibleWhen) return true;
   return answers[field.visibleWhen.fieldId] === field.visibleWhen.equals;
 }
-export function isAnswered(field: FormField, value: FormAnswer | undefined) {
+export function isAnswered(field: FormField, value: FormAnswer | undefined):boolean {
   if (value === undefined || value === null || value === "") return false;
   if (field.type === "signature") return isSignatureEvidence(value);
   if (field.type === "checkbox") return value===true;
@@ -56,7 +56,7 @@ export function isAnswered(field: FormField, value: FormAnswer | undefined) {
     return value.every(row=>{
       if(!row || typeof row!=="object" || Array.isArray(row))return false;
       const r=row as Record<string,PrimitiveAnswer>;
-      return children.every(child=>!child.required || (r[child.id]!==null && r[child.id]!==undefined && r[child.id]!==""));
+      return children.every(child=>!child.required || isAnswered(child,r[child.id]));
     });
   }
   if (Array.isArray(value)) return value.length > 0;
@@ -90,6 +90,21 @@ export function evaluateForm(template: FormTemplate, answers: FormAnswers, evide
       if (!missing.includes(f.id + ":evidence")) missing.push(f.id + ":evidence");
     }
   }
+  let repeatedFailure=false;
+  for(const parent of active){
+    if(parent.type!=="repeat"||!Array.isArray(answers[parent.id]))continue;
+    (answers[parent.id] as Record<string,PrimitiveAnswer>[]).forEach((row,index)=>{
+      if(!row||typeof row!=="object"||Array.isArray(row))return;
+      for(const child of parent.children??[]){
+        if(!isVisible(child,{...answers,...row}))continue;
+        const value=row[child.id],id=parent.id+":"+index+":"+child.id,answered=isAnswered(child,value);
+        if(child.required&&!answered)missing.push(id);
+        const failed=child.type==="pass_fail_na"?value==="FAIL":child.type==="yes_no"?value==="NO":child.type==="checkbox"&&child.critical?value===false:false;
+        if(child.critical&&(failed||answered&&value==="NA"))criticalFailures.push(id);
+        if(failed)repeatedFailure=true;
+      }
+    });
+  }
   const total = active.length;
   const highRisk = active.some(f=>{
     if(f.type!=="risk")return false;
@@ -98,7 +113,7 @@ export function evaluateForm(template: FormTemplate, answers: FormAnswers, evide
     return scoreRisk(defaultRiskMatrix,value as RiskAnswer).requiresApproval;
   });
   const decision = criticalFailures.length ? "NO_GO" : missing.length ? "INCOMPLETE" :
-    active.some(f => (f.type === "pass_fail_na" && answers[f.id] === "FAIL")) || highRisk ? "REVIEW" : "COMPLETE";
+    active.some(f => (f.type === "pass_fail_na" && answers[f.id] === "FAIL")) || repeatedFailure || highRisk ? "REVIEW" : "COMPLETE";
   return {completed,total,progress:total ? Math.round(completed / total * 100) : 100,missing,criticalFailures,decision};
 }
 export function makeSubmission(args: {

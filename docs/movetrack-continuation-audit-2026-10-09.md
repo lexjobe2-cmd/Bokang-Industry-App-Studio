@@ -34,10 +34,14 @@ These are UX/library references, not external processing services. No authentica
 
 ## Verification
 
-Local TypeScript checks for standalone app, web app and domain-data; assurance schema validator; 83 regression tests including new component, attendance/action/snapshot and actual document-generation tests. Standalone production Vite build passes. Existing document fixture generation passes. Runtime and deployment evidence is recorded in the PR after upload verification.
+Local TypeScript checks for standalone app, web app and domain-data; assurance schema validator; 86 regression tests including new component, attendance/action/snapshot and actual document-generation tests. Standalone production Vite build passes. Existing document fixture generation passes. Runtime and deployment evidence is recorded in the PR after upload verification.
 
 Manual runtime path: Home → New meeting → directory chair/minute taker → multi-attendees → late/early statuses → staff apologies → notification/reason/notes → actions → switch Forms/Fleet and return → refresh → draft export. Analytics separates absent people and owner-linked overdue actions. OCR review still requires correcting uncertain source controls before publishing.
 
 ## Limits
 
 All analytics and records are browser-local, not an organization-wide cross-device dataset. Signer selection and drawn marks remain unverified acknowledgements, never real permits or proof of competence. Existing historical v3 submissions remain unchanged. Main bundle warning remains (roughly 824 KB minified); PDF/DOCX/OCR dependencies are separate lazy-loaded chunks. Accuracy testing uses deterministic PDF/widget/bitmap fixtures; production scanned handwriting and complex table fidelity still need human review.
+
+## Runtime correction after first deployment
+
+Live native-PDF testing found printed glyphs (O/D/0) being proposed as radio circles. Added native text-glyph exclusion before proposing geometric controls, while preserving genuine controls outside text and blank writing rules. YES/NO/N/A printed labels now keep all three choices in the reconstructed decision field and preview. Regression tests cover both cases. Required booleans and critical decisions in repeating rows now use the standard safety evaluator rather than treating any non-empty primitive as completed.
