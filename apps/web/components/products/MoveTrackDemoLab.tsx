@@ -114,7 +114,7 @@ export function MoveTrackDemoLab(){
    <OrganizationOnboarding/>
    <section aria-label="Workspace quick access" style={{...style,display:"grid",gap:12}}>
     <div><p style={{fontSize:10,color:"#2563eb",fontWeight:900,letterSpacing:1.2,margin:0}}>YOUR MOVE TRACK WORKSPACE</p>
-     <h2 style={{fontSize:21,margin:"5px 0"}}What would you like to do?</h2>
+     <h2 style={{fontSize:21,margin:"5px 0"}}>What would you like to do?</h2>
      <p style={{fontSize:12,color:"#64748b",margin:0}}>Pick your work area first. Your saved records remain available across all views.</p>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:9}}>
