@@ -12,6 +12,7 @@ import type {AnswerType,FormCategory,FormField,FormSection,FormTemplate} from "@
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {buildFormDocument} from "../../lib/form-exports";
 import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance";
+import {unreviewedPaperFields} from "@bokang/domain-data/paper-forms";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 
 const card:React.CSSProperties={background:"#fff",border:"1px solid #d9e2ec",borderRadius:16,padding:17};
@@ -60,6 +61,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  function reset(){setEditing(null);setTitle("");setDescription("");setCategory("Inspections");setDocumentType("GENERAL");setJobId("");setSections([newSection()]);setNotice("");setPanel("create");}
  function save(publish:boolean){
   try{
+    if(publish&&unreviewedPaperFields(sections).length)throw Error("Review imported source controls in Paper → Digital before publishing.");
     const now=new Date().toISOString();
     const v=makeCustomTemplate({id:current?.id??"custom-"+crypto.randomUUID(),organization:org,
      title,category,description,sections,documentType,jobId:jobId||undefined,now,status:publish?"PUBLISHED":"DRAFT",
