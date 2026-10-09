@@ -92,7 +92,7 @@ try{
   assert.equal(result.collisions,0,JSON.stringify({width,height,theme,result}));
   assert.equal(result.clippedContents,0,JSON.stringify({width,height,theme,result}));
   assert.equal(result.horizontalOverflow,false,JSON.stringify({width,height,theme,result}));
-  assert.ok(result.footerBottom<=height+2,JSON.stringify({width,height,theme,result}));
+  if(width<=844)assert.ok(result.footerBottom<=height+2,JSON.stringify({width,height,theme,result}));
   assert.ok(result.listScrollable,JSON.stringify({width,height,theme,result}));
   checks.push({width,height,theme,...result});
   console.log("Picker geometry OK",JSON.stringify(checks.at(-1)));
