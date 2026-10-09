@@ -51,10 +51,10 @@ export function VehicleDocuments({documents,onChange,readOnly=false,label="Vehic
   </div>
   {documents.length?documents.map(doc=><div key={doc.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flexWrap:"wrap",border:"1px solid #e2e8f0",padding:8,borderRadius:9}}>
    <span title={doc.name} style={{fontSize:12,overflowWrap:"anywhere",flex:"1 1 160px"}}>{doc.name}</span>
-   <button type="button" style={{minHeight:44,padding:"7px 10px",borderRadius:8,border:"1px solid #94a3b8",background:"#fff",fontSize:12}} onClick={()=>documentDownload(doc)}>Download</button>
-   {!readOnly&&onChange?<button type="button" aria-label={"Remove document "+doc.name} style={{minHeight:44,padding:"7px 10px",borderRadius:8,border:"1px solid #fda4af",background:"#fff",color:"#b42318",fontSize:12}} onClick={()=>onChange(documents.filter(item=>item.id!==doc.id))}>Remove</button>:null}
-  </div>):<small style={{fontSize:11,color:"#64748b"}}>No PDF documents attached.</small>}
-  {!readOnly?<small style={{fontSize:11,color:"#64748b"}}>Up to four PDFs, 250 KB each. Browser-local only; files are not verified certificates.</small>:null}
-  {error?<p role="alert" style={{fontSize:12,color:"#b42318",margin:0}}>{error}</p>:null}
+   <button type="button" style={{minHeight:44,padding:"7px 10px",borderRadius:8,border:"1px solid #94a3b8",background:"var(--mt-surface,#fff)",fontSize:12}} onClick={()=>documentDownload(doc)}>Download</button>
+   {!readOnly&&onChange?<button type="button" aria-label={"Remove document "+doc.name} style={{minHeight:44,padding:"7px 10px",borderRadius:8,border:"1px solid #fda4af",background:"var(--mt-surface,#fff)",color:"var(--mt-danger,#b42318)",fontSize:12}} onClick={()=>onChange(documents.filter(item=>item.id!==doc.id))}>Remove</button>:null}
+  </div>):<small style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>No PDF documents attached.</small>}
+  {!readOnly?<small style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>Up to four PDFs, 250 KB each. Browser-local only; files are not verified certificates.</small>:null}
+  {error?<p role="alert" style={{fontSize:12,color:"var(--mt-danger,#b42318)",margin:0}}>{error}</p>:null}
  </section>;
 }

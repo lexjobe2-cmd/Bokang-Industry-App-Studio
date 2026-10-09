@@ -1,7 +1,7 @@
 "use client";
 import {useId,useState} from "react";
 import type {FleetVehicle} from "../../lib/move-track";
-const control:React.CSSProperties={width:"100%",minHeight:44,border:"1px solid #cbd5e1",borderRadius:10,padding:"10px 12px",background:"#fff",color:"#153553",font:"inherit"};
+const control:React.CSSProperties={width:"100%",minHeight:44,border:"1px solid #cbd5e1",borderRadius:10,padding:"10px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#153553)",font:"inherit"};
 export function QuickChoice({options,value,onChange}:{options:readonly string[];value:string;onChange:(v:string)=>void}){
  return <div style={{display:"flex",flexWrap:"wrap",gap:8}}>{options.map(v=><button type="button" key={v} aria-pressed={value===v} onClick={()=>onChange(v)} style={{...control,width:"auto",flex:"1 1 70px",background:value===v?(v==="FAIL"||v==="NO"?"#fee2e2":"#dbeafe"):"#fff",borderColor:value===v?"#2563eb":"#cbd5e1",fontWeight:800}}>{v==="NA"?"N/A":v}</button>)}</div>;
 }
