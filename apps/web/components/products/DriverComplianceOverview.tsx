@@ -11,7 +11,7 @@ type Filter="all"|"blocked"|"due"|"evidence"|"ready";
 type Props={drivers:readonly FleetDriver[];assignments:readonly FleetAssignment[];
  directory:readonly PersonRecord[];orgId:string;sites:readonly string[];policies:readonly FleetSitePolicy[];
  onManageDriver:(id:string)=>void;};
-const border="#dbe5ef";
+const border="var(--mt-border,#dbe5ef)";
 function downloadCsv(content:string,filename:string){
  const objectUrl=URL.createObjectURL(new Blob([content],{type:"text/csv;charset=utf-8"}));
  try{
@@ -22,9 +22,9 @@ function downloadCsv(content:string,filename:string){
   window.setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);
  }
 }
-const statuses={blocked:{label:"Criteria not met",text:"#b42318",background:"var(--mt-surface-soft,#fff1f2)"},
- busy:{label:"Currently allocated / off shift",text:"#475569",background:"var(--mt-surface-soft,#f1f5f9)"},
- ready:{label:"Recorded criteria met",text:"#047857",background:"var(--mt-surface-soft,#ecfdf5)"}} as const;
+const statuses={blocked:{label:"Criteria not met",text:"var(--mt-danger,#a51d2d)",background:"var(--mt-danger-bg,#fef3f2)"},
+ busy:{label:"Currently allocated / off shift",text:"var(--mt-muted,#516078)",background:"var(--mt-surface-soft,#f1f5f9)"},
+ ready:{label:"Recorded criteria met",text:"var(--mt-success,#087454)",background:"var(--mt-success-bg,#ecfdf3)"}} as const;
 
 export function DriverComplianceOverview({drivers,assignments,directory,orgId,sites,policies,onManageDriver}:Props){
  const siteOptions=[...new Set([...sites,...policies.map(policy=>policy.name)].filter(Boolean))];
@@ -77,7 +77,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
   {label:"Renewal due in 30 days",value:summary.counts.dueSoon},
   {label:"Missing linked evidence",value:summary.counts.missingEvidence}
  ];
- return <section aria-label="Driver competency compliance overview" style={{display:"grid",gap:15,padding:16,border:"1px solid #bed2eb",background:"var(--mt-surface-soft,#f8fbff)",borderRadius:18,minWidth:0}}>
+ return <section aria-label="Driver competency compliance overview" style={{display:"grid",gap:15,padding:16,border:"1px solid var(--mt-border,#bed2eb)",background:"var(--mt-surface-soft,#f8fbff)",borderRadius:18,minWidth:0}}>
   <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
    <div style={{minWidth:0}}>
     <p style={{margin:0,fontSize:11,color:"var(--mt-link,#1d4ed8)",fontWeight:850,letterSpacing:1.1}}>ADMIN · DRIVER COMPLIANCE</p>
@@ -85,7 +85,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
     <p style={{margin:0,fontSize:12,color:"var(--mt-muted,#475569)",lineHeight:1.6}}>Assessment against the selected site's recorded requirements. Certificate links are unverified references. Meeting recorded criteria does not constitute a dispatch release or permission to work.</p>
    </div>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800,minWidth:"min(100%,220px)"}}>Assess for site
-    <select value={selectedSite} onChange={event=>{setSite(event.target.value);setPage(1);setActionPage(1);}} style={{width:"100%",minHeight:44,padding:9,border:"1px solid #a8bfdc",borderRadius:10,background:"var(--mt-surface,#fff)",font:"inherit"}}>
+    <select value={selectedSite} onChange={event=>{setSite(event.target.value);setPage(1);setActionPage(1);}} style={{width:"100%",minHeight:44,padding:9,border:"1px solid var(--mt-border,#a8bfdc)",borderRadius:10,background:"var(--mt-surface,#fff)",font:"inherit"}}>
      {siteOptions.length?siteOptions.map(option=><option value={option} key={option}>{option}</option>):<option value="">Company baseline</option>}
     </select>
    </label>
@@ -101,8 +101,8 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
    <p style={{fontSize:12,margin:0,color:"var(--mt-muted,#475569)"}}>Download all drivers for the selected site, not just the current search, filter or page. Reports contain local employee names and competency details; store them only in authorized company systems.</p>
    <div style={{display:"flex",flexWrap:"wrap",gap:8,alignItems:"center"}}>
     <button type="button" onClick={()=>exportReport("driver-competency")} style={{minHeight:44,padding:"9px 12px",background:"#1d4ed8",color:"#fff",fontWeight:850,border:0,borderRadius:10,cursor:"pointer"}}>Download competency CSV</button>
-    <button type="button" onClick={()=>exportReport("supervisor-renewals")} style={{minHeight:44,padding:"9px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#174272)",fontWeight:850,border:"1px solid #a8bfdc",borderRadius:10,cursor:"pointer"}}>Download renewal actions CSV</button>
-    <button type="button" onClick={()=>setActionsOpen(true)} style={{minHeight:44,padding:"9px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#174272)",fontWeight:850,border:"1px solid #a8bfdc",borderRadius:10,cursor:"pointer"}}>View supervisor action list ({supervisorActions.length})</button>
+    <button type="button" onClick={()=>exportReport("supervisor-renewals")} style={{minHeight:44,padding:"9px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#174272)",fontWeight:850,border:"1px solid var(--mt-border,#a8bfdc)",borderRadius:10,cursor:"pointer"}}>Download renewal actions CSV</button>
+    <button type="button" onClick={()=>setActionsOpen(true)} style={{minHeight:44,padding:"9px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#174272)",fontWeight:850,border:"1px solid var(--mt-border,#a8bfdc)",borderRadius:10,cursor:"pointer"}}>View supervisor action list ({supervisorActions.length})</button>
    </div>
    {exportError?<p role="alert" style={{color:"var(--mt-danger,#b42318)",fontSize:12,margin:0}}>{exportError}</p>:null}
   </div>
@@ -117,7 +117,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
     </div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"end",flexWrap:"wrap",gap:10}}>
      <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800}}>Action priority
-      <select aria-label="Filter supervisor action priorities" value={actionFilter} onChange={event=>{setActionFilter(event.target.value as SupervisorActionPriority|"all");setActionPage(1);}} style={{minHeight:44,border:"1px solid #cbd5e1",borderRadius:9,padding:9,background:"var(--mt-surface,#fff)"}}>
+      <select aria-label="Filter supervisor action priorities" value={actionFilter} onChange={event=>{setActionFilter(event.target.value as SupervisorActionPriority|"all");setActionPage(1);}} style={{minHeight:44,border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:9,padding:9,background:"var(--mt-surface,#fff)"}}>
        <option value="all">All follow-ups</option>
        <option value="Immediate">Before dispatch</option>
        <option value="Due within 30 days">Renew within 30 days</option>
@@ -135,21 +135,21 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
       </div>
       <span>{action.issue}{action.expiry?" · "+action.expiry:""}</span>
       <span style={{color:"var(--mt-muted,#475569)"}}>{action.action}</span>
-      <button type="button" style={{minHeight:44,justifySelf:"start",border:"1px solid #b4cde9",borderRadius:9,background:"var(--mt-surface,#fff)",padding:"8px 11px",color:"var(--mt-link,#1d4ed8)",fontWeight:850}} onClick={()=>{setActionsOpen(false);onManageDriver(action.driverId);}}>Manage driver's record →</button>
+      <button type="button" style={{minHeight:44,justifySelf:"start",border:"1px solid var(--mt-border,#b4cde9)",borderRadius:9,background:"var(--mt-surface,#fff)",padding:"8px 11px",color:"var(--mt-link,#1d4ed8)",fontWeight:850}} onClick={()=>{setActionsOpen(false);onManageDriver(action.driverId);}}>Manage driver's record →</button>
      </article>)}
      {!filteredActions.length?<p style={{fontSize:12,color:"var(--mt-success,#047857)"}}>No action items match this priority for the selected site.</p>:null}
     </div>
     {actionPages>1?<div aria-label="Supervisor action pages" style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:9}}>
-     <button type="button" disabled={currentActionPage<=1} onClick={()=>setActionPage(p=>Math.max(1,p-1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid #cbd5e1",borderRadius:9,background:"var(--mt-surface,#fff)"}}>← Previous</button>
+     <button type="button" disabled={currentActionPage<=1} onClick={()=>setActionPage(p=>Math.max(1,p-1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:9,background:"var(--mt-surface,#fff)"}}>← Previous</button>
      <small>Page {currentActionPage} of {actionPages}</small>
-     <button type="button" disabled={currentActionPage>=actionPages} onClick={()=>setActionPage(p=>Math.min(actionPages,p+1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid #cbd5e1",borderRadius:9,background:"var(--mt-surface,#fff)"}}>Next →</button>
+     <button type="button" disabled={currentActionPage>=actionPages} onClick={()=>setActionPage(p=>Math.min(actionPages,p+1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:9,background:"var(--mt-surface,#fff)"}}>Next →</button>
     </div>:null}
-    <button type="button" onClick={()=>setActionsOpen(false)} style={{minHeight:44,justifySelf:"start",padding:"8px 14px",border:"1px solid #94a3b8",borderRadius:9,background:"var(--mt-surface,#fff)"}}>Close action list</button>
+    <button type="button" onClick={()=>setActionsOpen(false)} style={{minHeight:44,justifySelf:"start",padding:"8px 14px",border:"1px solid var(--mt-border,#94a3b8)",borderRadius:9,background:"var(--mt-surface,#fff)"}}>Close action list</button>
    </div>
   </DesktopModal>
   <div style={{display:"flex",gap:10,alignItems:"end",justifyContent:"space-between",flexWrap:"wrap"}}>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800}}>Show driver records
-    <select aria-label="Filter driver compliance records" value={filter} onChange={event=>{setFilter(event.target.value as Filter);setPage(1);}} style={{minHeight:44,maxWidth:"100%",border:"1px solid #a8bfdc",borderRadius:10,background:"var(--mt-surface,#fff)",padding:10,font:"inherit"}}>
+    <select aria-label="Filter driver compliance records" value={filter} onChange={event=>{setFilter(event.target.value as Filter);setPage(1);}} style={{minHeight:44,maxWidth:"100%",border:"1px solid var(--mt-border,#a8bfdc)",borderRadius:10,background:"var(--mt-surface,#fff)",padding:10,font:"inherit"}}>
      <option value="all">All drivers</option>
      <option value="blocked">Not meeting criteria</option>
      <option value="due">Due soon or expired</option>
@@ -158,7 +158,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
     </select>
    </label>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800}}>Search drivers
-    <input type="search" value={query} aria-label="Find driver in compliance overview" placeholder="Name or driver ID" onChange={event=>{setQuery(event.target.value);setPage(1);}} style={{minHeight:44,maxWidth:"100%",padding:10,border:"1px solid #a8bfdc",borderRadius:10,background:"var(--mt-surface,#fff)",font:"inherit"}}/>
+    <input type="search" value={query} aria-label="Find driver in compliance overview" placeholder="Name or driver ID" onChange={event=>{setQuery(event.target.value);setPage(1);}} style={{minHeight:44,maxWidth:"100%",padding:10,border:"1px solid var(--mt-border,#a8bfdc)",borderRadius:10,background:"var(--mt-surface,#fff)",font:"inherit"}}/>
    </label>
    <span role="status" style={{fontSize:12,color:"var(--mt-muted,#475569)"}}>{rows.length} matching of {summary.counts.total} drivers</span>
   </div>
@@ -180,15 +180,15 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
      {row.missingEvidence.length?<div style={{fontSize:12,color:"var(--mt-danger,#92400e)",display:"grid",gap:3}}><strong>Unlinked supporting evidence ({row.missingEvidence.length})</strong>
       {missingEvidenceLabels(row).map(label=><span key={label}>• {label}</span>)}
      </div>:<small style={{fontSize:11,color:"var(--mt-success,#047857)"}}>Each recorded active competency has a linked PDF reference (not independently verified).</small>}
-     <button type="button" onClick={()=>onManageDriver(row.id)} style={{marginTop:4,minHeight:44,justifySelf:"start",padding:"8px 12px",border:"1px solid #b4cde9",borderRadius:10,background:"var(--mt-surface,#fff)",color:"var(--mt-link,#1d4ed8)",fontWeight:850,cursor:"pointer"}}>Manage driver record →</button>
+     <button type="button" onClick={()=>onManageDriver(row.id)} style={{marginTop:4,minHeight:44,justifySelf:"start",padding:"8px 12px",border:"1px solid var(--mt-border,#b4cde9)",borderRadius:10,background:"var(--mt-surface,#fff)",color:"var(--mt-link,#1d4ed8)",fontWeight:850,cursor:"pointer"}}>Manage driver record →</button>
     </article>;
    })}
    {!rows.length?<p style={{fontSize:12,color:"var(--mt-muted,#64748b)"}}>{summary.counts.total?"No drivers match this filter.":"No drivers onboarded yet. Use Admin → Drivers to add them."}</p>:null}
   </div>
   {pages>1?<div aria-label="Compliance result pages" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
-   <button type="button" disabled={activePage<=1} onClick={()=>setPage(current=>Math.max(1,current-1))} style={{minHeight:44,border:"1px solid #a8bfdc",borderRadius:9,background:"var(--mt-surface,#fff)",padding:"8px 12px",fontWeight:800}}>← Previous</button>
+   <button type="button" disabled={activePage<=1} onClick={()=>setPage(current=>Math.max(1,current-1))} style={{minHeight:44,border:"1px solid var(--mt-border,#a8bfdc)",borderRadius:9,background:"var(--mt-surface,#fff)",padding:"8px 12px",fontWeight:800}}>← Previous</button>
    <span style={{fontSize:12,color:"var(--mt-muted,#475569)"}}>Page {activePage} of {pages}</span>
-   <button type="button" disabled={activePage>=pages} onClick={()=>setPage(current=>Math.min(pages,current+1))} style={{minHeight:44,border:"1px solid #a8bfdc",borderRadius:9,background:"var(--mt-surface,#fff)",padding:"8px 12px",fontWeight:800}}>Next →</button>
+   <button type="button" disabled={activePage>=pages} onClick={()=>setPage(current=>Math.min(pages,current+1))} style={{minHeight:44,border:"1px solid var(--mt-border,#a8bfdc)",borderRadius:9,background:"var(--mt-surface,#fff)",padding:"8px 12px",fontWeight:800}}>Next →</button>
   </div>:null}
   <small style={{color:"var(--mt-muted,#64748b)",fontSize:11}}>Read-only calculation from browser-local driver, workforce and assignment records. Counts reflect the records currently saved on this device and are recalculated on opening this view. No external certificate verification or automated notifications are active.</small>
  </section>;
