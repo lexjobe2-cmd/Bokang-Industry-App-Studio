@@ -72,7 +72,7 @@ test("source review gate blocks publishing guessed graphical fields until review
 
 test("OCR proposes real directory pickers and signatures for familiar printed form labels",()=>{
  const extraction=parsePaperText("Weekly SHE form.pdf",
-  "SHE Meeting and attendance register\\nChairperson: __________\\nStaff attending: __________\\nApologies: __________\\nSupervisor signature: __________\\nMeeting date: _______",90,1);
+  ["SHE Meeting and attendance register","Chairperson: __________","Staff attending: __________","Apologies: __________","Supervisor signature: __________","Meeting date: _______"].join(String.fromCharCode(10)),90,1);
  const fields=extraction.sections.flatMap(x=>x.fields);
  assert.equal(fields.find(x=>/Chairperson/i.test(x.label))?.type,"person");
  assert.equal(fields.find(x=>/Staff attending/i.test(x.label))?.type,"people");
