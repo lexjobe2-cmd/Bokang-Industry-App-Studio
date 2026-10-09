@@ -478,7 +478,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
 
     {view==="forms"?<AssuranceFormsWorkspace />:null}
     {view==="meetings"?<MeetingRegisterWorkspace />:null}
-    {view==="paper"?<PaperToDigitalWorkspace />:null}
+    {view==="paper"?<PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/>:null}
     {view==="release"?<FleetReleaseWorkspace />:null}
     {view==="local-data"?<LocalWorkspacePanel />:null}
     {view==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}
