@@ -661,5 +661,35 @@ export function MoveTrackThemeStyles(){
 /* Theme tokens also keep common secondary action labels visible on dark cards. */
 .movetrack-root[data-theme="dark"] :is(.movetrack-task-mobile-nav,.movetrack-task-mobile-summary) {color:var(--mt-ink);}
 
+
+/* Responsive text contract: grow to content, wrap long data, preserve semantics. */
+.movetrack-root .movetrack-readable-text,.movetrack-root .movetrack-rich-content {
+ min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere;word-break:normal;white-space:normal;line-height:1.55;
+}
+.movetrack-root .movetrack-readable-text {display:block;}
+.movetrack-root .movetrack-readable-text[data-variant="heading"] {font-weight:800;line-height:1.3;text-wrap:pretty;}
+.movetrack-root .movetrack-readable-text[data-variant="meta"] {font-size:0.8rem;line-height:1.5;}
+.movetrack-root .movetrack-readable-text[data-preserve-lines="true"] {white-space:pre-wrap;}
+.movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="primary"] {color:var(--mt-ink,#172b46);}
+.movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="muted"] {color:var(--mt-muted,#516078);}
+.movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="link"] {color:var(--mt-link,#174fa8);}
+.movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="danger"] {color:var(--mt-danger,#a51d2d);}
+.movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="warning"] {color:var(--mt-warning,#905a09);}
+.movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="success"] {color:var(--mt-success,#087454);}
+.movetrack-root .movetrack-rich-content {display:grid;gap:0.65rem;}
+.movetrack-root .movetrack-rich-content :is(p,h2,h3,ul,ol,blockquote,li) {
+ min-width:0;max-width:100%;overflow-wrap:anywhere;white-space:normal;line-height:1.65;margin:0;
+}
+.movetrack-root .movetrack-rich-content :is(ul,ol) {padding-inline-start:1.5rem;}
+.movetrack-root .movetrack-rich-content li {padding-block:0.1rem;}
+.movetrack-root .movetrack-rich-content h2 {font-size:clamp(1.1rem,1.04rem + 0.5vw,1.35rem);line-height:1.35;}
+.movetrack-root .movetrack-rich-content h3 {font-size:clamp(1rem,0.97rem + 0.4vw,1.2rem);line-height:1.4;}
+.movetrack-root .movetrack-rich-content blockquote {border-inline-start:3px solid var(--mt-border,#d8e3f0);padding-inline-start:1rem;}
+.movetrack-root .movetrack-rich-content code {
+ overflow-wrap:anywhere;border-radius:0.25rem;padding:0.1rem 0.25rem;
+ background:var(--mt-surface-soft,#f3f7fc);color:var(--mt-ink,#172b46);
+}
+.movetrack-root .movetrack-rich-content a {color:var(--mt-link,#174fa8);text-decoration:underline;text-underline-offset:2px;}
+
 `}</style>;
 }
