@@ -30,19 +30,19 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] [style*="background-color: rgb(255, 255, 255)"]{
  background-color: #14253b !important; border-color: #38506b !important;
 }
-.movetrack-root[data-theme="dark"] [style*="color: rgb(16, 24, 40)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 35, 58)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(52, 64, 84)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(17, 24, 39)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(20, 43, 77)"] {color: #eef5ff !important;}
-.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 52, 85)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 55, 100)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 43, 73)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(52, 65, 84)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 49, 83)"] {color: #eef5ff !important;}
-.movetrack-root[data-theme="dark"] [style*="color: rgb(100, 116, 139)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(102, 112, 133)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(71, 85, 105)"] {color: #bacbe0 !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(16, 24, 40)"],[style*="; color: rgb(16, 24, 40)"],[style*=";color: rgb(16, 24, 40)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(21, 35, 58)"],[style*="; color: rgb(21, 35, 58)"],[style*=";color: rgb(21, 35, 58)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(52, 64, 84)"],[style*="; color: rgb(52, 64, 84)"],[style*=";color: rgb(52, 64, 84)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(17, 24, 39)"],[style*="; color: rgb(17, 24, 39)"],[style*=";color: rgb(17, 24, 39)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(20, 43, 77)"],[style*="; color: rgb(20, 43, 77)"],[style*=";color: rgb(20, 43, 77)"]) {color: #eef5ff !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(21, 52, 85)"],[style*="; color: rgb(21, 52, 85)"],[style*=";color: rgb(21, 52, 85)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 55, 100)"],[style*="; color: rgb(23, 55, 100)"],[style*=";color: rgb(23, 55, 100)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(24, 43, 73)"],[style*="; color: rgb(24, 43, 73)"],[style*=";color: rgb(24, 43, 73)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(52, 65, 84)"],[style*="; color: rgb(52, 65, 84)"],[style*=";color: rgb(52, 65, 84)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(24, 49, 83)"],[style*="; color: rgb(24, 49, 83)"],[style*=";color: rgb(24, 49, 83)"]) {color: #eef5ff !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(100, 116, 139)"],[style*="; color: rgb(100, 116, 139)"],[style*=";color: rgb(100, 116, 139)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(102, 112, 133)"],[style*="; color: rgb(102, 112, 133)"],[style*=";color: rgb(102, 112, 133)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(71, 85, 105)"],[style*="; color: rgb(71, 85, 105)"],[style*=";color: rgb(71, 85, 105)"]) {color: #bacbe0 !important;}
 .movetrack-root[data-theme="dark"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),select,textarea) {
  color: #eff6ff !important; background-color: #1d324d !important;
  border-color: #49627e !important;
@@ -56,8 +56,8 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] [aria-label="Electronic signature capture"] canvas + p {color:#334155 !important;}
 .movetrack-root[data-theme="dark"] a:not([style*="color:"]) {color:#a4caff;}
 
-.movetrack-root[data-theme="dark"] [style*="color: rgb(29, 78, 216)"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(37, 99, 235)"] {color:#93c5fd !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(29, 78, 216)"],[style*="; color: rgb(29, 78, 216)"],[style*=";color: rgb(29, 78, 216)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(37, 99, 235)"],[style*="; color: rgb(37, 99, 235)"],[style*=";color: rgb(37, 99, 235)"]) {color:#93c5fd !important;}
 
 /* Desktop workbench and mobile guided views share data, not screen structure. */
 .movetrack-task-workspace {display:grid;gap:16px;align-items:start;min-width:0;}
@@ -332,114 +332,114 @@ export function MoveTrackThemeStyles(){
 }
 /* Semantic text colors: override only legacy hard-coded ink/muted/status/link values.
    Intentionally white-on-blue actions and dark-hero headings are untouched. */
-.movetrack-root[data-theme="dark"] [style*="color: #101827"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(16, 24, 39)"],
-.movetrack-root[data-theme="dark"] [style*="color: #101828"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(16, 24, 40)"],
-.movetrack-root[data-theme="dark"] [style*="color: #102033"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(16, 32, 51)"],
-.movetrack-root[data-theme="dark"] [style*="color: #111827"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(17, 24, 39)"],
-.movetrack-root[data-theme="dark"] [style*="color: #111c2e"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(17, 28, 46)"],
-.movetrack-root[data-theme="dark"] [style*="color: #142236"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(20, 34, 54)"],
-.movetrack-root[data-theme="dark"] [style*="color: #142946"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(20, 41, 70)"],
-.movetrack-root[data-theme="dark"] [style*="color: #15233a"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 35, 58)"],
-.movetrack-root[data-theme="dark"] [style*="color: #152d50"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 45, 80)"],
-.movetrack-root[data-theme="dark"] [style*="color: #153455"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 52, 85)"],
-.movetrack-root[data-theme="dark"] [style*="color: #16375b"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(22, 55, 91)"],
-.movetrack-root[data-theme="dark"] [style*="color: #172b4d"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 43, 77)"],
-.movetrack-root[data-theme="dark"] [style*="color: #173764"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 55, 100)"],
-.movetrack-root[data-theme="dark"] [style*="color: #17406b"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 64, 107)"],
-.movetrack-root[data-theme="dark"] [style*="color: #174272"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 66, 114)"],
-.movetrack-root[data-theme="dark"] [style*="color: #174b87"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 75, 135)"],
-.movetrack-root[data-theme="dark"] [style*="color: #182b49"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 43, 73)"],
-.movetrack-root[data-theme="dark"] [style*="color: #183454"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 52, 84)"],
-.movetrack-root[data-theme="dark"] [style*="color: #193756"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(25, 55, 86)"],
-.movetrack-root[data-theme="dark"] [style*="color: #1e3a5f"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(30, 58, 95)"],
-.movetrack-root[data-theme="dark"] [style*="color: #243e60"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(36, 62, 96)"],
-.movetrack-root[data-theme="dark"] [style*="color: #244260"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(36, 66, 96)"],
-.movetrack-root[data-theme="dark"] [style*="color: #315479"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(49, 84, 121)"],
-.movetrack-root[data-theme="dark"] [style*="color: #344054"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(52, 64, 84)"],
-.movetrack-root[data-theme="dark"] [style*="color: #364152"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(54, 65, 82)"],
-.movetrack-root[data-theme="dark"] [style*="color: #1e426a"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(30, 66, 106)"],
-.movetrack-root[data-theme="dark"] [style*="color: #425974"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(66, 89, 116)"]{color:var(--mt-ink) !important;}
-.movetrack-root[data-theme="dark"] [style*="color: #475467"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(71, 84, 103)"],
-.movetrack-root[data-theme="dark"] [style*="color: #475569"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(71, 85, 105)"],
-.movetrack-root[data-theme="dark"] [style*="color: #51627b"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(81, 98, 123)"],
-.movetrack-root[data-theme="dark"] [style*="color: #52677f"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(82, 103, 127)"],
-.movetrack-root[data-theme="dark"] [style*="color: #53647e"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(83, 100, 126)"],
-.movetrack-root[data-theme="dark"] [style*="color: #64748b"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(100, 116, 139)"],
-.movetrack-root[data-theme="dark"] [style*="color: #667085"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(102, 112, 133)"],
-.movetrack-root[data-theme="dark"] [style*="color: #98a2b3"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(152, 162, 179)"],
-.movetrack-root[data-theme="dark"] [style*="color: #9fb2ca"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(159, 178, 202)"],
-.movetrack-root[data-theme="dark"] [style*="color: #8296ad"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(130, 150, 173)"]{color:var(--mt-muted) !important;}
-.movetrack-root[data-theme="dark"] [style*="color: #1d4ed8"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(29, 78, 216)"],
-.movetrack-root[data-theme="dark"] [style*="color: #2563eb"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(37, 99, 235)"],
-.movetrack-root[data-theme="dark"] [style*="color: #1e40af"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(30, 64, 175)"],
-.movetrack-root[data-theme="dark"] [style*="color: #174fa8"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 79, 168)"],
-.movetrack-root[data-theme="dark"] [style*="color: #143b66"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(20, 59, 102)"],
-.movetrack-root[data-theme="dark"] [style*="color: #174b87"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 75, 135)"]{color:var(--mt-link) !important;}
-.movetrack-root[data-theme="dark"] [style*="color: #b42318"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(180, 35, 24)"]{color:var(--mt-danger) !important;}
-.movetrack-root[data-theme="dark"] [style*="color: #b45309"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(180, 83, 9)"],
-.movetrack-root[data-theme="dark"] [style*="color: #a16207"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(161, 98, 7)"],
-.movetrack-root[data-theme="dark"] [style*="color: #92400e"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(146, 64, 14)"],
-.movetrack-root[data-theme="dark"] [style*="color: #9a670a"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(154, 103, 10)"],
-.movetrack-root[data-theme="dark"] [style*="color: #9a670d"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(154, 103, 13)"],
-.movetrack-root[data-theme="dark"] [style*="color: #915b16"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(145, 91, 22)"],
-.movetrack-root[data-theme="dark"] [style*="color: #9a6310"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(154, 99, 16)"]{color:var(--mt-warning) !important;}
-.movetrack-root[data-theme="dark"] [style*="color: #047857"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(4, 120, 87)"],
-.movetrack-root[data-theme="dark"] [style*="color: #087f5b"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(8, 127, 91)"],
-.movetrack-root[data-theme="dark"] [style*="color: #087e8b"],
-.movetrack-root[data-theme="dark"] [style*="color: rgb(8, 126, 139)"]{color:var(--mt-success) !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: #101827"],[style*="; color: #101827"],[style*=";color: #101827"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(16, 24, 39)"],[style*="; color: rgb(16, 24, 39)"],[style*=";color: rgb(16, 24, 39)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #101828"],[style*="; color: #101828"],[style*=";color: #101828"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(16, 24, 40)"],[style*="; color: rgb(16, 24, 40)"],[style*=";color: rgb(16, 24, 40)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #102033"],[style*="; color: #102033"],[style*=";color: #102033"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(16, 32, 51)"],[style*="; color: rgb(16, 32, 51)"],[style*=";color: rgb(16, 32, 51)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #111827"],[style*="; color: #111827"],[style*=";color: #111827"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(17, 24, 39)"],[style*="; color: rgb(17, 24, 39)"],[style*=";color: rgb(17, 24, 39)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #111c2e"],[style*="; color: #111c2e"],[style*=";color: #111c2e"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(17, 28, 46)"],[style*="; color: rgb(17, 28, 46)"],[style*=";color: rgb(17, 28, 46)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #142236"],[style*="; color: #142236"],[style*=";color: #142236"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(20, 34, 54)"],[style*="; color: rgb(20, 34, 54)"],[style*=";color: rgb(20, 34, 54)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #142946"],[style*="; color: #142946"],[style*=";color: #142946"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(20, 41, 70)"],[style*="; color: rgb(20, 41, 70)"],[style*=";color: rgb(20, 41, 70)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #15233a"],[style*="; color: #15233a"],[style*=";color: #15233a"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(21, 35, 58)"],[style*="; color: rgb(21, 35, 58)"],[style*=";color: rgb(21, 35, 58)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #152d50"],[style*="; color: #152d50"],[style*=";color: #152d50"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(21, 45, 80)"],[style*="; color: rgb(21, 45, 80)"],[style*=";color: rgb(21, 45, 80)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #153455"],[style*="; color: #153455"],[style*=";color: #153455"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(21, 52, 85)"],[style*="; color: rgb(21, 52, 85)"],[style*=";color: rgb(21, 52, 85)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #16375b"],[style*="; color: #16375b"],[style*=";color: #16375b"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(22, 55, 91)"],[style*="; color: rgb(22, 55, 91)"],[style*=";color: rgb(22, 55, 91)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #172b4d"],[style*="; color: #172b4d"],[style*=";color: #172b4d"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 43, 77)"],[style*="; color: rgb(23, 43, 77)"],[style*=";color: rgb(23, 43, 77)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #173764"],[style*="; color: #173764"],[style*=";color: #173764"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 55, 100)"],[style*="; color: rgb(23, 55, 100)"],[style*=";color: rgb(23, 55, 100)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #17406b"],[style*="; color: #17406b"],[style*=";color: #17406b"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 64, 107)"],[style*="; color: rgb(23, 64, 107)"],[style*=";color: rgb(23, 64, 107)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #174272"],[style*="; color: #174272"],[style*=";color: #174272"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 66, 114)"],[style*="; color: rgb(23, 66, 114)"],[style*=";color: rgb(23, 66, 114)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #174b87"],[style*="; color: #174b87"],[style*=";color: #174b87"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 75, 135)"],[style*="; color: rgb(23, 75, 135)"],[style*=";color: rgb(23, 75, 135)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #182b49"],[style*="; color: #182b49"],[style*=";color: #182b49"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(24, 43, 73)"],[style*="; color: rgb(24, 43, 73)"],[style*=";color: rgb(24, 43, 73)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #183454"],[style*="; color: #183454"],[style*=";color: #183454"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(24, 52, 84)"],[style*="; color: rgb(24, 52, 84)"],[style*=";color: rgb(24, 52, 84)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #193756"],[style*="; color: #193756"],[style*=";color: #193756"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(25, 55, 86)"],[style*="; color: rgb(25, 55, 86)"],[style*=";color: rgb(25, 55, 86)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #1e3a5f"],[style*="; color: #1e3a5f"],[style*=";color: #1e3a5f"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(30, 58, 95)"],[style*="; color: rgb(30, 58, 95)"],[style*=";color: rgb(30, 58, 95)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #243e60"],[style*="; color: #243e60"],[style*=";color: #243e60"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(36, 62, 96)"],[style*="; color: rgb(36, 62, 96)"],[style*=";color: rgb(36, 62, 96)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #244260"],[style*="; color: #244260"],[style*=";color: #244260"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(36, 66, 96)"],[style*="; color: rgb(36, 66, 96)"],[style*=";color: rgb(36, 66, 96)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #315479"],[style*="; color: #315479"],[style*=";color: #315479"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(49, 84, 121)"],[style*="; color: rgb(49, 84, 121)"],[style*=";color: rgb(49, 84, 121)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #344054"],[style*="; color: #344054"],[style*=";color: #344054"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(52, 64, 84)"],[style*="; color: rgb(52, 64, 84)"],[style*=";color: rgb(52, 64, 84)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #364152"],[style*="; color: #364152"],[style*=";color: #364152"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(54, 65, 82)"],[style*="; color: rgb(54, 65, 82)"],[style*=";color: rgb(54, 65, 82)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #1e426a"],[style*="; color: #1e426a"],[style*=";color: #1e426a"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(30, 66, 106)"],[style*="; color: rgb(30, 66, 106)"],[style*=";color: rgb(30, 66, 106)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #425974"],[style*="; color: #425974"],[style*=";color: #425974"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(66, 89, 116)"],[style*="; color: rgb(66, 89, 116)"],[style*=";color: rgb(66, 89, 116)"]){color:var(--mt-ink) !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: #475467"],[style*="; color: #475467"],[style*=";color: #475467"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(71, 84, 103)"],[style*="; color: rgb(71, 84, 103)"],[style*=";color: rgb(71, 84, 103)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #475569"],[style*="; color: #475569"],[style*=";color: #475569"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(71, 85, 105)"],[style*="; color: rgb(71, 85, 105)"],[style*=";color: rgb(71, 85, 105)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #51627b"],[style*="; color: #51627b"],[style*=";color: #51627b"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(81, 98, 123)"],[style*="; color: rgb(81, 98, 123)"],[style*=";color: rgb(81, 98, 123)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #52677f"],[style*="; color: #52677f"],[style*=";color: #52677f"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(82, 103, 127)"],[style*="; color: rgb(82, 103, 127)"],[style*=";color: rgb(82, 103, 127)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #53647e"],[style*="; color: #53647e"],[style*=";color: #53647e"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(83, 100, 126)"],[style*="; color: rgb(83, 100, 126)"],[style*=";color: rgb(83, 100, 126)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #64748b"],[style*="; color: #64748b"],[style*=";color: #64748b"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(100, 116, 139)"],[style*="; color: rgb(100, 116, 139)"],[style*=";color: rgb(100, 116, 139)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #667085"],[style*="; color: #667085"],[style*=";color: #667085"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(102, 112, 133)"],[style*="; color: rgb(102, 112, 133)"],[style*=";color: rgb(102, 112, 133)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #98a2b3"],[style*="; color: #98a2b3"],[style*=";color: #98a2b3"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(152, 162, 179)"],[style*="; color: rgb(152, 162, 179)"],[style*=";color: rgb(152, 162, 179)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #9fb2ca"],[style*="; color: #9fb2ca"],[style*=";color: #9fb2ca"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(159, 178, 202)"],[style*="; color: rgb(159, 178, 202)"],[style*=";color: rgb(159, 178, 202)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #8296ad"],[style*="; color: #8296ad"],[style*=";color: #8296ad"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(130, 150, 173)"],[style*="; color: rgb(130, 150, 173)"],[style*=";color: rgb(130, 150, 173)"]){color:var(--mt-muted) !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: #1d4ed8"],[style*="; color: #1d4ed8"],[style*=";color: #1d4ed8"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(29, 78, 216)"],[style*="; color: rgb(29, 78, 216)"],[style*=";color: rgb(29, 78, 216)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #2563eb"],[style*="; color: #2563eb"],[style*=";color: #2563eb"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(37, 99, 235)"],[style*="; color: rgb(37, 99, 235)"],[style*=";color: rgb(37, 99, 235)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #1e40af"],[style*="; color: #1e40af"],[style*=";color: #1e40af"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(30, 64, 175)"],[style*="; color: rgb(30, 64, 175)"],[style*=";color: rgb(30, 64, 175)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #174fa8"],[style*="; color: #174fa8"],[style*=";color: #174fa8"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 79, 168)"],[style*="; color: rgb(23, 79, 168)"],[style*=";color: rgb(23, 79, 168)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #143b66"],[style*="; color: #143b66"],[style*=";color: #143b66"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(20, 59, 102)"],[style*="; color: rgb(20, 59, 102)"],[style*=";color: rgb(20, 59, 102)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #174b87"],[style*="; color: #174b87"],[style*=";color: #174b87"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(23, 75, 135)"],[style*="; color: rgb(23, 75, 135)"],[style*=";color: rgb(23, 75, 135)"]){color:var(--mt-link) !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: #b42318"],[style*="; color: #b42318"],[style*=";color: #b42318"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(180, 35, 24)"],[style*="; color: rgb(180, 35, 24)"],[style*=";color: rgb(180, 35, 24)"]){color:var(--mt-danger) !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: #b45309"],[style*="; color: #b45309"],[style*=";color: #b45309"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(180, 83, 9)"],[style*="; color: rgb(180, 83, 9)"],[style*=";color: rgb(180, 83, 9)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #a16207"],[style*="; color: #a16207"],[style*=";color: #a16207"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(161, 98, 7)"],[style*="; color: rgb(161, 98, 7)"],[style*=";color: rgb(161, 98, 7)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #92400e"],[style*="; color: #92400e"],[style*=";color: #92400e"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(146, 64, 14)"],[style*="; color: rgb(146, 64, 14)"],[style*=";color: rgb(146, 64, 14)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #9a670a"],[style*="; color: #9a670a"],[style*=";color: #9a670a"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(154, 103, 10)"],[style*="; color: rgb(154, 103, 10)"],[style*=";color: rgb(154, 103, 10)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #9a670d"],[style*="; color: #9a670d"],[style*=";color: #9a670d"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(154, 103, 13)"],[style*="; color: rgb(154, 103, 13)"],[style*=";color: rgb(154, 103, 13)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #915b16"],[style*="; color: #915b16"],[style*=";color: #915b16"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(145, 91, 22)"],[style*="; color: rgb(145, 91, 22)"],[style*=";color: rgb(145, 91, 22)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #9a6310"],[style*="; color: #9a6310"],[style*=";color: #9a6310"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(154, 99, 16)"],[style*="; color: rgb(154, 99, 16)"],[style*=";color: rgb(154, 99, 16)"]){color:var(--mt-warning) !important;}
+.movetrack-root[data-theme="dark"] :is([style^="color: #047857"],[style*="; color: #047857"],[style*=";color: #047857"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(4, 120, 87)"],[style*="; color: rgb(4, 120, 87)"],[style*=";color: rgb(4, 120, 87)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #087f5b"],[style*="; color: #087f5b"],[style*=";color: #087f5b"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(8, 127, 91)"],[style*="; color: rgb(8, 127, 91)"],[style*=";color: rgb(8, 127, 91)"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: #087e8b"],[style*="; color: #087e8b"],[style*=";color: #087e8b"]),
+.movetrack-root[data-theme="dark"] :is([style^="color: rgb(8, 126, 139)"],[style*="; color: rgb(8, 126, 139)"],[style*=";color: rgb(8, 126, 139)"]){color:var(--mt-success) !important;}
 .movetrack-root[data-theme="dark"] :is(.movetrack-step-nav button,.movetrack-step-footer button,.movetrack-task-outline button) {
  color:var(--mt-ink) !important;
 }
@@ -450,6 +450,46 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] :is(.movetrack-compact-table th,.movetrack-compact-table td) {color:var(--mt-ink);border-color:var(--mt-border);}
 .movetrack-root[data-theme="dark"] .movetrack-workspace-heading small {color:var(--mt-muted);}
 .movetrack-root[data-theme="dark"] .movetrack-appbar-brand b {color:#f0f6ff;}
+
+/* Root-level contrast contract used by every MoveTrack module. */
+.movetrack-root[data-theme="dark"] {
+ --mt-text-primary:#f7fbff;
+ --mt-text-secondary:#cad8ea;
+ --mt-text-link:#acd3ff;
+ --mt-text-critical:#ffb5bf;
+ --mt-text-warning:#ffde9e;
+ --mt-text-positive:#91efbf;
+}
+.movetrack-root[data-theme="dark"] :is(.movetrack-workspace-switcher,.movetrack-workspace-surface,.movetrack-task-workspace,
+ .movetrack-task-editor,.movetrack-task-mobile-nav,.movetrack-task-mobile-summary,
+ .movetrack-desktop-modal,.movetrack-nav-drawer,.movetrack-workspace-content) {
+ color:var(--mt-text-primary);
+}
+.movetrack-root[data-theme="dark"] :is(.movetrack-workspace-switcher,.movetrack-task-outline,.movetrack-task-inspector,
+ .movetrack-workspace-shortcuts button,.movetrack-step-nav button,.movetrack-step-footer button,
+ .movetrack-modal-launcher > button) {
+ border-color:var(--mt-border);
+}
+/* Text controls use their own dark surface, never dark text on a darkened light card. */
+.movetrack-root[data-theme="dark"] :is(button,summary,option) { color-scheme:dark; }
+.movetrack-root[data-theme="dark"] input[type="file"]::file-selector-button {
+ background:var(--mt-surface-soft);color:var(--mt-ink);border:1px solid var(--mt-border);border-radius:8px;
+}
+.movetrack-root[data-theme="dark"] :is(input,select,textarea):focus-visible {
+ outline:3px solid #93c5fd;outline-offset:2px;
+}
+/* Preserve strong contrast in author-provided white-on-blue actions and icon badges. */
+.movetrack-root[data-theme="dark"] button[style*="background: rgb(23, 79, 168)"],
+.movetrack-root[data-theme="dark"] button[style*="background: #174fa8"],
+.movetrack-root[data-theme="dark"] button[style*="background: rgb(29, 78, 216)"],
+.movetrack-root[data-theme="dark"] button[style*="background: #1d4ed8"],
+.movetrack-root[data-theme="dark"] button[style*="background: rgb(37, 99, 235)"],
+.movetrack-root[data-theme="dark"] button[style*="background: #2563eb"] {
+ color:#fff !important;
+}
+.movetrack-root[data-theme="dark"] .movetrack-workspace-mobile-switch,
+.movetrack-root[data-theme="dark"] .movetrack-workspace-heading {color:var(--mt-text-primary);}
+
 /* Theme tokens also keep common secondary action labels visible on dark cards. */
 .movetrack-root[data-theme="dark"] :is(.movetrack-task-mobile-nav,.movetrack-task-mobile-summary) {color:var(--mt-ink);}
 
