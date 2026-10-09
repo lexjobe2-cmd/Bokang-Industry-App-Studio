@@ -12,7 +12,7 @@ import {
 import { MOVE_TRACK_KEYS, starterFleet, type FleetVehicle, type FleetIncident, type FleetAssignment } from "../../lib/move-track";
 import { CustomFormBuilder } from "./CustomFormBuilder";
 import { JraWorkspace } from "./JraWorkspace";
-import {SignatureCapture} from "./SignatureCapture";
+import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { ASSURANCE_STORAGE,demoPeople,demoOrganization,makeCustomTemplate,type CustomTemplate,type PersonRecord,type OrganizationProfile } from "@bokang/domain-data/custom-assurance";
 import {additionalAssuranceRecipes,workflowLinks} from "@bokang/domain-data/expanded-assurance";
@@ -303,7 +303,7 @@ function FieldInput({field,value,onChange,people,scope}:{field:FormField;value:F
  if(field.type==="select")return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}><option value="">Select option</option>{(field.options??["Day shift","Night shift"]).map(opt=><option key={opt}>{opt}</option>)}</select></label>;
  if(field.type==="multiline")return <label style={fieldStyle}>{label}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)}/></label>;
  if(field.type==="signature")return <div style={fieldStyle}>{label}
-    <SignatureCapture value={isSignatureEvidence(value)?value:null} onChange={e=>onChange(e??"")}
+    <SignatureApprovalTray label={field.label.toLowerCase().includes("review")?"Supervisor review & sign":"Open signature tray"} value={isSignatureEvidence(value)?value:null} onChange={e=>onChange(e??"")}
      scope={scope+" / "+field.label} role={field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}
      intent={field.label.toLowerCase().includes("review")?"review":"acknowledgement"}/>
    </div>;
