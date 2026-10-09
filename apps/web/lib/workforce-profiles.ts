@@ -9,7 +9,7 @@ function validate(people:readonly PersonRecord[],orgId:string,details:WorkerDeta
  const cleaned={displayName:details.displayName.trim(),email:normalEmail(details.email),department:details.department.trim(),jobTitle:details.jobTitle.trim(),location:details.location.trim(),employeeNumber:(details.employeeNumber??"").trim(),active:details.active};
  if(!cleaned.displayName||!cleaned.jobTitle||!cleaned.department)throw Error("Worker name, job title and department are required.");
  if([cleaned.displayName,cleaned.email,cleaned.department,cleaned.jobTitle,cleaned.location,cleaned.employeeNumber].some(v=>v.length>150))throw Error("Worker profile field is too long.");
- if(cleaned.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleaned.email))throw Error("Enter a valid work email, or leave it blank.");
+ if(cleaned.email&&!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(cleaned.email))throw Error("Enter a valid work email, or leave it blank.");
  const peers=people.filter(p=>p.orgId===orgId&&p.id!==excludeId);
  if(cleaned.employeeNumber&&peers.some(p=>fleetIdentity(p.employeeNumber??"")===fleetIdentity(cleaned.employeeNumber)))throw Error("This employee number already exists in the organization.");
  if(cleaned.email&&peers.some(p=>p.email&&normalEmail(p.email)===cleaned.email))throw Error("This employee email already exists in the organization.");
