@@ -2,6 +2,7 @@
 import {useState} from "react";
 import {usePersistentState} from "@bokang/persistence";
 import {Sun,Moon,LifeBuoy,ShieldCheck,FileText,HelpCircle,Mail,ExternalLink,Database,Info} from "lucide-react";
+import {MoveTrackRichContent} from "./MoveTrackReadableContent";
 
 export const MOVETRACK_THEME_KEY="bokang-studio.move-track.ui.theme.v1";
 export type MoveTrackTheme="light"|"dark";
@@ -37,7 +38,7 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
  const [topic,setTopic]=useState("Product feedback");
  const [details,setDetails]=useState("");
  const [reference,setReference]=useState("");
- const bodyText=(text:string)=><p style={{color:"var(--mt-muted,#475569)",fontSize:13,lineHeight:1.8,margin:"6px 0 13px"}}>{text}</p>;
+ const bodyText=(text:string)=><MoveTrackRichContent blocks={[{type:"paragraph",content:[{text}]}]} tone="muted" className="movetrack-help-body"/>;
  function composeMail(){
   const subject="MoveTrack AI support — "+topic+(reference.trim()?" — "+reference.trim():"");
   const body="Hello MoveTrack support,\n\n"+details.trim()+"\n\nBrowser edition: local frontend preview\nPlease do not send passwords, signatures, medical records or confidential incident files.\n";
@@ -96,7 +97,7 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
    {faq.map(([question,answer],i)=>({question,answer,i})).filter(x=>(x.question+x.answer).toLowerCase().includes(search.toLowerCase())).map(({question,answer,i})=>
     <div key={question} style={{border:"1px solid #e2e8f0",borderRadius:11,overflow:"hidden"}}>
       <button aria-expanded={expanded===i} onClick={()=>setExpanded(expanded===i?null:i)} style={{...btn,border:0,textAlign:"left",width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",gap:7}}>{question}<span>{expanded===i?"−":"+"}</span></button>
-      {expanded===i?<div style={{padding:"3px 14px 12px",fontSize:12,color:"var(--mt-muted,#475569)",lineHeight:1.75}}>{answer}</div>:null}
+      {expanded===i?<div style={{padding:"3px 14px 12px",fontSize:12}}><MoveTrackRichContent blocks={[{type:"paragraph",content:[{text:answer}]}]} tone="muted"/></div>:null}
     </div>)}
    <button style={{...btn,justifySelf:"start"}} onClick={()=>setPage("support")}>Still need help? Contact support</button>
   </div>:null}
