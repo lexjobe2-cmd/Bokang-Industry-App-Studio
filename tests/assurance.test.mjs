@@ -73,18 +73,25 @@ test("maintenance/inspector/approver cannot self-approve",()=>{
  assert.ok(reasons.some(reason=>reason.includes("cannot approve")));
 });
 
+const localSupervisorReview={
+ kind:"drawn-signature-v1",imageDataUrl:"data:image/png;base64,"+"iVBORw0KGgoAAAANSUhEUgAA".repeat(5),
+ signerName:"Demo Supervisor",signerPersonId:"supervisor-demo-1",role:"Supervisor",intent:"review",
+ signedAt:"2026-10-09T07:00:00.000Z",scope:"Unit test sign off",verification:"LOCAL_UNVERIFIED",consent:true
+};
 test("repeatable JSA step cannot be submitted with blank required fields",()=>{
  const jsa=starterAssuranceTemplates.find(t=>t.id==="jsa");
  const draft={job:"Haul waste",workarea:"Demo",supervisor:"Shift lead",steps:[{}]};
  assert.equal(evaluateForm(jsa,draft).decision,"INCOMPLETE");
- const complete={...draft,steps:[{step:"Load truck",hazard:"Interaction",control:"Exclusion zone",responsible:"Operator",risk:9}]};
+ const complete={...draft,steps:[{step:"Load truck",hazard:"Interaction",control:"Exclusion zone",responsible:"Operator",risk:9}],
+   supervisor_reviewer:"supervisor-demo-1",supervisor_review_signature:localSupervisorReview};
  assert.equal(evaluateForm(jsa,complete).decision,"COMPLETE");
 });
 test("risk calculations are derived from likelihood and consequence, not typed score",()=>{
  const risk={likelihood:4,consequence:5,matrixId:defaultRiskMatrix.id,matrixVersion:defaultRiskMatrix.version};
  assert.deepEqual(scoreRisk(defaultRiskMatrix,risk),{score:20,level:"EXTREME",requiresApproval:true});
  const jra=starterAssuranceTemplates.find(t=>t.id==="jra");
- const draft={task:"Lift",location:"Workshop",hazard:"Suspended load",exposure:["Crew"],initial:risk,controls:"Barricade and qualified rigger",residual:risk};
+ const draft={task:"Lift",location:"Workshop",hazard:"Suspended load",exposure:["Crew"],initial:risk,controls:"Barricade and qualified rigger",residual:risk,
+  supervisor_reviewer:"supervisor-demo-1",supervisor_review_signature:localSupervisorReview};
  assert.equal(evaluateForm(jra,draft).decision,"REVIEW");
  assert.equal(evaluateForm(jra,{...draft,residual:{...risk,likelihood:0}}).decision,"INCOMPLETE");
 });
