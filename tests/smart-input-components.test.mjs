@@ -52,7 +52,7 @@ test('mobile dock exposes six destinations including Admin with Fleet active and
  assert.match(profile,/aria-current="page"[^>]*>[\s\S]*?<span>Profile<\/span>/);
   const admin=renderToStaticMarkup(React.createElement(MoveTrackAppShellNav,{activeView:'admin',atHome:false,onHome:noop,onSearch:noop,onNavigate:noop,onCompany:noop,onWorkflow:noop,theme:'dark',onToggleTheme:noop}));
   assert.match(admin,/aria-label="Open Admin test workspace"/);
-  assert.match(admin,/aria-current="page"[^>]*>[\\s\\S]*?<span>Admin<\\/span>/);
+  assert.match(admin,/aria-label="Open Admin test workspace"[^>]*aria-current="page"/);
 });
 
 test('text assistance uses an explicit local-analysis button and cannot auto-apply on render',()=>{
