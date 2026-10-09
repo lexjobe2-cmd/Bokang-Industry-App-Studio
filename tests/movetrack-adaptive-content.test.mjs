@@ -56,7 +56,7 @@ test("rich renderer is safe at runtime and preserves actual semantic document bl
  const source=product("MoveTrackReadableContent");
  const js=ts.transpileModule(source,{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  const module={exports:{}};
- vm.runInNewContext(js,{require:localRequire,exports:module.exports,module});
+ vm.runInNewContext(js,{require:localRequire,exports:module.exports,module,URL});
  const {safeMoveTrackHref,MoveTrackRichContent}=module.exports;
  const React=localRequire("react"),{renderToStaticMarkup}=localRequire("react-dom/server");
  assert.equal(safeMoveTrackHref("javascript:alert(1)"),undefined);
