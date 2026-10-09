@@ -1,0 +1,41 @@
+name: MoveTrack Rendered UI Geometry
+on:
+  push:
+    branches:
+      - feature/operational-assurance-on-fleet-foundation
+    paths:
+      - "apps/web/components/products/OrganizationPeopleComboBox.tsx"
+      - "apps/web/components/products/MeetingRegisterWorkspace.tsx"
+      - "apps/web/components/products/MoveTrackThemeStyles.tsx"
+      - "tests/ui/people-picker-geometry.mjs"
+      - ".github/workflows/movetrack-ui-geometry.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  picker-geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm --filter @bokang/assurance-demo build
+      - name: Render real meeting picker in headless Chromium
+        run: |
+          pnpm --filter @bokang/assurance-demo preview --host 127.0.0.1 --port 4173 --strictPort > /tmp/movetrack-preview.log 2>&1 &
+          for n in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/app/meetings > /dev/null; then break; fi
+            sleep 1
+          done
+          node tests/ui/people-picker-geometry.mjs
+      - name: Show server logs on failure
+        if: failure()
+        run: cat /tmp/movetrack-preview.log || true
