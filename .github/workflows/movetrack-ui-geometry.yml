@@ -5,6 +5,11 @@ on:
       - feature/operational-assurance-on-fleet-foundation
     paths:
       - "apps/web/components/products/OrganizationPeopleComboBox.tsx"
+      - "apps/web/components/products/MoveTrackReadableContent.tsx"
+      - "apps/web/components/products/MoveTrackWorkspaceDirectory.tsx"
+      - "apps/web/components/products/MoveTrackCompanySummary.tsx"
+      - "apps/web/components/products/MoveTrackHelpCenter.tsx"
+      - "tests/movetrack-adaptive-content.test.mjs"
       - "apps/web/components/products/MeetingRegisterWorkspace.tsx"
       - "apps/web/components/products/MoveTrackThemeStyles.tsx"
       - "tests/ui/people-picker-geometry.mjs"
