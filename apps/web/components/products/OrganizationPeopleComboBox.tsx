@@ -169,7 +169,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   }
   .movetrack-root[data-theme="dark"] .movetrack-personpicker .movetrack-people-panel{background:#152b46;color:#eff6ff;border-color:#3c5877;}
   .movetrack-root[data-theme="dark"] :is(.movetrack-people-panel-head,.movetrack-people-footer){background:#193552;border-color:#395575;}
-  .movetrack-root[data-theme="dark"] .movetrack-person-option{background:#17324e;}
+  .movetrack-root[data-theme="dark"] .movetrack-person-option{background:#17324e;border-color:#365575;}
   .movetrack-root[data-theme="dark"] .movetrack-person-option.selected{background:#254c73;}
   .movetrack-root[data-theme="dark"] .movetrack-person-option strong{color:#fff !important;}
   .movetrack-root[data-theme="dark"] .movetrack-person-option span{color:#c4d4e8 !important;}
