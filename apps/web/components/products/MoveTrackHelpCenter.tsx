@@ -51,9 +51,9 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
    <p style={{maxWidth:730,color:"#dbeafe",fontSize:12,lineHeight:1.7,margin:0}}>Control appearance, get help and understand how local forms, signatures, data protection and workplace approvals are handled.</p>
   </div>
   <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-   {([{id:"preferences",label:"Appearance",icon:Sun},...docs] as const).map(item=><button type="button" key={item.id}
+   {([{id:"preferences",label:"Appearance",icon:Sun},...docs] as const).map(item=><button type="button" key={item.id} className="movetrack-ui-button" data-mt-variant={page===item.id?"selected":"secondary"}
     onClick={()=>setPage(item.id)} aria-pressed={page===item.id}
-    style={{...btn,background:page===item.id?"#173764":"#fff",color:page===item.id?"#fff":"#344054",display:"flex",gap:6,alignItems:"center"}}>
+    className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,background:page===item.id?"#173764":"#fff",color:page===item.id?"#fff":"#344054",display:"flex",gap:6,alignItems:"center"}}>
     <item.icon size={15}/>{item.label}
    </button>)}
   </div>
@@ -61,7 +61,7 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
    <div><h3 style={{margin:"0 0 5px",fontSize:19}}>Appearance</h3>{bodyText("Your selection is saved to this device. Reports remain optimized for white paper regardless of theme.")}</div>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:10}}>
     {([{id:"light",label:"Light mode",icon:Sun,desc:"Clean, bright operational workspace"},{id:"dark",label:"Dark mode",icon:Moon,desc:"Reduced glare in low-light settings"}] as const).map(opt=>
-      <button type="button" key={opt.id} aria-pressed={theme===opt.id} onClick={()=>setTheme(opt.id)}
+      <button type="button" key={opt.id} className="movetrack-ui-button" data-mt-variant={theme===opt.id?"selected":"secondary"} aria-pressed={theme===opt.id} onClick={()=>setTheme(opt.id)}
        style={{...tile,textAlign:"left",cursor:"pointer",borderColor:theme===opt.id?"#2563eb":"#e2e8f0",boxShadow:theme===opt.id?"inset 0 0 0 1px #2563eb":undefined}}>
        <opt.icon size={22} color="#2563eb"/><strong style={{display:"block",marginTop:8,fontSize:14}}>{opt.label}</strong>
        <small style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>{opt.desc}</small>
@@ -70,7 +70,7 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
    </div>
    <div style={{padding:14,borderRadius:12,background:"var(--mt-surface-soft,#f1f5f9)",display:"grid",gap:8}}>
     <strong style={{fontSize:13}}>Device data and backup</strong>{bodyText("No enterprise storage or remote account sync is connected in this edition. Clear browser data or use a private device for fictional test records.")}
-    {onOpenData?<button style={{...btn,justifySelf:"start"}} onClick={onOpenData}><Database size={15} style={{display:"inline"}}/> Open local data manager</button>:null}
+    {onOpenData?<button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}} onClick={onOpenData}><Database size={15} style={{display:"inline"}}/> Open local data manager</button>:null}
    </div>
   </div>:null}
   {page==="support"?<div style={{...tile,display:"grid",gap:12}}>
@@ -78,28 +78,28 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
    {bodyText("For assistance with company onboarding, fleet inspections, custom forms, signatures, PDF downloads or accessibility, contact the developer. This frontend does not host a ticket server; the action below opens your email app.")}
    <a href={"mailto:"+email} style={{fontSize:14,fontWeight:850,color:"var(--mt-link,#2563eb)",display:"inline-flex",gap:8,alignItems:"center"}}><Mail size={17}/>{email}</a>
    <label style={{fontSize:12,fontWeight:800,display:"grid",gap:5}}>What do you need help with?
-    <select style={{...btn,textAlign:"left"}} value={topic} onChange={e=>setTopic(e.target.value)}>
+    <select className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,textAlign:"left"}} value={topic} onChange={e=>setTopic(e.target.value)}>
       {["Product feedback","Company onboarding","Fleet and safety workflow","Digital signatures","Document export","Data and privacy request","Report a technical problem","Commercial enquiry"].map(t=><option key={t}>{t}</option>)}
     </select>
    </label>
    <label style={{fontSize:12,fontWeight:800,display:"grid",gap:5}}>Reference or affected form (optional)
-     <input style={{...btn,textAlign:"left",fontWeight:400}} value={reference} onChange={e=>setReference(e.target.value)} placeholder="e.g. WORK-452 / JRA-1"/>
+     <input className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,textAlign:"left",fontWeight:400}} value={reference} onChange={e=>setReference(e.target.value)} placeholder="e.g. WORK-452 / JRA-1"/>
    </label>
    <label style={{fontSize:12,fontWeight:800,display:"grid",gap:5}}>Describe your question
-     <textarea style={{...btn,textAlign:"left",fontWeight:400,minHeight:125}} value={details} onChange={e=>setDetails(e.target.value)} placeholder="What were you trying to do? What happened?"/>
+     <textarea className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,textAlign:"left",fontWeight:400,minHeight:125}} value={details} onChange={e=>setDetails(e.target.value)} placeholder="What were you trying to do? What happened?"/>
    </label>
-   <button style={{...btn,background:"#1d4ed8",color:"#fff",justifySelf:"start"}} onClick={composeMail}><Mail size={16} style={{display:"inline",verticalAlign:"middle"}}/> Compose support email</button>
+   <button className="movetrack-ui-button" data-mt-variant="primary" style={{...btn,background:"#1d4ed8",color:"#fff",justifySelf:"start"}} onClick={composeMail}><Mail size={16} style={{display:"inline",verticalAlign:"middle"}}/> Compose support email</button>
    <small style={{color:"var(--mt-warning,#a16207)"}}>Opens your device's email app. No message is sent automatically. Do not include confidential injury information, passwords, signatures or personal IDs in the message.</small>
   </div>:null}
   {page==="faq"?<div style={{...tile,display:"grid",gap:10}}>
    <h3 style={{margin:"0 0 2px"}}>Frequently asked questions</h3>
-   <input aria-label="Search FAQ" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search signatures, exports, accounts, local data…" style={{...btn,textAlign:"left",fontWeight:400}}/>
+   <input aria-label="Search FAQ" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search signatures, exports, accounts, local data…" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,textAlign:"left",fontWeight:400}}/>
    {faq.map(([question,answer],i)=>({question,answer,i})).filter(x=>(x.question+x.answer).toLowerCase().includes(search.toLowerCase())).map(({question,answer,i})=>
     <div key={question} style={{border:"1px solid #e2e8f0",borderRadius:11,overflow:"hidden"}}>
-      <button aria-expanded={expanded===i} onClick={()=>setExpanded(expanded===i?null:i)} style={{...btn,border:0,textAlign:"left",width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",gap:7}}>{question}<span>{expanded===i?"−":"+"}</span></button>
+      <button aria-expanded={expanded===i} onClick={()=>setExpanded(expanded===i?null:i)} className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,border:0,textAlign:"left",width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",gap:7}}>{question}<span>{expanded===i?"−":"+"}</span></button>
       {expanded===i?<div style={{padding:"3px 14px 12px",fontSize:12}}><MoveTrackRichContent blocks={[{type:"paragraph",content:[{text:answer}]}]} tone="muted"/></div>:null}
     </div>)}
-   <button style={{...btn,justifySelf:"start"}} onClick={()=>setPage("support")}>Still need help? Contact support</button>
+   <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}} onClick={()=>setPage("support")}>Still need help? Contact support</button>
   </div>:null}
   {page==="privacy"?<article style={{...tile,display:"grid",gap:7}}>
    <h3 style={{fontSize:21,margin:"0 0 3px"}}>MoveTrack AI — Privacy Notice</h3>
