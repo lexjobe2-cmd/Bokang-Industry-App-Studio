@@ -239,7 +239,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
      </div>
    </motion.section>:null)}
    <button style={{...btn,justifySelf:"start",display:"inline-flex",gap:8,alignItems:"center"}} onClick={()=>{const sec=newSection();setSections(xs=>[...xs,sec]);setFieldFocus(sec.fields[0]?.id??"");}}><Layers size={16}/> Add section</button>
-   <div className="movetrack-step-footer"><button disabled={focusedIndex===0} onClick={()=>setFieldFocus(fieldIndex[focusedIndex-1]?.field.id??"")}>Previous question</button><span>{focusedIndex+1} / {fieldIndex.length}</span><button disabled={focusedIndex>=fieldIndex.length-1} onClick={()=>setFieldFocus(fieldIndex[focusedIndex+1]?.field.id??"")}>Next question</button></div>
+   <div className="movetrack-step-footer"><button disabled={focusedIndex===0} onClick={()=>setFieldFocus(fieldIndex[focusedIndex-1]?.field.id??"")}>Previous question</button><span>{fieldIndex.length?focusedIndex+1:0} / {fieldIndex.length}</span><button disabled={focusedIndex>=fieldIndex.length-1} onClick={()=>setFieldFocus(fieldIndex[focusedIndex+1]?.field.id??"")}>Next question</button></div>
    {!selectedField?<button style={btn} onClick={()=>{const sec=newSection();setSections(xs=>[...xs,sec]);setFieldFocus(sec.fields[0]?.id??"");}}>Add first question section</button>:null}
    </TaskWorkspace>:null}
    <div hidden={builderPage!=="publish"} style={card}><h3>Template preview</h3><p>{title} · {category} · {org.name}</p><table className="movetrack-compact-table"><thead><tr><th>Section</th><th>Questions</th></tr></thead><tbody>{sections.map(sec=><tr key={sec.id}><td>{sec.title}</td><td>{sec.fields.length}</td></tr>)}</tbody></table><p>Download the blank design to review every question before publishing.</p></div>

@@ -14,6 +14,20 @@ class FakeStorage{
  removeItem(key){this.#data.delete(key);}
  clear(){this.#data.clear();}
 }
+test("invalid backup collections and fleet records are rejected before replacing existing data",()=>{
+ const key="bokang-studio.move-track.fleet.v2",storage=new FakeStorage();
+ storage.setItem(key,'[{"id":"preserve"}]');
+ for(const value of [null,{},"fleet",[null],[42],[{id:"missing-fields"}]]){
+  const backup={schema:"movetrack-local-v1",exportedAt:"2026-10-09T00:00:00Z",items:{[key]:value}};
+  assert.throws(()=>restoreWorkspaceBackup(storage,backup),/Invalid/);
+  assert.equal(storage.getItem(key),'[{"id":"preserve"}]');
+ }
+});
+test("draft maps reject arrays while empty record collections and unknown extension keys remain compatible",()=>{
+ const make=items=>JSON.stringify({schema:"movetrack-local-v1",exportedAt:"2026-10-09T00:00:00Z",items});
+ assert.throws(()=>parseWorkspaceBackup(make({"bokang-studio.move-track.meeting.drafts.v1":[]})),/Invalid record map/);
+ assert.doesNotThrow(()=>parseWorkspaceBackup(make({"bokang-studio.move-track.fleet.v2":[],"bokang-studio.move-track.extension.v1":{custom:true}})));
+});
 test("writes synchronously and notifies all mounted subscribers",()=>{
  const storage=new FakeStorage();
  const previous=globalThis.window;

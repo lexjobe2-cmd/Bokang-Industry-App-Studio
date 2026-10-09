@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { usePersistentState } from "@bokang/persistence";
+import {duplicateVehicle,duplicateDriver} from "../../lib/fleet-identity";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
 import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
@@ -89,6 +90,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   function setView(next:MoveTrackView){setLocalView(next);onViewChange?.(next);}
   useEffect(()=>{if(!selectedView)setLocalView(initialView);},[initialView,selectedView]);
   const [notice,setNotice]=useState("");
+  useEffect(()=>{setNotice("");},[view]);
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [incidentSignatures,setIncidentSignatures]=useState<Record<string,SignatureEvidence|undefined>>({});
   const [incidentSupervisors,setIncidentSupervisors]=useState<Record<string,string>>({});
@@ -215,8 +217,10 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     if(!vehicleDraft.fleetNo.trim()||!vehicleDraft.registration.trim()||!vehicleDraft.makeModel.trim()){
       setNotice("Fleet number, registration and make/model are required."); return;
     }
+    const duplicate=duplicateVehicle(fleet,vehicleDraft);
+    if(duplicate){setNotice(duplicate);return;}
     const next:FleetVehicle={
-      id:"VEH-"+String(Date.now()).slice(-6),
+      id:"VEH-"+crypto.randomUUID(),
       fleetNo:vehicleDraft.fleetNo.trim(),registration:vehicleDraft.registration.trim(),
       makeModel:vehicleDraft.makeModel.trim(),type:vehicleDraft.type,site:vehicleDraft.site,
       status:"Inspection due",odometerKm:0,roadworthyExpiry:vehicleDraft.roadworthyExpiry||"Not set",
@@ -229,8 +233,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
   function addDriver(){
     if(!driverDraft.name.trim()||!driverDraft.licenceNo.trim()){setNotice("Driver name and licence/reference are required.");return;}
+    if(duplicateDriver(drivers,driverDraft.licenceNo)){setNotice("This driver licence/reference already exists. Open the existing driver instead.");return;}
     const next:FleetDriver={
-      id:"DRV-"+String(Date.now()).slice(-6),name:driverDraft.name.trim(),phone:driverDraft.phone.trim(),
+      id:"DRV-"+crypto.randomUUID(),name:driverDraft.name.trim(),phone:driverDraft.phone.trim(),
       licenceNo:driverDraft.licenceNo.trim(),siteAuthorised:false,openPitPermit:false,
       firstAid:false,defensiveDriving:false,status:"Available"
     };

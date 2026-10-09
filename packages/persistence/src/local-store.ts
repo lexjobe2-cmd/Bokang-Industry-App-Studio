@@ -2,6 +2,7 @@
  * Local-first JSON store shared by all mounted MoveTrack components.
  * Synchronous write-through avoids racing React effects or losing edits during navigation.
  */
+import {validateBackupShape} from "./backup-shape.ts";
 type StorageHealth = { status:"ready"|"unavailable"|"quota"|"corrupt"; error?:string; lastSavedAt?:string; };
 type Cell = {raw:string|null;value:unknown;};
 const cache=new Map<string,Cell>();
@@ -133,6 +134,7 @@ export function parseWorkspaceBackup(raw:string):WorkspaceBackup{
  for(const [key,value] of items){
   if(!safeKey(key))throw new Error("Unsupported backup key: "+key);
   if(value===undefined||typeof value==="function")throw new Error("Invalid backup value");
+  validateBackupShape(key,value);
  }
  return data as WorkspaceBackup;
 }
