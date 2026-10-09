@@ -25,6 +25,7 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
  const [search,setSearch]=useState("");
  const [area,setArea]=useState("All areas");
  const [expanded,setExpanded]=useState<string|null>("working-at-height");
+ const [showAll,setShowAll]=useState(false);
  const statusFor=(id:string)=>{
   const relevant=submitted.filter(s=>s.templateId===recipeTemplateId(org.id,id)&&s.taskId===job.trim());
   const latest=relevant.sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt))[0];
@@ -32,6 +33,7 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
  };
  const grouped=useMemo(()=>additionalAssuranceRecipes.filter(r=>(area==="All areas"||r.area===area)&&
   (r.title+" "+r.trigger+" "+r.criticalControls.join(" ")).toLowerCase().includes(search.toLowerCase())),[area,search]);
+ const visible=(showAll||search.trim()||area!=="All areas")?grouped:grouped.slice(0,6);
  const completed=additionalAssuranceRecipes.filter(w=>statusFor(w.id)==="COMPLETE").length;
  function openWorkflow(id:string){
   setActive(recipeTemplateId(org.id,id));setTab("library");onOpenWorkflow?.();
@@ -53,7 +55,7 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
    </div>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:10}}>
-   {grouped.map(workflow=>{
+   {visible.map(workflow=>{
     const status=statusFor(workflow.id),active=expanded===workflow.id,related=workflowLinks(workflow.id);
     return <motion.article key={workflow.id} whileHover={reduced?undefined:{y:-2}} style={{...card,borderColor:active?"#93c5fd":"#dbe5f2",display:"grid",gap:10,alignContent:"start"}}>
      <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"start"}}>
@@ -78,6 +80,10 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
     </motion.article>;
    })}
    {!grouped.length?<div style={{...card,gridColumn:"1 / -1"}}>No matching workflow. Change your search or area.</div>:null}
+   {grouped.length>6&&!search.trim()&&area==="All areas"?<div style={{...card,gridColumn:"1 / -1",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,background:"#eff6ff",borderColor:"#c7dbf8"}}>
+    <div><strong style={{fontSize:13}}>{showAll?"All 21 workflows are displayed":"Showing 6 featured workflows"}</strong><p style={{fontSize:11,color:"#64748b",margin:"5px 0 0"}}>Search by hazard or expand the complete list of connected safety checks.</p></div>
+    <button type="button" aria-expanded={showAll} onClick={()=>setShowAll(v=>!v)} style={{...btn,background:"#174fa8",color:"#fff",borderColor:"#174fa8"}}>{showAll?"Show fewer":"Browse all "+grouped.length+" workflows"} →</button>
+   </div>:null}
   </div>
   <p style={{fontSize:11,color:"#64748b",margin:0}}>The connections represent related work packages to review, not automated proof of compliance. For high-risk tasks, a competent human must approve the actual plan and site controls.</p>
  </section>;
