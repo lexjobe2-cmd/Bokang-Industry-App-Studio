@@ -2,6 +2,7 @@
 import {DesktopModal,DesktopModalDisclosure} from "./DesktopModal";
 import {VehicleDocuments} from "./VehicleDocuments";
 import {editableDetails,updateVehicleDetails,type VehicleDetails} from "../../lib/fleet-vehicle-admin";
+import {editableDriverDetails,updateDriverDetails,type DriverDetails} from "../../lib/driver-admin";
 import {MultiImageEvidence} from "./MultiImageEvidence";
 import {OrganizationOnboarding} from "./OrganizationOnboarding";
 import type {LocalEvidenceImage} from "../../lib/image-evidence";
@@ -123,7 +124,23 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     fleetNo:"",registration:"",makeModel:"",type:"Light vehicle / SUV",
     site:"Jwaneng mine · demo profile",roadworthyExpiry:"",extinguisherServiceDue:""
   });
-  const [driverDraft,setDriverDraft]=useState({name:"",phone:"",licenceNo:""});
+  const [driverDraft,setDriverDraft]=useState({name:"",phone:"",licenceNo:"",personId:""});
+  const [editingDriverId,setEditingDriverId]=useState<string|null>(null);
+  const [editDriverDetails,setEditDriverDetails]=useState<DriverDetails|null>(null);
+  const [driverEditError,setDriverEditError]=useState("");
+  function beginDriverEdit(driver:FleetDriver){
+    setEditingDriverId(driver.id);
+    setEditDriverDetails(editableDriverDetails(driver));
+    setDriverEditError("");
+  }
+  function saveDriverEdit(){
+    if(!editingDriverId||!editDriverDetails)return;
+    try{
+      setDrivers(updateDriverDetails(drivers,editingDriverId,editDriverDetails,assignments));
+      setEditingDriverId(null);setEditDriverDetails(null);setDriverEditError("");
+      setNotice("Driver details updated on this browser. Competency flags were not changed.");
+    }catch(error){setDriverEditError(error instanceof Error?error.message:"Driver update failed.");}
+  }
   const [vehiclePhotos,setVehiclePhotos]=useState<LocalEvidenceImage[]>([]);
   const [editingVehicleId,setEditingVehicleId]=useState<string|null>(null);
   const [editDetails,setEditDetails]=useState<VehicleDetails|null>(null);
@@ -276,11 +293,11 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     if(duplicateDriver(drivers,driverDraft.licenceNo)){setNotice("This driver licence/reference already exists. Open the existing driver instead.");return;}
     const next:FleetDriver={
       id:"DRV-"+crypto.randomUUID(),name:driverDraft.name.trim(),phone:driverDraft.phone.trim(),
-      licenceNo:driverDraft.licenceNo.trim(),siteAuthorised:false,openPitPermit:false,
+      licenceNo:driverDraft.licenceNo.trim(),personId:driverDraft.personId||undefined,siteAuthorised:false,openPitPermit:false,
       firstAid:false,defensiveDriving:false,status:"Available"
     };
     setDrivers((current)=>[next,...current]);
-    setDriverDraft({name:"",phone:"",licenceNo:""});
+    setDriverDraft({name:"",phone:"",licenceNo:"",personId:""});
     setNotice(next.name+" onboarded. Site/training authorisations must be completed before mine dispatch.");
   }
 
@@ -499,7 +516,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     {contentView==="drivers"?<div style={{display:"grid",gap:14}}>
       {adminMode?<DesktopModalDisclosure title="Add driver" mobileExpanded><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:0}}>Onboard driver</h2><div style={formGrid}>
         <Field label="Driver name"><input value={driverDraft.name} onChange={(e)=>setDriverDraft((c)=>({...c,name:e.target.value}))} style={input} placeholder="Choose a worker or type a name"/>
-         <select aria-label="Choose driver from company directory" defaultValue="" style={{...input,marginTop:7,width:"100%"}} onChange={e=>{const person=directory.find(p=>p.id===e.target.value);if(person)setDriverDraft(d=>({...d,name:person.displayName}));}}>
+         <select aria-label="Choose driver from company directory" defaultValue="" style={{...input,marginTop:7,width:"100%"}} onChange={e=>{const person=directory.find(p=>p.orgId===orgId&&p.active&&p.id===e.target.value);setDriverDraft(d=>({...d,personId:person?.id??"",name:person?.displayName??d.name}));}}>
           <option value="">Choose from {currentOrg.name} directory…</option>
           {directory.filter(p=>p.orgId===orgId&&p.active).map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}
          </select></Field>
@@ -511,6 +528,21 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         {drivers.map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
           <div style={{fontSize:11,color:"#667085",marginTop:4}}>{driver.licenceNo} · {driver.phone||"No phone"}</div>
+          {driver.personId?<small style={{display:"block",marginTop:5,color:"#64748b"}}>Linked worker: {directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.displayName??"Directory identity unavailable"}</small>:null}
+          {(()=>{
+            const current=activeAssignments.filter(a=>a.driverId===driver.id);
+            const history=assignments.filter(a=>a.driverId===driver.id).slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+            return <div aria-label={"Assignments for "+driver.name} style={{display:"grid",gap:6,marginTop:11,padding:10,background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:10}}>
+              <strong style={{fontSize:12}}>Assignments · {current.length} active / {history.length} total</strong>
+              {current.length?current.map(a=><div key={a.id} style={{fontSize:11,overflowWrap:"anywhere"}}>
+                {fleet.find(v=>v.id===a.vehicleId)?.fleetNo??a.vehicleId} · {a.site} · <strong>{a.status}</strong>
+              </div>):<span style={{fontSize:11,color:"#64748b"}}>No active assignment</span>}
+              {history.length>current.length?<small style={{color:"#64748b"}}>Previous: {history.filter(a=>a.status==="Returned"||a.status==="Cancelled").slice(0,2).map(a=>a.status+" · "+(fleet.find(v=>v.id===a.vehicleId)?.fleetNo??a.vehicleId)).join("; ")||"Previous records available"}</small>:null}
+              {adminMode?<button type="button" style={{...secondaryButton,minHeight:44,marginTop:4}} onClick={()=>setView("assign")}>Open assignments</button>:null}
+            </div>;
+          })()}
+          <VehicleDocuments label="Driver documents" readOnly={!adminMode} documents={driver.documents??[]} onChange={documents=>setDrivers(current=>current.map(item=>item.id===driver.id?{...item,documents}:item))}/>
+          {adminMode?<button type="button" style={{...secondaryButton,marginTop:11,minHeight:44}} onClick={()=>beginDriverEdit(driver)}>Edit driver profile</button>:null}
           <div style={{display:"grid",gap:7,marginTop:12}}>
             {([
               ["siteAuthorised","Site driving authorisation"],["openPitPermit","Site/open-pit permit"],
@@ -532,6 +564,21 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           <a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={{...primaryLink,marginTop:12}}>Open driver app</a>
         </article>)}
       </div>
+      {adminMode?<DesktopModal title="Edit driver profile" open={Boolean(editingDriverId&&editDriverDetails)} onClose={()=>{setEditingDriverId(null);setEditDriverDetails(null);setDriverEditError("");}}>
+       {editDriverDetails?<div style={{...panel,display:"grid",gap:12}}>
+        <p style={{fontSize:12,color:"#64748b",margin:0}}>Change driver identity and contact details only. Dispatch status, documents, driver permits and signed supervisor reviews are retained.</p>
+        {driverEditError?<p role="alert" style={{fontSize:12,color:"#b42318",margin:0}}>{driverEditError}</p>:null}
+        <div style={formGrid}>
+         <Field label="Driver name"><input aria-label="Edit driver name" style={input} value={editDriverDetails.name} onChange={event=>setEditDriverDetails(current=>current?{...current,name:event.target.value}:current)}/></Field>
+         <Field label="Phone"><input aria-label="Edit driver phone" type="tel" style={input} value={editDriverDetails.phone} onChange={event=>setEditDriverDetails(current=>current?{...current,phone:event.target.value}:current)}/></Field>
+         <Field label="Licence / reference"><input aria-label="Edit driver licence" style={input} value={editDriverDetails.licenceNo} onChange={event=>setEditDriverDetails(current=>current?{...current,licenceNo:event.target.value}:current)}/></Field>
+        </div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:9}}>
+         <button type="button" style={{...primaryButton,minHeight:44,marginTop:0}} onClick={saveDriverEdit}>Save driver profile</button>
+         <button type="button" style={{...secondaryButton,minHeight:44}} onClick={()=>{setEditingDriverId(null);setEditDriverDetails(null);setDriverEditError("");}}>Cancel</button>
+        </div>
+       </div>:null}
+      </DesktopModal>:null}
     </div>:null}
 
     
