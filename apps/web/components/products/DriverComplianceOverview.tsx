@@ -93,7 +93,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:9}}>
    {numbers.map(metric=><div key={metric.label} style={{padding:12,background:"var(--mt-surface,#fff)",border:"1px solid "+border,borderRadius:12,minWidth:0}}>
     <div style={{fontSize:11,fontWeight:750,color:"var(--mt-muted,#475569)"}}>{metric.label}</div>
-    <strong style={{fontSize:24,color:metric.label==="Blocked"&&metric.value?"#b42318":"#13253c"}}>{metric.value}</strong>
+    <strong style={{fontSize:24,color:metric.label==="Blocked"&&metric.value?"var(--mt-danger,#b42318)":"var(--mt-ink,#13253c)"}}>{metric.value}</strong>
    </div>)}
   </div>
   <div aria-label="Admin competency reporting" style={{display:"grid",gap:10,padding:12,border:"1px solid "+border,borderRadius:12,background:"var(--mt-surface,#fff)"}}>
@@ -131,7 +131,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
      {visibleActions.map((action,index)=><article key={action.driverId+":"+action.credential+":"+action.issue+":"+index} style={{display:"grid",gap:7,background:"var(--mt-surface,#fff)",border:"1px solid "+border,borderRadius:11,padding:12,fontSize:12}}>
       <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
        <strong>{action.driverName} · {action.issue==="Inactive or missing workforce identity"?"Workforce identity":credentialLabels[action.credential]}</strong>
-       <strong style={{color:action.priority==="Immediate"?"#b42318":action.priority==="Due within 30 days"?"#9a670a":"#475569"}}>{action.priority}</strong>
+       <strong style={{color:action.priority==="Immediate"?"var(--mt-danger,#b42318)":action.priority==="Due within 30 days"?"var(--mt-warning,#9a670a)":"var(--mt-muted,#475569)"}}>{action.priority}</strong>
       </div>
       <span>{action.issue}{action.expiry?" · "+action.expiry:""}</span>
       <span style={{color:"var(--mt-muted,#475569)"}}>{action.action}</span>

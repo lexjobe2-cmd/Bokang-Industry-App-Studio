@@ -25,7 +25,7 @@ export function DriverCompetencyPanel({driver,draft,evidenceDraft,adminMode,onCh
  return <section aria-label={"Competency and expiry dates for "+driver.name} style={{display:"grid",gap:8,marginTop:12,padding:11,background:"var(--mt-surface-soft,#f8fafc)",border:"1px solid #dbe4ef",borderRadius:12}}>
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
    <div><strong style={{fontSize:12}}>Competency & certificate evidence</strong>
-    <div style={{fontSize:11,marginTop:4,color:urgent.length?"#b42318":due.length?"#9a670a":"#047857"}}>
+    <div style={{fontSize:11,marginTop:4,color:urgent.length?"var(--mt-danger,#b42318)":due.length?"var(--mt-warning,#9a670a)":"var(--mt-success,#047857)"}}>
      {urgent.length?urgent.length+" missing/expired":due.length?due.length+" due within 30 days":"No recorded expiry alerts"}{pending?" · Pending review":""}
     </div>
     <small style={{display:"block",marginTop:3,color:"var(--mt-muted,#64748b)"}}>{history.length} recorded renewal/change {history.length===1?"event":"events"}</small>
@@ -49,7 +49,7 @@ export function DriverCompetencyPanel({driver,draft,evidenceDraft,adminMode,onCh
      return <div key={key} style={{display:"grid",gap:7,borderBottom:"1px solid #e2e8f0",paddingBottom:11}}>
       <div style={{display:"flex",gap:8,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
        <strong style={{fontSize:12}}>{credentialLabels[key]} {!enabled?<small style={{fontWeight:400,color:"var(--mt-muted,#64748b)"}}>(not authorised)</small>:null}</strong>
-       <strong style={{color:enabled?tones[result.state]:"#64748b",fontSize:11}}>{enabled?status:"Inactive"}</strong>
+       <strong style={{color:enabled?tones[result.state]:"var(--mt-muted,#64748b)",fontSize:11}}>{enabled?status:"Inactive"}</strong>
       </div>
       {adminMode&&onChange?<label style={{display:"grid",gap:4,fontSize:11}}>Expiry date
        <input aria-label={credentialLabels[key]+" expiry date"} type="date" value={value} onChange={e=>onChange(key,e.target.value)} style={{width:"100%",maxWidth:270,minHeight:44,border:"1px solid #cbd5e1",borderRadius:9,padding:8,font:"inherit",background:"var(--mt-surface,#fff)"}}/>
@@ -60,7 +60,7 @@ export function DriverCompetencyPanel({driver,draft,evidenceDraft,adminMode,onCh
         {(driver.documents??[]).map(doc=><option key={doc.id} value={doc.id}>{doc.name}</option>)}
        </select>
       </label>:null}
-      <small style={{color:source?"#047857":"#64748b"}}>Saved certificate: {source?.name??(savedDocumentId?"File no longer attached":"None linked")}</small>
+      <small style={{color:source?"var(--mt-success,#047857)":"var(--mt-muted,#64748b)"}}>Saved certificate: {source?.name??(savedDocumentId?"File no longer attached":"None linked")}</small>
       {changed?<small style={{color:"var(--mt-warning,#9a670a)",fontWeight:800}}>Pending supervisor review — saved record remains in effect{value!==saved&&value&&!documentId?". Upload and link a PDF first.":""}</small>:null}
       {!adminMode&&currentPdf&&!source?<small style={{color:"var(--mt-muted,#64748b)"}}>Current file: {currentPdf.name}</small>:null}
      </div>;

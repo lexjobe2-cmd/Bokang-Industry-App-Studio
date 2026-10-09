@@ -476,7 +476,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           return <div key={assignment.id} style={{padding:16,borderBottom:"1px solid #eff6ff",display:"grid",gap:9}}>
             <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
               <div><strong>{vehicle?.fleetNo||assignment.vehicleId} → {driver?.name||assignment.driverId}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{assignment.site} · {assignment.jobId||"No job linked"}</div></div>
-              <span style={{fontWeight:900,color:assignment.status==="Grounded"?"#b42318":assignment.status==="Cleared"?"#027a48":"#1d4ed8"}}>{assignment.status.toUpperCase()}</span>
+              <span style={{fontWeight:900,color:assignment.status==="Grounded"?"var(--mt-danger,#b42318)":assignment.status==="Cleared"?"var(--mt-success,#027a48)":"var(--mt-link,#1d4ed8)"}}>{assignment.status.toUpperCase()}</span>
             </div>
             {last?.result==="NO-GO"?<div style={{fontSize:11,color:"var(--mt-danger,#b42318)"}}>{last.reasons.join(" · ")}</div>:null}
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -535,7 +535,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
       <div className="movetrack-fleet-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
         {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid #fecaca":"1px solid #dbeafe"}}>
-          <div className="movetrack-fleet-card-heading" style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
+          <div className="movetrack-fleet-card-heading" style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"var(--mt-danger,#b42318)":"var(--mt-link,#1d4ed8)"}}>{vehicle.status}</span></div>
           <div style={{fontSize:12,color:"var(--mt-muted,#667085)",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
           <div style={{fontSize:11,color:"var(--mt-muted,#667085)",marginTop:3}}>{vehicle.site}</div>
           <div style={{marginTop:10}}><MultiImageEvidence label="Vehicle photo gallery" images={vehicle.images??[]} readOnly={!adminMode} onChange={images=>setFleet(current=>current.map(item=>item.id===vehicle.id?{...item,images}:item))}/></div>
@@ -588,10 +588,10 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           const alerts=drivers.flatMap(driver=>credentialAlerts(driver).filter(alert=>alert.state!=="current").map(alert=>({driver,alert})));
           const blocked=alerts.filter(({alert})=>alert.state==="expired"||alert.state==="missing");
           return <div style={{display:"grid",gap:7}}>
-            <strong style={{fontSize:12,color:blocked.length?"#b42318":"#9a670a"}}>{blocked.length} missing/expired · {alerts.length-blocked.length} due within 30 days</strong>
+            <strong style={{fontSize:12,color:blocked.length?"var(--mt-danger,#b42318)":"var(--mt-warning,#9a670a)"}}>{blocked.length} missing/expired · {alerts.length-blocked.length} due within 30 days</strong>
             {alerts.length?alerts.slice(0,12).map(({driver,alert})=><div key={driver.id+"-"+alert.key} style={{fontSize:12,display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap"}}>
               <span>{driver.name} · {alert.label}</span>
-              <strong style={{color:alert.state==="due"?"#9a670a":"#b42318"}}>{alert.state==="due"?"Due in "+alert.daysRemaining+" days":alert.state==="expired"?"Expired":"Expiry missing"}</strong>
+              <strong style={{color:alert.state==="due"?"var(--mt-warning,#9a670a)":"var(--mt-danger,#b42318)"}}>{alert.state==="due"?"Due in "+alert.daysRemaining+" days":alert.state==="expired"?"Expired":"Expiry missing"}</strong>
             </div>):<small style={{color:"var(--mt-success,#047857)"}}>No saved credentials are currently due, expired or missing.</small>}
             {alerts.length>12?<small>Showing 12 of {alerts.length} reminders; open individual driver cards for all dates.</small>:null}
           </div>;
@@ -603,9 +603,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       </div>:null}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
         {(adminMode&&focusedDriverId?drivers.filter(driver=>driver.id===focusedDriverId):drivers).map((driver)=><article key={driver.id} style={panel}>
-          <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
+          <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"var(--mt-success,#027a48)":"var(--mt-link,#1d4ed8)"}}>{driver.status}</span></div>
           <div style={{fontSize:11,color:"var(--mt-muted,#667085)",marginTop:4}}>{driver.licenceNo} · {driver.phone||"No phone"}</div>
-          {driver.personId?<small style={{display:"block",marginTop:5,color:directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"#64748b":"#b42318"}}>Linked worker: {directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.displayName??"Directory identity unavailable"}{directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"":" · Not active — no new assignments"}</small>:null}
+          {driver.personId?<small style={{display:"block",marginTop:5,color:directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"var(--mt-muted,#64748b)":"var(--mt-danger,#b42318)"}}>Linked worker: {directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.displayName??"Directory identity unavailable"}{directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"":" · Not active — no new assignments"}</small>:null}
           {(()=>{
             const current=activeAssignments.filter(a=>a.driverId===driver.id);
             const history=assignments.filter(a=>a.driverId===driver.id).slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt));

@@ -164,10 +164,10 @@ export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={
     </div>
   </div>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
-    <button onClick={()=>{setTab("library");setActiveId(null);setNotice("");}} style={{...button,background:tab==="library"?"#172b4d":"#fff",color:tab==="library"?"#fff":"#344054"}}>Template library</button>
-    <button onClick={()=>setTab("records")} style={{...button,background:tab==="records"?"#172b4d":"#fff",color:tab==="records"?"#fff":"#344054"}}>Submissions ({hydrated?submissions.length:"…" })</button>
-    <button onClick={()=>{setTab("jra");setActiveId(null);}} style={{...button,background:tab==="jra"?"#172b4d":"#fff",color:tab==="jra"?"#fff":"#344054"}}>JRA job studio</button>
-    {adminMode?<button onClick={()=>{setTab("designer");setActiveId(null);}} style={{...button,background:tab==="designer"?"#172b4d":"#fff",color:tab==="designer"?"#fff":"#344054"}}>Create custom form</button>:null}
+    <button onClick={()=>{setTab("library");setActiveId(null);setNotice("");}} style={{...button,background:tab==="library"?"#172b4d":"var(--mt-surface,#fff)",color:tab==="library"?"#fff":"var(--mt-ink,#344054)"}}>Template library</button>
+    <button onClick={()=>setTab("records")} style={{...button,background:tab==="records"?"#172b4d":"var(--mt-surface,#fff)",color:tab==="records"?"#fff":"var(--mt-ink,#344054)"}}>Submissions ({hydrated?submissions.length:"…" })</button>
+    <button onClick={()=>{setTab("jra");setActiveId(null);}} style={{...button,background:tab==="jra"?"#172b4d":"var(--mt-surface,#fff)",color:tab==="jra"?"#fff":"var(--mt-ink,#344054)"}}>JRA job studio</button>
+    {adminMode?<button onClick={()=>{setTab("designer");setActiveId(null);}} style={{...button,background:tab==="designer"?"#172b4d":"var(--mt-surface,#fff)",color:tab==="designer"?"#fff":"var(--mt-ink,#344054)"}}>Create custom form</button>:null}
   </div>
   {notice?<div role="status" style={{padding:13,borderRadius:12,background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-link,#1e40af)",fontSize:13}}>{notice}</div>:null}
   {tab==="designer"?(adminMode?<CustomFormBuilder onPublish={openTemplate}/>:<div style={tile}>Company form templates are managed in Admin → Forms. <button type="button" style={button} onClick={()=>setTab("library")}>Return to the template library</button></div>):null}
@@ -217,7 +217,7 @@ export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={
     {records.length===0?<div style={tile}>No submitted demonstration forms. Choose a template to start.</div>:records.map(r=><div key={r.id} style={{...tile,display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
       <div><strong>{r.templateSnapshot.title}</strong><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:"5px 0"}}>{new Date(r.submittedAt).toLocaleString()} · {r.templateId} v{r.templateVersion} · {r.siteId}</p></div>
       <div style={{textAlign:"right",display:"grid",gap:7,justifyItems:"end"}}>
-       <strong style={{color:r.decision==="NO_GO"?"#b42318":"#047857"}}>{r.decision}</strong>
+       <strong style={{color:r.decision==="NO_GO"?"var(--mt-danger,#b42318)":"var(--mt-success,#047857)"}}>{r.decision}</strong>
        <div style={{color:"var(--mt-link,#2563eb)",fontSize:11}}>SAVED LOCALLY</div>
        <DocumentDownloadActions document={buildFormDocument({template:r.templateSnapshot,mode:"filled",submission:r,company:org,people:visiblePeople})} compact/>
      </div>
@@ -230,7 +230,7 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
  const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"var(--mt-danger,#b42318)"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"var(--mt-danger,#b42318)",background:"var(--mt-surface-soft,#fef2f2)",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
  const fieldStyle:React.CSSProperties={display:"grid",gap:8};
  const quickChoices=fastEntry&&!field.critical?fieldQuickChoices(field.label,field.type):[];
- const quickButtons=quickChoices.length?<div style={{display:"flex",flexWrap:"wrap",gap:6}} aria-label={"Suggested answers for "+field.label}>{quickChoices.map(choice=><button key={choice.value} type="button" aria-pressed={value===choice.value} style={{...button,minHeight:34,padding:"6px 10px",fontSize:11,borderColor:value===choice.value?"#2563eb":"#cbd5e1",background:value===choice.value?"#dbeafe":"#f8fafc"}} onClick={()=>onChange(choice.value)}>{choice.label}</button>)}</div>:null;
+ const quickButtons=quickChoices.length?<div style={{display:"flex",flexWrap:"wrap",gap:6}} aria-label={"Suggested answers for "+field.label}>{quickChoices.map(choice=><button key={choice.value} type="button" aria-pressed={value===choice.value} style={{...button,minHeight:34,padding:"6px 10px",fontSize:11,borderColor:value===choice.value?"#2563eb":"#cbd5e1",background:value===choice.value?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface-soft,#f8fafc)"}} onClick={()=>onChange(choice.value)}>{choice.label}</button>)}</div>:null;
  if(field.type==="person"||field.type==="people"){
    const multiple=field.type==="people";
    const ids=multiple?(Array.isArray(value)?value as string[]:[]):typeof value==="string"&&value?[value]:[];
@@ -239,13 +239,13 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
     {field.critical?<small style={{color:"var(--mt-danger,#b42318)"}}>Critical control — site review still required.</small>:null}
    </div>;
  }
- if(field.type==="checkbox")return <label style={{...fieldStyle,display:"flex",alignItems:"center",gap:11,padding:"12px 13px",border:"1px solid #cbd5e1",borderRadius:11,background:value===true?"#eff6ff":"#fff"}}>
+ if(field.type==="checkbox")return <label style={{...fieldStyle,display:"flex",alignItems:"center",gap:11,padding:"12px 13px",border:"1px solid #cbd5e1",borderRadius:11,background:value===true?"var(--mt-surface-soft,#eff6ff)":"var(--mt-surface,#fff)"}}>
    <input type="checkbox" style={{width:21,height:21,accentColor:"#1d4ed8",flexShrink:0}} checked={value===true} onChange={e=>onChange(e.target.checked)} />
    {label}
   </label>;
  if(field.type==="radio")return <fieldset style={{...fieldStyle,border:"1px solid #e2e8f0",borderRadius:12,padding:11}}>
   <legend style={{padding:"0 7px"}}>{label}</legend>
-  <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>{(field.options??["Option 1","Option 2"]).map(opt=><label key={opt} style={{display:"flex",alignItems:"center",gap:8,padding:"9px 11px",borderRadius:9,background:value===opt?"#eff6ff":"#f8fafc",cursor:"pointer",fontSize:12}}>
+  <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>{(field.options??["Option 1","Option 2"]).map(opt=><label key={opt} style={{display:"flex",alignItems:"center",gap:8,padding:"9px 11px",borderRadius:9,background:value===opt?"var(--mt-surface-soft,#eff6ff)":"var(--mt-surface-soft,#f8fafc)",cursor:"pointer",fontSize:12}}>
     <input type="radio" name={field.id} checked={value===opt} onChange={()=>onChange(opt)} />{opt}
   </label>)}</div>
  </fieldset>;
@@ -291,9 +291,9 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
       {select("likelihood",defaultRiskMatrix.likelihoodLabels)}
       {select("consequence",defaultRiskMatrix.consequenceLabels)}
      </div>
-     <div style={{padding:12,borderRadius:10,background:result?.level==="EXTREME"?"#fef2f2":result?.level==="HIGH"?"#fff7ed":"#f8fafc",fontSize:12}}>
+     <div style={{padding:12,borderRadius:10,background:result?.level==="EXTREME"?"var(--mt-surface-soft,#fef2f2)":result?.level==="HIGH"?"var(--mt-surface-soft,#fff7ed)":"var(--mt-surface-soft,#f8fafc)",fontSize:12}}>
       <strong>{result?result.score+" / 25 · "+result.level:"Choose likelihood and consequence"}</strong>
-      <div style={{color:result?.requiresApproval?"#b42318":"#667085"}}>{result?.requiresApproval?"High / extreme risk requires separately verified supervisor approval":"Standard 5 × 5 matrix · version "+defaultRiskMatrix.version}</div>
+      <div style={{color:result?.requiresApproval?"var(--mt-danger,#b42318)":"var(--mt-muted,#667085)"}}>{result?.requiresApproval?"High / extreme risk requires separately verified supervisor approval":"Standard 5 × 5 matrix · version "+defaultRiskMatrix.version}</div>
      </div>
     </div>;
  }
