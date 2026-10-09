@@ -192,7 +192,7 @@ export const starterDrivers: FleetDriver[] = [
   {
     id:"DRV-002", name:"L. Moagi", phone:"+267 72 100 002",
     licenceNo:"DL-DEMO-102", siteAuthorised:true, openPitPermit:false,
-    competencyExpiry:{licence:"2027-09-30",siteAuthorisation:"2027-09-30",firstAid:"2027-09-30",defensiveDriving:"2027-09-30"},
+    competencyExpiry:{licence:"2027-09-30",siteAuthorisation:"2027-09-30",firstAid:"2026-10-26",defensiveDriving:"2027-09-30"},
     firstAid:true, defensiveDriving:true, status:"Available"
   },
 ];
