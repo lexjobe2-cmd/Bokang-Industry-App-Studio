@@ -39,7 +39,11 @@ export function MeetingRegisterWorkspace(){
  const answers=drafts[org.id]??newDraft(org.siteIds[0]??"");
  const patch=(changes:Partial<FormAnswers>)=>setDrafts(old=>{
   const safe=Object.fromEntries(Object.entries(changes).filter(([,v])=>v!==undefined)) as FormAnswers;
-  return {...old,[org.id]:{...(old[org.id]??newDraft(org.siteIds[0]??"")),...safe}};
+  const current=old[org.id]??newDraft(org.siteIds[0]??"");
+  const modified=Object.entries(safe).some(([key,value])=>!["chair_signature","minute_taker_signature"].includes(key)&&JSON.stringify(current[key])!==JSON.stringify(value));
+  const next={...current,...safe};
+  if(modified){delete next.chair_signature;delete next.minute_taker_signature;}
+  return {...old,[org.id]:next};
  });
  const text=(key:string,value:string)=>patch({[key]:value});
  const selected=Array.isArray(answers.participants)?answers.participants as string[]:[];
