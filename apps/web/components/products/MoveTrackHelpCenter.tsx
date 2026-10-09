@@ -53,7 +53,7 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
   <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
    {([{id:"preferences",label:"Appearance",icon:Sun},...docs] as const).map(item=><button type="button" key={item.id} className="movetrack-ui-button" data-mt-variant={page===item.id?"selected":"secondary"}
     onClick={()=>setPage(item.id)} aria-pressed={page===item.id}
-    className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,background:page===item.id?"#173764":"#fff",color:page===item.id?"#fff":"#344054",display:"flex",gap:6,alignItems:"center"}}>
+    style={{...btn,background:page===item.id?"#173764":"#fff",color:page===item.id?"#fff":"#344054",display:"flex",gap:6,alignItems:"center"}}>
     <item.icon size={15}/>{item.label}
    </button>)}
   </div>
