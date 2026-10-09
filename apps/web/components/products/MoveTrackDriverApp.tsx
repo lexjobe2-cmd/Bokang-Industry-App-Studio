@@ -251,12 +251,22 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
           </div>
         </article>;
       })}
+      <div style={{display:"flex",gap:7,flexWrap:"wrap"}} aria-label="Common pre-start remarks">
+       {["Requires maintenance inspection","Defect reported to supervisor","Retest needed after repair","Additional remarks"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:notes===text?"#dbeafe":"#fff",padding:"8px 10px",borderRadius:9,fontSize:11,fontWeight:750}} onClick={()=>setNotes(text==="Additional remarks"?"":text)}>{text}</button>)}
+      </div>
       <textarea value={notes} onChange={(e)=>setNotes(e.target.value)} placeholder="Defects / notes / corrective action required" style={{...input,minHeight:90}}/>
       <button onClick={submitPrestart} style={primary}>Submit pre-start</button>
     </section>:null}
 
     {tab==="incidents"?<section style={{marginTop:18,display:"grid",gap:12}}>
-      <article style={card}><h2 style={{marginTop:0}}>Report defect / incident</h2><textarea value={incidentText} onChange={(e)=>setIncidentText(e.target.value)} placeholder="Describe what happened or what is unsafe…" style={{...input,minHeight:90}}/><button onClick={addIncident} style={{...primary,marginTop:10}}>Submit report</button></article>
+      <article style={card}><h2 style={{marginTop:0}}>Report defect / incident</h2>
+       <p style={{fontSize:12,color:"#64748b"}}>Tap an observed condition to start the report, then add the actual facts. These suggestions do not submit anything automatically.</p>
+       <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:11}}>
+       {["Brake response abnormal","Fluid or fuel leak observed","Tyre or wheel damage","Unsafe access or pedestrian interaction","Unusual vibration or noise","Near miss reported"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:incidentText===text?"#fff7ed":"#fff",borderRadius:9,padding:"9px 10px",fontSize:11}} onClick={()=>setIncidentText(current=>current?current+"; "+text:text)}>{text}</button>)}
+       </div>
+       <textarea value={incidentText} onChange={(e)=>setIncidentText(e.target.value)} placeholder="Describe what you saw, the location and any immediate action…" style={{...input,width:"100%",minHeight:90}}/>
+       <button onClick={addIncident} style={{...primary,marginTop:10}}>Submit observed report</button>
+      </article>
       {incidents.filter((item)=>item.driverId===driver.id).map((item)=><article key={item.id} style={card}><div style={{display:"flex",justifyContent:"space-between"}}><strong>{item.category}</strong><span style={{fontSize:11,fontWeight:850}}>{item.status}</span></div><div style={{fontSize:12,color:"#667085",marginTop:5}}>{item.description}</div><div style={{fontSize:10,color:"#98a2b3",marginTop:5}}>{new Date(item.createdAt).toLocaleString()}</div></article>)}
     </section>:null}
 
