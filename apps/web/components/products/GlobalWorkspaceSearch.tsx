@@ -93,9 +93,9 @@ export function GlobalWorkspaceSearch({onNavigate,compact=false}:{
    {query?<button aria-label="Clear search" type="button" onClick={()=>{setQuery("");setCursor(0);inputRef.current?.focus();}}
     style={{position:"absolute",right:7,border:0,background:"#f1f5f9",color:"#334155",width:33,height:33,borderRadius:8,cursor:"pointer"}}><X size={16}/></button>:null}
   </div>
-  <div role="group" aria-label="Search result categories" style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:3}}>
+  <div role="group" aria-label="Search result categories" className="movetrack-search-categories">
    {categories.map(item=><button key={item} type="button" aria-pressed={category===item} onClick={()=>{setCategory(item);setCursor(0);setLimit(15);}}
-    style={{whiteSpace:"nowrap",border:"1px solid "+(category===item?"#1d4ed8":"#cad8e8"),borderRadius:999,
+    style={{border:"1px solid "+(category===item?"#1d4ed8":"#cad8e8"),borderRadius:999,
      minHeight:35,padding:"7px 10px",background:category===item?"#173764":"#fff",color:category===item?"#fff":"#475569",
      fontSize:11,fontWeight:850,cursor:"pointer"}}>{item}</button>)}
   </div>

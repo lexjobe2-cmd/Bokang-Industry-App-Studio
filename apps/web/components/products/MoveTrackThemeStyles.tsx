@@ -82,6 +82,12 @@ export function MoveTrackThemeStyles(){
 .movetrack-root :where(img,canvas,video,svg) { max-width:100%; }
 .movetrack-root :where(button,input,textarea,select) { min-width:0; }
 .movetrack-root :where(button) { white-space:normal; }
+.movetrack-search-categories {display:flex;flex-wrap:wrap;gap:8px;align-items:start;}
+.movetrack-search-categories button {flex:0 0 auto;min-height:44px;white-space:normal;overflow-wrap:anywhere;max-width:100%;}
+.movetrack-register-column-editor {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:10px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;align-items:end;}
+.movetrack-register-column-editor > button {justify-self:start;min-width:44px;}
+.movetrack-paper-column-editor {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;}
+@media(max-width:520px){.movetrack-paper-column-editor {grid-template-columns:minmax(0,1fr);}.movetrack-paper-column-editor button {justify-self:start;}}
 .movetrack-root :where(input,select,textarea) { box-sizing:border-box; }
 .movetrack-step-nav {display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px;}
 .movetrack-step-nav button {min-height:44px;padding:9px 12px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#315479;font:inherit;font-size:12px;font-weight:800;cursor:pointer;}
@@ -184,7 +190,7 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] .movetrack-drawer-group h3,.movetrack-root[data-theme="dark"] .movetrack-drawer-item-text small {color:#b3c6db;}
 .movetrack-root :is(.movetrack-appbar button,.movetrack-nav-drawer button,.movetrack-mobile-dock button):focus-visible {outline:3px solid #60a5fa;outline-offset:2px;}
 @media(max-width:860px) {
- .movetrack-root button,#movetrack-signing-tray button {min-height:44px !important;}
+ .movetrack-root button,#movetrack-signing-tray button {min-height:44px !important;min-width:44px;}
 
  .movetrack-appbar-content {padding:8px 12px;min-height:60px;gap:9px;}
  .movetrack-appbar-divider,.movetrack-appbar-current,.movetrack-desktop-links,.movetrack-hamburger-label {display:none;}

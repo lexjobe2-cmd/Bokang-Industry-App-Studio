@@ -201,7 +201,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
       </label>:null}
       {f.type==="repeat"?<div style={{gridColumn:"1 / -1",display:"grid",gap:6}}>
         <strong style={{fontSize:11}}>Detected table columns</strong>
-        {(f.children??[]).map((child,ci)=><div key={child.id} style={{display:"flex",gap:6}}>
+        {(f.children??[]).map((child,ci)=><div key={child.id} className="movetrack-paper-column-editor">
           <input style={input} aria-label={"Register column "+(ci+1)} value={child.label} onChange={e=>editField(section.id,f.id,v=>({...v,children:v.children?.map((c,j)=>j===ci?{...c,label:e.target.value}:c)}))}/>
           <button style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:v.children?.filter((_,j)=>j!==ci)}))}>Remove</button>
          </div>)}

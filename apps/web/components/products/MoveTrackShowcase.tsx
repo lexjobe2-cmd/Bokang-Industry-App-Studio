@@ -536,5 +536,5 @@ const input:React.CSSProperties={border:"1px solid #d0d5dd",borderRadius:10,padd
 const primaryButton:React.CSSProperties={marginTop:14,border:0,background:"#1d4ed8",color:"#fff",borderRadius:11,padding:"10px 14px",fontWeight:900};
 const secondaryButton:React.CSSProperties={border:"1px solid #d0d5dd",background:"#fff",borderRadius:10,padding:"8px 10px",fontWeight:800,fontSize:11};
 const checkRow:React.CSSProperties={display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",background:"#f8fafc",border:"1px solid #e5e7eb",borderRadius:10,padding:"9px 10px",fontSize:11,fontWeight:750};
-const fieldInline:React.CSSProperties={display:"grid",gridTemplateColumns:"1fr minmax(140px,180px)",gap:10,alignItems:"center",fontSize:11,fontWeight:750};
+const fieldInline:React.CSSProperties={display:"grid",gridTemplateColumns:"minmax(0,1fr)",gap:6,alignItems:"center",fontSize:11,fontWeight:750};
 const primaryLink:React.CSSProperties={display:"inline-flex",alignItems:"center",justifyContent:"center",background:"#1d4ed8",color:"#fff",borderRadius:10,padding:"8px 11px",fontWeight:850,fontSize:11,textDecoration:"none"};
