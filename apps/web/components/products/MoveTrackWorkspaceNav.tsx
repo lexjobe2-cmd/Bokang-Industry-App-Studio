@@ -33,6 +33,7 @@ export function MoveTrackWorkspaceNav({view,onChange}:{view:MoveTrackView;onChan
    <strong>{current?.label??"Control center"}</strong>
    <small>{current?.description??"Find your operational records"}</small>
   </div>
+  <label className="movetrack-workspace-mobile-switch">Workspace<select aria-label="Switch related workspace" value={view} onChange={e=>onChange(e.target.value as MoveTrackView)}>{group?.items.map(item=><option key={item.view} value={item.view}>{item.label}</option>)}</select></label>
   <div className="movetrack-workspace-shortcuts" aria-label="Related workspaces">
    {group?.items.filter(item=>item.view!==view).map(item=><button type="button" key={item.view} onClick={()=>onChange(item.view)} title={item.description}>
     <item.icon size={17}/><span>{item.label}</span>

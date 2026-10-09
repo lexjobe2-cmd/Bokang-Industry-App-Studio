@@ -159,6 +159,9 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
      display:flex;flex-direction:column;z-index:130;padding-top:env(safe-area-inset-top);}
     .movetrack-people-options{flex:1;min-height:0;max-height:none;}
     .movetrack-people-footer > div{flex-wrap:wrap;}
+    .movetrack-person-option strong{font-size:14px !important;}
+    .movetrack-person-option span{font-size:12px !important;}
+    .movetrack-people-search label,.movetrack-people-footer small{font-size:12px !important;}
     .movetrack-people-footer{padding-bottom:calc(13px + env(safe-area-inset-bottom));}
   }
   .movetrack-root[data-theme="dark"] .movetrack-personpicker .movetrack-people-panel{background:#152b46;color:#eff6ff;border-color:#3c5877;}
@@ -166,6 +169,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   .movetrack-root[data-theme="dark"] .movetrack-person-option{background:#17324e;}
   .movetrack-root[data-theme="dark"] .movetrack-person-option.selected{background:#254c73;}
   .movetrack-root[data-theme="dark"] .movetrack-person-option strong{color:#fff !important;}
+  .movetrack-root[data-theme="dark"] .movetrack-person-option span{color:#c4d4e8 !important;}
   `}</style>
  </div>;
 }

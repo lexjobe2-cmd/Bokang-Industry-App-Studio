@@ -152,7 +152,7 @@ export function AssuranceFormsWorkspace(){
  }
  const easing={duration:reducedMotion?0:0.18};
  return <section aria-label="Operational forms" style={{display:"grid",gap:16,marginTop:16}}>
-  <div hidden={!!template&&tab==="library"} style={{...tile,background:"#0b1930",color:"#fff",border:0}}>
+  <div hidden={!!template||tab!=="library"} style={{...tile,background:"#0b1930",color:"#fff",border:0}}>
     <div style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"start",flexWrap:"wrap"}}>
       <div>
         <div style={{display:"flex",alignItems:"center",gap:9,fontSize:11,fontWeight:850,letterSpacing:1.5,textTransform:"uppercase",color:"#9cc6ff"}}><ClipboardCheck size={16}/> Operational Assurance / Forms</div>
@@ -161,10 +161,6 @@ export function AssuranceFormsWorkspace(){
       </div>
       <span style={{border:"1px solid #5a7194",borderRadius:999,padding:"7px 12px",fontSize:11,fontWeight:900,color:"#fef08a"}}>DEMO · LOCAL ONLY</span>
     </div>
-  </div>
-  <div hidden={!!template&&tab==="library"} style={{...tile,display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",background:"#f0fdf4",borderColor:"#bbf7d0"}}>
-    <div><strong style={{color:"#166534"}}>Demo operator · No sign-in required</strong><p style={{color:"#475569",fontSize:12,margin:"4px 0"}}>All forms and drafts save in this browser. Test freely without external accounts.</p></div>
-    <span style={{background:"#dcfce7",color:"#166534",padding:"7px 10px",borderRadius:999,fontSize:11,fontWeight:850}}>LOCAL STORAGE</span>
   </div>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
     <button onClick={()=>{setTab("library");setActiveId(null);setNotice("");}} style={{...button,background:tab==="library"?"#172b4d":"#fff",color:tab==="library"?"#fff":"#344054"}}>Template library</button>

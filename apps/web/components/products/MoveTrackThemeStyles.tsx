@@ -43,6 +43,9 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] [aria-label="Electronic signature capture"] canvas + p {color:#334155 !important;}
 .movetrack-root[data-theme="dark"] a:not([style*="color:"]) {color:#a4caff;}
 
+.movetrack-root[data-theme="dark"] [style*="color: rgb(29, 78, 216)"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(37, 99, 235)"] {color:#93c5fd !important;}
+
 /* Desktop workbench and mobile guided views share data, not screen structure. */
 .movetrack-task-workspace {display:grid;gap:16px;align-items:start;min-width:0;}
 .movetrack-task-workspace.is-desktop {grid-template-columns:180px minmax(0,1fr) 220px;}
@@ -74,7 +77,7 @@ export function MoveTrackThemeStyles(){
 /* Responsive app shell: a real mobile dock, compact workspace header and one menu on every screen. */
 .movetrack-root { width:100%;min-width:0; }
 .movetrack-root [hidden] {display:none !important;}
-.movetrack-root :where(div,section,article,form,fieldset,label) { min-width:0; }
+.movetrack-root :where(div,section,article,main,nav,aside,header,footer,form,fieldset,label,details,summary,ul,ol,li) { min-width:0; }
 .movetrack-root :where(h1,h2,h3,p,strong,small,label,a) { overflow-wrap:anywhere; }
 .movetrack-root :where(img,canvas,video,svg) { max-width:100%; }
 .movetrack-root :where(button,input,textarea,select) { min-width:0; }
@@ -127,13 +130,14 @@ export function MoveTrackThemeStyles(){
 .movetrack-desktop-links button {background:transparent;border:0;border-radius:11px;padding:10px 13px;min-height:44px;font-size:12px;font-weight:850;color:#425974;}
 .movetrack-desktop-links button:hover {background:#eef4fd;color:#1d4ed8;}
 .movetrack-appbar-mode {display:flex;gap:7px;align-items:center;min-height:44px;padding:9px 12px;border-radius:11px;border:1px solid #d8e3f0;background:#fff;color:#1e426a;font-size:12px;font-weight:800;}
-.movetrack-workspace-switcher {display:flex;gap:17px;align-items:center;flex-wrap:wrap;padding:14px 16px;border:1px solid #dce7f2;background:#f8fafc;border-radius:15px;}
+.movetrack-workspace-switcher {min-width:0;max-width:100%;display:flex;gap:17px;align-items:center;flex-wrap:wrap;padding:14px 16px;border:1px solid #dce7f2;background:#f8fafc;border-radius:15px;}
 .movetrack-workspace-heading {display:grid;gap:3px;min-width:160px;}
 .movetrack-workspace-eyebrow {font-size:10px;color:#2563eb;font-weight:900;letter-spacing:1px;}
 .movetrack-workspace-heading strong {font-size:17px;}
 .movetrack-workspace-heading small {color:#64748b;font-size:11px;}
-.movetrack-workspace-shortcuts {display:flex;gap:7px;align-items:center;flex-wrap:wrap;flex:1;}
+.movetrack-workspace-shortcuts {min-width:0;max-width:100%;display:flex;gap:7px;align-items:center;flex-wrap:wrap;flex:1;}
 .movetrack-workspace-shortcuts button {display:flex;gap:7px;align-items:center;min-height:40px;background:#fff;border:1px solid #d4e2f0;border-radius:12px;padding:8px 11px;color:#315479;font-size:11px;font-weight:830;cursor:pointer;}
+.movetrack-workspace-mobile-switch {display:none;}
 .movetrack-workspace-hint {font-size:10px;color:#64748b;}
 .movetrack-mobile-dock {display:none;}
 .movetrack-drawer-layer {position:fixed;inset:0;z-index:120;}
@@ -198,7 +202,16 @@ export function MoveTrackThemeStyles(){
  .movetrack-root[data-theme="dark"] .movetrack-dock-action.is-active {color:#9ec7ff;background:#183d69;}
  .movetrack-root {padding-bottom:calc(98px + env(safe-area-inset-bottom)) !important;}
  #movetrack-global-search,#movetrack-workspaces,#movetrack-onboarding,#movetrack-workflow-graph {scroll-margin-top:83px !important;}
- .movetrack-workspace-switcher {gap:11px;}
+ .movetrack-workspace-switcher {display:grid;grid-template-columns:minmax(0,1fr);gap:11px;}
+ .movetrack-workspace-heading {min-width:0;}
+ .movetrack-workspace-shortcuts {display:none;}
+ .movetrack-workspace-mobile-switch {display:grid;gap:5px;font-size:12px;font-weight:750;}
+ .movetrack-workspace-mobile-switch select {width:100%;min-width:0;min-height:44px;padding:10px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#173764;font:inherit;}
+ .movetrack-root input[type=date],.movetrack-root input[type=time],.movetrack-root input[type=datetime-local] {display:block;width:100%;min-width:0;min-inline-size:0;max-width:100%;}
+ .movetrack-root input::-webkit-date-and-time-value {text-align:left;}
+ .movetrack-fleet-cards,.movetrack-fleet-entry {grid-template-columns:minmax(0,1fr) !important;}
+ .movetrack-root .movetrack-fleet-card-heading {flex-wrap:wrap;}
+ .movetrack-root .movetrack-fleet-card-heading strong {flex:1 1 170px;}
  .movetrack-workspace-hint {display:none;}
 }
 @media(max-width:520px) {
@@ -206,8 +219,7 @@ export function MoveTrackThemeStyles(){
  .movetrack-root .movetrack-hero {padding:22px 15px 34px !important;}
  .movetrack-root .movetrack-content {padding:0 12px !important;gap:12px !important;margin-top:-19px !important;}
  .movetrack-root .movetrack-workspace-surface {padding:0 !important;}
- .movetrack-root .movetrack-workspace-shortcuts {overflow:auto;flex-wrap:nowrap;max-width:100%;scrollbar-width:none;}
- .movetrack-root .movetrack-workspace-shortcuts button {white-space:nowrap;flex:none;}
+
  .movetrack-root .movetrack-workspace-switcher {padding:12px !important;}
  .movetrack-root [style*="grid-template-columns"] {min-width:0;}
 }

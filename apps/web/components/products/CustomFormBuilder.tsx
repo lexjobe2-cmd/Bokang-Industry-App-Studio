@@ -103,7 +103,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  return <section aria-label="Custom forms designer" style={{display:"grid",gap:13}}>
   <div style={{...card,background:"#101d33",color:"#fff",border:0}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
-    <div><p style={{color:"#9ac4ff",fontSize:11,fontWeight:900,letterSpacing:1.2,margin:0}}>FORM DESIGN STUDIO</p><h2 style={{fontSize:25,margin:"6px 0"}}>Create branded checklists for any job</h2><p style={{fontSize:12,color:"#cbd5e1",lineHeight:1.65,maxWidth:660}}>Reusable company templates, editable questions, repeatable steps, risk scores and live job-specific forms. All saved in this browser.</p></div>
+    <div><p style={{color:"#9ac4ff",fontSize:11,fontWeight:900,letterSpacing:1.2,margin:0}}>FORM DESIGN STUDIO</p><h2 style={{fontSize:20,margin:"6px 0"}}>Company form designer</h2></div>
     <span style={{alignSelf:"start",padding:"7px 11px",borderRadius:999,border:"1px solid #536985",fontSize:11,color:"#dbeafe"}}>FRONTEND ONLY</span>
    </div>
   </div>

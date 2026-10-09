@@ -364,9 +364,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     </div>:null}
 
     {view==="fleet"?<div style={{display:"grid",gap:14}}>
-      <section style={panel}><h2 style={{marginTop:0}}>Onboard fleet vehicle</h2>
+      <details style={panel}><summary style={{fontWeight:850,minHeight:44,cursor:"pointer"}}>Add fleet vehicle</summary><h2 style={{marginTop:10}}>Onboard fleet vehicle</h2>
        <p style={{fontSize:12,color:"#64748b"}}>Choose from company work sites and common vehicle details; only asset identity and verified expiry dates require direct entry.</p>
-       <div style={formGrid}>
+       <div className="movetrack-fleet-entry" style={formGrid}>
         <Field label="Fleet number"><input value={vehicleDraft.fleetNo} onChange={(e)=>setVehicleDraft((c)=>({...c,fleetNo:e.target.value}))} style={input} placeholder="LV-031"/></Field>
         <Field label="Registration"><input value={vehicleDraft.registration} onChange={(e)=>setVehicleDraft((c)=>({...c,registration:e.target.value}))} style={input} placeholder="B 000 ABC"/></Field>
         <Field label="Make / model"><input list="movetrack-vehicle-models" value={vehicleDraft.makeModel} onChange={(e)=>setVehicleDraft((c)=>({...c,makeModel:e.target.value}))} style={input} placeholder="Choose or type model"/>
@@ -378,11 +378,11 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
          </Field>
         <Field label="Roadworthy expiry"><input type="date" value={vehicleDraft.roadworthyExpiry} onChange={(e)=>setVehicleDraft((c)=>({...c,roadworthyExpiry:e.target.value}))} style={input}/></Field>
         <Field label="Extinguisher service due"><input type="date" value={vehicleDraft.extinguisherServiceDue} onChange={(e)=>setVehicleDraft((c)=>({...c,extinguisherServiceDue:e.target.value}))} style={input}/></Field>
-      </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></section>
+      </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></details>
 
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
+      <div className="movetrack-fleet-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
         {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid #fecaca":"1px solid #dbeafe"}}>
-          <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
+          <div className="movetrack-fleet-card-heading" style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
           <div style={{fontSize:12,color:"#667085",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
           <div style={{fontSize:11,color:"#667085",marginTop:3}}>{vehicle.site}</div>
           <div style={{display:"grid",gap:8,marginTop:12,fontSize:11}}>
