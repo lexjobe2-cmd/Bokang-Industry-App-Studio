@@ -5,7 +5,7 @@ import {ScanText,FileUp,FileImage,FileText,RefreshCw,Plus,Trash2,Save,CheckCircl
 import {usePersistentState} from "@bokang/persistence";
 import {ASSURANCE_STORAGE,demoOrganization,demoPeople,makeCustomTemplate,dictionary,type CustomTemplate,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {type FormCategory,type FormField,type FormSection,type FormTemplate} from "@bokang/domain-data/assurance-forms";
-import {detectPaperCategory,parsePaperText,validatePaperSections,type PaperExtraction} from "@bokang/domain-data/paper-forms";
+import {detectPaperCategory,parsePaperText,validatePaperSections,unreviewedPaperFields,type PaperExtraction} from "@bokang/domain-data/paper-forms";
 import {mergePaperLayout,type DetectedElement,type LayoutProposal} from "@bokang/domain-data/paper-layout";
 import {readPaperDocument,acceptedPaperFile,downloadSourcePdf,type PaperProgress} from "../../lib/paper-ocr";
 import {savePaperOriginal,getPaperOriginal,deletePaperOriginal} from "../../lib/paper-source-store";
@@ -86,7 +86,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
   if(!visibleDraft)return;
   try{
    validatePaperSections(visibleDraft.sections);
-   if(publish&&visibleDraft.sections.flatMap(s=>s.fields).some(f=>f.source&&!f.source.reviewed))
+   if(publish&&unreviewedPaperFields(visibleDraft.sections).length>0)
     throw Error("Review detected graphical fields against the original and mark them checked before publishing.");
    if(visibleDraft.title.trim().length<4)throw Error("Enter a descriptive form title.");
    const now=new Date().toISOString();
@@ -109,7 +109,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
  }
  function handoff(){
   if(!visibleDraft)return;
-  try{validatePaperSections(visibleDraft.sections);}catch(e){setMessage(e instanceof Error?e.message:"Review the form sections first.");return;}
+  try{validatePaperSections(visibleDraft.sections);if(unreviewedPaperFields(visibleDraft.sections).length)throw Error("Review all OCR-detected controls against their source pages before entering the full designer.");}catch(e){setMessage(e instanceof Error?e.message:"Review the form sections first.");return;}
   if(!window.confirm("Copy the reconstructed form to the full custom designer? It will replace the current unsaved designer draft but retain this paper import."))return;
   designerEdit(null);designerTitle(visibleDraft.title);designerDescription("Imported from "+visibleDraft.sourceName);
   designerCategory(visibleDraft.category);designerSections(structuredClone(visibleDraft.sections));
@@ -221,7 +221,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
       </div>))}</div>:null}
    </div>
    <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
-     <strong>{visibleDraft.sections.flatMap(s=>s.fields).filter(f=>f.source&&!f.source.reviewed).length} detected controls awaiting review</strong>
+     <strong>{unreviewedPaperFields(visibleDraft.sections).length} detected controls awaiting review</strong>
      <button style={btn} onClick={reviewAll}>Mark reviewed after source check</button>
      <button style={btn} onClick={handoff}>Continue in full custom form designer →</button>
    </div>
