@@ -94,6 +94,12 @@ export function MeetingRegisterWorkspace(){
   }catch(e){setMessage(e instanceof Error?e.message:"Unable to save meeting register.");}
  }
  const kind=answers.meeting_type as string||meetingTypes[0];
+ const quickAgenda=["Safety moment","Previous action follow-up","Incident and near-miss learnings","Job hazards and critical controls","Training and competency","Decisions and responsible owners","Next meeting arrangements"];
+ function addAgendaTopic(topic:string){
+  const current=textValue(answers.agenda).trim();
+  if(current.split("\\n").some(line=>line.replace(/^[•\\s-]+/,"").trim()===topic))return;
+  text("agenda",(current?current+"\\n":"")+"• "+topic);
+ }
  const grid={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(215px,1fr))",gap:10} as React.CSSProperties;
  return <section aria-label="Meeting registers" style={{display:"grid",gap:14}}>
   <div style={{...box,background:"linear-gradient(110deg,#102642,#19568b)",color:"#fff",border:0,padding:22}}>
@@ -108,7 +114,7 @@ export function MeetingRegisterWorkspace(){
    <div><strong>Start from a meeting type</strong><p style={{fontSize:11,color:"#64748b",margin:"4px 0"}}>Prepared company format · not a verified attendance signature</p></div>
    <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
     {(["SHE committee meeting","Toolbox safety talk","Pre-shift briefing","Contractor coordination"] as const).map(type=>
-     <button key={type} style={{...btn,background:kind===type?"#dbeafe":"#fff",borderColor:kind===type?"#93c5fd":"#cbd5e1"}} onClick={()=>{patch({meeting_type:type});setEditing(true);}}>{type}</button>)}
+     <button key={type} style={{...btn,background:kind===type?"#dbeafe":"#fff",borderColor:kind===type?"#93c5fd":"#cbd5e1"}} onClick={()=>{patch({meeting_type:type,...(!textValue(answers.meeting_title).trim()?{meeting_title:type}:{} )});setEditing(true);}}>{type}</button>)}
    </div>
    <DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:members})} compact/>
   </div>
@@ -186,6 +192,11 @@ export function MeetingRegisterWorkspace(){
    </div>
    <div style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
     <h3 style={{fontSize:17,margin:0}}><FileText size={18} style={{display:"inline",verticalAlign:"middle"}}/> Agenda and minutes</h3>
+    <div style={{display:"grid",gap:7}}>
+     <strong style={{fontSize:12}}>Build an agenda with one tap</strong>
+     <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{quickAgenda.map(topic=><button key={topic} type="button" style={{...btn,minHeight:35,fontSize:11,padding:"7px 10px"}} onClick={()=>addAgendaTopic(topic)}>+ {topic}</button>)}</div>
+     <span style={{fontSize:11,color:"#64748b"}}>Suggested headings only. Minutes and acknowledgements must still be recorded by the people present.</span>
+    </div>
     {([["agenda","Agenda / planned topics *"],["safety_highlights","Safety moment / hazards"],["minutes","Meeting discussions and minutes *"],["decisions","Decisions / resolutions"],["outstanding","Outstanding matters / closeout"]] as const).map(([key,title])=>
       <label key={key} style={label}>{title}<textarea style={{...input,minHeight:85}} value={textValue(answers[key])} onChange={e=>text(key,e.target.value)}/></label>)}
    </div>
