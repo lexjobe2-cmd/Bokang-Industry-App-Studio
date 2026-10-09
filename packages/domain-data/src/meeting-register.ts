@@ -2,6 +2,38 @@ import type {FormTemplate,FormSection,FormAnswers} from "./assurance-forms.ts";
 import {isSignatureEvidence} from "./signature-evidence.ts";
 import type {OrganizationProfile} from "./custom-assurance.ts";
 
+export const apologyStatusOptions=["Apology received","Absent (no apology)","Attendance unconfirmed"] as const;
+export const apologyReasonOptions=["Not specified","Leave","Different work site","Training","Operational duty","Travel","Unavailable","Other"] as const;
+
+const asPeople=(value:unknown)=>Array.isArray(value)?[...new Set(value.filter((id):id is string=>typeof id==="string"&&id.trim().length>0))]:[];
+const asRows=(value:unknown):Record<string,unknown>[]=>Array.isArray(value)?value.filter((v):v is Record<string,unknown>=>v!==null&&typeof v==="object"&&!Array.isArray(v)):[];
+export function meetingAttendanceCounts(answers:FormAnswers){
+ const present=asPeople(answers.participants);
+ const apologies=asPeople(answers.apology_person_ids);
+ const manualPresent=asRows(answers.attendees).filter(row=>String(row.attendee_name??"").trim()).length;
+ const manualAbsent=asRows(answers.apology_entries).filter(row=>String(row.apology_name??"").trim()).length;
+ return {present:present.length+manualPresent,absent:apologies.length+manualAbsent,
+  apologyReceived:asRows(answers.apology_details).filter(row=>apologies.includes(String(row.person_id??""))&&row.absence_status==="Apology received").length+
+   asRows(answers.apology_entries).filter(row=>String(row.apology_name??"").trim()&&row.apology_status==="Apology received").length};
+}
+/** Exclusive sets: a person cannot be both recorded present and absent.
+ * New snapshots keep stable person IDs and do not silently change existing submitted records. */
+export function updateMeetingAttendance(answers:FormAnswers,group:"present"|"absent",ids:readonly string[],names:Readonly<Record<string,string>>={}):FormAnswers{
+ const desired=asPeople([...ids]);
+ const previousPresent=asPeople(answers.participants);
+ const previousAbsent=asPeople(answers.apology_person_ids);
+ const present=group==="present"?desired:previousPresent.filter(id=>!desired.includes(id));
+ const absent=group==="absent"?desired:previousAbsent.filter(id=>!desired.includes(id));
+ const current=asRows(answers.apology_details);
+ const apologyDetails=absent.map(id=>{
+  const old=current.find(row=>row.person_id===id);
+  return {person_id:id,person_name:names[id]??String(old?.person_name??id),
+   absence_status:String(old?.absence_status??"Apology received"),
+   absence_reason:String(old?.absence_reason??"Not specified"),
+   absence_note:String(old?.absence_note??"")};
+ });
+ return {participants:present,apology_person_ids:absent,apology_details:apologyDetails};
+}
 export const meetingTypes=["SHE committee meeting","Toolbox safety talk","Pre-shift briefing","Contractor coordination","Incident learning review","Management SHE review","JSA / JRA team briefing","Emergency readiness meeting"] as const;
 export type MeetingType=typeof meetingTypes[number];
 export const meetingTemplateId=(orgId:string)=>"company-meeting-register-"+orgId;
@@ -27,7 +59,22 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
     fld("attendee_role","Role","text"),
     fld("attendee_ack","Attendance acknowledged (demo)","text")
    ]},
-   fld("apologies","Apologies / people absent","multiline")
+   {...fld("apology_person_ids","Staff who sent apologies or were absent","people"),
+     helperText:"People recorded absent are not counted as attendees or participants."},
+   {id:"apology_details",label:"Staff apology details",type:"repeat",required:false,children:[
+    fld("person_id","Person ID","text",true),
+    fld("person_name","Employee name","text",true),
+    {...fld("absence_status","Attendance status","select"),options:apologyStatusOptions},
+    {...fld("absence_reason","Reason category","select"),options:apologyReasonOptions},
+    fld("absence_note","Comment","text")
+   ]},
+   {id:"apology_entries",label:"External people absent / apologies",type:"repeat",required:false,children:[
+    fld("apology_name","Person name","text",true),
+    fld("apology_company","Company / department","text"),
+    {...fld("apology_status","Attendance status","select"),options:apologyStatusOptions},
+    {...fld("apology_reason","Reason category","select"),options:apologyReasonOptions}
+   ]},
+   fld("apologies","Additional apology notes (legacy free text)","multiline")
   ]},
   {id:"meeting-content",title:"Agenda, discussions and decisions",fields:[
    fld("agenda","Agenda / planned discussion topics","multiline",true),
@@ -49,7 +96,7 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
    {id:"minute_taker_signature",label:"Minute taker drawn acknowledgement",type:"signature",required:false}
   ]}
  ];
- return {id:meetingTemplateId(org.id),version:2,title:"Meeting register & minutes",category:"Meetings",
+ return {id:meetingTemplateId(org.id),version:3,title:"Meeting register & minutes",category:"Meetings",
   status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds:[],assetClasses:[],
   sections,organizationId:org.id,companyNameSnapshot:org.name,logoSnapshot:org.logoDataUrl,
   accent:org.accent,referencePrefix:org.documentPrefix};
@@ -73,6 +120,13 @@ export function validateMeetingInput(a:FormAnswers){
  }else if(!chairManual||sig.signerName.trim().toLowerCase()!==chairManual.toLowerCase()){
   throw Error("Choose the meeting chair or provide and match an external chairperson name.");
  }
+ const present=asPeople(a.participants),absent=asPeople(a.apology_person_ids);
+ if(present.some(id=>absent.includes(id)))throw Error("The same person cannot be marked both present and absent. Update their attendance selection.");
+ const details=asRows(a.apology_details);
+ if(absent.some(id=>!details.some(row=>row.person_id===id)))throw Error("Choose the attendance status for each person in the apologies register.");
+ if(details.some(row=>!absent.includes(String(row.person_id??""))))throw Error("Remove outdated apology details before submitting.");
+ const manual=asRows(a.apology_entries);
+ if(manual.some(row=>!String(row.apology_name??"").trim()))throw Error("Each external apology needs a person's name.");
  const rows=Array.isArray(a.actions)?a.actions:[];
  for(const row of rows){if(!row||Array.isArray(row)||typeof row!=="object"||!String((row as Record<string,unknown>).action??"").trim()||!String((row as Record<string,unknown>).owner??"").trim())throw Error("Each action needs a description and accountable owner.");}
  return true;
