@@ -133,7 +133,7 @@ export function FleetReleaseWorkspace(){
           value={inspectorSignature} onChange={setInspectorSignature}/>
        <MultiImageEvidence label="Reinspection photos" images={reinspectionPhotos} onChange={setReinspectionPhotos}/>
        <button style={{...btn,marginTop:10}} disabled={!isSignatureEvidence(inspectorSignature)} onClick={recordReinspection}>Record signed reinspection (demo)</button>
-       {reinspection?<><p style={{fontSize:11,color:reinspection.verdict==="PASS"?"#087f5b":"#b42318"}}>{reinspection.verdict} · {reinspection.inspectionBy}</p><MultiImageEvidence label="Saved reinspection photos" images={reinspection.images??[]} readOnly/></>:null}
+       {reinspection?<><p style={{fontSize:11,color:reinspection.verdict==="PASS"?"var(--mt-success,#087f5b)":"var(--mt-danger,#b42318)"}}>{reinspection.verdict} · {reinspection.inspectionBy}</p><MultiImageEvidence label="Saved reinspection photos" images={reinspection.images??[]} readOnly/></>:null}
       </section>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><FileCheck2 size={19}/> 3 · Supervisor review</h3>

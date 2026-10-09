@@ -156,7 +156,7 @@ export function MeetingRegisterWorkspace(){
    <div><strong>Start from a meeting type</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"4px 0"}}>Prepared company format · not a verified attendance signature</p></div>
    <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
     {(["SHE committee meeting","Toolbox safety talk","Pre-shift briefing","Contractor coordination"] as const).map(type=>
-     <button key={type} style={{...btn,background:kind===type?"#dbeafe":"#fff",borderColor:kind===type?"#93c5fd":"#cbd5e1"}} onClick={()=>{patch({meeting_type:type,...(!textValue(answers.meeting_title).trim()?{meeting_title:type}:{} )});setEditing(true);}}>{type}</button>)}
+     <button key={type} style={{...btn,background:kind===type?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)",borderColor:kind===type?"#93c5fd":"#cbd5e1"}} onClick={()=>{patch({meeting_type:type,...(!textValue(answers.meeting_title).trim()?{meeting_title:type}:{} )});setEditing(true);}}>{type}</button>)}
    </div>
    <DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:members})} compact/>
   </div>

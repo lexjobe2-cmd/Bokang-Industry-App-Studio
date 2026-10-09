@@ -190,11 +190,11 @@ export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpen
      <button style={btn} aria-label="Remove section" onClick={()=>patch({sections:visibleDraft.sections.filter(s=>s.id!==section.id)})}><Trash2 size={16}/></button>
     </div>
     <div style={{padding:12,display:"grid",gap:8}}>
-     {section.fields.map((f,i)=><div key={f.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:9,alignItems:"center",padding:10,border:"1px solid #e2e8f0",borderRadius:10,background:f.source?.reviewed?"#f0fdf4":"#fff"}}>
+     {section.fields.map((f,i)=><div key={f.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:9,alignItems:"center",padding:10,border:"1px solid #e2e8f0",borderRadius:10,background:f.source?.reviewed?"var(--mt-surface-soft,#f0fdf4)":"var(--mt-surface,#fff)"}}>
       <input aria-label={"Question "+(i+1)} style={input} value={f.label} onChange={e=>editField(section.id,f.id,v=>({...v,label:e.target.value}))}/>
       <select aria-label={"Input type "+(i+1)} style={input} value={f.type} onChange={e=>editField(section.id,f.id,v=>({...v,type:e.target.value as FormField["type"]}))}>{typeOptions.map(t=><option key={t} value={t}>{t.replaceAll("_"," / ")}</option>)}</select>
       <button style={btn} aria-label="Remove question" onClick={()=>editSection(section.id,s=>({...s,fields:s.fields.filter(x=>x.id!==f.id)}))}><Trash2 size={15}/></button>
-      {f.source?<label style={{fontSize:11,color:f.source.reviewed?"#047857":"#b45309",gridColumn:"1 / -1",display:"flex",gap:8,alignItems:"center"}}>
+      {f.source?<label style={{fontSize:11,color:f.source.reviewed?"var(--mt-success,#047857)":"var(--mt-warning,#b45309)",gridColumn:"1 / -1",display:"flex",gap:8,alignItems:"center"}}>
        <input type="checkbox" checked={!!f.source.reviewed} onChange={e=>editField(section.id,f.id,v=>({...v,source:v.source?{...v.source,reviewed:e.target.checked}:undefined}))}/>
        {f.source.reviewed?"Checked against source":"Needs source review"} · Page {f.source.page} · {Math.round(f.source.confidence*100)}% detection confidence · {f.source.kind.replaceAll("-"," ")}
       </label>:null}
