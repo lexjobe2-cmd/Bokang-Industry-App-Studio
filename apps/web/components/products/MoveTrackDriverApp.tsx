@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {Home,Truck,ClipboardCheck,AlertTriangle,UserRound,Menu,X,ChevronRight,ArrowLeft} from "lucide-react";
 import { usePersistentState } from "@bokang/persistence";
 import { miningCriticalChecks, miningPrestartChecks } from "@bokang/domain-data";
 import {
@@ -26,6 +27,24 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
   const [incidents,setIncidents] = usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
   const [policies] = usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
   const [tab,setTab] = useState<"home"|"assignment"|"check"|"incidents"|"profile">("home");
+  const [drawerOpen,setDrawerOpen]=useState(false);
+  const drawerCloseRef=useRef<HTMLButtonElement>(null);
+  const drawerButtonRef=useRef<HTMLButtonElement>(null);
+  const driverTabs=[
+   {key:"home" as const,label:"Home",icon:Home,description:"Driver overview"},
+   {key:"assignment" as const,label:"Vehicle",icon:Truck,description:"Current assignment"},
+   {key:"check" as const,label:"Check",icon:ClipboardCheck,description:"Mandatory pre-start"},
+   {key:"incidents" as const,label:"Report",icon:AlertTriangle,description:"Report an incident"},
+   {key:"profile" as const,label:"Profile",icon:UserRound,description:"Licence and permits"}
+  ];
+  function selectTab(key:typeof tab){setTab(key);setDrawerOpen(false);}
+  useEffect(()=>{
+   if(!drawerOpen)return;
+   const prior=document.body.style.overflow;document.body.style.overflow="hidden";drawerCloseRef.current?.focus();
+   const onKey=(e:KeyboardEvent)=>{if(e.key==="Escape")setDrawerOpen(false);};
+   document.addEventListener("keydown",onKey);
+   return ()=>{document.body.style.overflow=prior;document.removeEventListener("keydown",onKey);drawerButtonRef.current?.focus();};
+  },[drawerOpen]);
   const [checks,setChecks] = useState<Record<string,ChecklistResult>>(() => Object.fromEntries(miningPrestartChecks.map((item)=>[item,"unset"])));
   const [notes,setNotes] = useState("");
   const [returnOdometer,setReturnOdometer] = useState("");
@@ -158,7 +177,33 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
 
   const complianceColor=activeAssignment?.status==="Grounded"||vehicle?.status==="No-go"?"#b42318":activeAssignment?.status==="Cleared"?"#027a48":"#1d4ed8";
 
-  return <main style={{maxWidth:720,margin:"0 auto",padding:"18px 18px 92px",minHeight:"100vh",background:"#f8fafc"}}>
+  return <main style={{maxWidth:720,margin:"0 auto",padding:"12px clamp(10px,3vw,20px) calc(106px + env(safe-area-inset-bottom))",minHeight:"100vh",background:"#f8fafc",overflowX:"clip"}}>
+    <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+     <button ref={drawerButtonRef} type="button" aria-label="Open driver navigation menu" aria-expanded={drawerOpen} aria-controls="movetrack-driver-drawer"
+      onClick={()=>setDrawerOpen(true)} style={{display:"flex",gap:8,alignItems:"center",minHeight:45,border:"1px solid #cbd9e9",background:"#fff",borderRadius:12,color:"#173764",padding:"10px 12px",fontWeight:850,cursor:"pointer"}}>
+      <Menu size={22}/> Menu
+     </button>
+     <strong style={{fontSize:12,color:"#64748b"}}>Driver · {driverTabs.find(t=>t.key===tab)?.description}</strong>
+    </div>
+    {drawerOpen?<div style={{position:"fixed",inset:0,zIndex:130}}>
+     <button aria-label="Close driver navigation menu" onClick={()=>setDrawerOpen(false)} style={{position:"absolute",inset:0,width:"100%",height:"100%",background:"rgba(8,23,42,.58)",border:0}}/>
+     <aside id="movetrack-driver-drawer" role="dialog" aria-modal="true" aria-label="Driver workspaces"
+      style={{position:"absolute",inset:"0 auto 0 0",width:"min(375px,calc(100vw - 30px))",display:"flex",flexDirection:"column",background:"#f8fafc",boxShadow:"10px 0 50px rgba(0,0,0,.2)"}}>
+      <div style={{padding:"calc(20px + env(safe-area-inset-top)) 18px 20px",background:"#112b4e",display:"flex",gap:12,alignItems:"start",justifyContent:"space-between",color:"#fff"}}>
+       <div><small style={{color:"#9ec9ff",fontWeight:900,letterSpacing:1}}>MOVETRACK / DRIVER</small><h2 style={{margin:"7px 0 5px",fontSize:22}}>Your workspace</h2><p style={{margin:0,fontSize:12,color:"#c8dcf4"}}>Choose what you want to do</p></div>
+       <button ref={drawerCloseRef} aria-label="Close menu" onClick={()=>setDrawerOpen(false)} style={{display:"grid",placeItems:"center",background:"#1b406e",color:"#fff",border:"1px solid #6889af",borderRadius:12,width:44,height:44}}><X size={23}/></button>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"15px 13px"}}>
+       {driverTabs.map(item=><button type="button" key={item.key} onClick={()=>selectTab(item.key)}
+        aria-current={tab===item.key?"page":undefined}
+        style={{display:"flex",width:"100%",gap:13,alignItems:"center",minHeight:60,background:tab===item.key?"#e8f1ff":"#fff",color:"#183b63",textAlign:"left",border:"1px solid #dae6f5",borderRadius:11,marginBottom:7,padding:"10px 12px",cursor:"pointer"}}>
+        <item.icon size={22}/><span style={{flex:1}}><strong style={{display:"block",fontSize:13}}>{item.label}</strong><small style={{color:"#64748b"}}>{item.description}</small></span><ChevronRight size={17}/>
+       </button>)}
+       <a href="/" style={{display:"flex",gap:10,alignItems:"center",marginTop:15,padding:"14px 12px",borderRadius:11,background:"#173764",color:"#fff",fontSize:13,fontWeight:850,textDecoration:"none"}}><ArrowLeft size={18}/> Back to SHE manager</a>
+      </div>
+      <small style={{padding:"14px 18px calc(14px + env(safe-area-inset-bottom))",color:"#64748b",background:"#fff"}}>Frontend simulation · Not an official fleet authorization</small>
+     </aside>
+    </div>:null}
     <header style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"center"}}>
       <div><div style={{fontSize:11,color:"#1d4ed8",fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>MoveTrack Driver</div><h1 style={{fontSize:26,margin:"4px 0"}}>{driver.name}</h1><div style={{fontSize:12,color:"#667085"}}>{driver.status} · {driver.licenceNo}</div></div>
       <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:14,padding:"9px 11px",textAlign:"right"}}><div style={{fontSize:10,color:"#667085"}}>ASSIGNMENT</div><strong style={{color:complianceColor}}>{activeAssignment?.status||"None"}</strong></div>
@@ -208,8 +253,11 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
 
     {tab==="profile"?<section style={{marginTop:18,...card}}><h2 style={{marginTop:0}}>Driver profile</h2><Info label="Site authorised" value={driver.siteAuthorised?"Yes":"No"}/><Info label="Open-pit permit" value={driver.openPitPermit?"Yes":"No"}/><Info label="First-aid training" value={driver.firstAid?"Yes":"No"}/><Info label="Defensive driving" value={driver.defensiveDriving?"Yes":"No"}/></section>:null}
 
-    <nav style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"min(720px,100%)",background:"#fff",borderTop:"1px solid #e5e7eb",display:"grid",gridTemplateColumns:"repeat(5,1fr)",padding:"8px 6px calc(8px + env(safe-area-inset-bottom))",zIndex:20}}>
-      {([["home","Home"],["assignment","Vehicle"],["check","Check"],["incidents","Report"],["profile","Profile"]] as const).map(([key,label])=><button key={key} onClick={()=>setTab(key)} style={{border:0,background:"transparent",padding:8,fontSize:11,fontWeight:850,color:tab===key?"#1d4ed8":"#667085"}}>{label}</button>)}
+    <nav aria-label="Driver mobile primary navigation" style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"min(720px,100%)",background:"rgba(255,255,255,.97)",borderTop:"1px solid #dbe4ef",boxShadow:"0 -6px 18px rgba(15,36,68,.09)",display:"grid",gridTemplateColumns:"repeat(5,minmax(0,1fr))",padding:"8px 6px calc(9px + env(safe-area-inset-bottom))",zIndex:50,backdropFilter:"blur(14px)"}}>
+      {driverTabs.map(item=><button type="button" key={item.key} aria-current={tab===item.key?"page":undefined} onClick={()=>selectTab(item.key)}
+       style={{border:0,borderRadius:11,background:tab===item.key?"#e8f1ff":"transparent",padding:"7px 2px",minHeight:55,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:4,fontSize:10,fontWeight:850,color:tab===item.key?"#1d4ed8":"#667085",cursor:"pointer"}}>
+       <item.icon size={24} strokeWidth={tab===item.key?2.5:1.9}/><span>{item.label}</span>
+      </button>)}
     </nav>
   </main>;
 }
