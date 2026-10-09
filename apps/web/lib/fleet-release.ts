@@ -1,3 +1,4 @@
+import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import type { FleetAssignment, FleetIncident, FleetVehicle, PrestartRecord } from "./move-track";
 
 export type RepairEvidence = {
@@ -14,6 +15,7 @@ export type FleetReleaseRecord = {
   id: string; vehicleId: string; assignmentId?: string;
   repairEvidenceId: string; reinspectionId: string; approvedBy: string;
   approvedAt: string; decision: "RELEASED_FOR_PRESTART";
+  localReviewerSignature?: SignatureEvidence;
 };
 export type FleetReleaseAssessment = { allowed: boolean; reasons: string[] };
 export function verifyFleetRelease(params: {
