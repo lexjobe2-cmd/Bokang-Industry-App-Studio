@@ -104,7 +104,7 @@ export function MoveTrackDemoLab(){
  return <main className="movetrack-root" data-theme={theme} style={{background:theme==="dark"?"#081323":"#f3f7fc",minHeight:"100vh",color:theme==="dark"?"#edf4fe":"#15233a",paddingBottom:100}}>
   <MoveTrackThemeStyles/>
   <MoveTrackAppShellNav activeView={startWorkspace} atHome={atHome} onHome={goHome} onSearch={findSearch}
-   onNavigate={goWorkspace} onCompany={()=>jumpTo("movetrack-onboarding")} onWorkflow={()=>jumpTo("movetrack-workflow-graph")}
+   onNavigate={goWorkspace} onCompany={()=>{setAtHome(true);jumpTo("movetrack-onboarding");}} onWorkflow={()=>{setAtHome(true);jumpTo("movetrack-workflow-graph");}}
    theme={theme} onToggleTheme={()=>setTheme(theme==="dark"?"light":"dark")}/>
   <div className="movetrack-hero" style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"26px 20px 42px"}}>
    <div style={{maxWidth:1250,margin:"0 auto"}}>
