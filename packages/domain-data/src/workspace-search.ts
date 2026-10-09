@@ -12,16 +12,17 @@ export type SearchHit=SearchDocument & {score:number;matched:string[]};
 export function normalizeSearch(value:unknown):string{
  return String(value??"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("en").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
 }
-export function workspaceIndex(providers:readonly SearchProvider<never>[]):SearchDocument[]{
+export type SearchCollection={id:string;documents:SearchDocument[]};
+export function makeSearchProvider<T>(provider:SearchProvider<T>):SearchCollection{
+ const documents:SearchDocument[]=provider.items.map(item=>{
+  const d=provider.toDocument(item);
+  return {...d,source:provider.id,category:d.category??provider.category,target:d.target??provider.target};
+ }).filter(d=>Boolean(d.id&&d.title?.trim()));
+ return {id:provider.id,documents};
+}
+export function workspaceIndex(providers:readonly SearchCollection[]):SearchDocument[]{
  const map=new Map<string,SearchDocument>();
- for(const provider of providers){
-  for(const item of provider.items){
-   const d=provider.toDocument(item);
-   if(!d?.id||!d.title?.trim())continue;
-   const key=provider.id+":"+d.id;
-   map.set(key,{...d,source:provider.id,category:d.category??provider.category,target:d.target??provider.target});
-  }
- }
+ for(const provider of providers)for(const item of provider.documents)map.set(provider.id+":"+item.id,item);
  return [...map.values()];
 }
 export function searchDocuments(documents:readonly SearchDocument[],query:string,opts?:{
@@ -51,5 +52,4 @@ export function searchDocuments(documents:readonly SearchDocument[],query:string
  }
  return results.sort((a,b)=>b.score-a.score||a.category.localeCompare(b.category)||a.title.localeCompare(b.title)).slice(0,limit);
 }
-/** Coexists with clientside search or future server-backed indexes without coupling results to a vendor. */
-export function makeSearchProvider<T>(provider:SearchProvider<T>){return provider;}
+/** Backends or future indexes can expose the same SearchCollection shape, without replacing this renderer. */
