@@ -56,6 +56,10 @@ test('native PDF glyphs cannot masquerade as radio controls; YES/NO/N/A remains 
  const rule={page:1,kind:'underline',x:60,y:20,width:50,height:2,confidence:.63};
  assert.deepEqual(filterNativeTextGlyphMarks(runs,[glyph,realBox,rule]),[realBox,rule]);
  assert.deepEqual(inferQuestionType('Clear access? YES / NO / N/A'),{type:'yes_no',options:['YES','NO','NA']});
+ const {parsePaperText}=await import('../packages/domain-data/src/paper-forms.ts');
+ const parsed=parsePaperText('inspection.pdf','Daily inspection\nSite: ____\nClear access? YES / NO / N/A\nInspector: ____');
+ const decision=parsed.sections.flatMap(s=>s.fields).find(f=>f.type==='yes_no');
+ assert.deepEqual(decision.options,['YES','NO','NA']);assert.equal(decision.label,'Clear access?');
 });
 
 test('required repeating checkboxes and critical failures cannot be bypassed by populated rows',async()=>{

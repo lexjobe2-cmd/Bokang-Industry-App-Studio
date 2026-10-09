@@ -59,7 +59,8 @@ export function parsePaperText(sourceName:string,rawText:string,confidence:numbe
   used.add(content.toLowerCase());
   const type=fieldType(line);
   const id="ocr-"+String(++count).padStart(3,"0");
-  (sections[sections.length-1]!.fields as FormField[]).push({id,label:content.slice(0,160),type,required:false,
+  (sections[sections.length-1]!.fields as FormField[]).push({id,label:(type==="yes_no"?content.replace(/\bYES\s*[/|\-]\s*NO(?:\s*[/|\-]\s*N\/?A)?\b/gi,"").trim():content).slice(0,160),type,required:false,
+   ...(type==="yes_no"&&/\bN\/?A\b/i.test(line)?{options:["YES","NO","NA"]}:{}),
    helperText:"OCR-derived field. Confirm label and response type before publishing."});
   if(count>=100){warnings.push("Only the first 100 proposed fields were included; check the source for missing items.");break;}
  }
