@@ -25,3 +25,11 @@ test("people picker retains selection, filters, accessibility and separate mobil
  for(const name of ["MeetingRegisterWorkspace","JraWorkspace","AssuranceFormsWorkspace"])
   assert.match(component(name),/OrganizationPeopleComboBox/);
 });
+
+test("mobile picker keeps filters and completion action readable in both themes",()=>{
+ assert.match(picker,/<option value="">All depts<\/option>/);
+ assert.match(picker,/value.length===1\?"1 person selected":value.length\+" people selected"/);
+ assert.match(picker,/\.movetrack-person-option\{[^}]*border:1px solid #e2eaf5;[^}]*background:#f8fbff/);
+ assert.match(picker,/\.movetrack-root\[data-theme="dark"\] \.movetrack-person-option \.movetrack-person-avatar\{background:#29486e;color:#b9ddff !important;\}/);
+ assert.match(picker,/\.movetrack-root\[data-theme="dark"\] \.movetrack-person-option \.movetrack-person-check\{color:var\(--mt-success,#86efc0\) !important;\}/);
+});
