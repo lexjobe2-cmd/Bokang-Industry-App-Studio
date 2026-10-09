@@ -6,6 +6,15 @@ export const credentialLabels:Record<DriverCredentialKey,string>={
  licence:"Driver licence",siteAuthorisation:"Site driving authorisation",
  openPitPermit:"Site/open-pit permit",firstAid:"First-aid training",defensiveDriving:"Defensive driving"
 };
+export function credentialEnabled(driver:FleetDriver,key:DriverCredentialKey):boolean{
+ switch(key){
+  case "licence": return Boolean(driver.licenceNo.trim());
+  case "siteAuthorisation":return driver.siteAuthorised;
+  case "openPitPermit":return driver.openPitPermit;
+  case "firstAid":return driver.firstAid;
+  case "defensiveDriving":return driver.defensiveDriving;
+ }
+}
 export type CredentialState="missing"|"expired"|"due"|"current";
 export type CredentialAlert={key:DriverCredentialKey;label:string;state:CredentialState;date:string;daysRemaining:number|null};
 function dayNumber(y:number,m:number,d:number){return Math.round(Date.UTC(y,m-1,d)/86400000);}
@@ -22,7 +31,7 @@ export function credentialDateStatus(value:string|undefined,now:Date=new Date(),
  return {state:daysRemaining<0?"expired":daysRemaining<=dueWithinDays?"due":"current",daysRemaining};
 }
 export function credentialAlerts(driver:FleetDriver,now:Date=new Date()):CredentialAlert[]{
- return credentialKeys.filter(key=>key==="licence"||key==="siteAuthorisation"?true:Boolean(driver[key])).map(key=>{
+ return credentialKeys.filter(key=>key==="licence"||key==="siteAuthorisation"||credentialEnabled(driver,key)).map(key=>{
   const date=driver.competencyExpiry?.[key]??"";
   return {key,label:credentialLabels[key],date,...credentialDateStatus(date,now)};
  });
@@ -35,7 +44,7 @@ export function driverEligibilityReasons(driver:FleetDriver,requirements:DriverR
  if(requirements.requireFirstAid)required.push("firstAid");
  if(requirements.requireDefensiveDriving)required.push("defensiveDriving");
  for(const key of required){
-  if(key!=="licence"&&!driver[key]){
+  if(!credentialEnabled(driver,key)){
    reasons.push(credentialLabels[key]+" is not authorised/recorded");
    continue;
   }
