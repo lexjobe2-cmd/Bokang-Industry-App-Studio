@@ -60,8 +60,16 @@ test("native company meeting register has attendance, discussions, agenda and co
 });
 test("meetings validate essential fields and produce actual persistent form snapshots",()=>{
  const t=meetingTemplate(demoOrganization);
- const answers={meeting_title:"Monthly SHE committee",meeting_type:"SHE committee meeting",meeting_date:"2026-10-08",meeting_site:"Jwaneng",agenda:"Emergency readiness and working at height",minutes:"Rescue team available",participants:["demo-p01"],actions:[{action:"Check rescue plan",owner:"Safety officer",due:"2026-10-10",state:"Open"}]};
+ const signature={kind:"drawn-signature-v1",imageDataUrl:"data:image/png;base64,"+"iVBORw0KGgoAAAANSUhEUgAA".repeat(5),
+  signerName:"Demo Chairperson",role:"Meeting chairperson",intent:"attendance",signedAt:"2026-10-08T09:10:00Z",
+  scope:"Monthly SHE committee",verification:"LOCAL_UNVERIFIED",consent:true};
+ const answers={meeting_title:"Monthly SHE committee",meeting_type:"SHE committee meeting",meeting_date:"2026-10-08",
+  meeting_site:"Jwaneng",meeting_chair_manual:"Demo Chairperson",chair_signature:signature,
+  agenda:"Emergency readiness and working at height",minutes:"Rescue team available",participants:["demo-p01"],
+  actions:[{action:"Check rescue plan",owner:"Safety officer",due:"2026-10-10",state:"Open"}]};
  assert.ok(validateMeetingInput(answers));
+ assert.throws(()=>validateMeetingInput({...answers,chair_signature:undefined}),/chairperson/i);
+ assert.throws(()=>validateMeetingInput({...answers,meeting_chair_manual:"Another person"}),/match/i);
  const assessment=evaluateForm(t,answers);
  assert.equal(assessment.decision,"COMPLETE");
  const saved=makeSubmission({id:"meeting-test",template:t,answers,siteId:"Jwaneng",actorUid:"LOCAL-DEMO-OPERATOR",actorPersonId:"demo-p01",now:"2026-10-08T10:00:00Z"});
