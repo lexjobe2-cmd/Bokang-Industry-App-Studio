@@ -24,7 +24,7 @@ const label:React.CSSProperties={fontSize:12,fontWeight:800,color:"#344054",disp
 type PaperDraft={id:string;sourceName:string;kind:string;title:string;category:FormCategory;sections:FormSection[];rawText:string;warnings:string[];confidence:number|null;pages:number;orgId:string;elements?:DetectedElement[];summary?:LayoutProposal["summary"]};
 const kinds:FormCategory[]=["Fleet","Safety","Meetings","Risk","Handover","Inspections"];
 const typeOptions:FormField["type"][]=["checkbox","radio","yes_no","pass_fail_na","select","multiselect","text","multiline","number","date","datetime","repeat","person","people","signature","risk"];
-export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>void}={}){
+export function PaperToDigitalWorkspace({onOpenDesigner,adminMode=false}:{onOpenDesigner?:()=>void;adminMode?:boolean}={}){
  const reduced=useReducedMotion();
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
  const [orgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
@@ -86,6 +86,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
   patch({sections:joined.sections,warnings:joined.warnings,kind:parsed.kind,summary:joined.summary});
  }
  function create(publish:boolean){
+  if(!adminMode){setMessage("Template saving and publishing are managed in Admin → Paper to digital.");return;}
   if(!visibleDraft)return;
   try{
    validatePaperSections(visibleDraft.sections);
@@ -113,6 +114,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
   setMessage("All detected elements marked reviewed in this local draft. Inspect high-risk questions before publishing.");
  }
  function handoff(){
+  if(!adminMode){setMessage("Custom form designer access is managed in Admin → Paper to digital.");return;}
   if(!visibleDraft)return;
   try{validatePaperSections(visibleDraft.sections);if(unreviewedPaperFields(visibleDraft.sections).length)throw Error("Review all OCR-detected controls against their source pages before entering the full designer.");}catch(e){setMessage(e instanceof Error?e.message:"Review the form sections first.");return;}
   if(!window.confirm("Copy the reconstructed form to the full custom designer? It will replace the current unsaved designer draft but retain this paper import."))return;
@@ -236,7 +238,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
    <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
      <strong>{unreviewedPaperFields(visibleDraft.sections).length} detected controls awaiting review</strong>
      <button style={btn} onClick={reviewAll}>Mark reviewed after source check</button>
-     <button style={btn} onClick={handoff}>Continue in full custom form designer →</button>
+     {adminMode?<button style={btn} onClick={handoff}>Continue in full custom form designer →</button>:null}
    </div>
    <button type="button" style={primary} onClick={()=>setStage(2)}>Next: Save / publish →</button>
    </div>
@@ -248,8 +250,8 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",padding:"11px 0"}}>
     <strong style={{fontSize:12}}>4 · Save or publish the reconstructed form</strong>
     {template?<DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:people.filter(p=>p.orgId===org.id)})}/>:null}
-    <button style={btn} onClick={()=>create(false)}><Save size={15} style={{display:"inline"}}/> Save reusable draft</button>
-    <button style={primary} onClick={()=>create(true)}><CheckCircle2 size={15} style={{display:"inline"}}/> Publish to SHE Forms</button>
+    {adminMode?<button style={btn} onClick={()=>create(false)}><Save size={15} style={{display:"inline"}}/> Save reusable draft</button>:null}
+    {adminMode?<button style={primary} onClick={()=>create(true)}><CheckCircle2 size={15} style={{display:"inline"}}/> Publish to SHE Forms</button>:null}
     <button style={btn} onClick={reset}>Start over</button>
    </div>
    <p style={{fontSize:11,color:"#64748b",margin:0}}>The generated PDF/Word reproduces the reviewed questions and sections in MoveTrack's controlled layout. An exact pixel-for-pixel copy of the original is only available through “Export unchanged source PDF” while the source file is still selected.</p>
