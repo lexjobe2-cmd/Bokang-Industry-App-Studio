@@ -97,8 +97,8 @@ export function MeetingRegisterWorkspace(){
  const quickAgenda=["Safety moment","Previous action follow-up","Incident and near-miss learnings","Job hazards and critical controls","Training and competency","Decisions and responsible owners","Next meeting arrangements"];
  function addAgendaTopic(topic:string){
   const current=textValue(answers.agenda).trim();
-  if(current.split("\\n").some(line=>line.replace(/^[•\\s-]+/,"").trim()===topic))return;
-  text("agenda",(current?current+"\\n":"")+"• "+topic);
+  if(current.split("\n").some(line=>line.replace(/^[-• ]+/,"").trim()===topic))return;
+  text("agenda",(current?current+"\n":"")+"• "+topic);
  }
  const grid={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(215px,1fr))",gap:10} as React.CSSProperties;
  return <section aria-label="Meeting registers" style={{display:"grid",gap:14}}>
