@@ -14,6 +14,7 @@ import { type RepairEvidence, type ReinspectionEvidence, type FleetReleaseRecord
 import { MoveTrackShowcase } from "./MoveTrackShowcase";
 import { OrganizationOnboarding } from "./OrganizationOnboarding";
 import { OperationalGraphPanel } from "./OperationalGraphPanel";
+import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
 import {MoveTrackThemeStyles} from "./MoveTrackThemeStyles";
 import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
 import {Sun,Moon,LifeBuoy,LayoutDashboard,BarChart3} from "lucide-react";
@@ -142,6 +143,7 @@ export function MoveTrackDemoLab(){
        </button>)}
     </div>
    </section>
+   <GlobalWorkspaceSearch onNavigate={(view)=>setStartWorkspace(view)}/>
    <OperationalGraphPanel/>
    <section aria-label="Demo scenarios" style={style}>
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
