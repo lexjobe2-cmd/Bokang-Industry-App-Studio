@@ -12,6 +12,8 @@ import {
 import { MOVE_TRACK_KEYS, starterFleet, type FleetVehicle, type FleetIncident, type FleetAssignment } from "../../lib/move-track";
 import { CustomFormBuilder } from "./CustomFormBuilder";
 import { JraWorkspace } from "./JraWorkspace";
+import {SignatureCapture} from "./SignatureCapture";
+import {isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { ASSURANCE_STORAGE,demoPeople,demoOrganization,makeCustomTemplate,type CustomTemplate,type PersonRecord,type OrganizationProfile } from "@bokang/domain-data/custom-assurance";
 import {additionalAssuranceRecipes,workflowLinks} from "@bokang/domain-data/expanded-assurance";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
@@ -289,10 +291,11 @@ function FieldInput({field,value,onChange,people}:{field:FormField;value:FormAns
  }
  if(field.type==="select")return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}><option value="">Select option</option>{(field.options??["Day shift","Night shift"]).map(opt=><option key={opt}>{opt}</option>)}</select></label>;
  if(field.type==="multiline")return <label style={fieldStyle}>{label}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)}/></label>;
- if(field.type==="signature")return <label style={fieldStyle}>{label}
-    <input style={input} placeholder="Type your full name for a demo acknowledgement" value={answerText(value)} onChange={e=>onChange(e.target.value)}/>
-    <span style={{fontSize:11,color:"#b45309"}}>Typed name only. This is not a cryptographic or legally verified signature.</span>
-   </label>;
+ if(field.type==="signature")return <div style={fieldStyle}>{label}
+    <SignatureCapture value={isSignatureEvidence(value)?value:null} onChange={e=>onChange(e??"")}
+     scope={field.label} role={field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}
+     intent={field.label.toLowerCase().includes("review")?"review":"acknowledgement"}/>
+   </div>;
  if(field.type==="photo"||field.type==="document")return <div style={fieldStyle}>
    {label}
    <input type="file" accept={field.type==="photo"?"image/png,image/jpeg,image/webp":"application/pdf,image/png,image/jpeg,image/webp"} style={{...input,padding:9}} onChange={event=>{
