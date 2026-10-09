@@ -96,3 +96,11 @@ test("ambiguous legacy owner names remain manual, not silently linked to employe
  const result=carryForwardMeetingActions({},prior,[{id:"one",displayName:"Sam Dube"},{id:"two",displayName:"Sam Dube"}]);
  assert.equal(result.rows[0].owner_person_id,"");
 });
+
+test("meeting submissions require a newly reviewed date on carried-forward actions",()=>{
+ const base={meeting_title:"Safety follow-up",meeting_type:"SHE committee meeting",meeting_date:"2026-10-09",meeting_site:"Gaborone",
+  meeting_chair:first.id,chair_signature:sig,agenda:"Close-out review",minutes:"Discussed outstanding actions",actions:[]};
+ const open={action:"Inspect scaffolds",owner:first.displayName,owner_person_id:first.id,due:"",state:"Open",carried_from:"Previous meeting - verify"};
+ assert.throws(()=>validateMeetingInput({...base,actions:[open]}),/new due date/);
+ assert.equal(validateMeetingInput({...base,actions:[{...open,due:"2026-10-12"}]}),true);
+});
