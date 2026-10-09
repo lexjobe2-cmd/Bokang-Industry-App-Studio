@@ -14,7 +14,8 @@
     "./paper-forms": "./src/paper-forms.ts",
     "./meeting-register": "./src/meeting-register.ts",
     "./signature-evidence": "./src/signature-evidence.ts",
-    "./workspace-search": "./src/workspace-search.ts"
+    "./workspace-search": "./src/workspace-search.ts",
+    "./paper-layout": "./src/paper-layout.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
