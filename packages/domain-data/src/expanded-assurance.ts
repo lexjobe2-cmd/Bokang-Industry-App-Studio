@@ -99,7 +99,7 @@ function buildSections(spec:Spec):FormSection[]{
   {id:"stop_work",label:"Stop-work, rescue, handback or closeout arrangements",type:"multiline",required:true},
   {id:"reviewer",label:"Proposed reviewer",type:"person",required:true},
   {id:"participant_signature",label:"Work team acknowledgement (drawn)",type:"signature",required:false},
-  {id:"review_signature",label:"Supervisor/reviewer acknowledgement (drawn)",type:"signature",required:false}
+  {id:"review_signature",label:"Supervisor/reviewer acknowledgement (drawn)",type:"signature",required:true,signerFieldId:"reviewer",helperText:"Selected reviewer must sign this exact work record before a completed submission."}
  ]}
  ];
 }
