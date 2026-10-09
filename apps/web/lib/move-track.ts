@@ -1,3 +1,4 @@
+import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { miningPrestartChecks } from "@bokang/domain-data";
 
 export type FleetVehicleStatus =
@@ -97,6 +98,7 @@ export type FleetIncident = {
   status: "Open" | "Investigating" | "Resolved";
   resolutionNote?: string;
   resolvedAt?: string;
+  reviewSignature?: SignatureEvidence;
 };
 
 export const MOVE_TRACK_KEYS = {
