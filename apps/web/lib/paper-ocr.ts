@@ -35,14 +35,15 @@ function positionedPdfLines(items:readonly unknown[],viewport:{transform:number[
   const t=item as {str?:string;transform?:number[];width?:number;height?:number};
   if(!t.str?.trim()||!t.transform)continue;
   const tr=pdfjs.Util.transform(viewport.transform,t.transform);
-  const height=Math.max(8,(t.height??9)*viewport.scale),y=tr[5]-height;
+  const tx=tr[4]??0,ty=tr[5]??0;
+  const height=Math.max(8,(t.height??9)*viewport.scale),y=ty-height;
   const width=Math.max(2,(t.width??t.str.length*6)*viewport.scale);
   const match=rows.find(x=>Math.abs(x.y-y)<Math.max(4,height*.44));
   if(match){
-   if(tr[4]<match.x){match.text=t.str+" "+match.text;match.width=Math.max(match.width,match.x+match.width-tr[4]);match.x=tr[4];}
-   else{const gap=tr[4]-(match.x+match.width);match.text+=(gap>2?" ":"")+t.str;match.width=Math.max(match.width,tr[4]+width-match.x);}
+   if(tx<match.x){match.text=t.str+" "+match.text;match.width=Math.max(match.width,match.x+match.width-tx);match.x=tx;}
+   else{const gap=tx-(match.x+match.width);match.text+=(gap>2?" ":"")+t.str;match.width=Math.max(match.width,tx+width-match.x);}
    match.height=Math.max(match.height,height);
-  }else rows.push({text:t.str,page,x:tr[4],y,width,height});
+  }else rows.push({text:t.str,page,x:tx,y,width,height});
  }
  return rows.sort((a,b)=>a.y-b.y||a.x-b.x);
 }
@@ -83,9 +84,9 @@ async function textFromPdf(file:File,progress:(value:PaperProgress)=>void){
     const a=annotation as typeof annotation&{fieldType?:string;fieldName?:string;alternativeText?:string;checkBox?:boolean;radioButton?:boolean;combo?:boolean;options?:Array<{displayValue?:string;exportValue?:string}>;rect?:number[]};
     if(!a.fieldType||!a.rect)continue;
     const mapped=a.fieldType==="Btn"?(a.radioButton?"radio":"checkbox"):a.fieldType==="Sig"?"signature":a.fieldType==="Ch"?"select":"text";
-    const [x1,y1,x2,y2]=viewport.convertToViewportRectangle(a.rect);
+    const [x1=0,y1=0,x2=0,y2=0]=viewport.convertToViewportRectangle(a.rect);
     allWidgets.push({page:i,kind:mapped,label:a.alternativeText||a.fieldName||"",
-      choices:a.options?.map(o=>o.displayValue??o.exportValue??"").filter(Boolean),
+      choices:a.options?.map((o:{displayValue?:string;exportValue?:string})=>o.displayValue??o.exportValue??"").filter(Boolean),
       x:Math.min(x1,x2),y:Math.min(y1,y2),width:Math.abs(x2-x1),height:Math.abs(y2-y1)});
    }
    // Render digital pages as well, because checkboxes and ruled tables are often vector drawings.
