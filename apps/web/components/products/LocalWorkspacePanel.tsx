@@ -8,7 +8,7 @@ import {
  MOVE_TRACK_STORAGE_PREFIX,useLocalStorageErrors
 } from "@bokang/persistence";
 
-const panel:React.CSSProperties={border:"1px solid #dce4ee",background:"#fff",borderRadius:16,padding:18};
+const panel:React.CSSProperties={border:"1px solid #dce4ee",background:"var(--mt-surface,#fff)",borderRadius:16,padding:18};
 const button:React.CSSProperties={background:"#173764",color:"#fff",padding:"11px 15px",border:0,borderRadius:10,fontWeight:800,cursor:"pointer",minHeight:44};
 function countSaved(){
  if(typeof window==="undefined")return {count:0,bytes:0,available:false};
@@ -76,29 +76,29 @@ export function LocalWorkspacePanel(){
   <div style={{...panel,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
    <div style={{display:"flex",alignItems:"center",gap:9}}>
     {info.available&&!storageErrors?<ShieldCheck color="#07865a"/>:<AlertTriangle color="#b45309"/>}
-    <div><strong>{info.available&&!storageErrors?"Local storage available":"Check browser storage"}</strong><p style={{margin:"4px 0",color:"#667085",fontSize:12}}>{info.count} saved workspace entries · about {(info.bytes/1024).toFixed(1)} KiB of browser storage{updated?" · refreshed":""}</p></div>
+    <div><strong>{info.available&&!storageErrors?"Local storage available":"Check browser storage"}</strong><p style={{margin:"4px 0",color:"var(--mt-muted,#667085)",fontSize:12}}>{info.count} saved workspace entries · about {(info.bytes/1024).toFixed(1)} KiB of browser storage{updated?" · refreshed":""}</p></div>
    </div>
-   <button onClick={()=>setUpdated(n=>n+1)} style={{...button,background:"#e2e8f0",color:"#172b4d"}}>Refresh status</button>
+   <button onClick={()=>setUpdated(n=>n+1)} style={{...button,background:"var(--mt-surface-soft,#e2e8f0)",color:"var(--mt-ink,#172b4d)"}}>Refresh status</button>
   </div>
-  {storageErrors?<div role="alert" style={{...panel,background:"#fff7ed",borderColor:"#fed7aa",color:"#9a3412",fontSize:12,whiteSpace:"pre-wrap"}}>
+  {storageErrors?<div role="alert" style={{...panel,background:"var(--mt-surface-soft,#fff7ed)",borderColor:"#fed7aa",color:"var(--mt-danger,#9a3412)",fontSize:12,whiteSpace:"pre-wrap"}}>
    <strong>Some edits may not be saved</strong><p style={{margin:"8px 0"}}>{storageErrors}</p>Export a backup where possible and free browser storage or enable local site data.
   </div>:null}
   <div style={{...panel,display:"grid",gap:10}}>
    <h3 style={{margin:0,fontSize:17}}>Protect and move your work</h3>
-   <p style={{fontSize:12,color:"#667085",lineHeight:1.6,margin:0}}>Export a versioned JSON backup of your organizations, logos, personnel, scanned-form structures, work-in-progress forms, meeting registers, JRA assessments and fleet records. Restore it in another browser running this demo. Original photo/PDF source blobs reside separately in this browser's IndexedDB and are NOT included in JSON backups; download original PDFs separately.</p>
+   <p style={{fontSize:12,color:"var(--mt-muted,#667085)",lineHeight:1.6,margin:0}}>Export a versioned JSON backup of your organizations, logos, personnel, scanned-form structures, work-in-progress forms, meeting registers, JRA assessments and fleet records. Restore it in another browser running this demo. Original photo/PDF source blobs reside separately in this browser's IndexedDB and are NOT included in JSON backups; download original PDFs separately.</p>
    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
     <button style={{...button,display:"inline-flex",gap:8,alignItems:"center"}} onClick={downloadBackup}><Download size={17}/> Export JSON backup</button>
-    <button style={{...button,display:"inline-flex",gap:8,alignItems:"center",background:"#eaf2ff",color:"#173764"}} onClick={()=>inputRef.current?.click()}><Upload size={17}/> Import backup</button>
+    <button style={{...button,display:"inline-flex",gap:8,alignItems:"center",background:"var(--mt-surface-soft,#eaf2ff)",color:"var(--mt-ink,#173764)"}} onClick={()=>inputRef.current?.click()}><Upload size={17}/> Import backup</button>
     <input type="file" ref={inputRef} accept=".json,application/json" style={{display:"none"}} onChange={event=>void importBackup(event.target.files?.[0])}/>
    </div>
   </div>
   <div style={{...panel,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-   <div><strong style={{color:"#b42318"}}>Clear this browser's demo data</strong><p style={{fontSize:12,color:"#667085",margin:"5px 0"}}>Removes all locally stored MoveTrack work, not only test scenarios. Export first.</p></div>
-   <button style={{...button,background:"#fee4e2",color:"#b42318",display:"inline-flex",alignItems:"center",gap:7}} onClick={()=>void erase()}><Trash2 size={16}/> Clear workspace</button>
+   <div><strong style={{color:"var(--mt-danger,#b42318)"}}>Clear this browser's demo data</strong><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:"5px 0"}}>Removes all locally stored MoveTrack work, not only test scenarios. Export first.</p></div>
+   <button style={{...button,background:"var(--mt-surface-soft,#fee4e2)",color:"var(--mt-danger,#b42318)",display:"inline-flex",alignItems:"center",gap:7}} onClick={()=>void erase()}><Trash2 size={16}/> Clear workspace</button>
   </div>
-  {message?<div role="status" style={{...panel,background:"#eff6ff",color:"#1d4ed8",fontSize:12}}>{message}</div>:null}
-  <div style={{...panel,background:"#fffaf0"}}>
-   <p style={{fontSize:12,color:"#8a5210",lineHeight:1.65,margin:0}}><Archive size={16} style={{display:"inline",verticalAlign:"middle",marginRight:5}}/> Browser data is device-specific and may disappear if site data is cleared or private-browsing ends. Do not store actual employee or safety-sensitive production records in this unauthenticated demo. Backups are unencrypted JSON files.</p>
+  {message?<div role="status" style={{...panel,background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-link,#1d4ed8)",fontSize:12}}>{message}</div>:null}
+  <div style={{...panel,background:"var(--mt-surface-soft,#fffaf0)"}}>
+   <p style={{fontSize:12,color:"var(--mt-warning,#8a5210)",lineHeight:1.65,margin:0}}><Archive size={16} style={{display:"inline",verticalAlign:"middle",marginRight:5}}/> Browser data is device-specific and may disappear if site data is cleared or private-browsing ends. Do not store actual employee or safety-sensitive production records in this unauthenticated demo. Backups are unencrypted JSON files.</p>
   </div>
  </section>;
 }
