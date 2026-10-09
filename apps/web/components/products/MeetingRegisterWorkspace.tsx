@@ -18,10 +18,10 @@ import {OperationalTextAssist} from "./OperationalTextAssist";
 import {TaskWorkspace,useDesktopWorkspace} from "./TaskWorkspace";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 
-const box:React.CSSProperties={background:"#fff",border:"1px solid #dbe4ee",padding:17,borderRadius:15};
+const box:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid var(--mt-border,#d8e3f0)",padding:17,borderRadius:15,color:"var(--mt-ink,#172b46)"};
 const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,color:"#364152",fontWeight:800};
-const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",padding:"11px 12px",minHeight:44,borderRadius:10,font:"inherit",background:"#fff",color:"#182b49"};
-const btn:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:11,padding:"10px 13px",fontWeight:850,background:"#fff",color:"#17406b",minHeight:44,cursor:"pointer"};
+const input:React.CSSProperties={width:"100%",border:"1px solid var(--mt-border,#d8e3f0)",padding:"11px 12px",minHeight:44,borderRadius:10,font:"inherit",background:"var(--mt-surface-soft,#f8fafc)",color:"var(--mt-ink,#172b46)"};
+const btn:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:11,padding:"10px 13px",fontWeight:850,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",minHeight:44,cursor:"pointer"};
 const primary:React.CSSProperties={...btn,background:"#1d4ed8",borderColor:"#1d4ed8",color:"#fff"};
 type Row=Record<string,PrimitiveAnswer>;
 const rowValues=(v:unknown):Row[]=>Array.isArray(v)?v.filter(r=>r&&typeof r==="object"&&!Array.isArray(r)) as Row[]:[];
