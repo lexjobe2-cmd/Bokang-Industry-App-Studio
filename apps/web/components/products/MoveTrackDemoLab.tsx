@@ -18,7 +18,7 @@ import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
 import type {MoveTrackView} from "./MoveTrackWorkspaceNav";
 import {MoveTrackThemeStyles} from "./MoveTrackThemeStyles";
 import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
-import {Sun,Moon,LifeBuoy,LayoutDashboard,BarChart3} from "lucide-react";
+import {Sun,Moon,LifeBuoy,LayoutDashboard,BarChart3,Home,Search,FileCheck2} from "lucide-react";
 
 type Scenario="assignment"|"grounded"|"reset";
 const style:React.CSSProperties={border:"1px solid #dce4ef",borderRadius:17,padding:17,background:"#fff"};
@@ -174,5 +174,24 @@ export function MoveTrackDemoLab(){
    </section>
    <p style={{fontSize:11,color:"#64748b",textAlign:"center",margin:"12px 0"}}>Preview / simulation only. Locally submitted records cannot authorize real work or equipment movement. Designed and developed by Bokang Jobe. <button type="button" style={{marginLeft:10,border:0,background:"transparent",textDecoration:"underline",cursor:"pointer",font:"inherit",color:"#2563eb"}} onClick={()=>{setStartWorkspace("settings");document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});}}>Support · Privacy · Terms · FAQ</button></p>
   </div>
+  <nav className="movetrack-mobile-dock" aria-label="MoveTrack mobile quick actions">
+   {([{key:"home",label:"Home",icon:Home},
+      {key:"search",label:"Search",icon:Search},
+      {key:"forms",label:"SHE forms",icon:FileCheck2},
+      {key:"analytics",label:"Insights",icon:BarChart3}] as const).map(action=>
+    <button type="button" key={action.key} onClick={()=>{
+      if(action.key==="home"){window.scrollTo({top:0,behavior:"smooth"});return;}
+      if(action.key==="search"){
+       document.getElementById("movetrack-global-search")?.scrollIntoView({behavior:"smooth",block:"start"});
+       document.querySelector<HTMLInputElement>('[aria-label="Search MoveTrack records"]')?.focus({preventScroll:true});
+       return;
+      }
+      setStartWorkspace(action.key);
+      document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:"smooth",block:"start"});
+    }} aria-label={action.label} style={{display:"grid",justifyItems:"center",alignContent:"center",gap:4,background:"transparent",
+      border:0,color:(startWorkspace===action.key&&action.key!=="home")?"#1d4ed8":"#536b86",minHeight:51,minWidth:59,fontSize:10,fontWeight:800,cursor:"pointer"}}>
+     <action.icon size={22} strokeWidth={2.1}/>{action.label}
+    </button>)}
+  </nav>
  </main>;
 }
