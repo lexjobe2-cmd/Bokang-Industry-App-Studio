@@ -10,6 +10,7 @@ export type ReinspectionEvidence = {
   id: string; vehicleId: string; inspectionBy: string;
   verdict: "PASS" | "FAIL"; checkedControls: readonly string[];
   performedAt: string;
+  inspectorSignature?: SignatureEvidence;
 };
 export type FleetReleaseRecord = {
   id: string; vehicleId: string; assignmentId?: string;
