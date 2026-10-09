@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {proposePaperControls,mergePaperLayout,inferQuestionType} from "../packages/domain-data/src/paper-layout.ts";
-import {parsePaperText} from "../packages/domain-data/src/paper-forms.ts";
+import {parsePaperText,unreviewedPaperFields} from "../packages/domain-data/src/paper-forms.ts";
 import {findPaperShapes} from "../apps/web/lib/paper-shapes.ts";
 import {isAnswered,evaluateForm} from "../packages/domain-data/src/assurance-forms.ts";
 
@@ -59,4 +59,13 @@ test("false or missing single check cannot satisfy required confirmation",()=>{
  const t={id:"t",version:1,status:"PUBLISHED",title:"Permit check",category:"Safety",siteIds:[],assetClasses:[],sections:[{id:"s",title:"Entry",fields:[{id:"confirmed",label:"Guardrails fitted",required:true,type:"checkbox"}]}]};
  assert.equal(evaluateForm(t,{confirmed:false}).decision,"INCOMPLETE");
  assert.equal(evaluateForm(t,{confirmed:true}).decision,"COMPLETE");
+});
+
+test("source review gate blocks publishing guessed graphical fields until reviewed",()=>{
+ const box={id:"f1",label:"Confirm fall prevention",type:"checkbox",required:false,
+  source:{page:2,bounds:{x:20,y:30,width:14,height:14},confidence:.67,kind:"visual",reviewed:false}};
+ const sections=[{id:"work",title:"Work at heights",fields:[box]}];
+ assert.equal(unreviewedPaperFields(sections).length,1);
+ assert.equal(unreviewedPaperFields([{...sections[0],fields:[{...box,source:{...box.source,reviewed:true}}]}]).length,0);
+ assert.equal(unreviewedPaperFields([{...sections[0],fields:[{...box,source:undefined}]}]).length,0);
 });
