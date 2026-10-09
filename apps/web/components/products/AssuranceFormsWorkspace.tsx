@@ -43,7 +43,7 @@ const categories:{[key:string]:{color:string;label:string}}={
 };
 function answerText(value:FormAnswer|undefined){return typeof value==="string"||typeof value==="number"?String(value):"";}
 
-export function AssuranceFormsWorkspace(){
+export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={}){
  const reducedMotion=useReducedMotion();
  const desktop=useDesktopWorkspace();
  const [fieldAnchors,setFieldAnchors]=usePersistentState<Record<string,string>>("bokang-studio.move-track.form-field-anchors.v1",{});
@@ -167,10 +167,10 @@ export function AssuranceFormsWorkspace(){
     <button onClick={()=>{setTab("library");setActiveId(null);setNotice("");}} style={{...button,background:tab==="library"?"#172b4d":"#fff",color:tab==="library"?"#fff":"#344054"}}>Template library</button>
     <button onClick={()=>setTab("records")} style={{...button,background:tab==="records"?"#172b4d":"#fff",color:tab==="records"?"#fff":"#344054"}}>Submissions ({hydrated?submissions.length:"…" })</button>
     <button onClick={()=>{setTab("jra");setActiveId(null);}} style={{...button,background:tab==="jra"?"#172b4d":"#fff",color:tab==="jra"?"#fff":"#344054"}}>JRA job studio</button>
-    <button onClick={()=>{setTab("designer");setActiveId(null);}} style={{...button,background:tab==="designer"?"#172b4d":"#fff",color:tab==="designer"?"#fff":"#344054"}}>Create custom form</button>
+    {adminMode?<button onClick={()=>{setTab("designer");setActiveId(null);}} style={{...button,background:tab==="designer"?"#172b4d":"#fff",color:tab==="designer"?"#fff":"#344054"}}>Create custom form</button>:null}
   </div>
   {notice?<div role="status" style={{padding:13,borderRadius:12,background:"#eff6ff",color:"#1e40af",fontSize:13}}>{notice}</div>:null}
-  {tab==="designer"?<CustomFormBuilder onPublish={openTemplate}/>:null}
+  {tab==="designer"?(adminMode?<CustomFormBuilder onPublish={openTemplate}/>:<div style={tile}>Company form templates are managed in Admin → Forms. <button type="button" style={button} onClick={()=>setTab("library")}>Return to the template library</button></div>):null}
   {tab==="jra"?<JraWorkspace/>:null}
   {tab==="library"&&!template?<section style={{display:"grid",gap:12}} aria-label="Template collection">
    <div style={{...tile,display:"flex",gap:10,flexWrap:"wrap",alignItems:"end"}}>
