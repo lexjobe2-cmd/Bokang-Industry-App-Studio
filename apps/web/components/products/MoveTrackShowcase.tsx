@@ -3,6 +3,8 @@ import {DesktopModal,DesktopModalDisclosure} from "./DesktopModal";
 import {VehicleDocuments} from "./VehicleDocuments";
 import {editableDetails,updateVehicleDetails,type VehicleDetails} from "../../lib/fleet-vehicle-admin";
 import {editableDriverDetails,updateDriverDetails,type DriverDetails} from "../../lib/driver-admin";
+import {DriverCompetencyPanel} from "./DriverCompetencyPanel";
+import {credentialAlerts,credentialKeys,driverEligibilityReasons,validateCompetencyExpiry,type DriverCredentialExpiry,type DriverCredentialKey} from "../../lib/driver-competency";
 import {MultiImageEvidence} from "./MultiImageEvidence";
 import {OrganizationOnboarding} from "./OrganizationOnboarding";
 import type {LocalEvidenceImage} from "../../lib/image-evidence";
@@ -87,6 +89,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
   type DriverAuthorization=Pick<FleetDriver,"siteAuthorised"|"openPitPermit"|"firstAid"|"defensiveDriving">;
   const [authorizationDrafts,setAuthorizationDrafts]=useState<Record<string,DriverAuthorization>>({});
+  const [competencyDrafts,setCompetencyDrafts]=useState<Record<string,DriverCredentialExpiry>>({});
   const [authorizationSignatures,setAuthorizationSignatures]=useState<Record<string,SignatureEvidence|null>>({});
   const [siteDrafts,setSiteDrafts]=useState<Record<string,FleetSitePolicy>>({});
   const [siteSignatures,setSiteSignatures]=useState<Record<string,SignatureEvidence|null>>({});
@@ -237,18 +240,31 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     setAuthorizationDrafts(xs=>({...xs,[driver.id]:{...(xs[driver.id]??driverAuth(driver)),[key]:value}}));
     setAuthorizationSignatures(xs=>({...xs,[driver.id]:null}));
   }
+  function editDriverCompetency(driver:FleetDriver,key:DriverCredentialKey,value:string){
+    setCompetencyDrafts(xs=>({...xs,[driver.id]:{...(xs[driver.id]??driver.competencyExpiry??{}),[key]:value}}));
+    setAuthorizationDrafts(xs=>({...xs,[driver.id]:xs[driver.id]??driverAuth(driver)}));
+    setAuthorizationSignatures(xs=>({...xs,[driver.id]:null}));
+  }
   const driverScope=(d:FleetDriver,draft:DriverAuthorization)=>
     "Demo supervisor driver authorizations / "+d.id+" / "+d.name+" / "+
-    Object.entries(draft).map(([key,v])=>key+":"+(v?"yes":"no")).join(", ");
+    Object.entries(draft).map(([key,v])=>key+":"+(v?"yes":"no")).join(", ")+" / expiry: "+
+    credentialKeys.map(key=>key+":"+(competencyDrafts[d.id]?.[key]??d.competencyExpiry?.[key]??"")).join(", ");
+  function discardDriverReview(id:string){
+    setAuthorizationDrafts(xs=>{const next={...xs};delete next[id];return next;});
+    setCompetencyDrafts(xs=>{const next={...xs};delete next[id];return next;});
+    setAuthorizationSignatures(xs=>({...xs,[id]:null}));
+  }
   function saveDriverAuthorization(d:FleetDriver){
     const draft=authorizationDrafts[d.id],sig=authorizationSignatures[d.id];
     if(!draft||!isSignatureEvidence(sig)||sig.scope!==driverScope(d,draft)){
-      setNotice("An independent supervisor must review these exact driver authorization changes and capture a local drawn acknowledgement.");return;
+      setNotice("An independent supervisor must review these exact competency dates and authorizations before saving.");return;
     }
-    setDrivers(xs=>xs.map(x=>x.id===d.id?{...x,...draft,authorizationReview:{signedAt:sig.signedAt,signature:sig}}:x));
-    setAuthorizationDrafts(xs=>{const next={...xs};delete next[d.id];return next;});
-    setAuthorizationSignatures(xs=>({...xs,[d.id]:null}));
-    setNotice("Driver authorizations reviewed and recorded locally. Verify original qualifications and permits outside this demonstration.");
+    try{
+      const competencyExpiry=validateCompetencyExpiry(competencyDrafts[d.id]??d.competencyExpiry??{});
+      setDrivers(xs=>xs.map(x=>x.id===d.id?{...x,...draft,competencyExpiry,authorizationReview:{signedAt:sig.signedAt,signature:sig}}:x));
+      discardDriverReview(d.id);
+      setNotice("Reviewed driver competency and expiry dates saved locally. Confirm qualifications with issuing authorities; no automatic approval was given.");
+    }catch(error){setNotice(error instanceof Error?error.message:"Invalid competency dates.");}
   }
   function editPolicy(policy:FleetSitePolicy,change:(draft:FleetSitePolicy)=>FleetSitePolicy){
     setSiteDrafts(xs=>({...xs,[policy.id]:change(xs[policy.id]??policy)}));
@@ -314,9 +330,13 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       return;
     }
     const policy=policies.find((item)=>item.name===assignSite);
-    if(!driver.siteAuthorised || (policy?.requireOpenPitPermit && !driver.openPitPermit) || (policy?.requireFirstAid && !driver.firstAid) || (policy?.requireDefensiveDriving && !driver.defensiveDriving)){
-      setNotice(driver.name+" does not yet satisfy the selected site's driver authorisation/training policy.");
-      return;
+    const competencyBlocks=driverEligibilityReasons(driver,{
+      requireOpenPitPermit:policy?.requireOpenPitPermit??assignSite.toLowerCase().includes("mine"),
+      requireFirstAid:policy?.requireFirstAid??false,
+      requireDefensiveDriving:policy?.requireDefensiveDriving??false
+    });
+    if(competencyBlocks.length){
+      setNotice(driver.name+" cannot be dispatched: "+competencyBlocks.join("; ")+". Review Admin → Drivers competency dates.");return;
     }
     if(driver.personId){
       const worker=directory.find(person=>person.id===driver.personId&&person.orgId===orgId);
@@ -388,7 +408,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
        {([
         ["company","Company & branding","Set up organization, sites and identity"],
         ["fleet","Vehicles & photos","Onboard vehicles and manage image evidence"],
-        ["drivers","Drivers & competency","Onboard drivers, review local training flags"],
+        ["drivers","Drivers & competency","Onboard drivers, review expiring licences, permits and training"],
         ["workforce","Workforce directory","Maintain team and participant records"],
         ["sites","Site safety rules","Review critical site checklists and controls"],
         ["assign","Assignments","Manage dispatch and equipment allocations"],
@@ -530,6 +550,22 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Licence / reference"><input value={driverDraft.licenceNo} onChange={(e)=>setDriverDraft((c)=>({...c,licenceNo:e.target.value}))} style={input}/></Field>
       </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section></DesktopModalDisclosure>
       :<div style={{...panel,fontSize:12}}>Onboard company drivers under <button type="button" style={secondaryButton} onClick={()=>openAdminArea("drivers")}>Admin → Drivers</button>.</div>}
+      {adminMode?<section aria-label="Driver credential reminders" style={{...panel,display:"grid",gap:7,borderColor:"#fde68a"}}>
+        <strong style={{fontSize:14}}>Licence, permit and training reminders</strong>
+        <p style={{fontSize:12,color:"#64748b",margin:0}}>Visible on this device when Admin → Drivers is opened. No email, push notifications or background monitoring is configured.</p>
+        {(()=>{
+          const alerts=drivers.flatMap(driver=>credentialAlerts(driver).filter(alert=>alert.state!=="current").map(alert=>({driver,alert})));
+          const blocked=alerts.filter(({alert})=>alert.state==="expired"||alert.state==="missing");
+          return <div style={{display:"grid",gap:7}}>
+            <strong style={{fontSize:12,color:blocked.length?"#b42318":"#9a670a"}}>{blocked.length} missing/expired · {alerts.length-blocked.length} due within 30 days</strong>
+            {alerts.length?alerts.slice(0,12).map(({driver,alert})=><div key={driver.id+"-"+alert.key} style={{fontSize:12,display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap"}}>
+              <span>{driver.name} · {alert.label}</span>
+              <strong style={{color:alert.state==="due"?"#9a670a":"#b42318"}}>{alert.state==="due"?"Due in "+alert.daysRemaining+" days":alert.state==="expired"?"Expired":"Expiry missing"}</strong>
+            </div>):<small style={{color:"#047857"}}>No saved credentials are currently due, expired or missing.</small>}
+            {alerts.length>12?<small>Showing 12 of {alerts.length} reminders; open individual driver cards for all dates.</small>:null}
+          </div>;
+        })()}
+      </section>:null}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
         {drivers.map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
@@ -549,6 +585,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           })()}
           {adminMode?<VehicleDocuments label="Driver documents" documents={driver.documents??[]} onChange={documents=>setDrivers(current=>current.map(item=>item.id===driver.id?{...item,documents}:item))}/>:null}
           {adminMode?<button type="button" style={{...secondaryButton,marginTop:11,minHeight:44}} onClick={()=>beginDriverEdit(driver)}>Edit driver profile</button>:null}
+          <DriverCompetencyPanel driver={driver} adminMode={adminMode} draft={competencyDrafts[driver.id]} onChange={(key,date)=>editDriverCompetency(driver,key,date)}/>
           <div style={{display:"grid",gap:7,marginTop:12}}>
             {([
               ["siteAuthorised","Site driving authorisation"],["openPitPermit","Site/open-pit permit"],
@@ -556,15 +593,15 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             ] as const).map(([key,label])=><label key={key} style={{display:"flex",justifyContent:"space-between",gap:10,fontSize:12}}><span>{label}</span><input type="checkbox" disabled={!adminMode} checked={(authorizationDrafts[driver.id]??driver)[key]} onChange={e=>editDriverAuthorization(driver,key,e.target.checked)}/></label>)}
           </div>
           {adminMode&&authorizationDrafts[driver.id]?<div style={{display:"grid",gap:9,padding:"12px 0",borderTop:"1px solid #dbe4ef",marginTop:10}}>
-            <p style={{fontSize:11,color:"#b45309",margin:0}}>Pending changes are not active until locally acknowledged by a supervisor.</p>
+            <p style={{fontSize:11,color:"#b45309",margin:0}}>Pending authorizations or expiry dates are not active until a supervisor reviews these exact values. A local signature is a demo acknowledgement only.</p>
             <SignatureApprovalTray label="Supervisor review driver access" description="Examine the licence, medical and training evidence outside the app before capturing this unverified demo review."
               value={authorizationSignatures[driver.id]??null} onChange={sig=>setAuthorizationSignatures(xs=>({...xs,[driver.id]:sig}))}
               scope={driverScope(driver,authorizationDrafts[driver.id]!)} role="Site supervisor"/>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
               <button type="button" style={{...secondaryButton,background:"#173764",color:"#fff"}}
                 disabled={!isSignatureEvidence(authorizationSignatures[driver.id])||authorizationSignatures[driver.id]?.scope!==driverScope(driver,authorizationDrafts[driver.id]!)}
-                onClick={()=>saveDriverAuthorization(driver)}>Save reviewed authorizations</button>
-              <button type="button" style={secondaryButton} onClick={()=>{setAuthorizationDrafts(xs=>{const next={...xs};delete next[driver.id];return next;});setAuthorizationSignatures(xs=>({...xs,[driver.id]:null}));}}>Discard</button>
+                onClick={()=>saveDriverAuthorization(driver)}>Save reviewed competency</button>
+              <button type="button" style={secondaryButton} onClick={()=>discardDriverReview(driver.id)}>Discard</button>
             </div>
            </div>:driver.authorizationReview?<small style={{display:"block",marginTop:9,color:"#047857"}}>Demo supervisor acknowledgement recorded · {new Date(driver.authorizationReview.signedAt).toLocaleDateString()}</small>:null}
           <a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={{...primaryLink,marginTop:12}}>Open driver app</a>
