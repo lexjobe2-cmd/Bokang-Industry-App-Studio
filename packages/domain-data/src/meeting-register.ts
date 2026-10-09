@@ -131,3 +131,30 @@ export function validateMeetingInput(a:FormAnswers){
  for(const row of rows){if(!row||Array.isArray(row)||typeof row!=="object"||!String((row as Record<string,unknown>).action??"").trim()||!String((row as Record<string,unknown>).owner??"").trim())throw Error("Each action needs a description and accountable owner.");}
  return true;
 }
+
+/** Opt-in carry-forward of unresolved meeting actions, modelled after an editable
+ * Power Apps gallery. Never copy previous sign-off or treat previous attendance
+ * as current. Due dates are cleared for the new meeting and must be reviewed.
+ */
+export function carryForwardMeetingActions(current:FormAnswers,previous:FormAnswers,knownPeople:readonly {id:string;displayName:string}[]=[]){
+ const existing=asRows(current.actions).map(row=>({...row}));
+ const source=asRows(previous.actions);
+ const normalize=(s:unknown)=>String(s??"").trim().toLowerCase().replace(/\s+/g," ");
+ const seen=new Set(existing.map(row=>normalize(row.action)).filter(Boolean));
+ let added=0;
+ for(const item of source){
+  const action=String(item.action??"").trim();
+  if(!action||normalize(item.state)==="closed"||seen.has(normalize(action)))continue;
+  const oldOwnerId=String(item.owner_person_id??"");
+  const ownerName=String(item.owner??"").trim();
+  const byId=knownPeople.find(p=>p.id===oldOwnerId);
+  // Do not auto-link an ambiguous legacy free-text name to an employee.
+  const byName=knownPeople.filter(p=>normalize(p.displayName)===normalize(ownerName));
+  const person=byId??(byName.length===1?byName[0]:undefined);
+  existing.push({action,owner:person?.displayName??ownerName,
+   owner_person_id:person?.id??"",due:"",state:"Open",
+   carried_from:"Previous meeting - verify owner, due date and action status"});
+  seen.add(normalize(action));added++;
+ }
+ return {rows:existing,added};
+}
