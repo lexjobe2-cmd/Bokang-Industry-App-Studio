@@ -22,6 +22,11 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] [style*="color: rgb(52, 64, 84)"],
 .movetrack-root[data-theme="dark"] [style*="color: rgb(17, 24, 39)"],
 .movetrack-root[data-theme="dark"] [style*="color: rgb(20, 43, 77)"] {color: #eef5ff !important;}
+.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 52, 85)"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 55, 100)"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 43, 73)"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(52, 65, 84)"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 49, 83)"] {color: #eef5ff !important;}
 .movetrack-root[data-theme="dark"] [style*="color: rgb(100, 116, 139)"],
 .movetrack-root[data-theme="dark"] [style*="color: rgb(102, 112, 133)"],
 .movetrack-root[data-theme="dark"] [style*="color: rgb(71, 85, 105)"] {color: #bacbe0 !important;}
