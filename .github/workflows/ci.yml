@@ -19,7 +19,7 @@ jobs:
           node-version: 22
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm typecheck
-      - run: node --experimental-strip-types --test tests/assurance.test.mjs tests/local-persistence.test.mjs tests/participation-export.test.mjs tests/paper-meeting.test.mjs tests/paper-layout.test.mjs tests/workspace-search.test.mjs
+      - run: node --experimental-strip-types --test tests/assurance.test.mjs tests/local-persistence.test.mjs tests/participation-export.test.mjs tests/paper-meeting.test.mjs tests/paper-layout.test.mjs tests/workspace-search.test.mjs tests/organization-directory.test.mjs
       - run: python3 scripts/validate_assurance_schema.py
       - run: pnpm build
       - name: Render report quality samples (PDF and Word)
