@@ -66,6 +66,25 @@ export function proposePaperControls(lines:readonly PaperLine[],marks:readonly V
     height:Math.max(line.y+line.height,first.y+first.height)-Math.min(line.y,first.y)},
    source:"visual",label,type:inference.type,options:inference.options,confidence:Math.min(.86,group.reduce((a,b)=>a+b.confidence,0)/group.length)});
  }
+ // OCR sometimes recognizes printed box symbols even when the geometric outline is faint.
+ for(const l of sorted){
+  if(!/☐|☑|□|◯|○|\\[\\s*[xX]?\\s*\\]|\\(\\s*\\)/.test(l.text))continue;
+  const label=clean(l.text);if(label.length<3)continue;
+  if(output.some(o=>o.page===l.page&&norm(o.label)===norm(label)))continue;
+  const symbols=l.text.match(/☐|☑|□|◯|○|\\[\\s*[xX]?\\s*\\]|\\(\\s*\\)/g)??[];
+  const kind=/(◯|○|\\(\\s*\\))/.test(l.text)?"radio" as const:"checkbox" as const;
+  const inferred=inferQuestionType(l.text,Array.from({length:symbols.length},()=>kind));
+  output.push({id:"text-control-"+idHash(l.page+"|"+l.y+"|"+label),page:l.page,bounds:{x:l.x,y:l.y,width:l.width,height:l.height},
+   source:"ocr-layout",label,type:inferred.type,options:inferred.options,confidence:.67});
+ }
+ // Ruled or OCR-recognized table headers become a repeatable register, not a text field.
+ for(const l of sorted){
+  const columns=l.text.split(/\\s*\\|\\s*|\\t+/).map(clean).filter(c=>c.length>=2&&c.length<=45);
+  if(columns.length<3||columns.length>12||l.text.length>180||!columns.some(c=>/name|date|time|description|item|employee|action|status|signature|quantity/i.test(c)))continue;
+  const label="Register: "+columns.slice(0,3).join(" / ");
+  output.push({id:"table-"+idHash(l.page+"|"+l.y+"|"+label),page:l.page,bounds:{x:l.x,y:l.y,width:l.width,height:l.height},
+   source:"ocr-layout",label,type:"repeat",options:columns,confidence:.72});
+ }
  for(const w of widgets){
   const label=clean(w.label)||clean(nearest(sorted,w,w.page)?.text??"")||"Unlabeled PDF input";
   const mapped:FormField["type"]=w.kind==="checkbox"?"checkbox":w.kind==="radio"?"radio":w.kind==="signature"?"signature":
@@ -103,12 +122,15 @@ export function mergePaperLayout(parsed:PaperExtraction,elements:readonly Detect
   const inferred:Partial<FormField>={type:e.type,options:e.options?.length?e.options:undefined,
    source:{page:e.page,bounds:e.bounds,confidence:e.confidence,kind:e.source,reviewed:false}};
   if(found){
+   if(e.type==="repeat")inferred.children=(e.options??[]).map((option,i)=>({id:"col-"+i,label:option,type:"text" as const,required:false}));
    // Real PDF widget types or printed shape clusters trump plain text inference.
    Object.assign(found,inferred,{label:clean(e.label).slice(0,160)});
   }else{
    const last=sections[sections.length-1]??{id:"ocr-section-1",title:"Source form fields",fields:[]};
    if(!sections.length)sections.push(last);
-   last.fields.push({id:"scan-"+e.id,label:clean(e.label).slice(0,160),type:e.type,required:false,...inferred});
+   last.fields.push({id:"scan-"+e.id,label:clean(e.label).slice(0,160),type:e.type,required:false,
+     ...(e.type==="repeat"?{children:(e.options??[]).map((option,i)=>({id:"col-"+i,label:option,type:"text" as const,required:false}))}:{}),...inferred,
+     options:e.type==="repeat"?undefined:inferred.options});
   }
  }
  if(elements.some(e=>e.options?.some(x=>x.startsWith("Option "))))warnings.push("Some checkbox groups have unrecognized option labels. Review and rename those options before publishing.");
