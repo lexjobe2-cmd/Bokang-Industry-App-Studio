@@ -95,29 +95,29 @@ export function FleetReleaseWorkspace(){
  }
  return <section style={{display:"grid",gap:13,marginTop:20}}>
   <div style={{...card,background:"#111c2e",color:"#fff",border:0}}>
-   <p style={{fontSize:11,textTransform:"uppercase",letterSpacing:1.4,color:"#93c5fd",fontWeight:900}}>Maintenance assurance</p>
+   <p style={{fontSize:11,textTransform:"uppercase",letterSpacing:1.4,color:"var(--mt-link,#93c5fd)",fontWeight:900}}>Maintenance assurance</p>
    <h2 style={{margin:"6px 0"}}>Grounding → repair → reinspection → release</h2>
    <p style={{fontSize:12,color:"#cbd5e1",lineHeight:1.6}}>Separate roles and evidence checkpoints. All controls on this screen are demonstration-only; they do not constitute an authenticated safety release.</p>
   </div>
-  {notice?<div role="status" style={{...card,background:"#eff6ff",fontSize:12,color:"#1e40af"}}>{notice}</div>:null}
+  {notice?<div role="status" style={{...card,background:"var(--mt-surface-soft,#eff6ff)",fontSize:12,color:"var(--mt-link,#1e40af)"}}>{notice}</div>:null}
   {grounded.length===0?<div style={card}><CheckCircle2 color="#087f5b" style={{display:"inline",verticalAlign:"middle",marginRight:8}}/> No currently grounded assets. Previous demo release records: {releases.length}.</div>:<>
     <label style={{...card,display:"grid",gap:8,fontWeight:800}}>Grounded vehicle
       <select style={input} value={vehicle?.id??""} onChange={e=>{setChosen(e.target.value);setNotice("");setVerified([]);setRepairPhotos([]);setReinspectionPhotos([]);}}>
        {grounded.map(v=><option key={v.id} value={v.id}>{v.fleetNo} · {v.makeModel} · NO-GO</option>)}
       </select>
-      <small style={{color:"#b42318"}}><ShieldAlert size={14} style={{display:"inline"}}/> {unresolved.length} outstanding report(s). Resolve them in Fleet control before release.</small>
+      <small style={{color:"var(--mt-danger,#b42318)"}}><ShieldAlert size={14} style={{display:"inline"}}/> {unresolved.length} outstanding report(s). Resolve them in Fleet control before release.</small>
     </label>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,250px),1fr))",gap:12}}>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><Wrench size={19}/> 1 · Maintenance evidence</h3>
-       <p style={{fontSize:11,color:"#667085"}}>Attach multiple photos of the defect, parts and repair alongside the manual evidence reference. Local images do not verify that repair work occurred.</p>
+       <p style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>Attach multiple photos of the defect, parts and repair alongside the manual evidence reference. Local images do not verify that repair work occurred.</p>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Repairer<input style={input} value={repairer} onChange={e=>setRepairer(e.target.value)} placeholder="Maintenance technician"/></label>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Repair notes<textarea style={{...input,minHeight:83}} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Work performed and parts used"/></label>
        <OperationalTextAssist value={notes}/>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Evidence reference<input style={input} value={ref} onChange={e=>setRef(e.target.value)} placeholder="DEMO-REPAIR-001"/></label>
        <MultiImageEvidence label="Maintenance and repair photos" images={repairPhotos} onChange={setRepairPhotos}/>
        <button style={btn} onClick={recordRepair}>Record repair (demo)</button>
-       {repair?<><p style={{fontSize:11,color:"#087f5b"}}>Recorded by {repair.repairedBy} · {repair.evidenceReference}</p><MultiImageEvidence label="Saved repair photos" images={repair.images??[]} readOnly/></>:null}
+       {repair?<><p style={{fontSize:11,color:"var(--mt-success,#087f5b)"}}>Recorded by {repair.repairedBy} · {repair.evidenceReference}</p><MultiImageEvidence label="Saved repair photos" images={repair.images??[]} readOnly/></>:null}
       </section>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><ClipboardCheck size={19}/> 2 · Independent reinspection</h3>
@@ -140,12 +140,12 @@ export function FleetReleaseWorkspace(){
        <label style={{display:"grid",gap:6,fontSize:12,marginBottom:12}}>Approving supervisor<input style={input} value={approver} onChange={e=>setApprover(e.target.value)} placeholder="Independent supervisor"/></label>
        <SignatureApprovalTray compact label="Review evidence & sign release" value={releaseSignature} onChange={setReleaseSignature}
         defaultSignerName={approver} scope={"Local fleet release review "+(vehicle?.fleetNo??"")} role="Supervisor" intent="review"/>
-       <div style={{padding:11,borderRadius:10,background:"#f8fafc",fontSize:12}}>
+       <div style={{padding:11,borderRadius:10,background:"var(--mt-surface-soft,#f8fafc)",fontSize:12}}>
         <strong>{assessment?.allowed?"Ready for simulated release":"Release blocked"}</strong>
         <ul style={{paddingLeft:18,margin:"8px 0"}}>{assessment?.reasons.map((reason,i)=><li key={i}>{reason}</li>)}</ul>
        </div>
        <button onClick={release} disabled={!assessment?.allowed||!isSignatureEvidence(releaseSignature)||releaseSignature.signerName.trim().toLowerCase()!==approver.trim().toLowerCase()} style={{...btn,marginTop:12,opacity:assessment?.allowed?1:0.55}}>Authorize release to pre-start (demo)</button>
-       <p style={{color:"#667085",fontSize:11}}>Never returns equipment directly to operational GO.</p>
+       <p style={{color:"var(--mt-muted,#667085)",fontSize:11}}>Never returns equipment directly to operational GO.</p>
       </section>
     </div>
    </>}
