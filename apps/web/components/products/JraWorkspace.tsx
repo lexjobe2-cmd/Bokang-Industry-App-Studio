@@ -11,6 +11,8 @@ import {
 } from "@bokang/domain-data/custom-assurance";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
+import {SignatureCapture} from "./SignatureCapture";
+import {isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {buildJraDocument,buildBlankJraDocument} from "../../lib/form-exports";
 
@@ -81,6 +83,9 @@ export function JraWorkspace(){
  function approveDemo(){
   if(!current)return;
   if(!canSimulateApproval(current)){setMessage("Cannot mark ready: complete controls, resolve high residual risks, acknowledge all participants and choose an independent reviewer.");return;}
+  if(!isSignatureEvidence(current.reviewSignature)||current.reviewSignature.signerPersonId!==current.reviewerId){
+   setMessage("Capture a drawn local acknowledgement from the selected independent reviewer first. This does not establish legal identity or authorize work.");setPage("review");return;
+  }
   patch({status:"APPROVED_DEMO",reviewedAt:new Date().toISOString()});
   const now=new Date().toISOString();
   const next={...current,status:"APPROVED_DEMO" as const,reviewedAt:now,updatedAt:now};
@@ -162,7 +167,12 @@ export function JraWorkspace(){
       <div style={{display:"grid",gap:8}}>{job.participants.map(p=><div key={p.personId} style={{padding:11,border:"1px solid #e2e8f0",borderRadius:11,display:"flex",gap:11,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
        <div><strong style={{fontSize:12}}>{p.nameSnapshot}</strong><div style={{fontSize:10,color:"#667085"}}>Directory ID {p.personId}</div></div>
        <select aria-label={"Role for "+p.nameSnapshot} style={{...input,width:"auto",minWidth:135}} value={p.role} onChange={e=>patch({participants:job.participants.map(x=>x.personId===p.personId?{...x,role:e.target.value}:x)})}>{dictionary.jobRoles.map(role=><option key={role}>{role}</option>)}</select>
-       <label style={{fontSize:11,display:"flex",alignItems:"center",gap:5}}><input type="checkbox" checked={p.acknowledged} onChange={e=>patch({participants:job.participants.map(x=>x.personId===p.personId?{...x,acknowledged:e.target.checked,acknowledgedAt:e.target.checked?new Date().toISOString():undefined}:x)})}/> Demo acknowledgement</label>
+       <div style={{flex:"1 1 285px",minWidth:250}}>
+        <SignatureCapture compact value={p.signature??null} role={p.role} intent="acknowledgement"
+         scope={job.reference||job.title||"JRA task review"} signerPersonId={p.personId} defaultSignerName={p.nameSnapshot}
+         onChange={signature=>patch({participants:job.participants.map(x=>x.personId===p.personId?
+          {...x,signature:signature??undefined,acknowledged:!!signature,acknowledgedAt:signature?.signedAt}:x)})}/>
+       </div>
        <button style={{...btn,padding:8,minHeight:33}} onClick={()=>patch({participants:job.participants.filter(x=>x.personId!==p.personId)})} aria-label={"Remove "+p.nameSnapshot}><Trash2 size={15}/></button>
       </div>)}</div>
      </div>:null}
@@ -220,8 +230,12 @@ export function JraWorkspace(){
       </div>
       <div style={shell}><h3 style={{marginTop:0}}>Approver / review register</h3>
        <p style={{fontSize:12,color:"#667085"}}>Choose a different person from the job supervisor for independent review. These approvals are simulated; there are no real electronic signatures.</p>
-       <label style={label}>Independent reviewer<select style={input} value={job.reviewerId} onChange={e=>patch({reviewerId:e.target.value})}><option value="">Choose reviewer</option>{persons.filter(p=>p.id!==job.supervisorId).map(p=><option key={p.id} value={p.id}>{p.displayName} · {p.jobTitle}</option>)}</select></label>
+       <label style={label}>Independent reviewer<select style={input} value={job.reviewerId} onChange={e=>patch({reviewerId:e.target.value,reviewSignature:undefined})}><option value="">Choose reviewer</option>{persons.filter(p=>p.id!==job.supervisorId).map(p=><option key={p.id} value={p.id}>{p.displayName} · {p.jobTitle}</option>)}</select></label>
        <label style={{...label,marginTop:13}}>Review notes<textarea style={{...input,minHeight:90}} value={job.reviewerNote} onChange={e=>patch({reviewerNote:e.target.value})} placeholder="Required amendments, outstanding controls and approval conditions"/></label>
+       {job.reviewerId?<SignatureCapture value={job.reviewSignature??null} intent="review" role="Independent reviewer"
+        scope={job.reference||job.title||"JRA independent review"} signerPersonId={job.reviewerId}
+        defaultSignerName={persons.find(p=>p.id===job.reviewerId)?.displayName??""}
+        onChange={signature=>patch({reviewSignature:signature??undefined})}/>:null}
        <div style={{display:"grid",gap:9,marginTop:14}}>
         {job.participants.map(p=><div key={p.personId} style={{padding:9,borderRadius:8,background:"#f8fafc",display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><span style={{fontSize:12}}>{p.nameSnapshot} · {p.role}</span><Badge color={p.acknowledged?"#087f5b":"#b45309"}>{p.acknowledged?"DEMO ACKNOWLEDGED":"AWAITING ACKNOWLEDGEMENT"}</Badge></div>)}
        </div>
@@ -229,7 +243,7 @@ export function JraWorkspace(){
       </div>
       <div style={{...shell,display:"flex",gap:10,justifyContent:"space-between",flexWrap:"wrap"}}>
        <button style={btn} onClick={()=>save("DRAFT")}>Save editable draft</button>
-       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={primary} onClick={submitReview}>Save for review</button><button style={{...primary,background:"#087f5b",borderColor:"#087f5b",opacity:canSimulateApproval(job)?1:0.5}} disabled={!canSimulateApproval(job)} onClick={approveDemo}>Mark reviewed (demo)</button></div>
+       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={primary} onClick={submitReview}>Save for review</button><button style={{...primary,background:"#087f5b",borderColor:"#087f5b",opacity:canSimulateApproval(job)?1:0.5}} disabled={!canSimulateApproval(job)||!isSignatureEvidence(job.reviewSignature)||job.reviewSignature.signerPersonId!==job.reviewerId} onClick={approveDemo}>Mark reviewed (demo)</button></div>
       </div>
     </div>:null}
     {page!=="review"?<div style={{...shell,display:"flex",justifyContent:"flex-end"}}><button style={btn} onClick={()=>save("DRAFT")}>Save draft</button></div>:null}
