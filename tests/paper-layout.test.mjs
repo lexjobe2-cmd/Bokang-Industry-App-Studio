@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {proposePaperControls,mergePaperLayout,inferQuestionType} from "../packages/domain-data/src/paper-layout.ts";
-import {parsePaperText,unreviewedPaperFields} from "../packages/domain-data/src/paper-forms.ts";
+import {parsePaperText,unreviewedPaperFields,paperPublicationIssues} from "../packages/domain-data/src/paper-forms.ts";
 import {findPaperShapes} from "../apps/web/lib/paper-shapes.ts";
 import {isAnswered,evaluateForm} from "../packages/domain-data/src/assurance-forms.ts";
 
@@ -68,4 +68,33 @@ test("source review gate blocks publishing guessed graphical fields until review
  assert.equal(unreviewedPaperFields(sections).length,1);
  assert.equal(unreviewedPaperFields([{...sections[0],fields:[{...box,source:{...box.source,reviewed:true}}]}]).length,0);
  assert.equal(unreviewedPaperFields([{...sections[0],fields:[{...box,source:undefined}]}]).length,0);
+});
+
+test("OCR proposes real directory pickers and signatures for familiar printed form labels",()=>{
+ const extraction=parsePaperText("Weekly SHE form.pdf",
+  "SHE Meeting and attendance register\\nChairperson: __________\\nStaff attending: __________\\nApologies: __________\\nSupervisor signature: __________\\nMeeting date: _______",90,1);
+ const fields=extraction.sections.flatMap(x=>x.fields);
+ assert.equal(fields.find(x=>/Chairperson/i.test(x.label))?.type,"person");
+ assert.equal(fields.find(x=>/Staff attending/i.test(x.label))?.type,"people");
+ assert.equal(fields.find(x=>/Apologies/i.test(x.label))?.type,"people");
+ assert.equal(fields.find(x=>/signature/i.test(x.label))?.type,"signature");
+});
+test("OCR publication requires meaningful choices, columns and source review",()=>{
+ const section={id:"section1",title:"W@H",fields:[
+  {id:"f1",label:"PPE types",type:"multiselect",required:false,options:["Option 1","Option 2"],
+   source:{page:1,confidence:0.65,bounds:{x:10,y:10,width:80,height:22},kind:"visual",reviewed:true}},
+  {id:"f2",label:"Line item",type:"repeat",children:[{id:"c1",label:"New column",type:"text"}]},
+  {id:"f3",label:"Unlabeled PDF input",type:"text"}
+ ]};
+ const issues=paperPublicationIssues([section]);
+ assert.ok(issues.some(x=>x.includes("placeholder choices")));
+ assert.ok(issues.some(x=>x.includes("name all table columns")));
+ assert.ok(issues.some(x=>x.includes("source question label")));
+ const fixed={...section,fields:[
+  {...section.fields[0],options:["Gloves","Harness"]},
+  {...section.fields[1],children:[{id:"c1",label:"Inspection item",type:"text"}]},
+  {...section.fields[2],label:"Employee name"}
+ ]};
+ assert.deepEqual(paperPublicationIssues([fixed]),[]);
+ assert.ok(paperPublicationIssues([{...section,fields:[{...fixed.fields[0],source:{...fixed.fields[0].source,reviewed:false}}]}]).some(x=>x.includes("compare")));
 });
