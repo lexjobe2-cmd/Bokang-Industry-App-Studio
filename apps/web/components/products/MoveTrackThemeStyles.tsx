@@ -611,6 +611,47 @@ export function MoveTrackThemeStyles(){
  article,section,button,select,input,textarea) {transition-duration:0ms;}
 }
 
+
+/* Chunk 1: explicit, paired surfaces and foregrounds for the exact Company
+   onboarding and Fleet KPI screens. Avoid ancestor-wide color overrides. */
+.movetrack-root[data-theme="light"] .movetrack-company-setup-hero {
+ background:linear-gradient(110deg,#fff,#eaf2ff) !important;
+ color:#172b46 !important;border-color:#bfd4fa !important;
+}
+.movetrack-root[data-theme="light"] .movetrack-company-hero-title {color:#172b46 !important;}
+.movetrack-root[data-theme="light"] .movetrack-company-hero-description {color:#516078 !important;}
+.movetrack-root[data-theme="light"] .movetrack-company-hero-eyebrow {color:#174fa8 !important;}
+.movetrack-root[data-theme="dark"] .movetrack-company-setup-hero {
+ background:linear-gradient(110deg,#172e4b,#1a3a63) !important;
+ background-color:#172e4b !important;color:#f5f9ff !important;
+ border-color:#52759e !important;
+}
+.movetrack-root[data-theme="dark"] .movetrack-company-hero-title {color:#f5f9ff !important;}
+.movetrack-root[data-theme="dark"] .movetrack-company-hero-description {color:#c5d7ed !important;}
+.movetrack-root[data-theme="dark"] .movetrack-company-hero-eyebrow {color:#add2ff !important;}
+.movetrack-root[data-theme="dark"] :is(.movetrack-company-edit,.movetrack-company-start) {
+ color:#f5f9ff !important;background:#253e5e !important;
+ border-color:#6a88ab !important;
+}
+.movetrack-root[data-theme="light"] :is(.movetrack-company-edit,.movetrack-company-start) {
+ color:#172b46 !important;background:#f1f6ff !important;border-color:#b3c8e7 !important;
+}
+.movetrack-root :is(.movetrack-company-add) {
+ color:#fff !important;background:#2152b3 !important;border-color:#2152b3 !important;
+}
+.movetrack-root[data-theme="light"] .movetrack-control-stat {
+ background:#fff !important;color:#172b46 !important;border-color:#d8e3f0 !important;
+}
+.movetrack-root[data-theme="light"] .movetrack-control-stat-label {color:#516078 !important;}
+.movetrack-root[data-theme="light"] .movetrack-control-stat-value {color:#172b46 !important;}
+.movetrack-root[data-theme="dark"] .movetrack-control-stat {
+ background:#162940 !important;color:#f5f9ff !important;border-color:#496380 !important;
+}
+.movetrack-root[data-theme="dark"] .movetrack-control-stat-label {color:#c5d7ed !important;}
+.movetrack-root[data-theme="dark"] .movetrack-control-stat-value {color:#f5f9ff !important;}
+.movetrack-root[data-theme="dark"] .movetrack-control-stat-value.is-danger {color:#ffabb5 !important;}
+.movetrack-root[data-theme="light"] .movetrack-control-stat-value.is-danger {color:#a51d2d !important;}
+
 /* Theme tokens also keep common secondary action labels visible on dark cards. */
 .movetrack-root[data-theme="dark"] :is(.movetrack-task-mobile-nav,.movetrack-task-mobile-summary) {color:var(--mt-ink);}
 

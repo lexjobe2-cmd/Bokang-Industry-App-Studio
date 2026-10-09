@@ -464,7 +464,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         {[
           ["Available",control.available],["Assigned",control.assigned],["In use",control.inUse],
           ["Inspection due",control.due],["Grounded",control.grounded],["Open defects",control.openIncidents]
-        ].map(([label,value])=><article key={String(label)} style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:17,padding:14}}><div style={{fontSize:11,color:"var(--mt-muted,#667085)",fontWeight:850}}>{label}</div><strong style={{fontSize:26,color:label==="Grounded"&&Number(value)>0?"var(--mt-danger,#b42318)":"var(--mt-ink,#101827)"}}>{value}</strong></article>)}
+        ].map(([label,value])=><article key={String(label)} className="movetrack-control-stat" style={{background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",border:"1px solid var(--mt-border,#dbeafe)",borderRadius:17,padding:14}}><div className="movetrack-control-stat-label" style={{fontSize:11,color:"var(--mt-muted,#667085)",fontWeight:850}}>{label}</div><strong className={label==="Grounded"&&Number(value)>0?"movetrack-control-stat-value is-danger":"movetrack-control-stat-value"} style={{fontSize:26,color:label==="Grounded"&&Number(value)>0?"var(--mt-danger,#b42318)":"var(--mt-ink,#101827)"}}>{value}</strong></article>)}
       </div>
 
       <section style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>

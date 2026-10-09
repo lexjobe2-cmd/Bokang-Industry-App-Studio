@@ -74,21 +74,21 @@ export function OrganizationOnboarding(){
   setActiveOrg(id);setEditingId(null);setOpen(false);setStep(0);setNotice(priorOrg?"Company updated locally.":"Company created locally. Your operational workspaces now use its branding and personnel.");
  }
  return <section aria-label="Company onboarding" style={{display:"grid",gap:11}}>
-  <div data-testid="company-setup-hero" style={{...card,background:"var(--mt-company-hero-bg,linear-gradient(110deg,#fff,#eaf2ff))",color:"var(--mt-company-hero-ink,#172b46)",borderColor:"var(--mt-company-hero-border,#c4d8ff)",display:"flex",justifyContent:"space-between",gap:13,alignItems:"center",flexWrap:"wrap"}}>
+  <div className="movetrack-company-setup-hero" data-testid="company-setup-hero" style={{...card,background:"var(--mt-company-hero-bg,linear-gradient(110deg,#fff,#eaf2ff))",color:"var(--mt-company-hero-ink,#172b46)",borderColor:"var(--mt-company-hero-border,#c4d8ff)",display:"flex",justifyContent:"space-between",gap:13,alignItems:"center",flexWrap:"wrap"}}>
    <div style={{display:"flex",gap:12,alignItems:"center"}}>
     {currentOrg.logoDataUrl?<img src={currentOrg.logoDataUrl} alt={currentOrg.name+" logo"} style={{width:62,height:58,objectFit:"contain"}}/>:<div style={{width:53,height:53,borderRadius:14,background:"var(--mt-surface-soft,#dbeafe)",display:"grid",placeItems:"center"}}><Building2 size={24} color="var(--mt-link,#174fa8)"/></div>}
-    <div><p style={{fontSize:10,fontWeight:900,letterSpacing:1.2,color:"var(--mt-link,#2563eb)",margin:"0 0 4px"}}>STEP 01 · YOUR ORGANIZATION</p><h2 style={{fontSize:20,margin:0,color:"var(--mt-company-hero-ink,#172b46)"}}>Set up your company workspace</h2><p style={{fontSize:12,color:"var(--mt-company-hero-muted,#516078)",margin:"6px 0 0"}}>Company profile, logos, work sites, owners and staff feed into your live SHE checklists.</p></div>
+    <div><p className="movetrack-company-hero-eyebrow" style={{fontSize:10,fontWeight:900,letterSpacing:1.2,color:"var(--mt-link,#2563eb)",margin:"0 0 4px"}}>STEP 01 · YOUR ORGANIZATION</p><h2 className="movetrack-company-hero-title" style={{fontSize:20,margin:0,color:"var(--mt-company-hero-ink,#172b46)"}}>Set up your company workspace</h2><p className="movetrack-company-hero-description" style={{fontSize:12,color:"var(--mt-company-hero-muted,#516078)",margin:"6px 0 0"}}>Company profile, logos, work sites, owners and staff feed into your live SHE checklists.</p></div>
    </div>
    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-    <button style={primary} onClick={resetDraft}><Plus size={15} style={{display:"inline",verticalAlign:"middle"}}/> Add company</button>
-    <button style={{...button,color:"var(--mt-ink,#183454)",background:"var(--mt-surface,#fff)"}} onClick={()=>editCompany(currentOrg)}><Edit3 size={15} style={{display:"inline",verticalAlign:"middle"}}/> Edit active</button>
+    <button className="movetrack-company-add" style={primary} onClick={resetDraft}><Plus size={15} style={{display:"inline",verticalAlign:"middle"}}/> Add company</button>
+    <button className="movetrack-company-edit" style={{...button,color:"var(--mt-ink,#183454)",background:"var(--mt-surface,#fff)"}} onClick={()=>editCompany(currentOrg)}><Edit3 size={15} style={{display:"inline",verticalAlign:"middle"}}/> Edit active</button>
    </div>
   </div>
   <div style={{...card,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
    <strong style={{fontSize:12}}>Working as</strong>
    <select aria-label="Active organization" value={activeOrg} onChange={e=>{setActiveOrg(e.target.value);setNotice("Organization switched for future work.");}} style={{...input,flex:"1 1 220px",maxWidth:370}}>{orgs.map(o=><option value={o.id} key={o.id}>{o.name}{o.id===demoOrganization.id?" (demo)":""}</option>)}</select>
    <span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>{customOrgs.length} locally onboarded · {people.filter(p=>p.orgId===activeOrg).length} people</span>
-   {isFirst?<button style={{...button,border:"1px solid var(--mt-border,#bfdbfe)",background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-ink,#183454)"}} onClick={resetDraft}>New? Start 4-step onboarding →</button>:null}
+   {isFirst?<button className="movetrack-company-start" style={{...button,border:"1px solid var(--mt-border,#bfdbfe)",background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-ink,#183454)"}} onClick={resetDraft}>New? Start 4-step onboarding →</button>:null}
   </div>
   <CompanyDirectoryImport org={currentOrg} people={people} setPeople={setPeople}/>
   {notice?<div role="status" style={{...card,color:"var(--mt-link,#174fa8)",fontSize:12,background:"var(--mt-surface-soft,#eff6ff)"}}>{notice}</div>:null}
