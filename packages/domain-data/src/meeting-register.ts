@@ -43,7 +43,9 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
     fld("state","Status (Open / In progress / Closed)","text")
    ]},
    fld("outstanding","Outstanding issues / matters arising","multiline"),
-   fld("prepared_by","Prepared by","text")
+   fld("prepared_by","Prepared by","text"),
+   {id:"chair_signature",label:"Chairperson drawn acknowledgement",type:"signature",required:false},
+   {id:"minute_taker_signature",label:"Minute taker drawn acknowledgement",type:"signature",required:false}
   ]}
  ];
  return {id:meetingTemplateId(org.id),version:1,title:"Meeting register & minutes",category:"Meetings",
