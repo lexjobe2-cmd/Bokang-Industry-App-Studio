@@ -40,6 +40,8 @@ export type FleetDriver = {
   firstAid: boolean;
   defensiveDriving: boolean;
   status: DriverStatus;
+  documents?: LocalAssetDocument[];
+  personId?: string; // Optional stable organization directory reference; never a safety authorization.
   authorizationReview?:{signedAt:string;signature:SignatureEvidence};
 };
 
