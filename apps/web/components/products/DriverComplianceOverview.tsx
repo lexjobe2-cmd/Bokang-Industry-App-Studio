@@ -1,14 +1,27 @@
 "use client";
 import {useMemo,useState} from "react";
+import {DesktopModal} from "./DesktopModal";
+import {buildSupervisorRenewalActions,complianceExportFilename,driverComplianceCsv,supervisorActionsCsv} from "../../lib/driver-compliance-export";
 import type {PersonRecord} from "@bokang/domain-data/custom-assurance";
 import type {FleetAssignment,FleetDriver,FleetSitePolicy} from "../../lib/move-track";
 import {buildDriverComplianceSummary,missingEvidenceLabels,type DriverComplianceRow} from "../../lib/driver-compliance";
+import {credentialLabels} from "../../lib/driver-competency";
 
 type Filter="all"|"blocked"|"due"|"evidence"|"ready";
 type Props={drivers:readonly FleetDriver[];assignments:readonly FleetAssignment[];
  directory:readonly PersonRecord[];orgId:string;sites:readonly string[];policies:readonly FleetSitePolicy[];
  onManageDriver:(id:string)=>void;};
 const border="#dbe5ef";
+function downloadCsv(content:string,filename:string){
+ const objectUrl=URL.createObjectURL(new Blob([content],{type:"text/csv;charset=utf-8"}));
+ try{
+  const anchor=document.createElement("a");
+  anchor.href=objectUrl;anchor.download=filename;
+  document.body.appendChild(anchor);anchor.click();anchor.remove();
+ }finally{
+  window.setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);
+ }
+}
 const statuses={blocked:{label:"Criteria not met",text:"#b42318",background:"#fff1f2"},
  busy:{label:"Currently allocated / off shift",text:"#475569",background:"#f1f5f9"},
  ready:{label:"Recorded criteria met",text:"#047857",background:"#ecfdf5"}} as const;
@@ -18,9 +31,26 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
  const [site,setSite]=useState(siteOptions[0]??"");
  const [filter,setFilter]=useState<Filter>("all");
  const [query,setQuery]=useState("");
+ const [actionsOpen,setActionsOpen]=useState(false);
+ const [exportError,setExportError]=useState("");
  const [page,setPage]=useState(1);
  const selectedSite=siteOptions.includes(site)?site:siteOptions[0]??"";
  const summary=useMemo(()=>buildDriverComplianceSummary({drivers,assignments,directory,orgId,site:selectedSite,policies}),[drivers,assignments,directory,orgId,selectedSite,policies]);
+ const supervisorActions=useMemo(()=>buildSupervisorRenewalActions({summary,drivers,policies}),[summary,drivers,policies]);
+ function exportReport(kind:"driver-competency"|"supervisor-renewals"){
+  try{
+   const now=new Date();
+   // Capture a current, unfiltered site snapshot at the actual time of export.
+   const current=buildDriverComplianceSummary({drivers,assignments,directory,orgId,site:selectedSite,policies,now});
+   const data=kind==="driver-competency"
+    ?driverComplianceCsv(current,drivers,now)
+    :supervisorActionsCsv(buildSupervisorRenewalActions({summary:current,drivers,policies,now}),now);
+   downloadCsv(data,complianceExportFilename(selectedSite,kind,now));
+   setExportError("");
+  }catch{
+   setExportError("The export could not be started. Check browser download permissions and try again.");
+  }
+ }
  const rows=summary.rows.filter(row=>{
   if(query.trim()&&!([row.id,row.name,row.driverStatus,...row.blockingReasons].join(" ").toLowerCase().includes(query.trim().toLowerCase())))return false;
   if(filter==="blocked")return row.state==="blocked";
@@ -60,6 +90,37 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
     <strong style={{fontSize:24,color:metric.label==="Blocked"&&metric.value?"#b42318":"#13253c"}}>{metric.value}</strong>
    </div>)}
   </div>
+  <div aria-label="Admin competency reporting" style={{display:"grid",gap:10,padding:12,border:"1px solid "+border,borderRadius:12,background:"#fff"}}>
+   <strong style={{fontSize:13}}>Reports & supervisor renewal actions</strong>
+   <p style={{fontSize:12,margin:0,color:"#475569"}}>Download all drivers for the selected site, not just the current search, filter or page. Reports contain local employee names and competency details; store them only in authorized company systems.</p>
+   <div style={{display:"flex",flexWrap:"wrap",gap:8,alignItems:"center"}}>
+    <button type="button" onClick={()=>exportReport("driver-competency")} style={{minHeight:44,padding:"9px 12px",background:"#1d4ed8",color:"#fff",fontWeight:850,border:0,borderRadius:10,cursor:"pointer"}}>Download competency CSV</button>
+    <button type="button" onClick={()=>exportReport("supervisor-renewals")} style={{minHeight:44,padding:"9px 12px",background:"#fff",color:"#174272",fontWeight:850,border:"1px solid #a8bfdc",borderRadius:10,cursor:"pointer"}}>Download renewal actions CSV</button>
+    <button type="button" onClick={()=>setActionsOpen(true)} style={{minHeight:44,padding:"9px 12px",background:"#fff",color:"#174272",fontWeight:850,border:"1px solid #a8bfdc",borderRadius:10,cursor:"pointer"}}>View supervisor action list ({supervisorActions.length})</button>
+   </div>
+   {exportError?<p role="alert" style={{color:"#b42318",fontSize:12,margin:0}}>{exportError}</p>:null}
+  </div>
+  <DesktopModal title={"Supervisor renewal actions · "+(selectedSite||"Company")} open={actionsOpen} onClose={()=>setActionsOpen(false)}>
+   <div style={{display:"grid",gap:12}}>
+    <p style={{fontSize:12,color:"#475569",margin:0}}>Actions are generated from recorded site requirements, credential dates and PDF links. Immediate items require supervisor follow-up, not an automatic status change. This preview is read-only.</p>
+    <div style={{display:"flex",flexWrap:"wrap",gap:8,fontSize:12}}>
+     <strong style={{color:"#b42318"}}>{supervisorActions.filter(a=>a.priority==="Immediate").length} immediate</strong>
+     <strong style={{color:"#9a670a"}}>{supervisorActions.filter(a=>a.priority==="Due within 30 days").length} due soon</strong>
+     <strong style={{color:"#475569"}}>{supervisorActions.filter(a=>a.priority==="Evidence review").length} evidence links</strong>
+    </div>
+    {supervisorActions.length?supervisorActions.map((action,index)=><article key={action.driverId+":"+action.credential+":"+action.issue+":"+index} style={{display:"grid",gap:6,padding:12,border:"1px solid "+border,borderRadius:11}}>
+     <div style={{display:"flex",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
+      <strong style={{fontSize:13}}>{action.driverName}</strong>
+      <strong style={{fontSize:11,color:action.priority==="Immediate"?"#b42318":action.priority==="Due within 30 days"?"#9a670a":"#475569"}}>{action.priority}</strong>
+     </div>
+     <span style={{fontSize:12}}>{action.issue} · {action.issue==="Inactive or missing workforce identity"?"Workforce directory":credentialLabels[action.credential]}</span>
+     {action.expiry?<small style={{color:"#475569"}}>Expiry: {action.expiry}{action.daysRemaining!==null?" · "+action.daysRemaining+" days remaining":""}</small>:null}
+     <small style={{color:"#475569"}}>{action.action}</small>
+     <button type="button" onClick={()=>{setActionsOpen(false);onManageDriver(action.driverId);}} style={{minHeight:44,justifySelf:"start",padding:"8px 12px",border:"1px solid #b4cde9",borderRadius:9,background:"#fff",fontWeight:800,cursor:"pointer"}}>Open driver →</button>
+    </article>):<p style={{fontSize:12,color:"#047857"}}>No credential renewal or evidence-link actions were identified for this site.</p>}
+    <button type="button" onClick={()=>setActionsOpen(false)} style={{minHeight:44,justifySelf:"start",padding:"8px 12px",border:"1px solid #b4cde9",borderRadius:9,background:"#fff",fontWeight:800}}>Close action list</button>
+   </div>
+  </DesktopModal>
   <div style={{display:"flex",gap:10,alignItems:"end",justifyContent:"space-between",flexWrap:"wrap"}}>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800}}>Show driver records
     <select aria-label="Filter driver compliance records" value={filter} onChange={event=>{setFilter(event.target.value as Filter);setPage(1);}} style={{minHeight:44,maxWidth:"100%",border:"1px solid #a8bfdc",borderRadius:10,background:"#fff",padding:10,font:"inherit"}}>
