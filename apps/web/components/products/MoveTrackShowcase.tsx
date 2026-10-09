@@ -67,6 +67,11 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   const [,setOpenedJra]=usePersistentState<JobRiskAssessment|null>("bokang-studio.move-track.jra.working.v1",null);
 
 
+  type DriverAuthorization=Pick<FleetDriver,"siteAuthorised"|"openPitPermit"|"firstAid"|"defensiveDriving">;
+  const [authorizationDrafts,setAuthorizationDrafts]=useState<Record<string,DriverAuthorization>>({});
+  const [authorizationSignatures,setAuthorizationSignatures]=useState<Record<string,SignatureEvidence|null>>({});
+  const [siteDrafts,setSiteDrafts]=useState<Record<string,FleetSitePolicy>>({});
+  const [siteSignatures,setSiteSignatures]=useState<Record<string,SignatureEvidence|null>>({});
   const [view,setView]=useState<MoveTrackView>(initialView);
   useEffect(()=>setView(initialView),[initialView]);
   const [notice,setNotice]=useState("");
@@ -144,6 +149,44 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
    setNotice("Opened "+result.category+": "+result.title+". Demo record context is stored on this device.");
   }
 
+  const driverAuth=(d:FleetDriver):DriverAuthorization=>({
+    siteAuthorised:d.siteAuthorised,openPitPermit:d.openPitPermit,firstAid:d.firstAid,defensiveDriving:d.defensiveDriving
+  });
+  function editDriverAuthorization(driver:FleetDriver,key:keyof DriverAuthorization,value:boolean){
+    setAuthorizationDrafts(xs=>({...xs,[driver.id]:{...(xs[driver.id]??driverAuth(driver)),[key]:value}}));
+    setAuthorizationSignatures(xs=>({...xs,[driver.id]:null}));
+  }
+  const driverScope=(d:FleetDriver,draft:DriverAuthorization)=>
+    "Demo supervisor driver authorizations / "+d.id+" / "+d.name+" / "+
+    Object.entries(draft).map(([key,v])=>key+":"+(v?"yes":"no")).join(", ");
+  function saveDriverAuthorization(d:FleetDriver){
+    const draft=authorizationDrafts[d.id],sig=authorizationSignatures[d.id];
+    if(!draft||!isSignatureEvidence(sig)||sig.scope!==driverScope(d,draft)){
+      setNotice("An independent supervisor must review these exact driver authorization changes and capture a local drawn acknowledgement.");return;
+    }
+    setDrivers(xs=>xs.map(x=>x.id===d.id?{...x,...draft,authorizationReview:{signedAt:sig.signedAt,signature:sig}}:x));
+    setAuthorizationDrafts(xs=>{const next={...xs};delete next[d.id];return next;});
+    setAuthorizationSignatures(xs=>({...xs,[d.id]:null}));
+    setNotice("Driver authorizations reviewed and recorded locally. Verify original qualifications and permits outside this demonstration.");
+  }
+  function editPolicy(policy:FleetSitePolicy,change:(draft:FleetSitePolicy)=>FleetSitePolicy){
+    setSiteDrafts(xs=>({...xs,[policy.id]:change(xs[policy.id]??policy)}));
+    setSiteSignatures(xs=>({...xs,[policy.id]:null}));
+  }
+  const policyScope=(p:FleetSitePolicy)=>
+   "Site safety policy review / "+p.id+" / "+p.name+" / "+
+   [p.requireOpenPitPermit,p.requireFirstAid,p.requireDefensiveDriving].map(v=>v?"yes":"no").join(",")+
+   " / critical: "+p.additionalCriticalChecks.join("; ");
+  function saveSitePolicy(policy:FleetSitePolicy){
+    const draft=siteDrafts[policy.id],sig=siteSignatures[policy.id];
+    if(!draft||!isSignatureEvidence(sig)||sig.scope!==policyScope(draft)){
+      setNotice("Capture the supervisor acknowledgement for these exact site policy changes before applying them.");return;
+    }
+    setPolicies(xs=>xs.map(x=>x.id===policy.id?{...draft,policyReview:{signedAt:sig.signedAt,signature:sig}}:x));
+    setSiteDrafts(xs=>{const next={...xs};delete next[policy.id];return next;});
+    setSiteSignatures(xs=>({...xs,[policy.id]:null}));
+    setNotice("Reviewed site policy changes saved locally. Formal company/site authorization remains separate.");
+  }
   function addVehicle(){
     if(!vehicleDraft.fleetNo.trim()||!vehicleDraft.registration.trim()||!vehicleDraft.makeModel.trim()){
       setNotice("Fleet number, registration and make/model are required."); return;
@@ -337,8 +380,20 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
             {([
               ["siteAuthorised","Site driving authorisation"],["openPitPermit","Site/open-pit permit"],
               ["firstAid","First-aid training"],["defensiveDriving","Defensive driving"]
-            ] as const).map(([key,label])=><label key={key} style={{display:"flex",justifyContent:"space-between",gap:10,fontSize:12}}><span>{label}</span><input type="checkbox" checked={driver[key]} onChange={(e)=>setDrivers((current)=>current.map((item)=>item.id===driver.id?{...item,[key]:e.target.checked}:item))}/></label>)}
+            ] as const).map(([key,label])=><label key={key} style={{display:"flex",justifyContent:"space-between",gap:10,fontSize:12}}><span>{label}</span><input type="checkbox" checked={(authorizationDrafts[driver.id]??driver)[key]} onChange={e=>editDriverAuthorization(driver,key,e.target.checked)}/></label>)}
           </div>
+          {authorizationDrafts[driver.id]?<div style={{display:"grid",gap:9,padding:"12px 0",borderTop:"1px solid #dbe4ef",marginTop:10}}>
+            <p style={{fontSize:11,color:"#b45309",margin:0}}>Pending changes are not active until locally acknowledged by a supervisor.</p>
+            <SignatureApprovalTray label="Supervisor review driver access" description="Examine the licence, medical and training evidence outside the app before capturing this unverified demo review."
+              value={authorizationSignatures[driver.id]??null} onChange={sig=>setAuthorizationSignatures(xs=>({...xs,[driver.id]:sig}))}
+              scope={driverScope(driver,authorizationDrafts[driver.id]!)} role="Site supervisor"/>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+              <button type="button" style={{...secondaryButton,background:"#173764",color:"#fff"}}
+                disabled={!isSignatureEvidence(authorizationSignatures[driver.id])||authorizationSignatures[driver.id]?.scope!==driverScope(driver,authorizationDrafts[driver.id]!)}
+                onClick={()=>saveDriverAuthorization(driver)}>Save reviewed authorizations</button>
+              <button type="button" style={secondaryButton} onClick={()=>{setAuthorizationDrafts(xs=>{const next={...xs};delete next[driver.id];return next;});setAuthorizationSignatures(xs=>({...xs,[driver.id]:null}));}}>Discard</button>
+            </div>
+           </div>:driver.authorizationReview?<small style={{display:"block",marginTop:9,color:"#047857"}}>Demo supervisor acknowledgement recorded · {new Date(driver.authorizationReview.signedAt).toLocaleDateString()}</small>:null}
           <a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={{...primaryLink,marginTop:12}}>Open driver app</a>
         </article>)}
       </div>
@@ -357,9 +412,9 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
           <span style={{fontSize:11,color:"#667085"}}>{policy.additionalCriticalChecks.length} extra critical controls</span>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:8,marginTop:12}}>
-          <label style={checkRow}><span>Require site/open-pit permit</span><input type="checkbox" checked={policy.requireOpenPitPermit} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,requireOpenPitPermit:e.target.checked}:item))}/></label>
-          <label style={checkRow}><span>Require first-aid training</span><input type="checkbox" checked={policy.requireFirstAid} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,requireFirstAid:e.target.checked}:item))}/></label>
-          <label style={checkRow}><span>Require defensive driving</span><input type="checkbox" checked={policy.requireDefensiveDriving} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,requireDefensiveDriving:e.target.checked}:item))}/></label>
+          <label style={checkRow}><span>Require site/open-pit permit</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireOpenPitPermit} onChange={e=>editPolicy(policy,d=>({...d,requireOpenPitPermit:e.target.checked}))}/></label>
+          <label style={checkRow}><span>Require first-aid training</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireFirstAid} onChange={e=>editPolicy(policy,d=>({...d,requireFirstAid:e.target.checked}))}/></label>
+          <label style={checkRow}><span>Require defensive driving</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireDefensiveDriving} onChange={e=>editPolicy(policy,d=>({...d,requireDefensiveDriving:e.target.checked}))}/></label>
         </div>
         <div style={{marginTop:12}}>
           <div style={{fontSize:11,fontWeight:850,color:"#667085",marginBottom:7}}>Additional critical vehicle controls</div>
@@ -373,9 +428,20 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
               "Reflective strips / vehicle identification visible",
               "No critical fluid leaks",
               "Cargo secured"
-            ].map((label)=><label key={label} style={checkRow}><span>{label}</span><input type="checkbox" checked={policy.additionalCriticalChecks.includes(label)} onChange={(e)=>setPolicies((current)=>current.map((item)=>item.id===policy.id?{...item,additionalCriticalChecks:e.target.checked?[...item.additionalCriticalChecks,label]:item.additionalCriticalChecks.filter((x)=>x!==label)}:item))}/></label>)}
+            ].map((label)=><label key={label} style={checkRow}><span>{label}</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).additionalCriticalChecks.includes(label)} onChange={e=>editPolicy(policy,d=>({...d,additionalCriticalChecks:e.target.checked?[...d.additionalCriticalChecks,label]:d.additionalCriticalChecks.filter(x=>x!==label)}))}/></label>)}
           </div>
         </div>
+        {siteDrafts[policy.id]?<div style={{display:"grid",gap:9,marginTop:14,paddingTop:12,borderTop:"1px solid #dbe4ef"}}>
+          <p style={{fontSize:11,color:"#b45309",margin:0}}>Policy changes are staged. A supervisor must review before they affect simulated dispatch.</p>
+          <SignatureApprovalTray label="Supervisor review site policy" value={siteSignatures[policy.id]??null}
+            onChange={sig=>setSiteSignatures(xs=>({...xs,[policy.id]:sig}))} role="Site safety supervisor"
+            scope={policyScope(siteDrafts[policy.id]!)} description="Assess the site requirements and preserve safety-critical controls; the local signature is not a verified authorization."/>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+           <button type="button" style={{...secondaryButton,background:"#173764",color:"#fff"}} onClick={()=>saveSitePolicy(policy)}
+             disabled={!isSignatureEvidence(siteSignatures[policy.id])||siteSignatures[policy.id]?.scope!==policyScope(siteDrafts[policy.id]!)}>Save reviewed policy</button>
+           <button type="button" style={secondaryButton} onClick={()=>{setSiteDrafts(xs=>{const next={...xs};delete next[policy.id];return next;});setSiteSignatures(xs=>({...xs,[policy.id]:null}));}}>Discard</button>
+          </div>
+        </div>:policy.policyReview?<small style={{display:"block",marginTop:10,color:"#047857"}}>Last demo supervisor review · {new Date(policy.policyReview.signedAt).toLocaleDateString()}</small>:null}
       </article>)}
     </div>:null}
 
