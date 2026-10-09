@@ -108,7 +108,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:8,marginTop:9}}>
      <label style={{fontSize:10,color:"var(--mt-muted,#64748b)",fontWeight:850}}>DEPARTMENT
-      <select aria-label="Filter people by department" value={department} onChange={e=>setDepartment(e.target.value)} style={{...input,fontSize:12,marginTop:5}}><option value="">All departments</option>{departments.map(x=><option key={x}>{x}</option>)}</select>
+      <select aria-label="Filter people by department" value={department} onChange={e=>setDepartment(e.target.value)} style={{...input,fontSize:12,marginTop:5}}><option value="">All depts</option>{departments.map(x=><option key={x}>{x}</option>)}</select>
      </label>
      <label style={{fontSize:10,color:"var(--mt-muted,#64748b)",fontWeight:850}}>CITY / SITE
       <select aria-label="Filter people by city" value={city} onChange={e=>setCity(e.target.value)} style={{...input,fontSize:12,marginTop:5}}><option value="">All cities</option>{cities.map(x=><option key={x}>{x}</option>)}</select>
@@ -132,7 +132,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
     {result.nextCursor?<button type="button" onClick={()=>setCursor(result.nextCursor)} style={{...input,cursor:"pointer",fontSize:12,fontWeight:850}}>Show more results</button>:null}
    </div>
    <div className="movetrack-people-footer">
-    <small style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}>{value.length} {multiple?"people":"person"} selected · matched by stable directory ID</small>
+    <small title="Selections match stable company directory IDs" style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}>{value.length===1?"1 person selected":value.length+" people selected"}</small>
     <div style={{display:"flex",gap:7}}>
      {multiple?<button type="button" style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"var(--mt-surface,#fff)",fontSize:11,fontWeight:850}} onClick={()=>onChange([...new Set([...value,...options.filter(p=>p.active).map(p=>p.id)])])}>Select visible</button>:null}
      {value.length?<button type="button" onClick={clear} style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"var(--mt-surface,#fff)",fontSize:11,fontWeight:850}}>Clear</button>:null}
@@ -148,7 +148,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   .movetrack-people-panel-head,.movetrack-people-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;background:#f5f8fd;border-bottom:1px solid #dfe8f2;}
   .movetrack-people-search{padding:12px 13px 3px;}
   .movetrack-people-options{display:grid;grid-auto-rows:max-content;align-content:start;gap:6px;max-height:315px;overflow-y:auto;overscroll-behavior:contain;padding:7px 9px;}
-  .movetrack-person-option{display:flex;align-items:flex-start;gap:10px;text-align:left;width:100%;height:auto;min-height:108px;padding:12px 10px;border:1px solid transparent;border-radius:11px;background:#fff;cursor:pointer;overflow:visible;line-height:1.4;}
+  .movetrack-person-option{display:flex;align-items:flex-start;gap:10px;text-align:left;width:100%;height:auto;min-height:108px;padding:12px 10px;border:1px solid #e2eaf5;border-radius:11px;background:#f8fbff;cursor:pointer;overflow:visible;line-height:1.4;}
   .movetrack-person-option:hover,.movetrack-person-option:focus-visible{background:#f0f6fd;}
   .movetrack-person-option .movetrack-person-details{min-width:0;overflow-wrap:anywhere;line-height:1.45;}
   .movetrack-person-option .movetrack-person-details > *{display:block;min-width:0;line-height:1.45;}
@@ -173,6 +173,8 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   .movetrack-root[data-theme="dark"] .movetrack-person-option.selected{background:#254c73;}
   .movetrack-root[data-theme="dark"] .movetrack-person-option strong{color:#fff !important;}
   .movetrack-root[data-theme="dark"] .movetrack-person-option span{color:#c4d4e8 !important;}
+  .movetrack-root[data-theme="dark"] .movetrack-person-option .movetrack-person-avatar{background:#29486e;color:#b9ddff !important;}
+  .movetrack-root[data-theme="dark"] .movetrack-person-option .movetrack-person-check{color:var(--mt-success,#86efc0) !important;}
   `}</style>
  </div>;
 }
