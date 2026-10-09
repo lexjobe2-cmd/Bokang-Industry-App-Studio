@@ -23,7 +23,7 @@ export const navigationGroups=[
 ] as const;
 
 export function MoveTrackWorkspaceNav({view,onChange}:{view:MoveTrackView;onChange:(view:MoveTrackView)=>void}){
- const current=navigationGroups.flatMap(group=>group.items).find(item=>item.view===view);
+ const current=navigationGroups.flatMap(group=>group.items.map(item=>({view:item.view,label:item.label,description:item.description}))).find(item=>item.view===view);
  const group=navigationGroups.find(group=>group.items.some(item=>item.view===view));
  return <nav aria-label="MoveTrack workspace navigation" className="movetrack-workspace-switcher">
   <div className="movetrack-workspace-heading">
