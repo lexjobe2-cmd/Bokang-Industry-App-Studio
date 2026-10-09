@@ -36,6 +36,15 @@ jobs:
             sleep 1
           done
           node tests/ui/people-picker-geometry.mjs
+      - name: Preserve responsive layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: movetrack-rendered-ui-audit
+          path: |
+            ui-geometry-results.json
+            ui-geometry-*.png
+          if-no-files-found: ignore
       - name: Show server logs on failure
         if: failure()
         run: cat /tmp/movetrack-preview.log || true
