@@ -1,4 +1,5 @@
 "use client";
+import {OperationalTextAssist} from "./OperationalTextAssist";
 import {QuickChoice,SmartMultiSelect,SearchableAssetPicker} from "./SmartFormInputs";
 import {RepeatableRowActions} from "./RepeatableRowActions";
 import {moveRegisterRow,duplicateRegisterRow} from "@bokang/domain-data/repeatable-register";
@@ -338,7 +339,7 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
     </div>;
  }
  if(field.type==="select")return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}><option value="">Select option</option>{(field.options??["Day shift","Night shift"]).map(opt=><option key={opt}>{opt}</option>)}</select>{quickButtons}</label>;
- if(field.type==="multiline")return <label style={fieldStyle}>{label}{quickButtons}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)} placeholder="Choose a suggestion above or enter your own details"/></label>;
+ if(field.type==="multiline")return <div style={{display:"grid",gap:8}}><label style={fieldStyle}>{label}{quickButtons}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)} placeholder="Choose a suggestion above or enter your own details"/></label><OperationalTextAssist value={answerText(value)}/></div>;
  if(field.type==="signature")return <div style={fieldStyle}>{label}
     <SignatureApprovalTray label={field.label.toLowerCase().includes("review")?"Supervisor review & sign":"Open signature tray"} value={isSignatureEvidence(value)?value:null} onChange={e=>onChange(e??"")}
      scope={scope+" / "+field.label} role={field.signerFieldId?"Reviewer":field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}

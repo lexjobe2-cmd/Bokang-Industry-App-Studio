@@ -1,4 +1,5 @@
 "use client";
+import {OperationalTextAssist} from "./OperationalTextAssist";
 
 import { useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
@@ -107,6 +108,7 @@ export function FleetReleaseWorkspace(){
        <p style={{fontSize:11,color:"#667085"}}>Records a DEMO evidence reference only, not an uploaded repair photo.</p>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Repairer<input style={input} value={repairer} onChange={e=>setRepairer(e.target.value)} placeholder="Maintenance technician"/></label>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Repair notes<textarea style={{...input,minHeight:83}} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Work performed and parts used"/></label>
+       <OperationalTextAssist value={notes}/>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Evidence reference<input style={input} value={ref} onChange={e=>setRef(e.target.value)} placeholder="DEMO-REPAIR-001"/></label>
        <button style={btn} onClick={recordRepair}>Record repair (demo)</button>
        {repair?<p style={{fontSize:11,color:"#087f5b"}}>Recorded by {repair.repairedBy} · {repair.evidenceReference}</p>:null}

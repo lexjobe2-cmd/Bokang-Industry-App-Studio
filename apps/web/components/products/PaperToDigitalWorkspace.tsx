@@ -1,4 +1,5 @@
 "use client";
+import {OperationalTextAssist} from "./OperationalTextAssist";
 import {useEffect,useMemo,useState} from "react";
 import {motion,useReducedMotion} from "framer-motion";
 import {ScanText,FileUp,FileImage,FileText,RefreshCw,Plus,Trash2,Save,CheckCircle2,ExternalLink,AlertTriangle} from "lucide-react";
@@ -167,6 +168,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
      {visibleDraft.warnings.map((w,i)=><p key={i} style={{padding:"9px 10px",fontSize:11,color:"#915b16",background:"#fffbeb",borderRadius:9,margin:0}}><AlertTriangle size={13} style={{display:"inline",verticalAlign:"middle"}}/> {w}</p>)}
      <button style={{...btn,justifySelf:"start"}} onClick={()=>setRawOpen(!rawOpen)}>{rawOpen?"Hide":"Review / correct"} raw OCR text</button>
      {rawOpen?<div style={{display:"grid",gap:7}}>
+       <OperationalTextAssist value={visibleDraft.rawText}/>
        <textarea aria-label="Recognized source text" style={{...input,minHeight:190,fontFamily:"monospace",fontSize:12}} value={visibleDraft.rawText} onChange={e=>patch({rawText:e.target.value})}/>
        <button style={btn} onClick={reparse}><RefreshCw size={13} style={{display:"inline"}}/> Re-detect questions from edited text</button>
       </div>:null}

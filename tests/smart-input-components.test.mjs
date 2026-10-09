@@ -51,3 +51,9 @@ test('mobile dock exposes five requested destinations with Fleet active and a se
  const profile=renderToStaticMarkup(React.createElement(MoveTrackAppShellNav,{activeView:'profile',atHome:false,onHome:noop,onSearch:noop,onNavigate:noop,onCompany:noop,onWorkflow:noop,theme:'light',onToggleTheme:noop}));
  assert.match(profile,/aria-current="page"[^>]*>[\s\S]*?<span>Profile<\/span>/);
 });
+
+test('text assistance uses an explicit local-analysis button and cannot auto-apply on render',()=>{
+ const {OperationalTextAssist}=load('../apps/web/components/products/OperationalTextAssist.tsx');
+ const html=renderToStaticMarkup(React.createElement(OperationalTextAssist,{value:'Naledi must inspect brakes tomorrow',onAction:()=>{throw Error('must not apply automatically')}}));
+ assert.match(html,/type="button"/);assert.match(html,/Analyze text locally/);assert.ok(!html.includes('Add to editable action register'));
+});

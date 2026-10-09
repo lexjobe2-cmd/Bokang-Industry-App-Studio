@@ -42,7 +42,7 @@ export function updateMeetingAttendance(answers:FormAnswers,group:"present"|"abs
   return {person_id:id,person_name:names[id]??String(old?.person_name??id),department:person?.department??String(old?.department??""),job_title:person?.jobTitle??String(old?.job_title??""),attendance_status:String(old?.attendance_status??"Present"),arrival_time:String(old?.arrival_time??""),departure_time:String(old?.departure_time??"")};});
  return {participants:present,attendance_details:attendanceDetails,apology_person_ids:absent,apology_details:apologyDetails};
 }
-export const meetingTypes=["SHE committee meeting","Toolbox safety talk","Pre-shift briefing","Contractor coordination","Incident learning review","Management SHE review","JSA / JRA team briefing","Emergency readiness meeting"] as const;
+export const meetingTypes=["Departmental meeting","SHE committee meeting","Toolbox safety talk","Pre-shift briefing","Contractor coordination","Incident learning review","Management SHE review","JSA / JRA team briefing","Emergency readiness meeting"] as const;
 export type MeetingType=typeof meetingTypes[number];
 export const meetingTemplateId=(orgId:string)=>"company-meeting-register-"+orgId;
 const fld=(id:string,label:string,type:"text"|"date"|"multiline"|"person"|"people"|"select",required=false)=>({id,label,type,required});
@@ -58,7 +58,15 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
    fld("meeting_chair_manual","Chair name (if external or not in directory)","text"),
    fld("meeting_recorder","Minute taker (legacy name / external)","text"),
    fld("meeting_recorder_id","Company minute taker","person"),
-   fld("meeting_ref","Company meeting reference","text")
+   fld("meeting_ref","Company meeting reference","text"),
+   fld("meeting_series_id","Meeting series ID","text"),fld("meeting_series_name","Meeting series","text"),
+   fld("meeting_department","Department","text"),{...fld("meeting_cadence","Recurrence","select"),options:["Monthly","Weekly","Quarterly"]},
+   fld("previous_meeting_id","Previous meeting record","text"),fld("previous_meeting_title","Previous meeting title","text"),
+   fld("previous_meeting_date","Previous meeting date","date"),
+   {...fld("minutes_adoption","Previous minutes adoption","select"),options:["Pending review","Adopted","Adopted with amendments","Deferred"]},
+   fld("minutes_amendments","Previous minutes amendments / adoption notes","multiline"),
+   fld("minutes_adopted_by","Adoption recorded by (unverified)","person"),fld("minutes_adopted_date","Adoption recorded date","date"),
+   fld("invited_person_ids","Invited crew — attendance not confirmed","people")
   ]},
   {id:"meeting-attendance",title:"Attendance and apologies",fields:[
    {...fld("participants","Company staff present","people"),helperText:"Use the directory to attribute meeting participation to individual profiles"},
@@ -105,7 +113,8 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
     fld("action","Action or follow-up","text",true),
     fld("owner","Owner / responsible person","text",true),
     fld("due","Due date","date"),
-    fld("state","Status (Open / In progress / Closed)","text")
+    fld("state","Status (Open / In progress / Closed)","text"),fld("action_id","Action lineage ID","text"),
+    fld("origin_meeting_id","Original meeting record","text"),fld("previous_due","Previous due date","date"),fld("carried_from","Carried from meeting","text"),fld("nlp_source","Text suggestion source","multiline"),{id:"nlp_reviewed",label:"Text action reviewed by operator",type:"checkbox"}
    ]},
    fld("outstanding","Outstanding issues / matters arising","multiline"),
    fld("prepared_by","Prepared by","text"),
@@ -113,8 +122,8 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
    {id:"minute_taker_signature",label:"Minute taker drawn acknowledgement",type:"signature",required:false}
   ]}
  ];
- return {id:meetingTemplateId(org.id),version:4,title:"Meeting register & minutes",category:"Meetings",
-  status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds:[],assetClasses:[],
+ return {id:meetingTemplateId(org.id),version:5,title:"Meeting register & minutes",category:"Meetings",
+  status:"PUBLISHED",effectiveDate:"2026-10-09",siteIds:[],assetClasses:[],
   sections,organizationId:org.id,companyNameSnapshot:org.name,logoSnapshot:org.logoDataUrl,
   accent:org.accent,referencePrefix:org.documentPrefix};
 }
@@ -127,6 +136,11 @@ export function validateMeetingInput(a:FormAnswers){
  if(!String(a.meeting_site??"").trim())throw Error("Provide the work site / meeting location.");
  if(!agenda)throw Error("Provide the meeting agenda.");
  if(!minutes)throw Error("Add meeting minutes or a summary before saving the completed record.");
+ if(a.meeting_series_id && (!String(a.meeting_series_name??"").trim()||!String(a.meeting_department??"").trim()))throw Error("Provide the series name and department.");
+ if(a.previous_meeting_id){
+  if(!["Adopted","Adopted with amendments","Deferred"].includes(String(a.minutes_adoption)))throw Error("Record the previous minutes adoption decision.");
+  if(a.minutes_adoption==="Adopted with amendments"&&!String(a.minutes_amendments??"").trim())throw Error("Record the amendments to previous minutes.");
+ }
  const sig=a.chair_signature;
  if(!isSignatureEvidence(sig)||sig.intent!=="attendance"||sig.role!=="Meeting chairperson")
   throw Error("The meeting chairperson must capture a local drawn acknowledgement before finalizing minutes.");
@@ -154,7 +168,8 @@ export function validateMeetingInput(a:FormAnswers){
  const rows=Array.isArray(a.actions)?a.actions:[];
  for(const row of rows){if(!row||Array.isArray(row)||typeof row!=="object"||!String((row as Record<string,unknown>).action??"").trim()||!String((row as Record<string,unknown>).owner??"").trim())throw Error("Each action needs a description and accountable owner.");}
  for(const row of asRows(a.actions)){
-  if(row.carried_from && !/^\d{4}-\d{2}-\d{2}$/.test(String(row.due??"")))
+  if(row.nlp_source&&row.nlp_reviewed!==true)throw Error("Review every text-suggested action and confirm its owner and due date.");
+  if((row.carried_from||row.nlp_source) && !/^\d{4}-\d{2}-\d{2}$/.test(String(row.due??"")))
    throw Error("Confirm a new due date for every carried-forward action before submitting this meeting.");
  }
  return true;
@@ -210,15 +225,50 @@ export function buildMeetingAnalytics({forms,people,orgId,personId,site,month,to
   }
   const m=String(a.meeting_date??f.submittedAt).slice(0,7);
   if(!personId||ids.includes(personId))months.set(m,(months.get(m)??0)+1);
-  for(const row of asRows(a.actions)){
+  }
+ for(const row of currentMeetingActions(records)){
    if(personId&&row.owner_person_id!==personId)continue;
    if(String(row.state??"").toLowerCase()==="closed")continue;
    open++;if(/^\d{4}-\d{2}-\d{2}$/.test(String(row.due??""))&&String(row.due)<today)overdue++;
   }
- }
  return {meetings:records.length,attended,present,absent,apologies,open,overdue,
   attendanceRate:present+absent?Math.round(100*present/(present+absent)):null,
   departments:[...departments].map(([name,count])=>({name,count})),
   months:[...months].sort().map(([name,count])=>({name,count})),
   topPeople:[...top].sort((a,b)=>b[1]-a[1]).map(([id,count])=>({id,name:people.find(p=>p.id===id)?.displayName??id,count}))};
+}
+
+/** Calendar recurrence clamps month ends; no timer or real invitations are issued. */
+export function nextMeetingDate(date:string,cadence:string):string{
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return "";
+ const d=new Date(date+"T12:00:00Z");if(Number.isNaN(d.getTime())||d.toISOString().slice(0,10)!==date)return "";
+ if(cadence==="Weekly")d.setUTCDate(d.getUTCDate()+7);
+ else {const day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+(cadence==="Quarterly"?3:1));const last=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();d.setUTCDate(Math.min(day,last));}
+ return d.toISOString().slice(0,10);
+}
+export function meetingSeriesRecords(forms:readonly import("./assurance-forms.ts").FormSubmission[],orgId:string,seriesId:string){
+ return forms.filter(f=>f.templateSnapshot.category==="Meetings"&&(f.templateSnapshot as FormTemplate&{organizationId?:string}).organizationId===orgId&&f.answers.meeting_series_id===seriesId)
+  .sort((a,b)=>String(b.answers.meeting_date??b.submittedAt).localeCompare(String(a.answers.meeting_date??a.submittedAt))||b.submittedAt.localeCompare(a.submittedAt));
+}
+/** New occurrence copies context, never attendance, apologies, minutes or acknowledgements. */
+export function continueMeetingSeries(previous:import("./assurance-forms.ts").FormSubmission,orgId:string,people:readonly PersonRecord[]):FormAnswers{
+ const a=previous.answers;
+ if((previous.templateSnapshot as FormTemplate&{organizationId?:string}).organizationId!==orgId||!a.meeting_series_id)throw Error("Select a meeting series from the active company.");
+ const ids=new Set(people.filter(p=>p.orgId===orgId&&p.active).map(p=>p.id));
+ const crew=Array.isArray(a.invited_person_ids)?asPeople(a.invited_person_ids):asPeople(a.participants);
+ const carried=carryForwardMeetingActions({},a,people.filter(p=>p.orgId===orgId&&p.active)).rows.map(row=>{const source=asRows(a.actions).find(r=>String(r.action).trim().toLowerCase()===String(row.action).trim().toLowerCase());const index=asRows(a.actions).indexOf(source!);return {...row,action_id:String(source?.action_id??previous.id+":action:"+index),origin_meeting_id:String(source?.origin_meeting_id??previous.id),previous_due:String(source?.due??""),carried_from:previous.id};});
+ return {meeting_title:String(a.meeting_series_name),meeting_type:String(a.meeting_type??""),meeting_series_id:String(a.meeting_series_id??""),meeting_series_name:String(a.meeting_series_name??""),
+  meeting_department:String(a.meeting_department??""),meeting_cadence:a.meeting_cadence??"Monthly",meeting_site:String(a.meeting_site??""),
+  meeting_date:String(a.next_meeting||nextMeetingDate(String(a.meeting_date),String(a.meeting_cadence??"Monthly"))),meeting_time:a.meeting_time??"",
+  meeting_chair:ids.has(String(a.meeting_chair))?String(a.meeting_chair):"",meeting_recorder_id:ids.has(String(a.meeting_recorder_id))?String(a.meeting_recorder_id):"",
+  invited_person_ids:crew.filter(id=>ids.has(id)),participants:[],attendance_details:[],attendees:[],apology_person_ids:[],apology_details:[],apology_entries:[],
+  previous_meeting_id:previous.id,previous_meeting_title:String(a.meeting_title??""),previous_meeting_date:String(a.meeting_date??""),minutes_adoption:"Pending review",minutes_amendments:"",
+  agenda:a.agenda??"",minutes:"",decisions:"",safety_highlights:"",outstanding:"",actions:carried};
+}
+/** Latest occurrence of a linked action wins, preserving all historic snapshots. */
+export function currentMeetingActions(records:readonly import("./assurance-forms.ts").FormSubmission[]){
+ const seen=new Set<string>(),result:Record<string,unknown>[]=[];
+ for(const f of [...records].sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt))){for(const [i,row] of asRows(f.answers.actions).entries()){
+  const key=String(row.action_id||f.id+":action:"+i);if(seen.has(key))continue;seen.add(key);result.push(row);
+ }}return result;
 }

@@ -1,4 +1,5 @@
 "use client";
+import {OperationalTextAssist} from "./OperationalTextAssist";
 
 import {useMemo,useState} from "react";
 import {motion,useReducedMotion} from "framer-motion";
@@ -207,6 +208,7 @@ export function JraWorkspace(){
         <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}} aria-label="Select equipment and tools">
          {["Hand tools","LOTO kit","Barricades","Access platform","Lifting equipment","Inspection kit","Gas detector","Fire extinguisher","PPE"].map(tool=><button type="button" key={tool} aria-pressed={step.equipment.includes(tool)} style={{...btn,padding:"6px 9px",minHeight:33,fontSize:11,background:step.equipment.includes(tool)?"#dbeafe":"#fff"}} onClick={()=>updateTask(step.id,t=>({...t,equipment:step.equipment.includes(tool)?t.equipment.filter(x=>x!==tool):[...new Set([...t.equipment,tool])] }))}>{step.equipment.includes(tool)?"✓ ":""}{tool}</button>)}
         </div>
+        <OperationalTextAssist value={step.description} people={persons}/>
         <div style={{display:"grid",gap:10,marginTop:14}}>
          {step.hazards.map((hazard,hi)=>{
           let residual:ReturnType<typeof scoreRisk>|null=null;try{residual=scoreRisk(defaultRiskMatrix,hazard.residual);}catch{}
