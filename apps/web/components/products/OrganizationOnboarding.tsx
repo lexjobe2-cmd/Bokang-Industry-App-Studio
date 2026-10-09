@@ -61,8 +61,8 @@ export function OrganizationOnboarding(){
   const roster=valid.map((m,i):PersonRecord=>{
    const old=m.id?existingMembers.find(p=>p.id===m.id):undefined;
    return {...old,id:old?.id??"worker-"+crypto.randomUUID(),orgId:id,source:"MANUAL",displayName:m.name.trim(),
-    jobTitle:m.jobTitle.trim(),department:m.department.trim(),location:m.city.trim()||draft.siteIds[0]||"",city:m.city.trim(),
-    userPrincipalName:m.upn.trim(),employeeNumber:m.employeeNumber.trim(),email:m.email.trim(),active:true};
+    jobTitle:m.jobTitle.trim(),department:m.department.trim(),location:(m.city??"").trim()||draft.siteIds[0]||"",city:(m.city??"").trim(),
+    userPrincipalName:(m.upn??"").trim(),employeeNumber:(m.employeeNumber??"").trim(),email:m.email.trim(),active:true};
   });
   const ownerIds=[...new Set([...draft.ownerIds.filter(id=>!existingMembers.some(p=>p.id===id&&p.source==="MANUAL")),...roster.filter((_,i)=>valid[i]?.owner).map(p=>p.id)])];
   const org:OrganizationProfile={...draft,id,name:draft.name.trim(),domain:draft.domain.trim().toLowerCase(),
