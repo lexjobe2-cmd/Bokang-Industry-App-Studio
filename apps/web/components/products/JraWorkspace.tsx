@@ -6,7 +6,7 @@ import {Plus,Trash2,Users,ShieldAlert,ClipboardList,CheckCircle2,FileText,Search
 import {usePersistentState} from "@bokang/persistence";
 import {
  ASSURANCE_STORAGE,dictionary,demoPeople,demoOrganization,
- blankJra,blankJraTask,blankHazard,assessJra,canSimulateApproval,sampleBrakeMaintenanceJra,
+ blankJra,blankJraTask,blankHazard,assessJra,canSimulateApproval,invalidateJraAcknowledgements,sampleBrakeMaintenanceJra,
  type OrganizationProfile,type PersonRecord,type JobRiskAssessment,type JraTask,type HazardEntry
 } from "@bokang/domain-data/custom-assurance";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
@@ -60,10 +60,18 @@ export function JraWorkspace(){
  function patch(fields:Partial<JobRiskAssessment>){
   // Changing reviewed job content makes an existing local reviewer mark stale.
   const materialChange=Object.keys(fields).some(key=>["title","jobId","siteId","location","scope","method","ppe","permits","emergencyPlan","tasks","participants","supervisorId","reviewerNote","reviewerId"].includes(key));
-  setCurrent(current=>current?{
-   ...current,...fields,updatedAt:new Date().toISOString(),
-   ...(materialChange?{reviewSignature:undefined,status:current.status==="APPROVED_DEMO"?"IN_REVIEW" as const:current.status}: {})
-  }:current);
+  const crewMustResign=Object.keys(fields).some(key=>[
+    "title","jobId","siteId","location","scope","method","ppe","permits","emergencyPlan","tasks","supervisorId"
+   ].includes(key));
+  setCurrent(current=>{
+   if(!current)return current;
+   const revised={...current,...fields,updatedAt:new Date().toISOString()};
+   if(crewMustResign)return invalidateJraAcknowledgements(revised);
+   return materialChange?{
+     ...revised,reviewSignature:undefined,reviewedAt:undefined,
+     status:current.status==="APPROVED_DEMO"?"IN_REVIEW" as const:revised.status
+   }:revised;
+  });
  }
  function addTask(){patch({tasks:[...job.tasks,blankJraTask(job.tasks.length+1)]});setPage("risks");}
  function updateTask(id:string,fn:(task:JraTask)=>JraTask){patch({tasks:job.tasks.map(s=>s.id===id?fn(s):s)});}
