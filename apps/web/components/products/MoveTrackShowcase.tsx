@@ -8,9 +8,9 @@ import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
 import {MoveTrackWorkspaceNav,type MoveTrackView} from "./MoveTrackWorkspaceNav";
-import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
 import {MoveTrackGlobalSearch} from "./MoveTrackGlobalSearch";
 import {makeSearchProvider,workspaceIndex,type SearchHit} from "@bokang/domain-data/workspace-search";
+import type {FleetReleaseRecord,RepairEvidence,ReinspectionEvidence} from "../../lib/fleet-release";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY,recipeTemplateId} from "./OperationalGraphPanel";
 import {ASSURANCE_STORAGE,demoOrganization,demoPeople,type OrganizationProfile,type PersonRecord,type CustomTemplate,type JobRiskAssessment} from "@bokang/domain-data/custom-assurance";
@@ -62,6 +62,9 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   const [customTemplates]=usePersistentState<CustomTemplate[]>(ASSURANCE_STORAGE.templates,[]);
   const [forms]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
   const [riskAssessments]=usePersistentState<JobRiskAssessment[]>(ASSURANCE_STORAGE.jras,[]);
+  const [repairs]=usePersistentState<RepairEvidence[]>("bokang-studio.move-track.repairs.v1",[]);
+  const [reinspections]=usePersistentState<ReinspectionEvidence[]>("bokang-studio.move-track.reinspections.v1",[]);
+  const [releases]=usePersistentState<FleetReleaseRecord[]>("bokang-studio.move-track.releases.v1",[]);
   const [,setOpenedTemplate]=usePersistentState<string|null>(ACTIVE_WORKFLOW_KEY,null);
   const [,setFormsTab]=usePersistentState<"library"|"records"|"designer"|"jra">(ACTIVE_FORMS_TAB_KEY,"library");
   const [,setOpenedJra]=usePersistentState<JobRiskAssessment|null>("bokang-studio.move-track.jra.working.v1",null);
@@ -132,8 +135,14 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
    makeSearchProvider({id:"sites",category:"Sites",target:"sites",items:policies,
     toDocument:p=>({id:p.id,title:p.name,description:"Fleet site safety policy",fields:p.additionalCriticalChecks})}),
    makeSearchProvider({id:"prestarts",category:"Pre-start checks",target:"fleet",items:prestarts,
-    toDocument:p=>({id:p.id,title:"Pre-start "+p.id,description:p.vehicleId,fields:[p.driverId,p.assignmentId,p.notes,...p.reasons],status:p.result})})
-  ]),[orgId,customTemplates,forms,directory,riskAssessments,fleet,drivers,assignments,jobs,incidents,policies,prestarts]);
+    toDocument:p=>({id:p.id,title:"Pre-start "+p.id,description:p.vehicleId,fields:[p.driverId,p.assignmentId,p.notes,...p.reasons],status:p.result})}),
+   makeSearchProvider({id:"repairs",category:"Maintenance evidence",target:"release",items:repairs,
+    toDocument:r=>({id:r.id,title:"Repair "+r.vehicleId,description:r.repairNotes,fields:[r.evidenceReference,r.repairedBy,...r.incidentIds]})}),
+   makeSearchProvider({id:"independent-inspections",category:"Inspections",target:"release",items:reinspections,
+    toDocument:r=>({id:r.id,title:"Reinspection "+r.vehicleId,description:r.inspectionBy,fields:[r.vehicleId,...r.checkedControls],status:r.verdict})}),
+   makeSearchProvider({id:"release-decisions",category:"Supervisor reviews",target:"release",items:releases,
+    toDocument:r=>({id:r.id,title:"Release decision "+r.vehicleId,description:r.approvedBy,fields:[r.repairEvidenceId,r.reinspectionId,r.vehicleId,r.approvedAt],status:r.decision})})
+  ]),[orgId,customTemplates,forms,directory,riskAssessments,fleet,drivers,assignments,jobs,incidents,policies,prestarts,repairs,reinspections,releases]);
   function openSearchResult(result:SearchHit){
    const target=result.target as MoveTrackView;
    if(result.source==="safety-workflows"||result.source==="form-library"||result.source==="custom-forms"){
@@ -279,10 +288,9 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
     setClient("");setView("jobs");
   }
 
-  return <section style={{marginTop:28,display:"grid",gap:18}}>
+  return <section id="movetrack-workspaces" style={{marginTop:28,display:"grid",gap:18}}>
     <MoveTrackGlobalSearch documents={searchIndex} onOpen={openSearchResult}/>
     <MoveTrackWorkspaceNav view={view} onChange={setView}/>
-    <GlobalWorkspaceSearch compact onNavigate={setView}/>
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
 
