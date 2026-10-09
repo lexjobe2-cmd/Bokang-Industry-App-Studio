@@ -109,7 +109,7 @@ export function MoveTrackAppShellNav({
      <div className="movetrack-drawer-primary">
       <button type="button" onClick={home}><Home size={20}/> Home <ChevronRight size={16}/></button>
       <button type="button" onClick={()=>{close();onSearch();}}><Search size={20}/> Global search <ChevronRight size={16}/></button>
-      <button type="button" onClick={()=>navigate("admin")}><Building2 size={20}/> Admin · company and asset setup <ChevronRight size={16}/></button>
+      <button type="button" onClick={()=>{close();onCompany();}}><Building2 size={20}/> Admin · company and asset setup <ChevronRight size={16}/></button>
       <button type="button" onClick={()=>{close();onWorkflow();}}><ScanLine size={20}/> Safety workflow library <ChevronRight size={16}/></button>
      </div>
      {navigationGroups.map(group=><section key={group.id} aria-label={group.label} className="movetrack-drawer-group">

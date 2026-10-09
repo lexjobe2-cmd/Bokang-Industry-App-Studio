@@ -1,5 +1,7 @@
 "use client";
 import {OperationalTextAssist} from "./OperationalTextAssist";
+import {MultiImageEvidence} from "./MultiImageEvidence";
+import type {LocalEvidenceImage} from "../../lib/image-evidence";
 
 import { useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
@@ -30,6 +32,8 @@ export function FleetReleaseWorkspace(){
  const [repairer,setRepairer]=useState("");
  const [notes,setNotes]=useState("");
  const [ref,setRef]=useState("");
+ const [repairPhotos,setRepairPhotos]=useState<LocalEvidenceImage[]>([]);
+ const [reinspectionPhotos,setReinspectionPhotos]=useState<LocalEvidenceImage[]>([]);
  const [inspector,setInspector]=useState("");
  const [verified,setVerified]=useState<string[]>([]);
  const [verdict,setVerdict]=useState<"PASS"|"FAIL">("FAIL");
@@ -53,10 +57,10 @@ export function FleetReleaseWorkspace(){
   if(!vehicle || !notes.trim() || !repairer.trim() || !ref.trim()){setNotice("Repairer, repair notes and an evidence reference are required.");return;}
   const record:RepairEvidence={
    id:crypto.randomUUID(),vehicleId:vehicle.id,incidentIds:defects.filter(i=>i.category==="Defect"||i.severity==="Critical").map(i=>i.id),
-   repairedBy:repairer.trim(),repairNotes:notes.trim(),evidenceReference:ref.trim(),recordedAt:new Date().toISOString()
+   repairedBy:repairer.trim(),repairNotes:notes.trim(),evidenceReference:ref.trim(),recordedAt:new Date().toISOString(),images:repairPhotos
   };
   setRepairs(current=>[record,...current.filter(r=>r.vehicleId!==vehicle.id)]);
-  setReinspections(current=>current.filter(r=>r.vehicleId!==vehicle.id));setInspectorSignature(null);setReleaseSignature(null);
+  setReinspections(current=>current.filter(r=>r.vehicleId!==vehicle.id));setInspectorSignature(null);setReleaseSignature(null);setRepairPhotos([]);setReinspectionPhotos([]);
   setNotice("Demonstration repair reference recorded. Complete incident resolution and a separate reinspection.");
  }
  function recordReinspection(){
@@ -69,8 +73,9 @@ export function FleetReleaseWorkspace(){
   }
   setReinspections(current=>[{
    id:crypto.randomUUID(),vehicleId:vehicle.id,inspectionBy:inspector.trim(),
-   verdict,checkedControls:[...verified],performedAt:new Date().toISOString(),inspectorSignature
+   verdict,checkedControls:[...verified],performedAt:new Date().toISOString(),inspectorSignature,images:reinspectionPhotos
   },...current.filter(r=>r.vehicleId!==vehicle.id)]);
+  setReinspectionPhotos([]);
   setNotice(verdict==="PASS"?"Demo reinspection recorded. Supervisor must independently review and approve.":"Failed reinspection recorded: asset remains grounded.");
  }
  function release(){
@@ -97,7 +102,7 @@ export function FleetReleaseWorkspace(){
   {notice?<div role="status" style={{...card,background:"#eff6ff",fontSize:12,color:"#1e40af"}}>{notice}</div>:null}
   {grounded.length===0?<div style={card}><CheckCircle2 color="#087f5b" style={{display:"inline",verticalAlign:"middle",marginRight:8}}/> No currently grounded assets. Previous demo release records: {releases.length}.</div>:<>
     <label style={{...card,display:"grid",gap:8,fontWeight:800}}>Grounded vehicle
-      <select style={input} value={vehicle?.id??""} onChange={e=>{setChosen(e.target.value);setNotice("");setVerified([]);}}>
+      <select style={input} value={vehicle?.id??""} onChange={e=>{setChosen(e.target.value);setNotice("");setVerified([]);setRepairPhotos([]);setReinspectionPhotos([]);}}>
        {grounded.map(v=><option key={v.id} value={v.id}>{v.fleetNo} · {v.makeModel} · NO-GO</option>)}
       </select>
       <small style={{color:"#b42318"}}><ShieldAlert size={14} style={{display:"inline"}}/> {unresolved.length} outstanding report(s). Resolve them in Fleet control before release.</small>
@@ -105,13 +110,14 @@ export function FleetReleaseWorkspace(){
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,250px),1fr))",gap:12}}>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><Wrench size={19}/> 1 · Maintenance evidence</h3>
-       <p style={{fontSize:11,color:"#667085"}}>Records a DEMO evidence reference only, not an uploaded repair photo.</p>
+       <p style={{fontSize:11,color:"#667085"}}>Attach multiple photos of the defect, parts and repair alongside the manual evidence reference. Local images do not verify that repair work occurred.</p>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Repairer<input style={input} value={repairer} onChange={e=>setRepairer(e.target.value)} placeholder="Maintenance technician"/></label>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Repair notes<textarea style={{...input,minHeight:83}} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Work performed and parts used"/></label>
        <OperationalTextAssist value={notes}/>
        <label style={{display:"grid",gap:6,marginBottom:10,fontSize:12}}>Evidence reference<input style={input} value={ref} onChange={e=>setRef(e.target.value)} placeholder="DEMO-REPAIR-001"/></label>
+       <MultiImageEvidence label="Maintenance and repair photos" images={repairPhotos} onChange={setRepairPhotos}/>
        <button style={btn} onClick={recordRepair}>Record repair (demo)</button>
-       {repair?<p style={{fontSize:11,color:"#087f5b"}}>Recorded by {repair.repairedBy} · {repair.evidenceReference}</p>:null}
+       {repair?<><p style={{fontSize:11,color:"#087f5b"}}>Recorded by {repair.repairedBy} · {repair.evidenceReference}</p><MultiImageEvidence label="Saved repair photos" images={repair.images??[]} readOnly/></>:null}
       </section>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><ClipboardCheck size={19}/> 2 · Independent reinspection</h3>
@@ -125,8 +131,9 @@ export function FleetReleaseWorkspace(){
           disabled={!inspector.trim()||!verified.length||!repair} defaultSignerName={inspector}
           scope={"Reinspection "+(vehicle?.id??"")+" · "+verdict+" · "+[...verified].sort().join(", ")}
           value={inspectorSignature} onChange={setInspectorSignature}/>
+       <MultiImageEvidence label="Reinspection photos" images={reinspectionPhotos} onChange={setReinspectionPhotos}/>
        <button style={{...btn,marginTop:10}} disabled={!isSignatureEvidence(inspectorSignature)} onClick={recordReinspection}>Record signed reinspection (demo)</button>
-       {reinspection?<p style={{fontSize:11,color:reinspection.verdict==="PASS"?"#087f5b":"#b42318"}}>{reinspection.verdict} · {reinspection.inspectionBy}</p>:null}
+       {reinspection?<><p style={{fontSize:11,color:reinspection.verdict==="PASS"?"#087f5b":"#b42318"}}>{reinspection.verdict} · {reinspection.inspectionBy}</p><MultiImageEvidence label="Saved reinspection photos" images={reinspection.images??[]} readOnly/></>:null}
       </section>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><FileCheck2 size={19}/> 3 · Supervisor review</h3>

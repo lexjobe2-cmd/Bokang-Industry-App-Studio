@@ -102,7 +102,7 @@ export function MoveTrackDemoLab(){
  return <main className="movetrack-root" data-theme={theme} style={{background:theme==="dark"?"#081323":"#f3f7fc",minHeight:"100vh",color:theme==="dark"?"#edf4fe":"#15233a",paddingBottom:100}}>
   <MoveTrackThemeStyles/>
   <MoveTrackAppShellNav activeView={startWorkspace} atHome={atHome} onHome={goHome} onSearch={findSearch}
-   onNavigate={goWorkspace} onCompany={()=>navigate({kind:"company"})} onWorkflow={()=>navigate({kind:"workflows"})} screenLabel={screen.kind==="company"?"Company management":screen.kind==="search"?"Search":screen.kind==="workflows"?"Safety workflow library":undefined}
+   onNavigate={goWorkspace} onCompany={()=>goWorkspace("admin")} onWorkflow={()=>navigate({kind:"workflows"})} screenLabel={screen.kind==="company"?"Company management":screen.kind==="search"?"Search":screen.kind==="workflows"?"Safety workflow library":undefined}
    theme={theme} onToggleTheme={()=>setTheme(theme==="dark"?"light":"dark")}/>
   <div style={{display:atHome?"contents":"none"}}><div className="movetrack-hero" style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"26px 20px 42px"}}>
    <div style={{maxWidth:1250,margin:"0 auto"}}>
@@ -120,7 +120,7 @@ export function MoveTrackDemoLab(){
    </div>
   </div>
   <div className="movetrack-content" style={{maxWidth:1250,margin:"-24px auto 0",padding:"0 20px",position:"relative",display:"grid",gap:19}}>
-   <MoveTrackCompanySummary onManage={()=>navigate({kind:"company"})} onWorkforce={()=>goWorkspace("workforce")}/>
+   <MoveTrackCompanySummary onManage={()=>goWorkspace("admin")} onWorkforce={()=>goWorkspace("admin")}/>
    <section aria-label="Workspace quick access" style={{...style,display:"grid",gap:12}}>
     <div><p style={{fontSize:10,color:"#2563eb",fontWeight:900,letterSpacing:1.2,margin:0}}>YOUR MOVE TRACK WORKSPACE</p>
      <h2 style={{fontSize:21,margin:"5px 0"}}>What would you like to do?</h2>
@@ -133,6 +133,7 @@ export function MoveTrackDemoLab(){
         {key:"release",title:"Report / review defect",desc:"Grounding, repair and reinspection",icon:AlertTriangle},
         {key:"assign",title:"View assigned work",desc:"Drivers, equipment and dispatch",icon:Truck},
         {key:"profile",title:"View my participation",desc:"Meeting attendance and safety trends",icon:BarChart3},
+        {key:"admin",title:"Admin workspace",desc:"Company, employees, fleet onboarding and media",icon:ShieldCheck},
         {key:"paper",title:"Convert a paper form",desc:"Upload, review and publish a template",icon:ClipboardCheck}] as const).map(item=>
        <button type="button" key={item.key} onClick={()=>{goWorkspace(item.key);}}
          style={{...style,textAlign:"left",cursor:"pointer",display:"flex",gap:11,alignItems:"start",borderColor:"#b6cde8"}}>
