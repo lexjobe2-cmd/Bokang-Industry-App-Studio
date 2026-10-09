@@ -117,8 +117,8 @@ export function JraWorkspace(){
   <div style={{...shell,background:"#0c1d32",color:"#fff",border:0,display:"flex",gap:13,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
    <div><div style={{color:"var(--mt-link,#9cc6ff)",fontSize:11,letterSpacing:1.4,fontWeight:900}}>JOB RISK ASSESSMENT · FIELD STUDIO</div><h2 style={{fontSize:26,margin:"6px 0"}}>People. Tasks. Hazards. Controls.</h2><p style={{color:"#cbd5e1",fontSize:12,maxWidth:720,lineHeight:1.65}}>Job details, participants, hazards, risk and control edits autosave to this browser. Microsoft 365 is modeled but disconnected in demo mode.</p></div>
    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-    <button style={{...primary,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#14305b)"}} onClick={start}><Plus size={16} style={{display:"inline"}}/> New JRA</button>
-    <button style={{...btn,background:"var(--mt-surface-soft,#dbeafe)",borderColor:"#dbeafe"}} onClick={startSample}>Load example job</button>
+    <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...primary,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#14305b)"}} onClick={start}><Plus size={16} style={{display:"inline"}}/> New JRA</button>
+    <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,background:"var(--mt-surface-soft,#dbeafe)",borderColor:"#dbeafe"}} onClick={startSample}>Load example job</button>
    </div>
   </div>
   <div style={{...shell,display:"grid",gap:8}}>
@@ -134,10 +134,10 @@ export function JraWorkspace(){
   {!current?<div style={{display:"grid",gap:11}}>
    <div style={{...shell,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
      <div><h3 style={{margin:"0 0 4px"}}>Saved job risk assessments</h3><label style={{...label,marginTop:8}}>Organization
-       <select style={{...input,minWidth:220}} value={org.id} onChange={e=>setSelectedOrg(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label><span style={{fontSize:12,color:"var(--mt-muted,#667085)"}}>{count} locally saved job records; no sign-in required</span></div><button style={primary} onClick={start}>Create new JRA</button></div>
+       <select style={{...input,minWidth:220}} value={org.id} onChange={e=>setSelectedOrg(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label><span style={{fontSize:12,color:"var(--mt-muted,#667085)"}}>{count} locally saved job records; no sign-in required</span></div><button className="movetrack-ui-button" data-mt-variant="primary" style={primary} onClick={start}>Create new JRA</button></div>
    {records.filter(r=>r.orgId===org.id).length===0?<div style={{...shell,textAlign:"center",padding:"45px 15px"}}><ClipboardList size={34} color="#94a3b8"/><h3>No JRA saved yet</h3><p style={{color:"var(--mt-muted,#64748b)",fontSize:12}}>Start a new assessment, choose workers and build a task-by-task hazard register.</p></div>:records.map(jra=><div key={jra.id} style={{...shell,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center",flexWrap:"wrap"}}>
     <div><Badge>{jra.status.replaceAll("_"," ")}</Badge><h3 style={{fontSize:16,margin:"8px 0 5px"}}>{jra.title||"Untitled assessment"}</h3><span style={{fontSize:12,color:"var(--mt-muted,#667085)"}}>{jra.reference} · {jra.jobId} · {jra.tasks.length} steps · {jra.participants.length} people</span></div>
-    <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}><DocumentDownloadActions document={buildJraDocument(jra,persons)} compact/><button style={btn} onClick={()=>{setCurrent(jra);setSelectedOrg(jra.orgId);setEditing(jra.id);setPage("job");setMessage("");}}>Open</button><button style={btn} onClick={()=>{const newId="JRA-"+crypto.randomUUID();const copy={...structuredClone(jra),id:newId,reference:jra.reference+"-COPY",revision:1,status:"DRAFT" as const,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};setCurrent(copy);setEditing(null);setPage("job");}}>Duplicate</button></div>
+    <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}><DocumentDownloadActions document={buildJraDocument(jra,persons)} compact/><button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>{setCurrent(jra);setSelectedOrg(jra.orgId);setEditing(jra.id);setPage("job");setMessage("");}}>Open</button><button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>{const newId="JRA-"+crypto.randomUUID();const copy={...structuredClone(jra),id:newId,reference:jra.reference+"-COPY",revision:1,status:"DRAFT" as const,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};setCurrent(copy);setEditing(null);setPage("job");}}>Duplicate</button></div>
    </div>)}
   </div>:<div style={{display:"grid",gap:13}}>
     <div style={{...shell,borderTop:"4px solid "+org.accent}}>
@@ -146,10 +146,10 @@ export function JraWorkspace(){
        {job.logoSnapshot?<img src={job.logoSnapshot} alt={job.companyNameSnapshot+" logo"} style={{maxHeight:65,maxWidth:105,objectFit:"contain"}}/>:<div style={{width:55,height:55,borderRadius:10,display:"grid",placeItems:"center",background:"var(--mt-surface-soft,#dbeafe)",color:"var(--mt-link,#1849a9)",fontWeight:900}}>LOGO</div>}
        <div><strong style={{fontSize:15}}>{job.companyNameSnapshot}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{job.reference} · v{job.revision} · {job.status.replaceAll("_"," ")}</div></div>
       </div>
-      <button style={btn} onClick={()=>{setCurrent(null);setMessage("");}}>← Back to JRA library</button>
+      <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>{setCurrent(null);setMessage("");}}>← Back to JRA library</button>
      </div>
      <div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:17}}>
-      {([{key:"job",text:"1 · Job details",icon:FileText},{key:"team",text:"2 · Team & roles",icon:Users},{key:"risks",text:"3 · Tasks & hazards",icon:ShieldAlert},{key:"review",text:"4 · Review",icon:CheckCircle2}] as const).map(t=><button key={t.key} onClick={()=>setPage(t.key)} style={{...btn,background:page===t.key?"#193962":"var(--mt-surface,#fff)",color:page===t.key?"#fff":"var(--mt-ink,#344054)",display:"flex",gap:6,alignItems:"center"}}><t.icon size={15}/>{t.text}</button>)}
+      {([{key:"job",text:"1 · Job details",icon:FileText},{key:"team",text:"2 · Team & roles",icon:Users},{key:"risks",text:"3 · Tasks & hazards",icon:ShieldAlert},{key:"review",text:"4 · Review",icon:CheckCircle2}] as const).map(t=><button key={t.key} onClick={()=>setPage(t.key)} className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,background:page===t.key?"#193962":"var(--mt-surface,#fff)",color:page===t.key?"#fff":"var(--mt-ink,#344054)",display:"flex",gap:6,alignItems:"center"}}><t.icon size={15}/>{t.text}</button>)}
      </div>
     </div>
     {page==="job"?<motion.div initial={reduced?false:{opacity:0,y:6}} animate={{opacity:1,y:0}} style={{...shell,display:"grid",gap:13}}>
@@ -162,15 +162,15 @@ export function JraWorkspace(){
       <label style={label}>Work area / asset<input style={input} value={job.location} onChange={e=>patch({location:e.target.value})} placeholder="Workshop bay 4"/></label>
       <OrganizationPeopleComboBox people={persons} orgId={org.id} label="JRA supervisor" value={job.supervisorId?[job.supervisorId]:[]} onChange={ids=>patch({supervisorId:ids[0]??""})}/>
       <label style={label}>Start date<input type="date" style={input} value={job.startDate} onChange={e=>patch({startDate:e.target.value})}/>
-      <button type="button" style={{...btn,fontSize:11,minHeight:31,padding:"5px 8px",justifySelf:"start"}} onClick={()=>patch({startDate:new Date().toLocaleDateString("en-CA")})}>Today</button></label>
+      <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,fontSize:11,minHeight:31,padding:"5px 8px",justifySelf:"start"}} onClick={()=>patch({startDate:new Date().toLocaleDateString("en-CA")})}>Today</button></label>
       <label style={label}>End date<input type="date" style={input} value={job.endDate} onChange={e=>patch({endDate:e.target.value})}/>
-      <button type="button" style={{...btn,fontSize:11,minHeight:31,padding:"5px 8px",justifySelf:"start"}} onClick={()=>patch({endDate:job.startDate||new Date().toLocaleDateString("en-CA")})}>Same as start</button></label>
+      <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,fontSize:11,minHeight:31,padding:"5px 8px",justifySelf:"start"}} onClick={()=>patch({endDate:job.startDate||new Date().toLocaleDateString("en-CA")})}>Same as start</button></label>
      </div>
      <label style={label}>Scope of work<textarea style={{...input,minHeight:91}} value={job.scope} onChange={e=>patch({scope:e.target.value})} placeholder="Describe task, boundaries, location and expected outcome"/></label>
      <label style={label}>Method / safe sequence<textarea style={{...input,minHeight:73}} value={job.method} onChange={e=>patch({method:e.target.value})} placeholder="Work execution approach"/></label>
      <label style={label}>Emergency and rescue plan<textarea style={{...input,minHeight:72}} value={job.emergencyPlan} onChange={e=>patch({emergencyPlan:e.target.value})} placeholder="Response team, emergency contact, evacuation route"/></label>
-     <div><strong style={{fontSize:12}}>PPE required</strong><div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:7}}>{dictionary.ppe.map(p=><button key={p} aria-pressed={job.ppe.includes(p)} style={{...btn,background:job.ppe.includes(p)?"var(--mt-surface-soft,#dbeafe)":"white",padding:"8px 11px",fontSize:11}} onClick={()=>patch({ppe:unique(job.ppe,p,!job.ppe.includes(p))})}>{p}</button>)}</div></div>
-     <div style={{display:"flex",justifyContent:"flex-end"}}><button style={primary} onClick={()=>setPage("team")}>Next · Team & roles <ChevronRight size={15} style={{display:"inline"}}/></button></div>
+     <div><strong style={{fontSize:12}}>PPE required</strong><div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:7}}>{dictionary.ppe.map(p=><button key={p} aria-pressed={job.ppe.includes(p)} className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,background:job.ppe.includes(p)?"var(--mt-surface-soft,#dbeafe)":"white",padding:"8px 11px",fontSize:11}} onClick={()=>patch({ppe:unique(job.ppe,p,!job.ppe.includes(p))})}>{p}</button>)}</div></div>
+     <div style={{display:"flex",justifyContent:"flex-end"}}><button className="movetrack-ui-button" data-mt-variant="primary" style={primary} onClick={()=>setPage("team")}>Next · Team & roles <ChevronRight size={15} style={{display:"inline"}}/></button></div>
     </motion.div>:null}
     {page==="team"?<div style={{display:"grid",gap:12}}>
      <div style={{...shell,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
@@ -194,24 +194,24 @@ export function JraWorkspace(){
          onChange={signature=>patch({participants:job.participants.map(x=>x.personId===p.personId?
           {...x,signature:signature??undefined,acknowledged:!!signature,acknowledgedAt:signature?.signedAt}:x)})}/>
        </div>
-       <button style={{...btn,padding:8,minHeight:33}} onClick={()=>patch({participants:job.participants.filter(x=>x.personId!==p.personId)})} aria-label={"Remove "+p.nameSnapshot}><Trash2 size={15}/></button>
+       <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,padding:8,minHeight:33}} onClick={()=>patch({participants:job.participants.filter(x=>x.personId!==p.personId)})} aria-label={"Remove "+p.nameSnapshot}><Trash2 size={15}/></button>
       </div>)}</div>
      </div>:null}
-     <button style={{...primary,justifySelf:"end"}} onClick={()=>setPage("risks")}>Next · Tasks & hazards →</button>
+     <button className="movetrack-ui-button" data-mt-variant="primary" style={{...primary,justifySelf:"end"}} onClick={()=>setPage("risks")}>Next · Tasks & hazards →</button>
     </div>:null}
     {page==="risks"?<div style={{display:"grid",gap:12}}>
-      <div style={{...shell,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><h3 style={{margin:"0 0 4px"}}>Job steps · hazard register</h3><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:0}}>For every activity, identify exposed people, consequences, controls and initial/residual risk.</p></div><button style={primary} onClick={addTask}><Plus size={16} style={{display:"inline"}}/> Add job step</button></div>
+      <div style={{...shell,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><h3 style={{margin:"0 0 4px"}}>Job steps · hazard register</h3><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:0}}>For every activity, identify exposed people, consequences, controls and initial/residual risk.</p></div><button className="movetrack-ui-button" data-mt-variant="primary" style={primary} onClick={addTask}><Plus size={16} style={{display:"inline"}}/> Add job step</button></div>
       {job.tasks.length===0?<div style={{...shell,textAlign:"center",padding:39}}><HardHat color="#94a3b8" size={34}/><p style={{fontSize:13}}>No steps yet. Add each task performed during this work.</p></div>:null}
       <label style={label}>{desktop?"Task workbench · choose a task":"Current job step"}<select style={input} value={Math.min(taskFocus,Math.max(0,job.tasks.length-1))} onChange={e=>{setTaskFocus(Number(e.target.value));setHazardFocus(0);}}>{job.tasks.map((task,i)=><option key={task.id} value={i}>{i+1}. {task.description||"New task"} · {task.hazards.length} hazards</option>)}</select></label>
       {job.tasks.map((step,index)=>index===Math.min(taskFocus,Math.max(0,job.tasks.length-1))?<motion.section initial={reduced?false:{opacity:0,y:6}} animate={{opacity:1,y:0}} key={step.id} style={shell}>
         <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-         <h3 style={{margin:0,fontSize:16}}>Step {index+1}</h3><button style={{...btn,color:"var(--mt-danger,#b42318)"}} onClick={()=>patch({tasks:job.tasks.filter(t=>t.id!==step.id).map((s,i)=>({...s,sequence:i+1}))})}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
+         <h3 style={{margin:0,fontSize:16}}>Step {index+1}</h3><button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,color:"var(--mt-danger,#b42318)"}} onClick={()=>patch({tasks:job.tasks.filter(t=>t.id!==step.id).map((s,i)=>({...s,sequence:i+1}))})}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
         </div>
         <label style={{...label,marginTop:12}}>Task/activity description<textarea style={{...input,minHeight:66}} value={step.description} onChange={e=>updateTask(step.id,t=>({...t,description:e.target.value}))} placeholder="Choose a task below or describe the activity"/></label>
-        <div style={{display:"flex",flexWrap:"wrap",gap:7,marginTop:8}} aria-label="Quick task steps">{taskQuickChoices.map(text=><button key={text} type="button" style={{...btn,minHeight:34,fontSize:11,padding:"6px 9px",background:step.description===text?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)"}} onClick={()=>updateTask(step.id,t=>({...t,description:text}))}>{text}</button>)}</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:7,marginTop:8}} aria-label="Quick task steps">{taskQuickChoices.map(text=><button key={text} type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,minHeight:34,fontSize:11,padding:"6px 9px",background:step.description===text?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)"}} onClick={()=>updateTask(step.id,t=>({...t,description:text}))}>{text}</button>)}</div>
         <label style={{...label,marginTop:10}}>Equipment / tools (comma-separated)<input style={input} value={step.equipment.join(", ")} onChange={e=>updateTask(step.id,t=>({...t,equipment:e.target.value.split(",").map(v=>v.trim()).filter(Boolean)}))} placeholder="Or tap equipment below"/></label>
         <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}} aria-label="Select equipment and tools">
-         {["Hand tools","LOTO kit","Barricades","Access platform","Lifting equipment","Inspection kit","Gas detector","Fire extinguisher","PPE"].map(tool=><button type="button" key={tool} aria-pressed={step.equipment.includes(tool)} style={{...btn,padding:"6px 9px",minHeight:33,fontSize:11,background:step.equipment.includes(tool)?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)"}} onClick={()=>updateTask(step.id,t=>({...t,equipment:step.equipment.includes(tool)?t.equipment.filter(x=>x!==tool):[...new Set([...t.equipment,tool])] }))}>{step.equipment.includes(tool)?"✓ ":""}{tool}</button>)}
+         {["Hand tools","LOTO kit","Barricades","Access platform","Lifting equipment","Inspection kit","Gas detector","Fire extinguisher","PPE"].map(tool=><button type="button" key={tool} aria-pressed={step.equipment.includes(tool)} className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,padding:"6px 9px",minHeight:33,fontSize:11,background:step.equipment.includes(tool)?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)"}} onClick={()=>updateTask(step.id,t=>({...t,equipment:step.equipment.includes(tool)?t.equipment.filter(x=>x!==tool):[...new Set([...t.equipment,tool])] }))}>{step.equipment.includes(tool)?"✓ ":""}{tool}</button>)}
         </div>
         <OperationalTextAssist value={step.description} people={persons}/>
         <div style={{display:"grid",gap:10,marginTop:14}}>
@@ -220,7 +220,7 @@ export function JraWorkspace(){
            if(hi!==Math.min(hazardFocus,Math.max(0,step.hazards.length-1)))return null;
           let residual:ReturnType<typeof scoreRisk>|null=null;try{residual=scoreRisk(defaultRiskMatrix,hazard.residual);}catch{}
           return <div key={hazard.id} style={{background:"var(--mt-surface-soft,#f8fafc)",border:"1px solid #dce4ec",borderRadius:13,padding:13,display:"grid",gap:11}}>
-           <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:13}}>Hazard {hi+1}</strong><button style={{...btn,padding:7,minHeight:33,color:"var(--mt-danger,#b42318)"}} aria-label="Remove hazard" onClick={()=>updateTask(step.id,t=>({...t,hazards:t.hazards.filter(h=>h.id!==hazard.id)}))}><Trash2 size={15}/></button></div>
+           <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:13}}>Hazard {hi+1}</strong><button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,padding:7,minHeight:33,color:"var(--mt-danger,#b42318)"}} aria-label="Remove hazard" onClick={()=>updateTask(step.id,t=>({...t,hazards:t.hazards.filter(h=>h.id!==hazard.id)}))}><Trash2 size={15}/></button></div>
            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:9}}>
             <label style={label}>Hazard category<select style={input} value={hazard.category} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,category:e.target.value}))}>{dictionary.hazardCategories.map(v=><option key={v}>{v}</option>)}</select></label>
             <label style={label}>What can go wrong?<input style={input} value={hazard.hazard} placeholder="Choose a hazard or enter another" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,hazard:e.target.value}))}/>
@@ -233,11 +233,11 @@ export function JraWorkspace(){
              </select></label>
            </div>
            <div><strong style={{fontSize:12}}>People exposed to this hazard</strong>
-            {job.participants.length===0?<p style={{color:"var(--mt-warning,#b45309)",fontSize:11}}>Add job participants on Team tab first.</p>:<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:7}}>{job.participants.map(p=><button key={p.personId} aria-pressed={hazard.exposedPersonIds.includes(p.personId)} style={{...btn,fontSize:11,padding:"7px 10px",background:hazard.exposedPersonIds.includes(p.personId)?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)"}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,exposedPersonIds:unique(h.exposedPersonIds,p.personId,!h.exposedPersonIds.includes(p.personId))}))}>{p.nameSnapshot}</button>)}</div>}
+            {job.participants.length===0?<p style={{color:"var(--mt-warning,#b45309)",fontSize:11}}>Add job participants on Team tab first.</p>:<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:7}}>{job.participants.map(p=><button key={p.personId} aria-pressed={hazard.exposedPersonIds.includes(p.personId)} className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,fontSize:11,padding:"7px 10px",background:hazard.exposedPersonIds.includes(p.personId)?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)"}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,exposedPersonIds:unique(h.exposedPersonIds,p.personId,!h.exposedPersonIds.includes(p.personId))}))}>{p.nameSnapshot}</button>)}</div>}
            </div>
            <div><strong style={{fontSize:12}}>Initial risk — without additional controls</strong><div style={{marginTop:7}}><RiskChooser value={hazard.initial} onChange={risk=>changeHazard(step.id,hazard.id,h=>({...h,initial:risk}))}/></div></div>
            <div style={{borderTop:"1px solid #e2e8f0",paddingTop:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:12}}>Remedies / preventive controls</strong><button style={{...btn,fontSize:11,padding:"7px 9px",minHeight:33}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:[...h.controls,{id:"ctrl-"+crypto.randomUUID(),hierarchy:dictionary.hierarchyOfControls[2],description:"",verified:false}]}))}><Plus size={13} style={{display:"inline"}}/> Add control</button></div>
+            <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:12}}>Remedies / preventive controls</strong><button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,fontSize:11,padding:"7px 9px",minHeight:33}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:[...h.controls,{id:"ctrl-"+crypto.randomUUID(),hierarchy:dictionary.hierarchyOfControls[2],description:"",verified:false}]}))}><Plus size={13} style={{display:"inline"}}/> Add control</button></div>
             {hazard.controls.map(control=><div key={control.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,150px),1fr))",gap:7,marginTop:8}}>
              <select aria-label="Hierarchy of control" style={input} value={control.hierarchy} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,hierarchy:e.target.value}:c)}))}>{dictionary.hierarchyOfControls.map(v=><option key={v}>{v}</option>)}</select>
              <div style={{display:"grid",gap:5}}>
@@ -248,7 +248,7 @@ export function JraWorkspace(){
              </div>
              <select aria-label="Responsible person" style={input} value={control.ownerId??""} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,ownerId:e.target.value}:c)}))}><option value="">Owner</option>{job.participants.map(p=><option key={p.personId} value={p.personId}>{p.nameSnapshot}</option>)}</select>
              <label style={{fontSize:11,display:"flex",gap:4,alignItems:"center"}}><input type="checkbox" checked={control.verified} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,verified:e.target.checked}:c)}))}/> Verified</label>
-             <button aria-label="Delete control" style={{...btn,padding:7}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.filter(c=>c.id!==control.id)}))}><Trash2 size={15}/></button>
+             <button aria-label="Delete control" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,padding:7}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.filter(c=>c.id!==control.id)}))}><Trash2 size={15}/></button>
             </div>)}
            </div>
            <div><strong style={{fontSize:12}}>Residual risk — after controls</strong><div style={{marginTop:7}}><RiskChooser value={hazard.residual} onChange={risk=>changeHazard(step.id,hazard.id,h=>({...h,residual:risk}))}/></div>
@@ -256,11 +256,11 @@ export function JraWorkspace(){
            </div>
           </div>;
          })}
-         <button style={{...btn,justifySelf:"start"}} onClick={()=>{setHazardFocus(step.hazards.length);updateTask(step.id,t=>({...t,hazards:[...t.hazards,blankHazard()]}));}}><Plus size={15} style={{display:"inline"}}/> Add hazard to this step</button>
+         <button className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}} onClick={()=>{setHazardFocus(step.hazards.length);updateTask(step.id,t=>({...t,hazards:[...t.hazards,blankHazard()]}));}}><Plus size={15} style={{display:"inline"}}/> Add hazard to this step</button>
          <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>Suggested hazards and proposed controls are text-entry aids only. Each exposure, risk score and actual control verification still needs individual assessment and review.</p>
         </div>
       </motion.section>:null)}
-      <button style={{...primary,justifySelf:"end"}} onClick={()=>setPage("review")}>Next · Review risk assessment →</button>
+      <button className="movetrack-ui-button" data-mt-variant="primary" style={{...primary,justifySelf:"end"}} onClick={()=>setPage("review")}>Next · Review risk assessment →</button>
     </div>:null}
     {page==="review"?<div style={{display:"grid",gap:13}}>
       <div style={{...shell,background:assessment?.decision==="READY_FOR_DEMO_REVIEW"?"var(--mt-surface-soft,#ecfdf3)":"var(--mt-surface-soft,#fff7ed)",borderColor:assessment?.decision==="READY_FOR_DEMO_REVIEW"?"#abefc6":"#fed7aa"}}>
@@ -285,11 +285,11 @@ export function JraWorkspace(){
        <p style={{color:"var(--mt-danger,#b42318)",fontSize:11,marginTop:12}}>A DEMO APPROVED label does not grant permission to perform work. Formal authorization, site verification and records remain future implementation.</p>
       </div>
       <div style={{...shell,display:"flex",gap:10,justifyContent:"space-between",flexWrap:"wrap"}}>
-       <button style={btn} onClick={()=>save("DRAFT")}>Save editable draft</button>
-       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={primary} onClick={submitReview}>Save for review</button><button style={{...primary,background:"#087f5b",borderColor:"#087f5b",opacity:canSimulateApproval(job)?1:0.5}} disabled={!canSimulateApproval(job)||!isSignatureEvidence(job.reviewSignature)||job.reviewSignature.signerPersonId!==job.reviewerId||job.reviewSignature.intent!=="review"||job.reviewSignature.scope!==(job.reference||job.title||"JRA independent review")} onClick={approveDemo}>Mark reviewed (demo)</button></div>
+       <button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>save("DRAFT")}>Save editable draft</button>
+       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button className="movetrack-ui-button" data-mt-variant="primary" style={primary} onClick={submitReview}>Save for review</button><button className="movetrack-ui-button" data-mt-variant="primary" style={{...primary,background:"#087f5b",borderColor:"#087f5b",opacity:canSimulateApproval(job)?1:0.5}} disabled={!canSimulateApproval(job)||!isSignatureEvidence(job.reviewSignature)||job.reviewSignature.signerPersonId!==job.reviewerId||job.reviewSignature.intent!=="review"||job.reviewSignature.scope!==(job.reference||job.title||"JRA independent review")} onClick={approveDemo}>Mark reviewed (demo)</button></div>
       </div>
     </div>:null}
-    {page!=="review"?<div style={{...shell,display:"flex",justifyContent:"flex-end"}}><button style={btn} onClick={()=>save("DRAFT")}>Save draft</button></div>:null}
+    {page!=="review"?<div style={{...shell,display:"flex",justifyContent:"flex-end"}}><button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>save("DRAFT")}>Save draft</button></div>:null}
    </div>}
  </section>;
 }
