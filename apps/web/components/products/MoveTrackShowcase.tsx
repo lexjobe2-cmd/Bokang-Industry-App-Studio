@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
 import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
@@ -8,6 +8,7 @@ import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
 import {MoveTrackWorkspaceNav,type MoveTrackView} from "./MoveTrackWorkspaceNav";
+import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
 import {MoveTrackGlobalSearch} from "./MoveTrackGlobalSearch";
 import {makeSearchProvider,workspaceIndex,type SearchHit} from "@bokang/domain-data/workspace-search";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
@@ -67,6 +68,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
 
 
   const [view,setView]=useState<MoveTrackView>(initialView);
+  useEffect(()=>setView(initialView),[initialView]);
   const [notice,setNotice]=useState("");
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [incidentSignatures,setIncidentSignatures]=useState<Record<string,SignatureEvidence|undefined>>({});
@@ -237,6 +239,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   return <section style={{marginTop:28,display:"grid",gap:18}}>
     <MoveTrackGlobalSearch documents={searchIndex} onOpen={openSearchResult}/>
     <MoveTrackWorkspaceNav view={view} onChange={setView}/>
+    <GlobalWorkspaceSearch compact onNavigate={setView}/>
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
 
