@@ -70,11 +70,12 @@ for(const desktop of [true,false])test(`task workspace uses distinct ${desktop?'
  else{assert.match(html,/Meeting mobile step/);assert.match(html,/<details/);assert.ok(!html.includes('Meeting desktop sections'));}
 });
 
-test('related workspace picker has current Fleet selected and navigable fleet destinations',()=>{
+test('workspace picker keeps Fleet selected while exposing every workspace category',()=>{
  const {MoveTrackWorkspaceNav}=load('../apps/web/components/products/MoveTrackWorkspaceNav.tsx');
  const html=renderToStaticMarkup(React.createElement(MoveTrackWorkspaceNav,{view:'fleet',onChange:noop}));
- const select=html.match(/<select[^>]*aria-label="Switch related workspace"[^>]*>(.*?)<\/select>/)?.[1];
+ const select=html.match(/<select[^>]*aria-label="Switch to any MoveTrack workspace"[^>]*>(.*?)<\/select>/)?.[1];
  assert.ok(select);assert.match(select,/value="fleet" selected=""/);
- for(const id of ['drivers','sites','assign','jobs','release'])assert.ok(select.includes(`value="${id}"`));
+ for(const id of ['drivers','sites','assign','jobs','release','admin','paper','meetings','workforce','settings','local-data'])assert.ok(select.includes(`value="${id}"`));
+ assert.match(select,/<optgroup label="Administration">/);
  assert.equal((select.match(/selected=""/g)||[]).length,1);
 });
