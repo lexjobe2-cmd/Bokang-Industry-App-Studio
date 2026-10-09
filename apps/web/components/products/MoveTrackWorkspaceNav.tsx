@@ -22,7 +22,7 @@ export const navigationGroups=[
   {view:"local-data",label:"Local data & backup",description:"Import and export workspace",icon:Database},
   {view:"settings",label:"Settings & help",description:"Appearance, support and legal",icon:Settings2}]}
 ] as const;
-const all=navigationGroups.flatMap(g=>g.items);
+const all=navigationGroups.reduce<Array<{view:MoveTrackView;label:string;description:string}>>((result,group)=>{for(const item of group.items)result.push({view:item.view,label:item.label,description:item.description});return result;},[]);
 export function MoveTrackWorkspaceNav({view,onChange}:{view:MoveTrackView;onChange:(view:MoveTrackView)=>void}){
  const group=navigationGroups.find(g=>g.items.some(i=>i.view===view))??navigationGroups[0];
  const [expanded,setExpanded]=useState<string|null>(null);
