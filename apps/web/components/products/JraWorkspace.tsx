@@ -11,7 +11,7 @@ import {
 } from "@bokang/domain-data/custom-assurance";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
-import {SignatureCapture} from "./SignatureCapture";
+import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {buildJraDocument,buildBlankJraDocument} from "../../lib/form-exports";
@@ -175,7 +175,7 @@ export function JraWorkspace(){
        <div><strong style={{fontSize:12}}>{p.nameSnapshot}</strong><div style={{fontSize:10,color:"#667085"}}>Directory ID {p.personId}</div></div>
        <select aria-label={"Role for "+p.nameSnapshot} style={{...input,width:"auto",minWidth:135}} value={p.role} onChange={e=>patch({participants:job.participants.map(x=>x.personId===p.personId?{...x,role:e.target.value}:x)})}>{dictionary.jobRoles.map(role=><option key={role}>{role}</option>)}</select>
        <div style={{flex:"1 1 285px",minWidth:250}}>
-        <SignatureCapture compact value={p.signature??null} role={p.role} intent="acknowledgement"
+        <SignatureApprovalTray compact label={"Sign "+p.nameSnapshot+" acknowledgement"} value={p.signature??null} role={p.role} intent="acknowledgement"
          scope={job.reference||job.title||"JRA task review"} signerPersonId={p.personId} defaultSignerName={p.nameSnapshot}
          onChange={signature=>patch({participants:job.participants.map(x=>x.personId===p.personId?
           {...x,signature:signature??undefined,acknowledged:!!signature,acknowledgedAt:signature?.signedAt}:x)})}/>
@@ -239,7 +239,7 @@ export function JraWorkspace(){
        <p style={{fontSize:12,color:"#667085"}}>Choose a different person from the job supervisor for independent review. These approvals are simulated; there are no real electronic signatures.</p>
        <label style={label}>Independent reviewer<select style={input} value={job.reviewerId} onChange={e=>patch({reviewerId:e.target.value,reviewSignature:undefined})}><option value="">Choose reviewer</option>{persons.filter(p=>p.id!==job.supervisorId).map(p=><option key={p.id} value={p.id}>{p.displayName} · {p.jobTitle}</option>)}</select></label>
        <label style={{...label,marginTop:13}}>Review notes<textarea style={{...input,minHeight:90}} value={job.reviewerNote} onChange={e=>patch({reviewerNote:e.target.value})} placeholder="Required amendments, outstanding controls and approval conditions"/></label>
-       {job.reviewerId?<SignatureCapture value={job.reviewSignature??null} intent="review" role="Independent reviewer"
+       {job.reviewerId?<SignatureApprovalTray label="Open independent reviewer sign-off" value={job.reviewSignature??null} intent="review" role="Independent reviewer"
         scope={job.reference||job.title||"JRA independent review"} signerPersonId={job.reviewerId}
         defaultSignerName={persons.find(p=>p.id===job.reviewerId)?.displayName??""}
         onChange={signature=>patch({reviewSignature:signature??undefined})}/>:null}
