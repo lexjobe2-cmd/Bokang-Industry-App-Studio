@@ -246,3 +246,29 @@ test("working at height captures collective fall protection, dropped objects and
  for(const phrase of ["ground level","guardrails","anchor","falling-object","rescue","weather","working height"])
    assert.ok(labels.includes(phrase),"Missing height control: "+phrase);
 });
+
+test("supervisor signing tray is mandatory for all reviewed core and 21 specialist forms",()=>{
+ for(const template of starterAssuranceTemplates.filter(t=>["meeting-register","toolbox-brief","jsa","jra","shift-handover"].includes(t.id))){
+  const fields=template.sections.flatMap(s=>s.fields);
+  assert.ok(fields.some(f=>f.id==="supervisor_review_signature"&&f.required&&f.signerFieldId==="supervisor_reviewer"),template.id);
+  assert.equal(template.version,2);
+ }
+ for(const recipe of additionalAssuranceRecipes){
+  const fields=recipe.sections.flatMap(s=>s.fields);
+  assert.ok(fields.some(f=>f.id==="review_signature"&&f.required&&f.signerFieldId==="reviewer"),recipe.id);
+ }
+});
+test("reviewer identity, signed intent and exact site/job scope must agree before a checklist can be submitted",()=>{
+ const template={id:"signed-check",version:1,title:"Height safety",category:"Safety",status:"PUBLISHED",effectiveDate:"2026-10-09",siteIds:[],assetClasses:[],
+  sections:[{id:"review",title:"Review",fields:[
+   {id:"supervisor_reviewer",label:"Supervisor",type:"person",required:true},
+   {id:"supervisor_review_signature",label:"Supervisor review",type:"signature",required:true,signerFieldId:"supervisor_reviewer"}]}]};
+ const scope="Height safety / WORK-129 / Jwaneng / demo-mining";
+ const sig={...localSupervisorReview,scope:scope+" / Supervisor review"};
+ const base={supervisor_reviewer:"supervisor-demo-1",supervisor_review_signature:sig};
+ assert.equal(evaluateForm(template,base,[],scope).decision,"COMPLETE");
+ assert.equal(evaluateForm(template,{...base,supervisor_reviewer:"someone-else"},[],scope).decision,"INCOMPLETE");
+ assert.equal(evaluateForm(template,{...base,supervisor_review_signature:{...sig,intent:"attendance"}},[],scope).decision,"INCOMPLETE");
+ assert.equal(evaluateForm(template,base,[],scope+" / different-site").decision,"INCOMPLETE");
+ assert.throws(()=>makeSubmission({id:"s1",template,answers:base,siteId:"Other site",actorUid:"demo",signatureScopePrefix:scope+" / different-site",now:"2026-10-09T09:00:00Z"}),/Required/);
+});
