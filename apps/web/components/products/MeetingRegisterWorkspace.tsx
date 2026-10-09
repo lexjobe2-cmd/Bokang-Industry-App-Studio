@@ -7,6 +7,7 @@ import {meetingTypes,meetingTemplate,validateMeetingInput,type MeetingType} from
 import {makeSubmission,type FormAnswers,type FormSubmission,type PrimitiveAnswer} from "@bokang/domain-data/assurance-forms";
 import {buildFormDocument} from "../../lib/form-exports";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
+import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
@@ -101,19 +102,18 @@ export function MeetingRegisterWorkspace(){
     <label style={label}>Time<input type="time" style={input} value={textValue(answers.meeting_time)} onChange={e=>text("meeting_time",e.target.value)}/></label>
     <label style={label}>Work site / meeting room *<input style={input} value={textValue(answers.meeting_site)} onChange={e=>text("meeting_site",e.target.value)}/></label>
     <label style={label}>Reference<input style={input} value={textValue(answers.meeting_ref)} placeholder="SHE-MIN-2026-01" onChange={e=>text("meeting_ref",e.target.value)}/></label>
-    <label style={label}>Chairperson<select style={input} value={textValue(answers.meeting_chair)} onChange={e=>text("meeting_chair",e.target.value)}><option value="">Select a person</option>{members.map(p=><option key={p.id} value={p.id}>{p.displayName} · {p.jobTitle}</option>)}</select></label>
+    <OrganizationPeopleComboBox people={members} orgId={org.id} label="Chairperson" value={textValue(answers.meeting_chair)?[textValue(answers.meeting_chair)]:[]} onChange={ids=>text("meeting_chair",ids[0]??"")}/>
     <label style={label}>Minute taker<input style={input} value={textValue(answers.meeting_recorder)} onChange={e=>text("meeting_recorder",e.target.value)}/></label>
-    <label style={label}>Local author / submitted by<select style={input} value={actor} onChange={e=>setActor(e.target.value)}><option value="">Anonymous demo facilitator</option>{members.map(p=><option key={p.id} value={p.id}>{p.displayName}</option>)}</select></label>
+    <OrganizationPeopleComboBox people={members} orgId={org.id} label="Facilitator / submitted by" value={actor?[actor]:[]} onChange={ids=>setActor(ids[0]??"")}/>
+
    </div>
    <div style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
     <h3 style={{fontSize:17,margin:0}}><UsersRound size={18} style={{display:"inline",verticalAlign:"middle"}}/> Attendance register</h3>
     <p style={{fontSize:12,color:"#64748b",margin:0}}>Select staff from your company's directory; add external visitors and contractors separately. Selected employees appear in their personal participation analytics.</p>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:7}}>
-     {members.map(p=><button key={p.id} aria-pressed={selected.includes(p.id)}
-      style={{...btn,textAlign:"left",background:selected.includes(p.id)?"#eff6ff":"#fff",borderColor:selected.includes(p.id)?"#93c5fd":"#cbd5e1"}}
-      onClick={()=>patch({participants:selected.includes(p.id)?selected.filter(x=>x!==p.id):[...selected,p.id]})}>
-      {selected.includes(p.id)?"✓ ":"○ "}{p.displayName}<span style={{display:"block",fontSize:10,color:"#64748b"}}>{p.jobTitle} · {p.department}</span></button>)}
-    </div>
+    <OrganizationPeopleComboBox people={members} orgId={org.id} label="Organization meeting participants" multiple
+     value={selected} onChange={ids=>patch({participants:ids})}
+     placeholder="Search employees, UPN, department, city or email"/>
+    <p style={{fontSize:11,color:"#64748b",margin:"0 0 4px"}}>{selected.length} selected from {members.length} active people in {org.name}.</p>
     <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><strong style={{fontSize:13}}>External/manual attendees ({attendees.length})</strong><button style={btn} onClick={()=>addRow("attendees")}><Plus size={14} style={{display:"inline"}}/> Add person</button></div>
     {attendees.map((r,i)=><div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
      {([["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]] as const).map(([key,title])=><label key={key} style={label}>{title}<input style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
