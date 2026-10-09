@@ -130,9 +130,17 @@ const starterAssuranceBase:readonly FormTemplate[]=[
     {id:"emergency",title:"Emergency equipment",fields:[check("extinguisher","Fire extinguisher service current",true),check("first-aid","First aid and emergency kit")]},
     {id:"final",title:"Final record",fields:[field("odometer","Odometer / engine hours","number"),field("remarks","Driver remarks","multiline",false)]}
   ]},
-  {id:"meeting-register",version:1,title:"SHE meeting register",category:"Meetings",status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds:[],assetClasses:[],sections:[
+  {id:"meeting-register",version:3,title:"SHE meeting register",category:"Meetings",status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds:[],assetClasses:[],sections:[
     {id:"meeting",title:"Meeting details",fields:[field("title","Meeting title","text"),field("date","Meeting date","date"),{...field("type","Meeting type","select"),options:["SHE meeting","Daily production","Contractor meeting","Shift handover","Emergency meeting"]},field("supervisor","Chairperson / supervisor","text"),field("notes","Minutes / outcomes","multiline",false)]},
-    {id:"attendance",title:"Attendees and actions",fields:[{...field("attendees","Attendance register","repeat"),children:[field("name","Name","text"),field("employee","Employee number","text"),field("role","Role","text")]},field("actions","Actions / owner / due date","multiline",false)]}
+    {id:"attendance",title:"Attendees and actions",fields:[{...field("attendees","Attendance register","repeat"),children:[field("name","Name","text"),field("employee","Employee number","text"),field("role","Role","text")]},field("actions","Actions / owner / due date","multiline",false),
+       {id:"apology_person_ids",label:"Staff apologizing / absent",type:"people",required:false},
+       {id:"apology_entries",label:"External apologies",type:"repeat",required:false,children:[
+        field("apology_name","Person name","text"),
+        field("apology_company","Company / department","text",false),
+        {...field("apology_status","Attendance status","select",false),options:["Apology received","Absent (no apology)","Attendance unconfirmed"]},
+        {...field("apology_reason","Reason category","select",false),options:["Not specified","Leave","Different work site","Training","Operational duty","Travel","Unavailable","Other"]}
+       ]},
+       field("apologies","Additional apology notes","multiline",false)]}
   ]},
   {id:"toolbox-brief",version:1,title:"Pre-shift / toolbox briefing",category:"Safety",status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds:[],assetClasses:[],sections:[
     {id:"context",title:"Shift and crew",fields:[field("shift","Shift","select"),field("area","Work area","text"),field("crew","Crew / team","text"),field("weather","Weather and conditions","text")]},
