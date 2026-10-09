@@ -421,7 +421,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
      </aside>:null}
 
 
-    {view==="admin"?<section aria-label="Admin workspace" style={{...panel,display:"grid",gap:13,borderColor:"#93c5fd"}}>
+    {view==="admin"?<section aria-label="Admin workspace" style={{...panel,display:"grid",gap:13,borderColor:"var(--mt-link,#93c5fd)"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
        <div><p style={{fontSize:11,color:"var(--mt-link,#1d4ed8)",fontWeight:900,letterSpacing:1.2,margin:0}}>ADMIN · LOCAL DEMONSTRATION</p>
         <h2 style={{fontSize:22,margin:"6px 0"}}>{adminArea==="overview"?"Organization administration":adminArea==="company"?"Company management":adminArea==="fleet"?"Vehicle onboarding & asset media":adminArea==="drivers"?"Driver onboarding":adminArea==="workforce"?"Employee directory":adminArea==="sites"?"Site policies":adminArea==="forms"?"Form & template management":"Manage "+adminArea}</h2>
@@ -444,7 +444,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         ["analytics","Management analytics","Review recorded operational activity"],
         ["local-data","Data & backups","Export, restore and review local data"],
         ["settings","Settings & support","Local preferences and guidance"]
-       ] as const).map(([area,title,description])=><button type="button" key={area} onClick={()=>{if(area==="drivers")setFocusedDriverId(null);setAdminArea(area);}} style={{...panel,cursor:"pointer",textAlign:"left",minHeight:87,borderColor:"#c6d9f3"}}>
+       ] as const).map(([area,title,description])=><button type="button" key={area} onClick={()=>{if(area==="drivers")setFocusedDriverId(null);setAdminArea(area);}} style={{...panel,cursor:"pointer",textAlign:"left",minHeight:87,borderColor:"var(--mt-border,#c6d9f3)"}}>
         <strong style={{display:"block",fontSize:13}}>{title} →</strong><span style={{display:"block",fontSize:11,color:"var(--mt-muted,#64748b)",marginTop:7}}>{description}</span>
        </button>)}
       </div>:null}
@@ -473,7 +473,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           const vehicle=fleet.find((item)=>item.id===assignment.vehicleId);
           const driver=drivers.find((item)=>item.id===assignment.driverId);
           const last=assignment.prestartId?prestarts.find((item)=>item.id===assignment.prestartId):undefined;
-          return <div key={assignment.id} style={{padding:16,borderBottom:"1px solid #eff6ff",display:"grid",gap:9}}>
+          return <div key={assignment.id} style={{padding:16,borderBottom:"1px solid var(--mt-border,#eff6ff)",display:"grid",gap:9}}>
             <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
               <div><strong>{vehicle?.fleetNo||assignment.vehicleId} → {driver?.name||assignment.driverId}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{assignment.site} · {assignment.jobId||"No job linked"}</div></div>
               <span style={{fontWeight:900,color:assignment.status==="Grounded"?"var(--mt-danger,#b42318)":assignment.status==="Cleared"?"var(--mt-success,#027a48)":"var(--mt-link,#1d4ed8)"}}>{assignment.status.toUpperCase()}</span>
@@ -488,11 +488,11 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         })}
       </section>
 
-      <section style={{background:"var(--mt-surface,#fff)",border:"1px solid #fecaca",borderRadius:22,padding:16}}>
+      <section style={{background:"var(--mt-surface,#fff)",border:"1px solid var(--mt-danger,#fecaca)",borderRadius:22,padding:16}}>
         <h2 style={{marginTop:0}}>Open safety / defect reports</h2>
         {incidents.filter((item)=>item.status!=="Resolved").length===0?<p style={{color:"var(--mt-muted,#667085)"}}>No open reports.</p>:incidents.filter((item)=>item.status!=="Resolved").map((item)=>{
           const vehicle=fleet.find((x)=>x.id===item.vehicleId);
-          return <div key={item.id} style={{padding:"10px 0",borderBottom:"1px solid #fee2e2",display:"grid",gap:8}}>
+          return <div key={item.id} style={{padding:"10px 0",borderBottom:"1px solid var(--mt-border,#fee2e2)",display:"grid",gap:8}}>
             <div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{item.description}</div></div>
             <MultiImageEvidence label="Defect / incident photos" images={item.images??[]} onChange={images=>setIncidents(current=>current.map(row=>row.id===item.id?{...row,images}:row))}/>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -534,7 +534,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       :<div style={{...panel,fontSize:12}}>Vehicle records are visible here. Onboarding and vehicle editing are handled in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("fleet")}>Admin → Vehicles</button>.</div>}
 
       <div className="movetrack-fleet-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
-        {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid #fecaca":"1px solid #dbeafe"}}>
+        {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid var(--mt-danger,#fecaca)":"1px solid var(--mt-border,#dbeafe)"}}>
           <div className="movetrack-fleet-card-heading" style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"var(--mt-danger,#b42318)":"var(--mt-link,#1d4ed8)"}}>{vehicle.status}</span></div>
           <div style={{fontSize:12,color:"var(--mt-muted,#667085)",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
           <div style={{fontSize:11,color:"var(--mt-muted,#667085)",marginTop:3}}>{vehicle.site}</div>
@@ -581,7 +581,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Licence / reference"><input value={driverDraft.licenceNo} onChange={(e)=>setDriverDraft((c)=>({...c,licenceNo:e.target.value}))} style={input}/></Field>
       </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section></DesktopModalDisclosure>
       :<div style={{...panel,fontSize:12}}>Onboard company drivers under <button type="button" style={secondaryButton} onClick={()=>openAdminArea("drivers")}>Admin → Drivers</button>.</div>}
-      {adminMode?<section aria-label="Driver credential reminders" style={{...panel,display:"grid",gap:7,borderColor:"#fde68a"}}>
+      {adminMode?<section aria-label="Driver credential reminders" style={{...panel,display:"grid",gap:7,borderColor:"var(--mt-warning,#fde68a)"}}>
         <strong style={{fontSize:14}}>Licence, permit and training reminders</strong>
         <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Visible on this device when Admin → Drivers is opened. No email, push notifications or background monitoring is configured.</p>
         {(()=>{
@@ -735,7 +735,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="From"><select value={from} onChange={(e)=>setFrom(e.target.value as typeof from)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="To"><select value={to} onChange={(e)=>setTo(e.target.value as typeof to)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
       </div><button onClick={addJob} style={primaryButton}>Create job</button></section></DesktopModalDisclosure>:<p style={{...panel,fontSize:12}}>New work orders are created in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("jobs")}>Admin → Jobs</button>.</p>}
-      <div style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
+      <div style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid var(--mt-border,#eff6ff)",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
     <div hidden={contentView!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace adminMode={adminMode}/></Suspense>:null}</div>
