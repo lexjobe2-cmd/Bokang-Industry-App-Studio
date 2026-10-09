@@ -78,7 +78,18 @@ export function AssuranceFormsWorkspace(){
    return (snapshot.organizationId===org.id||(!snapshot.organizationId&&org.id===demoOrganization.id))&&(!activeId||s.templateId===activeId);
  }),[submissions,activeId,org.id]);
  function openTemplate(id:string){setActiveId(id);setSectionIndex(0);setNotice("");setTab("library");}
- function setAnswer(id:string,value:FormAnswer){if(!activeId)return;setDrafts(d=>({...d,[activeId]:{...(d[activeId]??{}),[id]:value}}));}
+ function setAnswer(id:string,value:FormAnswer){
+  if(!activeId)return;
+  const previous=drafts[activeId]??{};
+  const changed=JSON.stringify(previous[id])!==JSON.stringify(value);
+  const hadSignature=changed&&!isSignatureEvidence(value)&&Object.entries(previous).some(([key,answer])=>key!==id&&isSignatureEvidence(answer));
+  setDrafts(d=>{
+   const next={...(d[activeId]??{}),[id]:value};
+   if(hadSignature)for(const [key,answer] of Object.entries(next))if(key!==id&&isSignatureEvidence(answer))delete next[key];
+   return {...d,[activeId]:next};
+  });
+  if(hadSignature)setNotice("Checklist content changed. Earlier local signatures were cleared: collect fresh acknowledgements for the updated answers.");
+ }
  function submit(){
   if(!template||!evaluation)return;
   if(template.category==="Fleet"&&!assetId){setNotice("Select an asset so the inspection is linked to the fleet record.");return;}
@@ -202,7 +213,7 @@ export function AssuranceFormsWorkspace(){
         <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
         {activeSection.description?<p style={{color:"#667085"}}>{activeSection.description}</p>:null}
         <div style={{display:"grid",gap:17,marginTop:22}}>
-          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)}/>)}
+          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={template.title+" / "+(jobReference.trim()||"no job reference")}/>)}
         </div>
       </motion.div>
     </AnimatePresence>
@@ -230,7 +241,7 @@ export function AssuranceFormsWorkspace(){
  </section>;
 }
 
-function FieldInput({field,value,onChange,people}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void}){
+function FieldInput({field,value,onChange,people,scope}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void;scope:string}){
  const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"#b42318"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"#b42318",background:"#fef2f2",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
  const fieldStyle:React.CSSProperties={display:"grid",gap:8};
  if(field.type==="person"){
@@ -293,7 +304,7 @@ function FieldInput({field,value,onChange,people}:{field:FormField;value:FormAns
  if(field.type==="multiline")return <label style={fieldStyle}>{label}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)}/></label>;
  if(field.type==="signature")return <div style={fieldStyle}>{label}
     <SignatureCapture value={isSignatureEvidence(value)?value:null} onChange={e=>onChange(e??"")}
-     scope={field.label} role={field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}
+     scope={scope+" / "+field.label} role={field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}
      intent={field.label.toLowerCase().includes("review")?"review":"acknowledgement"}/>
    </div>;
  if(field.type==="photo"||field.type==="document")return <div style={fieldStyle}>
