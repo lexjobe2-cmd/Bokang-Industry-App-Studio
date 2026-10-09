@@ -12,7 +12,7 @@ function documentDownload(document:LocalAssetDocument){
  anchor.href=url;anchor.download=document.name;window.document.body.appendChild(anchor);anchor.click();anchor.remove();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-export function VehicleDocuments({documents,onChange,readOnly=false}:{documents:readonly LocalAssetDocument[];onChange?:(documents:LocalAssetDocument[])=>void;readOnly?:boolean}){
+export function VehicleDocuments({documents,onChange,readOnly=false,label="Vehicle documents"}:{documents:readonly LocalAssetDocument[];onChange?:(documents:LocalAssetDocument[])=>void;readOnly?:boolean;label?:string}){
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState("");
  async function add(files:FileList|null){
@@ -41,19 +41,19 @@ export function VehicleDocuments({documents,onChange,readOnly=false}:{documents:
    setError(errors.join(" "));
   }finally{setBusy(false);}
  }
- return <section aria-label="Vehicle documents" style={{display:"grid",gap:9,minWidth:0,marginTop:12}}>
+ return <section aria-label={label} style={{display:"grid",gap:9,minWidth:0,marginTop:12}}>
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
-   <strong style={{fontSize:12}}>Vehicle documents ({documents.length}/{MAX_VEHICLE_DOCUMENTS})</strong>
+   <strong style={{fontSize:12}}>{label} ({documents.length}/{MAX_VEHICLE_DOCUMENTS})</strong>
    {!readOnly&&onChange?<label style={{minHeight:44,display:"inline-flex",alignItems:"center",padding:"9px 12px",border:"1px solid #94a3b8",borderRadius:10,fontSize:12,fontWeight:750,cursor:"pointer"}}>
     {busy?"Reading PDFs…":"Attach PDFs"}
-    <input type="file" aria-label="Choose vehicle PDF documents" accept="application/pdf,.pdf" multiple disabled={busy||documents.length>=MAX_VEHICLE_DOCUMENTS} style={{position:"absolute",width:1,height:1,opacity:0}} onChange={event=>{void add(event.currentTarget.files);event.currentTarget.value="";}}/>
+    <input type="file" aria-label={"Choose "+label.toLowerCase()} accept="application/pdf,.pdf" multiple disabled={busy||documents.length>=MAX_VEHICLE_DOCUMENTS} style={{position:"absolute",width:1,height:1,opacity:0}} onChange={event=>{void add(event.currentTarget.files);event.currentTarget.value="";}}/>
    </label>:null}
   </div>
   {documents.length?documents.map(doc=><div key={doc.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flexWrap:"wrap",border:"1px solid #e2e8f0",padding:8,borderRadius:9}}>
    <span title={doc.name} style={{fontSize:12,overflowWrap:"anywhere",flex:"1 1 160px"}}>{doc.name}</span>
    <button type="button" style={{minHeight:44,padding:"7px 10px",borderRadius:8,border:"1px solid #94a3b8",background:"#fff",fontSize:12}} onClick={()=>documentDownload(doc)}>Download</button>
    {!readOnly&&onChange?<button type="button" aria-label={"Remove document "+doc.name} style={{minHeight:44,padding:"7px 10px",borderRadius:8,border:"1px solid #fda4af",background:"#fff",color:"#b42318",fontSize:12}} onClick={()=>onChange(documents.filter(item=>item.id!==doc.id))}>Remove</button>:null}
-  </div>):<small style={{fontSize:11,color:"#64748b"}}>No documents attached.</small>}
+  </div>):<small style={{fontSize:11,color:"#64748b"}}>No PDF documents attached.</small>}
   {!readOnly?<small style={{fontSize:11,color:"#64748b"}}>Up to four PDFs, 250 KB each. Browser-local only; files are not verified certificates.</small>:null}
   {error?<p role="alert" style={{fontSize:12,color:"#b42318",margin:0}}>{error}</p>:null}
  </section>;
