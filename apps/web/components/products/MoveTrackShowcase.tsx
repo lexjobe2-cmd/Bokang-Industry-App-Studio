@@ -4,7 +4,7 @@ import {VehicleDocuments} from "./VehicleDocuments";
 import {editableDetails,updateVehicleDetails,type VehicleDetails} from "../../lib/fleet-vehicle-admin";
 import {editableDriverDetails,updateDriverDetails,type DriverDetails} from "../../lib/driver-admin";
 import {DriverCompetencyPanel} from "./DriverCompetencyPanel";
-import {credentialAlerts,credentialKeys,driverEligibilityReasons,validateCompetencyExpiry,type DriverCredentialExpiry,type DriverCredentialKey} from "../../lib/driver-competency";
+import {applyReviewedDriverCompetency,credentialAlerts,credentialKeys,driverEligibilityReasons,type DriverCredentialExpiry,type DriverCredentialEvidenceLinks,type DriverCredentialKey} from "../../lib/driver-competency";
 import {MultiImageEvidence} from "./MultiImageEvidence";
 import {OrganizationOnboarding} from "./OrganizationOnboarding";
 import type {LocalEvidenceImage} from "../../lib/image-evidence";
@@ -90,6 +90,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   type DriverAuthorization=Pick<FleetDriver,"siteAuthorised"|"openPitPermit"|"firstAid"|"defensiveDriving">;
   const [authorizationDrafts,setAuthorizationDrafts]=useState<Record<string,DriverAuthorization>>({});
   const [competencyDrafts,setCompetencyDrafts]=useState<Record<string,DriverCredentialExpiry>>({});
+  const [competencyEvidenceDrafts,setCompetencyEvidenceDrafts]=useState<Record<string,DriverCredentialEvidenceLinks>>({});
   const [authorizationSignatures,setAuthorizationSignatures]=useState<Record<string,SignatureEvidence|null>>({});
   const [siteDrafts,setSiteDrafts]=useState<Record<string,FleetSitePolicy>>({});
   const [siteSignatures,setSiteSignatures]=useState<Record<string,SignatureEvidence|null>>({});
@@ -245,13 +246,20 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     setAuthorizationDrafts(xs=>({...xs,[driver.id]:xs[driver.id]??driverAuth(driver)}));
     setAuthorizationSignatures(xs=>({...xs,[driver.id]:null}));
   }
+  function editDriverEvidence(driver:FleetDriver,key:DriverCredentialKey,documentId:string){
+    setCompetencyEvidenceDrafts(xs=>({...xs,[driver.id]:{...(xs[driver.id]??driver.competencyEvidence??{}),[key]:documentId}}));
+    setAuthorizationDrafts(xs=>({...xs,[driver.id]:xs[driver.id]??driverAuth(driver)}));
+    setAuthorizationSignatures(xs=>({...xs,[driver.id]:null}));
+  }
   const driverScope=(d:FleetDriver,draft:DriverAuthorization)=>
     "Demo supervisor driver authorizations / "+d.id+" / "+d.name+" / "+
     Object.entries(draft).map(([key,v])=>key+":"+(v?"yes":"no")).join(", ")+" / expiry: "+
-    credentialKeys.map(key=>key+":"+(competencyDrafts[d.id]?.[key]??d.competencyExpiry?.[key]??"")).join(", ");
+    credentialKeys.map(key=>key+":"+(competencyDrafts[d.id]?.[key]??d.competencyExpiry?.[key]??"")).join(", ")+" / documents: "+
+    credentialKeys.map(key=>key+":"+(competencyEvidenceDrafts[d.id]?.[key]??d.competencyEvidence?.[key]??"")).join(", ");
   function discardDriverReview(id:string){
     setAuthorizationDrafts(xs=>{const next={...xs};delete next[id];return next;});
     setCompetencyDrafts(xs=>{const next={...xs};delete next[id];return next;});
+    setCompetencyEvidenceDrafts(xs=>{const next={...xs};delete next[id];return next;});
     setAuthorizationSignatures(xs=>({...xs,[id]:null}));
   }
   function saveDriverAuthorization(d:FleetDriver){
@@ -260,10 +268,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       setNotice("An independent supervisor must review these exact competency dates and authorizations before saving.");return;
     }
     try{
-      const competencyExpiry=validateCompetencyExpiry(competencyDrafts[d.id]??d.competencyExpiry??{});
-      setDrivers(xs=>xs.map(x=>x.id===d.id?{...x,...draft,competencyExpiry,authorizationReview:{signedAt:sig.signedAt,signature:sig}}:x));
+      const updated=applyReviewedDriverCompetency({
+        driver:d,authorisations:draft,expiry:competencyDrafts[d.id]??d.competencyExpiry??{},
+        evidence:competencyEvidenceDrafts[d.id]??d.competencyEvidence??{},
+        reviewedAt:sig.signedAt,reviewerName:sig.signerName,createId:()=>crypto.randomUUID()
+      });
+      setDrivers(xs=>xs.map(x=>x.id===d.id?{...updated,authorizationReview:{signedAt:sig.signedAt,signature:sig}}:x));
       discardDriverReview(d.id);
-      setNotice("Reviewed driver competency and expiry dates saved locally. Confirm qualifications with issuing authorities; no automatic approval was given.");
+      setNotice("Competency links and renewal history recorded locally after supervisor acknowledgement. PDF attachments are not independently verified.");
     }catch(error){setNotice(error instanceof Error?error.message:"Invalid competency dates.");}
   }
   function editPolicy(policy:FleetSitePolicy,change:(draft:FleetSitePolicy)=>FleetSitePolicy){
@@ -583,9 +595,18 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
               {adminMode?<button type="button" style={{...secondaryButton,minHeight:44,marginTop:4}} onClick={()=>setView("assign")}>Open assignments</button>:null}
             </div>;
           })()}
-          {adminMode?<VehicleDocuments label="Driver documents" documents={driver.documents??[]} onChange={documents=>setDrivers(current=>current.map(item=>item.id===driver.id?{...item,documents}:item))}/>:null}
+          {adminMode?<VehicleDocuments label="Driver documents" documents={driver.documents??[]} onChange={documents=>{
+            const removed=(driver.documents??[]).filter(doc=>!documents.some(next=>next.id===doc.id));
+            const linked=new Set(Object.values(driver.competencyEvidence??{}));
+            const pending=new Set(Object.values(competencyEvidenceDrafts[driver.id]??{}));
+            if(removed.some(doc=>linked.has(doc.id)||pending.has(doc.id))){
+              setNotice("This PDF is linked to a current or pending competency. Unlink it through a supervisor review before deleting it.");return;
+            }
+            setDrivers(current=>current.map(item=>item.id===driver.id?{...item,documents}:item));
+          }}/>:null}
           {adminMode?<button type="button" style={{...secondaryButton,marginTop:11,minHeight:44}} onClick={()=>beginDriverEdit(driver)}>Edit driver profile</button>:null}
-          <DriverCompetencyPanel driver={driver} adminMode={adminMode} draft={competencyDrafts[driver.id]} onChange={(key,date)=>editDriverCompetency(driver,key,date)}/>
+          <DriverCompetencyPanel driver={driver} adminMode={adminMode} draft={competencyDrafts[driver.id]} evidenceDraft={competencyEvidenceDrafts[driver.id]}
+            onChange={(key,date)=>editDriverCompetency(driver,key,date)} onEvidenceChange={(key,id)=>editDriverEvidence(driver,key,id)}/>
           <div style={{display:"grid",gap:7,marginTop:12}}>
             {([
               ["siteAuthorised","Site driving authorisation"],["openPitPermit","Site/open-pit permit"],
