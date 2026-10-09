@@ -92,7 +92,7 @@ export function AssuranceFormsWorkspace(){
   if(!Object.keys(updates).length){setNotice("No reusable directory participants were found in the previous record.");return;}
   const sigs=Object.values(answers).some(isSignatureEvidence);
   if(sigs&&!window.confirm("Reusing crew changes this checklist and clears any existing local signatures. Continue?"))return;
-  setDrafts(old=>({...old,[template.id]:{...old[template.id],...updates,...Object.fromEntries(Object.entries(old[template.id]??{}).filter(([,v])=>isSignatureEvidence(v)).map(([k])=>[k,undefined]))}}));
+  setDrafts(old=>{const updated={...(old[template.id]??{})};for(const [key,v] of Object.entries(updated))if(isSignatureEvidence(v))delete updated[key];return {...old,[template.id]:{...updated,...updates}};});
   setNotice("Previous crew selections inserted. Inspect the current team and re-confirm all safety checks; no hazard ratings or approvals were copied.");
  }
  function setAnswer(id:string,value:FormAnswer){
