@@ -18,6 +18,7 @@ import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
 import {MoveTrackWorkspaceNav,type MoveTrackView} from "./MoveTrackWorkspaceNav";
+import {MoveTrackWorkspaceDirectory} from "./MoveTrackWorkspaceDirectory";
 import {MoveTrackGlobalSearch} from "./MoveTrackGlobalSearch";
 import {makeSearchProvider,workspaceIndex,type SearchHit} from "@bokang/domain-data/workspace-search";
 import type {FleetReleaseRecord,RepairEvidence,ReinspectionEvidence} from "../../lib/fleet-release";
@@ -109,6 +110,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   },[contentView]);
   function setView(next:MoveTrackView){
     if(adminMode&&next!=="admin"){setAdminArea(next);return;}
+    if(next==="admin")setAdminArea("overview");
     setLocalView(next);onViewChange?.(next);
   }
   function openAdminArea(next:MoveTrackView|"company"){
@@ -407,7 +409,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
   return <section style={{marginTop:0,display:"grid",gap:14}}>
 
-    <MoveTrackWorkspaceNav view={view} onChange={setView}/>
+    <MoveTrackWorkspaceNav view={adminMode&&adminArea!=="overview"&&adminArea!=="company"?adminArea:view} onChange={setView}/>
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
 
@@ -439,6 +441,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
        </button>)}
       </div>:null}
       {adminArea==="fleet"?<p style={{fontSize:12,color:"#1d4ed8",margin:0}}>Only the Admin workspace exposes vehicle creation, certificate editing and asset photo changes. Photos are device-local and do not establish authorization.</p>:null}
+     </section>:null}
+    {view==="admin"&&adminArea==="overview"?<section aria-label="All app features from Admin" style={panel}>
+      <MoveTrackWorkspaceDirectory onNavigate={next=>next==="admin"?setAdminArea("overview"):setAdminArea(next)}/>
      </section>:null}
     {view==="admin"&&adminArea==="overview"?<DriverComplianceOverview
       drivers={drivers} assignments={assignments} directory={directory} orgId={orgId}

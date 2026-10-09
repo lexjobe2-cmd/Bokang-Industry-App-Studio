@@ -19,6 +19,7 @@ import type {MoveTrackView} from "./MoveTrackWorkspaceNav";
 import {MoveTrackThemeStyles} from "./MoveTrackThemeStyles";
 import {useMoveTrackScreen} from "./useMoveTrackScreen";
 import {MoveTrackCompanySummary} from "./MoveTrackCompanySummary";
+import {MoveTrackWorkspaceDirectory} from "./MoveTrackWorkspaceDirectory";
 import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
 import {LifeBuoy,LayoutDashboard,BarChart3} from "lucide-react";
 
@@ -141,7 +142,9 @@ export function MoveTrackDemoLab(){
        </button>)}
     </div>
    </section>
-   <button type="button" style={{...style,textAlign:"left",font:"inherit",fontWeight:850,minHeight:48,cursor:"pointer"}} onClick={()=>navigate({kind:"workflows"})}>Explore the safety workflow library →</button>
+   <section aria-label="Complete workspace directory" style={{...style}}>
+    <MoveTrackWorkspaceDirectory onNavigate={goWorkspace} onSearch={findSearch} onWorkflows={()=>navigate({kind:"workflows"})}/>
+   </section>
    <section aria-label="Live test overview" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:10}}>
     {[
       {label:"Fleet registered",value:fleet.length,icon:Truck},
