@@ -17,8 +17,8 @@ import {
   type RepairEvidence, type ReinspectionEvidence, type FleetReleaseRecord
 } from "../../lib/fleet-release";
 
-const card:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:15,padding:16,background:"#fff"};
-const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,minHeight:42,padding:"10px 11px",background:"#fff",color:"#111827"};
+const card:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:15,padding:16,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)"};
+const input:React.CSSProperties={width:"100%",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:10,minHeight:44,padding:"10px 11px",background:"var(--mt-surface-soft,#fff)",color:"var(--mt-ink,#172b46)"};
 const btn:React.CSSProperties={border:0,borderRadius:10,padding:"11px 14px",minHeight:44,color:"#fff",background:"#172b4d",fontWeight:750,cursor:"pointer"};
 const controls=["Brakes","Steering","Tyres and wheel nuts","Reverse alarm","Fire extinguisher","Permits and certificates"];
 export function FleetReleaseWorkspace(){
