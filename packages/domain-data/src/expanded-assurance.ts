@@ -97,7 +97,9 @@ function buildSections(spec:Spec):FormSection[]{
   register("action_register","Corrective actions and accountable owners",[["action","Action / remedy"],["owner","Person accountable"],["due","Due / escalation date"]]),
   {id:"observations",label:"Additional hazards or notes",type:"multiline",required:false},
   {id:"stop_work",label:"Stop-work, rescue, handback or closeout arrangements",type:"multiline",required:true},
-  {id:"reviewer",label:"Proposed reviewer",type:"person",required:true}
+  {id:"reviewer",label:"Proposed reviewer",type:"person",required:true},
+  {id:"participant_signature",label:"Work team acknowledgement (drawn)",type:"signature",required:false},
+  {id:"review_signature",label:"Supervisor/reviewer acknowledgement (drawn)",type:"signature",required:false}
  ]}
  ];
 }
