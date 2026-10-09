@@ -108,5 +108,9 @@ test("Admin home binds the overview and driver management drilldown; regular dri
  assert.match(ui,/Show all drivers/);
  assert.match(panel,/Filter driver compliance records/);
  assert.match(panel,/Missing supporting PDF link/);
+ assert.match(panel,/Find driver in compliance overview/);
+ assert.match(panel,/const perPage=12/);
+ assert.match(panel,/visibleRows.map/);
+ assert.match(panel,/Page \{activePage\} of \{pages\}/);
  assert.match(panel,/Meeting recorded criteria does not constitute a dispatch release/);
 });
