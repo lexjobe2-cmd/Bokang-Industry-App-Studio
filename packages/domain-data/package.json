@@ -13,7 +13,8 @@
     "./participation-analytics": "./src/participation-analytics.ts",
     "./paper-forms": "./src/paper-forms.ts",
     "./meeting-register": "./src/meeting-register.ts",
-    "./signature-evidence": "./src/signature-evidence.ts"
+    "./signature-evidence": "./src/signature-evidence.ts",
+    "./workspace-search": "./src/workspace-search.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
