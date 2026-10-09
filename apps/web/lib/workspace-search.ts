@@ -1,3 +1,4 @@
+import {searchDocuments,type SearchDocument} from "@bokang/domain-data/workspace-search";
 import {starterAssuranceTemplates,type FormSubmission} from "@bokang/domain-data/assurance-forms";
 import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance";
 import type {CustomTemplate,JobRiskAssessment,OrganizationProfile,PersonRecord} from "@bokang/domain-data/custom-assurance";
@@ -98,13 +99,14 @@ export function buildWorkspaceIndex(data:WorkspaceSearchSources):SearchHit[]{
  return result;
 }
 export function searchWorkspace(index:readonly SearchHit[],query:string,group:"All"|SearchGroup="All",limit=30){
- const search=norm(query),tokens=[...new Set(search.split(" ").filter(Boolean))];
- if(!tokens.length)return [];
- const out=index.filter(i=>(group==="All"||i.group===group)&&tokens.every(token=>i.searchText.includes(token))).map(i=>{
-  const title=norm(i.title),subtitle=norm(i.subtitle);
-  const score=tokens.reduce((sum,token)=>sum+(title===token?25:title.startsWith(token)?12:title.includes(token)?7:subtitle.includes(token)?4:1),0)
-    +(i.searchText.includes(search)?9:0)+(i.kind==="Submitted form"?1:0);
-  return {...i,score};
- }).sort((a,b)=>b.score-a.score||(b.updatedAt??"").localeCompare(a.updatedAt??"")||a.title.localeCompare(b.title));
- return out.slice(0,Math.max(0,limit));
+ if(!query.trim()||limit<=0)return [];
+ // A provider-neutral search core handles ranking. These adapters only map dynamic
+ // MoveTrack records into its document contract; additional providers need no engine changes.
+ const docs:SearchDocument[]=index.map(hit=>({
+  id:hit.key,source:hit.kind,category:hit.group,title:hit.title,description:hit.subtitle,
+  fields:[hit.searchText],target:hit.view,recordId:hit.id,priority:hit.kind==="Submitted form"?1:0,status:hit.tag
+ }));
+ const ranked=searchDocuments(docs,query,{category:group,limit});
+ const lookup=new Map(index.map(hit=>[hit.key,hit]));
+ return ranked.map(doc=>lookup.get(doc.id)).filter((hit):hit is SearchHit=>!!hit);
 }
