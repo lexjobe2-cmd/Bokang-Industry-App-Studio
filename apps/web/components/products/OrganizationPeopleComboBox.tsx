@@ -4,7 +4,7 @@ import {Check,ChevronDown,Search,Users,UserRound,X,Building2,MapPin,Mail,LoaderC
 import type {PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {searchOrganizationPeople,type DirectoryProvider,type DirectorySearchPage} from "@bokang/domain-data/organization-directory";
 
-const input:React.CSSProperties={font:"inherit",background:"#fff",border:"1px solid #cbd5e1",borderRadius:10,color:"#153553",minHeight:43,padding:"9px 11px",width:"100%"};
+const input:React.CSSProperties={font:"inherit",background:"var(--mt-surface,#fff)",border:"1px solid #cbd5e1",borderRadius:10,color:"var(--mt-ink,#153553)",minHeight:43,padding:"9px 11px",width:"100%"};
 type Props={
  people:readonly PersonRecord[];orgId:string;value:string[];onChange:(peopleIds:string[])=>void;
  label:string;multiple?:boolean;required?:boolean;placeholder?:string;provider?:DirectoryProvider;
@@ -78,16 +78,16 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
  function open(){setOpened(true);setHighlight(0);window.requestAnimationFrame(()=>searchRef.current?.focus());}
  return <div className="movetrack-personpicker" ref={wrap} style={{display:"grid",gap:7,minWidth:0,width:"100%"}}>
   <div style={{display:"flex",alignItems:"center",gap:8,justifyContent:"space-between"}}>
-   <label htmlFor={uid+"-trigger"} style={{fontSize:12,fontWeight:850,color:"#344054"}}>{label}{required?<span style={{color:"#b42318"}}> *</span>:null}</label>
-   <span style={{fontSize:11,fontWeight:800,color:"#64748b"}}>{multiple?value.length+" selected":value.length?"Selected":""}</span>
+   <label htmlFor={uid+"-trigger"} style={{fontSize:12,fontWeight:850,color:"var(--mt-ink,#344054)"}}>{label}{required?<span style={{color:"var(--mt-danger,#b42318)"}}> *</span>:null}</label>
+   <span style={{fontSize:11,fontWeight:800,color:"var(--mt-muted,#64748b)"}}>{multiple?value.length+" selected":value.length?"Selected":""}</span>
   </div>
   {chosen.length>0?<div className="movetrack-person-chips" aria-label="Selected people" style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-   {chosen.map(person=><span key={person.id} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"5px 7px 5px 10px",border:"1px solid #bdd5ef",borderRadius:999,background:"#eaf3ff",color:"#173d68",fontSize:11,fontWeight:800,maxWidth:"100%"}}>
+   {chosen.map(person=><span key={person.id} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"5px 7px 5px 10px",border:"1px solid #bdd5ef",borderRadius:999,background:"var(--mt-surface-soft,#eaf3ff)",color:"var(--mt-ink,#173d68)",fontSize:11,fontWeight:800,maxWidth:"100%"}}>
     <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{person.displayName}</span>
     <button type="button" aria-label={"Remove "+person.displayName} onClick={()=>onChange(value.filter(id=>id!==person.id))}
-     style={{border:0,borderRadius:999,display:"grid",placeItems:"center",background:"transparent",minWidth:44,minHeight:44,color:"#245387",cursor:"pointer"}}><X size={14}/></button>
+     style={{border:0,borderRadius:999,display:"grid",placeItems:"center",background:"transparent",minWidth:44,minHeight:44,color:"var(--mt-link,#245387)",cursor:"pointer"}}><X size={14}/></button>
    </span>)}
-   {missing.length?<span style={{fontSize:10,color:"#b45309",padding:5}}>{missing.length} selected IDs not found in current directory</span>:null}
+   {missing.length?<span style={{fontSize:10,color:"var(--mt-warning,#b45309)",padding:5}}>{missing.length} selected IDs not found in current directory</span>:null}
   </div>:null}
   <button id={uid+"-trigger"} type="button" aria-expanded={opened} aria-controls={uid+"-options"} aria-haspopup="listbox"
     ref={triggerRef} onClick={()=>opened?setOpened(false):open()} style={{...input,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",fontSize:13,fontWeight:750,minHeight:48,minWidth:0,width:"100%"}}>
@@ -97,45 +97,45 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   {opened?<div className="movetrack-people-panel" id={uid+"-options"} role="group" aria-label={label+" search options"}>
    <div className="movetrack-people-panel-head">
     <strong style={{fontSize:14}}>Find organization people</strong>
-    <button type="button" aria-label="Close people picker" onClick={()=>setOpened(false)} style={{border:0,background:"#edf2f8",color:"#24415e",borderRadius:10,width:44,height:44,display:"grid",placeItems:"center"}}><X size={20}/></button>
+    <button type="button" aria-label="Close people picker" onClick={()=>setOpened(false)} style={{border:0,background:"var(--mt-surface-soft,#edf2f8)",color:"var(--mt-ink,#24415e)",borderRadius:10,width:44,height:44,display:"grid",placeItems:"center"}}><X size={20}/></button>
    </div>
    <div className="movetrack-people-search">
-    <div style={{display:"flex",alignItems:"center",gap:7,border:"1px solid #c6d6e8",borderRadius:12,background:"#fff",padding:"0 10px"}}>
+    <div style={{display:"flex",alignItems:"center",gap:7,border:"1px solid #c6d6e8",borderRadius:12,background:"var(--mt-surface,#fff)",padding:"0 10px"}}>
      <Search size={18} color="#64748b"/><input ref={searchRef} role="combobox" aria-label="Search people by name, UPN, email, department or city" aria-autocomplete="list"
        aria-expanded={opened} aria-controls={uid+"-list"} aria-activedescendant={options[highlight]?uid+"-option-"+highlight:undefined} type="search" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={keyboard}
        placeholder="Name, department, email, city..." autoComplete="off"
-       style={{border:0,outline:"none",width:"100%",minHeight:49,font:"inherit",fontSize:13,color:"#153553",background:"transparent"}}/>
+       style={{border:0,outline:"none",width:"100%",minHeight:49,font:"inherit",fontSize:13,color:"var(--mt-ink,#153553)",background:"transparent"}}/>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:8,marginTop:9}}>
-     <label style={{fontSize:10,color:"#64748b",fontWeight:850}}>DEPARTMENT
+     <label style={{fontSize:10,color:"var(--mt-muted,#64748b)",fontWeight:850}}>DEPARTMENT
       <select aria-label="Filter people by department" value={department} onChange={e=>setDepartment(e.target.value)} style={{...input,fontSize:12,marginTop:5}}><option value="">All departments</option>{departments.map(x=><option key={x}>{x}</option>)}</select>
      </label>
-     <label style={{fontSize:10,color:"#64748b",fontWeight:850}}>CITY / SITE
+     <label style={{fontSize:10,color:"var(--mt-muted,#64748b)",fontWeight:850}}>CITY / SITE
       <select aria-label="Filter people by city" value={city} onChange={e=>setCity(e.target.value)} style={{...input,fontSize:12,marginTop:5}}><option value="">All cities</option>{cities.map(x=><option key={x}>{x}</option>)}</select>
      </label>
     </div>
    </div>
-   <div aria-live="polite" style={{fontSize:10,color:"#64748b",padding:"8px 13px 6px"}}>{busy?"Searching directory…":result.total+" matching people"} · {provider?.mode==="CONNECTED"?"Connected directory":"Local organization directory"}</div>
-   {error?<div role="alert" style={{fontSize:11,color:"#b42318",padding:12}}>{error}</div>:null}
+   <div aria-live="polite" style={{fontSize:10,color:"var(--mt-muted,#64748b)",padding:"8px 13px 6px"}}>{busy?"Searching directory…":result.total+" matching people"} · {provider?.mode==="CONNECTED"?"Connected directory":"Local organization directory"}</div>
+   {error?<div role="alert" style={{fontSize:11,color:"var(--mt-danger,#b42318)",padding:12}}>{error}</div>:null}
    <div className="movetrack-people-options" id={uid+"-list"} role="listbox" aria-label={"People matching "+label} aria-multiselectable={multiple}>
     {options.map((p,i)=><button type="button" role="option" id={uid+"-option-"+i} key={p.id} aria-selected={selected.has(p.id)} aria-disabled={!p.active} disabled={!p.active}
       onMouseEnter={()=>setHighlight(i)} onClick={()=>pick(p)} className={selected.has(p.id)?"movetrack-person-option selected":"movetrack-person-option"}>
      <span className="movetrack-person-avatar"><UserRound size={18}/></span>
      <span style={{flex:1,minWidth:0,display:"grid",gap:3}}>
-      <strong style={{fontSize:12,color:"#16355a"}}>{p.displayName}</strong>
-      <span style={{fontSize:10,color:"#526987"}}>{[p.jobTitle,p.department].filter(Boolean).join(" · ")||"Role not specified"}</span>
-      <span style={{fontSize:10,color:"#64748b",overflowWrap:"anywhere"}}><Mail size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.email||p.userPrincipalName||"No email"}{p.userPrincipalName&&p.userPrincipalName!==p.email?" · UPN "+p.userPrincipalName:""}</span>
-      <span style={{fontSize:10,color:"#64748b"}}><MapPin size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.city||p.location||p.officeLocation||"City not specified"}{p.employeeNumber?" · "+p.employeeNumber:""}</span>
+      <strong style={{fontSize:12,color:"var(--mt-ink,#16355a)"}}>{p.displayName}</strong>
+      <span style={{fontSize:10,color:"var(--mt-muted,#526987)"}}>{[p.jobTitle,p.department].filter(Boolean).join(" · ")||"Role not specified"}</span>
+      <span style={{fontSize:10,color:"var(--mt-muted,#64748b)",overflowWrap:"anywhere"}}><Mail size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.email||p.userPrincipalName||"No email"}{p.userPrincipalName&&p.userPrincipalName!==p.email?" · UPN "+p.userPrincipalName:""}</span>
+      <span style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}><MapPin size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.city||p.location||p.officeLocation||"City not specified"}{p.employeeNumber?" · "+p.employeeNumber:""}</span>
      </span><span className="movetrack-person-check">{selected.has(p.id)?<Check size={19}/>:null}</span>
     </button>)}
-    {!options.length&&!busy?<div style={{padding:"19px 12px",textAlign:"center",fontSize:12,color:"#64748b"}}>No matching people. Change the filters or import your company's directory CSV.</div>:null}
+    {!options.length&&!busy?<div style={{padding:"19px 12px",textAlign:"center",fontSize:12,color:"var(--mt-muted,#64748b)"}}>No matching people. Change the filters or import your company's directory CSV.</div>:null}
     {result.nextCursor?<button type="button" onClick={()=>setCursor(result.nextCursor)} style={{...input,cursor:"pointer",fontSize:12,fontWeight:850}}>Show more results</button>:null}
    </div>
    <div className="movetrack-people-footer">
-    <small style={{fontSize:10,color:"#64748b"}}>{value.length} {multiple?"people":"person"} selected · matched by stable directory ID</small>
+    <small style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}>{value.length} {multiple?"people":"person"} selected · matched by stable directory ID</small>
     <div style={{display:"flex",gap:7}}>
-     {multiple?<button type="button" style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"#fff",fontSize:11,fontWeight:850}} onClick={()=>onChange([...new Set([...value,...options.filter(p=>p.active).map(p=>p.id)])])}>Select visible</button>:null}
-     {value.length?<button type="button" onClick={clear} style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"#fff",fontSize:11,fontWeight:850}}>Clear</button>:null}
+     {multiple?<button type="button" style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"var(--mt-surface,#fff)",fontSize:11,fontWeight:850}} onClick={()=>onChange([...new Set([...value,...options.filter(p=>p.active).map(p=>p.id)])])}>Select visible</button>:null}
+     {value.length?<button type="button" onClick={clear} style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"var(--mt-surface,#fff)",fontSize:11,fontWeight:850}}>Clear</button>:null}
      <button type="button" onClick={()=>setOpened(false)} style={{minHeight:44,padding:"9px 13px",borderRadius:10,border:0,background:"#174fa8",color:"#fff",fontSize:11,fontWeight:850}}>Done</button>
     </div>
    </div>

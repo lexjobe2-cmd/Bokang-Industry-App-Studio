@@ -2,13 +2,13 @@
 import {useState} from "react";
 import {analyzeOperationalText,type OperationalTextAnalysis,type TextActionSuggestion} from "@bokang/domain-data/operational-nlp";
 import type {PersonRecord} from "@bokang/domain-data/custom-assurance";
-const button:React.CSSProperties={minHeight:44,border:"1px solid #cbd5e1",borderRadius:9,padding:"8px 12px",background:"#fff",color:"#17406b",fontWeight:750,cursor:"pointer"};
+const button:React.CSSProperties={minHeight:44,border:"1px solid #cbd5e1",borderRadius:9,padding:"8px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#17406b)",fontWeight:750,cursor:"pointer"};
 export function OperationalTextAssist({value,people=[],onAction}:{value:string;people?:readonly PersonRecord[];onAction?:(action:TextActionSuggestion)=>void}){
  const [analysis,setAnalysis]=useState<OperationalTextAnalysis|null>(null),[source,setSource]=useState("");
  const stale=analysis!==null&&source!==value;
  return <div style={{minWidth:0,display:"grid",gap:8,fontSize:12,fontWeight:400}}>
   <button type="button" style={{...button,justifySelf:"start"}} disabled={!value.trim()} onClick={()=>{setAnalysis(analyzeOperationalText(value,people));setSource(value);}}>Analyze text locally</button>
-  {analysis?<section aria-label="Text assistance suggestions" style={{display:"grid",gap:10,border:"1px solid #bfdbfe",padding:12,borderRadius:10,background:"#eff6ff",overflowWrap:"anywhere"}}>
+  {analysis?<section aria-label="Text assistance suggestions" style={{display:"grid",gap:10,border:"1px solid #bfdbfe",padding:12,borderRadius:10,background:"var(--mt-surface-soft,#eff6ff)",overflowWrap:"anywhere"}}>
    <strong>{analysis.engine} · suggestions for review</strong>
    {stale?<p role="status">Text has changed. Analyze again before using suggestions.</p>:null}
    <div><strong>Source summary excerpts</strong><ul>{analysis.summary.map((s,i)=><li key={i}>{s}</li>)}</ul></div>
