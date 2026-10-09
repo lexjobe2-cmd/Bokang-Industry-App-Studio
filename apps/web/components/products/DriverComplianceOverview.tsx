@@ -36,6 +36,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
  const numbers=[
   {label:"All drivers",value:summary.counts.total},
   {label:"Recorded criteria met",value:summary.counts.ready},
+  {label:"Already allocated / off shift",value:summary.counts.busy},
   {label:"Blocked",value:summary.counts.blocked},
   {label:"Renewal due in 30 days",value:summary.counts.dueSoon},
   {label:"Missing linked evidence",value:summary.counts.missingEvidence}

@@ -434,7 +434,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         ["analytics","Management analytics","Review recorded operational activity"],
         ["local-data","Data & backups","Export, restore and review local data"],
         ["settings","Settings & support","Local preferences and guidance"]
-       ] as const).map(([area,title,description])=><button type="button" key={area} onClick={()=>setAdminArea(area)} style={{...panel,cursor:"pointer",textAlign:"left",minHeight:87,borderColor:"#c6d9f3"}}>
+       ] as const).map(([area,title,description])=><button type="button" key={area} onClick={()=>{if(area==="drivers")setFocusedDriverId(null);setAdminArea(area);}} style={{...panel,cursor:"pointer",textAlign:"left",minHeight:87,borderColor:"#c6d9f3"}}>
         <strong style={{display:"block",fontSize:13}}>{title} →</strong><span style={{display:"block",fontSize:11,color:"#64748b",marginTop:7}}>{description}</span>
        </button>)}
       </div>:null}
