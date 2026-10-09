@@ -279,12 +279,12 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
         return <article key={item} style={{...card,border:critical?"1px solid #fecaca":"1px solid #dbeafe"}}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong style={{fontSize:13}}>{item}</strong>{critical?<span style={{fontSize:10,color:"#b42318",fontWeight:900}}>MANDATORY</span>:null}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:7,marginTop:10}}>
-            {(["pass","fail","na"] as ChecklistResult[]).map((result)=><button key={result} onClick={()=>setResult(item,result)} style={{border:"1px solid #d0d5dd",borderRadius:9,padding:"8px 5px",fontWeight:850,fontSize:11,background:value===result?(result==="pass"?"#ecfdf3":result==="fail"?"#fef3f2":"#f2f4f7"):"#fff",color:value===result?(result==="pass"?"#027a48":result==="fail"?"#b42318":"#475467"):"#344054"}}>{result.toUpperCase()}</button>)}
+            {(["pass","fail","na"] as ChecklistResult[]).map((result)=><button key={result} onClick={()=>setResult(item,result)} style={{border:"1px solid #d0d5dd",borderRadius:9,padding:"8px 5px",fontWeight:850,fontSize:11,background:value===result?(result==="pass"?"var(--mt-success-bg,#ecfdf3)":result==="fail"?"var(--mt-danger-bg,#fef3f2)":"var(--mt-surface-soft,#f2f4f7)"):"var(--mt-surface,#fff)",color:value===result?(result==="pass"?"var(--mt-success,#027a48)":result==="fail"?"var(--mt-danger,#b42318)":"var(--mt-muted,#475467)"):"var(--mt-ink,#344054)"}}>{result.toUpperCase()}</button>)}
           </div>
         </article>;
       })}
       <div style={{display:"flex",gap:7,flexWrap:"wrap"}} aria-label="Common pre-start remarks">
-       {["Requires maintenance inspection","Defect reported to supervisor","Retest needed after repair","Additional remarks"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:notes===text?"#dbeafe":"#fff",padding:"8px 10px",borderRadius:9,fontSize:11,fontWeight:750}} onClick={()=>setNotes(text==="Additional remarks"?"":text)}>{text}</button>)}
+       {["Requires maintenance inspection","Defect reported to supervisor","Retest needed after repair","Additional remarks"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:notes===text?"var(--mt-surface-soft,#dbeafe)":"var(--mt-surface,#fff)",padding:"8px 10px",borderRadius:9,fontSize:11,fontWeight:750}} onClick={()=>setNotes(text==="Additional remarks"?"":text)}>{text}</button>)}
       </div>
       <textarea value={notes} onChange={(e)=>setNotes(e.target.value)} placeholder="Defects / notes / corrective action required" style={{...input,minHeight:90}}/>
       <MultiImageEvidence label="Pre-start inspection photos" images={prestartPhotos} onChange={setPrestartPhotos}/>
@@ -295,7 +295,7 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
       <article style={card}><h2 style={{marginTop:0}}>Report defect / incident</h2>
        <p style={{fontSize:12,color:"#64748b"}}>Tap an observed condition to start the report, then add the actual facts. These suggestions do not submit anything automatically.</p>
        <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:11}}>
-       {["Brake response abnormal","Fluid or fuel leak observed","Tyre or wheel damage","Unsafe access or pedestrian interaction","Unusual vibration or noise","Near miss reported"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:incidentText===text?"#fff7ed":"#fff",borderRadius:9,padding:"9px 10px",fontSize:11}} onClick={()=>setIncidentText(current=>current?current+"; "+text:text)}>{text}</button>)}
+       {["Brake response abnormal","Fluid or fuel leak observed","Tyre or wheel damage","Unsafe access or pedestrian interaction","Unusual vibration or noise","Near miss reported"].map(text=><button type="button" key={text} style={{border:"1px solid #cbd5e1",background:incidentText===text?"var(--mt-warning-bg,#fff7ed)":"var(--mt-surface,#fff)",borderRadius:9,padding:"9px 10px",fontSize:11}} onClick={()=>setIncidentText(current=>current?current+"; "+text:text)}>{text}</button>)}
        </div>
        <textarea value={incidentText} onChange={(e)=>setIncidentText(e.target.value)} placeholder="Describe what you saw, the location and any immediate action…" style={{...input,width:"100%",minHeight:90}}/>
        <MultiImageEvidence label="Incident and defect photographs" images={incidentPhotos} onChange={setIncidentPhotos}/>
@@ -329,7 +329,7 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
 }
 
 function Info({label,value}:{label:string;value:string}){return <div style={{padding:"8px 0",borderBottom:"1px solid #eef2f6"}}><div style={{fontSize:10,color:"#98a2b3",fontWeight:850}}>{label.toUpperCase()}</div><strong style={{fontSize:13}}>{value}</strong></div>;}
-const card:React.CSSProperties={background:"#fff",border:"1px solid #dbeafe",borderRadius:18,padding:16};
+const card:React.CSSProperties={background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#15233a)",border:"1px solid var(--mt-border,#dbeafe)",borderRadius:18,padding:16};
 const field:React.CSSProperties={display:"grid",gap:5,fontSize:11,fontWeight:850};
-const input:React.CSSProperties={border:"1px solid #d0d5dd",borderRadius:10,padding:10,font:"inherit",background:"#fff"};
+const input:React.CSSProperties={border:"1px solid var(--mt-border,#d0d5dd)",borderRadius:10,padding:10,font:"inherit",background:"var(--mt-surface-soft,#fff)",color:"var(--mt-ink,#15233a)"};
 const primary:React.CSSProperties={width:"100%",border:0,background:"#1d4ed8",color:"#fff",borderRadius:12,padding:"12px 14px",fontWeight:900};

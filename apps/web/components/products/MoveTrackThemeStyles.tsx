@@ -459,6 +459,7 @@ export function MoveTrackThemeStyles(){
  --mt-text-critical:#ffb5bf;
  --mt-text-warning:#ffde9e;
  --mt-text-positive:#91efbf;
+ --mt-success-bg:#173f35;--mt-danger-bg:#40212d;--mt-warning-bg:#413623;
 }
 .movetrack-root[data-theme="dark"] :is(.movetrack-workspace-switcher,.movetrack-workspace-surface,.movetrack-task-workspace,
  .movetrack-task-editor,.movetrack-task-mobile-nav,.movetrack-task-mobile-summary,
@@ -471,6 +472,9 @@ export function MoveTrackThemeStyles(){
  border-color:var(--mt-border);
 }
 /* Text controls use their own dark surface, never dark text on a darkened light card. */
+.movetrack-root[data-theme="light"] {
+ --mt-success-bg:#ecfdf3;--mt-danger-bg:#fef3f2;--mt-warning-bg:#fff7ed;
+}
 .movetrack-root[data-theme="dark"] :is(button,summary,option) { color-scheme:dark; }
 .movetrack-root[data-theme="dark"] input[type="file"]::file-selector-button {
  background:var(--mt-surface-soft);color:var(--mt-ink);border:1px solid var(--mt-border);border-radius:8px;

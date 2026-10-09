@@ -464,7 +464,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         {[
           ["Available",control.available],["Assigned",control.assigned],["In use",control.inUse],
           ["Inspection due",control.due],["Grounded",control.grounded],["Open defects",control.openIncidents]
-        ].map(([label,value])=><article key={String(label)} style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:17,padding:14}}><div style={{fontSize:11,color:"#667085",fontWeight:850}}>{label}</div><strong style={{fontSize:26,color:label==="Grounded"&&Number(value)>0?"#b42318":"#101827"}}>{value}</strong></article>)}
+        ].map(([label,value])=><article key={String(label)} style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:17,padding:14}}><div style={{fontSize:11,color:"#667085",fontWeight:850}}>{label}</div><strong style={{fontSize:26,color:label==="Grounded"&&Number(value)>0?"var(--mt-danger,#b42318)":"var(--mt-ink,#101827)"}}>{value}</strong></article>)}
       </div>
 
       <section style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>
