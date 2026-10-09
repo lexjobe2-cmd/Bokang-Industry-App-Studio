@@ -193,7 +193,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
          <label style={label}>Question label<input style={input} value={f.label} onChange={e=>patchField(si,fi,{label:e.target.value})}/></label>
          <label style={label}>Answer type<select style={input} value={f.type} onChange={e=>{
            const type=e.target.value as AnswerType;
-           patchField(si,fi,{type,options:type==="select"||type==="multiselect"?["Yes","No","Not sure"]:undefined,children:type==="repeat"?[{id:"name",label:"Name",type:"text",required:true}]:undefined});
+           patchField(si,fi,{type,options:type==="select"||type==="multiselect"||type==="radio"?["Yes","No","Not sure"]:undefined,children:type==="repeat"?[{id:"name",label:"Name",type:"text",required:true}]:undefined});
          }}>{dictionary.inputTypes.map(type=><option key={type.id} value={type.id}>{type.label}</option>)}</select></label>
         </div>
         <div style={{display:"flex",gap:16,flexWrap:"wrap",fontSize:12}}>
@@ -201,7 +201,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
          <label><input type="checkbox" checked={!!f.critical} onChange={e=>patchField(si,fi,{critical:e.target.checked})}/> Critical / NO-GO</label>
          <label title="Reserved for future evidence upload integration"><input type="checkbox" disabled checked={false}/> Evidence on fail (cloud phase)</label>
         </div>
-        {(f.type==="select"||f.type==="multiselect")?<label style={label}>Options (one per line)<textarea style={{...input,minHeight:83}} value={(f.options??[]).join("\n")} onChange={e=>patchField(si,fi,{options:e.target.value.split("\n").map(s=>s.trim()).filter(Boolean)})}/></label>:null}
+        {(f.type==="select"||f.type==="multiselect"||f.type==="radio")?<label style={label}>Options (one per line)<textarea style={{...input,minHeight:83}} value={(f.options??[]).join("\n")} onChange={e=>patchField(si,fi,{options:e.target.value.split("\n").map(s=>s.trim()).filter(Boolean)})}/></label>:null}
         {f.type==="repeat"?<div style={{display:"grid",gap:7}}>
           <strong style={{fontSize:12}}>Repeatable row columns</strong>
           {(f.children??[]).map((child,ci)=><div key={child.id} style={{display:"flex",gap:7}}>
