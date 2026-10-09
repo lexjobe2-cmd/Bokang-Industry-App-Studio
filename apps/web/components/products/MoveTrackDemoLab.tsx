@@ -13,7 +13,6 @@ import { type FormSubmission, type FormAnswers } from "@bokang/domain-data/assur
 import { type RepairEvidence, type ReinspectionEvidence, type FleetReleaseRecord } from "../../lib/fleet-release";
 import { MoveTrackShowcase } from "./MoveTrackShowcase";
 import {MoveTrackAppShellNav} from "./MoveTrackAppShellNav";
-import { OrganizationOnboarding } from "./OrganizationOnboarding";
 import { OperationalGraphPanel } from "./OperationalGraphPanel";
 import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
 import type {MoveTrackView} from "./MoveTrackWorkspaceNav";
@@ -152,7 +151,7 @@ export function MoveTrackDemoLab(){
    </section>
   </div></div>
   <div className="movetrack-workspace-content">
-   <section hidden={screen.kind!=="company"} aria-label="Company management"><OrganizationOnboarding/></section>
+   <section hidden={screen.kind!=="company"} aria-label="Company management" style={{...style,maxWidth:800,margin:"0 auto"}}><h2>Company settings moved to Admin</h2><p>Manage company onboarding, workforce, fleet, documents and operational rules together in the Admin workspace.</p><button type="button" onClick={()=>goWorkspace("admin")} style={{minHeight:44,padding:"10px 16px",background:"#1d4ed8",color:"#fff",border:0,borderRadius:10,fontWeight:850}}>Open Admin workspace →</button></section>
    <section hidden={screen.kind!=="search"}><GlobalWorkspaceSearch onNavigate={goWorkspace}/></section>
    <section hidden={screen.kind!=="workflows"} id="movetrack-workflow-graph"><h1 style={{fontSize:25}}>Safety workflow library</h1><OperationalGraphPanel onOpenWorkflow={()=>goWorkspace("forms")}/></section>
    <section hidden={screen.kind!=="workspace"} id="movetrack-workspaces" className="movetrack-workspace-surface" style={{...style,padding:"10px 17px 19px",scrollMarginTop:83}}>
