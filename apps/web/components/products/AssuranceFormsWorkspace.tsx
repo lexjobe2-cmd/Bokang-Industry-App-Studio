@@ -71,7 +71,8 @@ export function AssuranceFormsWorkspace(){
  useEffect(()=>{setSectionIndex(0);},[activeId]);
  useEffect(()=>{setSiteId(org.siteIds[0]??"");},[org.id]);
  const answers=activeId?(drafts[activeId]??{}):{};
- const evaluation=useMemo(()=>template?evaluateForm(template,answers):null,[template,answers]);
+ const signatureScopePrefix=template?template.title+" / "+(jobReference.trim()||"no job reference")+" / "+(siteId||org.siteIds[0]||"unknown site")+" / "+org.id:"";
+ const evaluation=useMemo(()=>template?evaluateForm(template,answers,[],signatureScopePrefix):null,[template,answers,signatureScopePrefix]);
  const activeSection=template?.sections[sectionIndex];
  const records=useMemo(()=>submissions.filter(s=>{
    const snapshot=s.templateSnapshot as typeof s.templateSnapshot & {organizationId?:string};
@@ -98,7 +99,7 @@ export function AssuranceFormsWorkspace(){
     const record=makeSubmission({
       id:"DEMO-FORM-"+crypto.randomUUID(),template,answers,siteId:siteId||org.siteIds[0]||"Demo site",taskId:jobReference.trim()||undefined,
       assetId:template.category==="Fleet"?assetId||undefined:undefined,
-      actorUid:"LOCAL-DEMO-OPERATOR",actorPersonId:actorPersonId||undefined,now:new Date().toISOString()
+      actorUid:"LOCAL-DEMO-OPERATOR",actorPersonId:actorPersonId||undefined,now:new Date().toISOString(),signatureScopePrefix
     });
     setSubmissions(current=>[record,...current]);
     if(template.category==="Fleet"&&assetId&&record.decision==="NO_GO"){
@@ -213,7 +214,7 @@ export function AssuranceFormsWorkspace(){
         <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
         {activeSection.description?<p style={{color:"#667085"}}>{activeSection.description}</p>:null}
         <div style={{display:"grid",gap:17,marginTop:22}}>
-          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={template.title+" / "+(jobReference.trim()||"no job reference")}/>)}
+          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={signatureScopePrefix} reviewerPersonId={f.signerFieldId&&typeof answers[f.signerFieldId]==="string"?answers[f.signerFieldId] as string:undefined}/>)}
         </div>
       </motion.div>
     </AnimatePresence>
@@ -241,7 +242,7 @@ export function AssuranceFormsWorkspace(){
  </section>;
 }
 
-function FieldInput({field,value,onChange,people,scope}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void;scope:string}){
+function FieldInput({field,value,onChange,people,scope,reviewerPersonId}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void;scope:string;reviewerPersonId?:string}){
  const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"#b42318"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"#b42318",background:"#fef2f2",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
  const fieldStyle:React.CSSProperties={display:"grid",gap:8};
  if(field.type==="person"){
@@ -304,8 +305,12 @@ function FieldInput({field,value,onChange,people,scope}:{field:FormField;value:F
  if(field.type==="multiline")return <label style={fieldStyle}>{label}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)}/></label>;
  if(field.type==="signature")return <div style={fieldStyle}>{label}
     <SignatureApprovalTray label={field.label.toLowerCase().includes("review")?"Supervisor review & sign":"Open signature tray"} value={isSignatureEvidence(value)?value:null} onChange={e=>onChange(e??"")}
-     scope={scope+" / "+field.label} role={field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}
-     intent={field.label.toLowerCase().includes("review")?"review":"acknowledgement"}/>
+     scope={scope+" / "+field.label} role={field.signerFieldId?"Reviewer":field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}
+     disabled={Boolean(field.signerFieldId&&!reviewerPersonId)}
+     signerPersonId={field.signerFieldId?reviewerPersonId:undefined}
+     defaultSignerName={field.signerFieldId?people.find(p=>p.id===reviewerPersonId)?.displayName??"":""}
+     intent={field.signerFieldId?"review":field.label.toLowerCase().includes("review")?"review":"acknowledgement"}/>
+     {field.signerFieldId&&!reviewerPersonId?<small style={{color:"#b45309"}}>Select the responsible reviewer before signing.</small>:null}
    </div>;
  if(field.type==="photo"||field.type==="document")return <div style={fieldStyle}>
    {label}
