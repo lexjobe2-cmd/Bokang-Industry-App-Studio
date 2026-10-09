@@ -42,16 +42,16 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
  return <section aria-label="Operational workflow graph" style={{display:"grid",gap:12}}>
   <div style={{...card,background:"#0c2445",color:"#fff",border:0,padding:20}}>
    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-    <div><p style={{fontSize:11,letterSpacing:1.5,color:"#9ecbff",fontWeight:900,margin:0}}>STEP 02 · OPERATIONAL WORKFLOW GRAPH</p>
+    <div><p style={{fontSize:11,letterSpacing:1.5,color:"var(--mt-link,#9ecbff)",fontWeight:900,margin:0}}>STEP 02 · OPERATIONAL WORKFLOW GRAPH</p>
      <h2 style={{fontSize:24,margin:"6px 0"}}>21 connected safety workflows</h2>
      <p style={{fontSize:12,color:"#cbd5e1",margin:0,lineHeight:1.6,maxWidth:790}}>Working at heights plus 20 new operational controls. Each opens a functional branded checklist, saves a job-linked record and shows related workflows. This is a local demonstration, not a permit or workplace authorization.</p>
     </div>
-    <div style={{textAlign:"right"}}><strong style={{fontSize:26,display:"block"}}>{completed}/21</strong><span style={{fontSize:11,color:"#a3c9f5"}}>Checklists COMPLETE for this job</span></div>
+    <div style={{textAlign:"right"}}><strong style={{fontSize:26,display:"block"}}>{completed}/21</strong><span style={{fontSize:11,color:"var(--mt-muted,#a3c9f5)"}}>Checklists COMPLETE for this job</span></div>
    </div>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10,marginTop:15}}>
-    <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Active job / work order reference<input value={job} onChange={e=>setJob(e.target.value)} placeholder="WO-DEMO-001" style={{padding:"11px",border:"1px solid #8096b3",borderRadius:10,minHeight:43,font:"inherit",color:"#102033"}}/></label>
-    <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Search the connected workflows<div style={{display:"flex",gap:7,alignItems:"center",background:"#fff",borderRadius:10,padding:"0 10px"}}><Search size={16} color="#64748b"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="height, rescue, gas test, silica..." style={{minWidth:0,flex:1,border:0,padding:"12px 3px",font:"inherit",color:"#102033"}}/></div></label>
-    <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Area<select style={{padding:11,borderRadius:10,minHeight:43,color:"#102033"}} value={area} onChange={e=>setArea(e.target.value)}><option>All areas</option>{[...new Set(additionalAssuranceRecipes.map(r=>r.area))].map(name=><option key={name}>{name}</option>)}</select></label>
+    <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Active job / work order reference<input value={job} onChange={e=>setJob(e.target.value)} placeholder="WO-DEMO-001" style={{padding:"11px",border:"1px solid #8096b3",borderRadius:10,minHeight:43,font:"inherit",color:"var(--mt-ink,#102033)"}}/></label>
+    <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Search the connected workflows<div style={{display:"flex",gap:7,alignItems:"center",background:"var(--mt-surface,#fff)",borderRadius:10,padding:"0 10px"}}><Search size={16} color="#64748b"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="height, rescue, gas test, silica..." style={{minWidth:0,flex:1,border:0,padding:"12px 3px",font:"inherit",color:"var(--mt-ink,#102033)"}}/></div></label>
+    <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Area<select style={{padding:11,borderRadius:10,minHeight:43,color:"var(--mt-ink,#102033)"}} value={area} onChange={e=>setArea(e.target.value)}><option>All areas</option>{[...new Set(additionalAssuranceRecipes.map(r=>r.area))].map(name=><option key={name}>{name}</option>)}</select></label>
    </div>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,250px),1fr))",gap:10}}>
@@ -59,18 +59,18 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
     const status=statusFor(workflow.id),active=expanded===workflow.id,related=workflowLinks(workflow.id);
     return <motion.article key={workflow.id} whileHover={reduced?undefined:{y:-2}} style={{...card,borderColor:active?"#93c5fd":"#dbe5f2",display:"grid",gap:10,alignContent:"start"}}>
      <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"start"}}>
-      <span style={{fontSize:10,fontWeight:900,letterSpacing:0.7,color:"#1d4ed8"}}>{workflow.area.toUpperCase()}</span>
+      <span style={{fontSize:10,fontWeight:900,letterSpacing:0.7,color:"var(--mt-link,#1d4ed8)"}}>{workflow.area.toUpperCase()}</span>
       <span style={{fontSize:10,color:status==="COMPLETE"?"#047857":status==="NO_GO"?"#b42318":status==="REVIEW"?"#b45309":"#64748b",fontWeight:900}}>{status==="NOT_STARTED"?"NOT STARTED":status==="COMPLETE"?"SAVED · COMPLETE":status==="NO_GO"?"NO-GO FLAG":status==="REVIEW"?"REVIEW REQUIRED":status}</span>
      </div>
      <h3 style={{fontSize:16,margin:0,lineHeight:1.3}}>{workflow.title}</h3>
-     <p style={{fontSize:12,margin:0,lineHeight:1.55,color:"#64748b"}}>{workflow.trigger}</p>
-     <div style={{display:"flex",gap:9,alignItems:"center",fontSize:11,color:"#51627b"}}>
+     <p style={{fontSize:12,margin:0,lineHeight:1.55,color:"var(--mt-muted,#64748b)"}}>{workflow.trigger}</p>
+     <div style={{display:"flex",gap:9,alignItems:"center",fontSize:11,color:"var(--mt-muted,#51627b)"}}>
       <ClipboardCheck size={14}/>{workflow.criticalControls.length} critical control checks
       <Link2 size={14}/>{related.length} linked workflows
      </div>
      {active?<div style={{borderTop:"1px solid #e2e8f0",paddingTop:9,display:"grid",gap:7}}>
       <strong style={{fontSize:12}}>Critical assurance checklist</strong>
-      {workflow.criticalControls.map((c,i)=><span style={{display:"flex",gap:7,color:"#475569",fontSize:11}} key={i}><ShieldAlert size={13} color="#c2781b"/>{c}</span>)}
+      {workflow.criticalControls.map((c,i)=><span style={{display:"flex",gap:7,color:"var(--mt-muted,#475569)",fontSize:11}} key={i}><ShieldAlert size={13} color="#c2781b"/>{c}</span>)}
       {related.length?<><strong style={{fontSize:12,marginTop:8}}>Connected workflows</strong><div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{related.map(id=><button key={id} style={{...btn,fontSize:10,padding:"6px 8px",minHeight:30}} onClick={()=>{setSearch("");setArea("All areas");setExpanded(id);}}>{additionalAssuranceRecipes.find(w=>w.id===id)?.title??id} <span style={{color:"var(--mt-link,#2563eb)"}}>· {statusFor(id)==="COMPLETE"?"done":"open"}</span></button>)}</div></>:null}
      </div>:null}
      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:"auto"}}>
@@ -80,11 +80,11 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
     </motion.article>;
    })}
    {!grouped.length?<div style={{...card,gridColumn:"1 / -1"}}>No matching workflow. Change your search or area.</div>:null}
-   {grouped.length>6&&!search.trim()&&area==="All areas"?<div style={{...card,gridColumn:"1 / -1",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,background:"#eff6ff",borderColor:"#c7dbf8"}}>
-    <div><strong style={{fontSize:13}}>{showAll?"All 21 workflows are displayed":"Showing 6 featured workflows"}</strong><p style={{fontSize:11,color:"#64748b",margin:"5px 0 0"}}>Search by hazard or expand the complete list of connected safety checks.</p></div>
+   {grouped.length>6&&!search.trim()&&area==="All areas"?<div style={{...card,gridColumn:"1 / -1",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,background:"var(--mt-surface-soft,#eff6ff)",borderColor:"#c7dbf8"}}>
+    <div><strong style={{fontSize:13}}>{showAll?"All 21 workflows are displayed":"Showing 6 featured workflows"}</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"5px 0 0"}}>Search by hazard or expand the complete list of connected safety checks.</p></div>
     <button type="button" aria-expanded={showAll} onClick={()=>setShowAll(v=>!v)} style={{...btn,background:"#174fa8",color:"#fff",borderColor:"#174fa8"}}>{showAll?"Show fewer":"Browse all "+grouped.length+" workflows"} →</button>
    </div>:null}
   </div>
-  <p style={{fontSize:11,color:"#64748b",margin:0}}>The connections represent related work packages to review, not automated proof of compliance. For high-risk tasks, a competent human must approve the actual plan and site controls.</p>
+  <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>The connections represent related work packages to review, not automated proof of compliance. For high-risk tasks, a competent human must approve the actual plan and site controls.</p>
  </section>;
 }
