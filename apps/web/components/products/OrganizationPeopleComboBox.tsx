@@ -3,6 +3,7 @@ import {useEffect,useId,useMemo,useRef,useState} from "react";
 import {Check,ChevronDown,Search,Users,UserRound,X,Building2,MapPin,Mail,LoaderCircle} from "lucide-react";
 import type {PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {searchOrganizationPeople,type DirectoryProvider,type DirectorySearchPage} from "@bokang/domain-data/organization-directory";
+import {MoveTrackReadableText} from "./MoveTrackReadableContent";
 
 const input:React.CSSProperties={font:"inherit",background:"var(--mt-surface,#fff)",border:"1px solid #cbd5e1",borderRadius:10,color:"var(--mt-ink,#153553)",minHeight:43,padding:"9px 11px",width:"100%"};
 type Props={
@@ -122,10 +123,10 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
       onMouseEnter={()=>setHighlight(i)} onClick={()=>pick(p)} className={selected.has(p.id)?"movetrack-person-option selected":"movetrack-person-option"}>
      <span className="movetrack-person-avatar"><UserRound size={18}/></span>
      <span className="movetrack-person-details" style={{flex:1,minWidth:0,display:"grid",gap:4,gridAutoRows:"max-content",alignContent:"start"}}>
-      <strong style={{fontSize:12,color:"var(--mt-ink,#16355a)"}}>{p.displayName}</strong>
-      <span style={{fontSize:10,color:"var(--mt-muted,#526987)"}}>{[p.jobTitle,p.department].filter(Boolean).join(" · ")||"Role not specified"}</span>
-      <span style={{fontSize:10,color:"var(--mt-muted,#64748b)",overflowWrap:"anywhere"}}><Mail size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.email||p.userPrincipalName||"No email"}{p.userPrincipalName&&p.userPrincipalName!==p.email?" · UPN "+p.userPrincipalName:""}</span>
-      <span style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}><MapPin size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.city||p.location||p.officeLocation||"City not specified"}{p.employeeNumber?" · "+p.employeeNumber:""}</span>
+      <MoveTrackReadableText as="strong" variant="heading">{p.displayName}</MoveTrackReadableText>
+      <MoveTrackReadableText as="span" variant="meta" tone="muted">{[p.jobTitle,p.department].filter(Boolean).join(" · ")||"Role not specified"}</MoveTrackReadableText>
+      <MoveTrackReadableText as="span" variant="meta" tone="muted"><Mail size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.email||p.userPrincipalName||"No email"}{p.userPrincipalName&&p.userPrincipalName!==p.email?" · UPN "+p.userPrincipalName:""}</MoveTrackReadableText>
+      <MoveTrackReadableText as="span" variant="meta" tone="muted"><MapPin size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.city||p.location||p.officeLocation||"City not specified"}{p.employeeNumber?" · "+p.employeeNumber:""}</MoveTrackReadableText>
      </span><span className="movetrack-person-check">{selected.has(p.id)?<Check size={19}/>:null}</span>
     </button>)}
     {!options.length&&!busy?<div style={{padding:"19px 12px",textAlign:"center",fontSize:12,color:"var(--mt-muted,#64748b)"}}>No matching people. Change the filters or import your company's directory CSV.</div>:null}
