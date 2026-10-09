@@ -56,6 +56,7 @@ try{
  const checks=[];
  for(const {width,height,theme} of [
   {width:320,height:700,theme:"light"},
+  {width:320,height:700,theme:"dark"},
   {width:390,height:844,theme:"light"},
   {width:390,height:844,theme:"dark"},
   {width:844,height:390,theme:"dark"},
