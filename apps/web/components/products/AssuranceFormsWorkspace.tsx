@@ -318,11 +318,11 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
  }
  if(field.type==="document")return <div style={fieldStyle}>
    {label}
-   <input type="file" accept={field.type==="photo"?"image/png,image/jpeg,image/webp":"application/pdf,image/png,image/jpeg,image/webp"} style={{...input,padding:9}} onChange={event=>{
+   <input type="file" accept="application/pdf,image/png,image/jpeg,image/webp" style={{...input,padding:9}} onChange={event=>{
      const file=event.target.files?.[0];
      if(!file)return;
      if(file.size>200000){window.alert("Choose a demo file under 200 KB. Uploaded evidence is local browser data only.");event.target.value="";return;}
-     const types=field.type==="photo"?["image/png","image/jpeg","image/webp"]:["application/pdf","image/png","image/jpeg","image/webp"];
+     const types=["application/pdf","image/png","image/jpeg","image/webp"];
      if(!types.includes(file.type)){window.alert("Unsupported demo attachment type");return;}
      const reader=new FileReader();
      reader.onload=()=>{if(typeof reader.result==="string")onChange(reader.result);};
