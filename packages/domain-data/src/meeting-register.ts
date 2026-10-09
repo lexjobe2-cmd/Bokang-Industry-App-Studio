@@ -1,7 +1,9 @@
 import type {FormTemplate,FormSection,FormAnswers} from "./assurance-forms.ts";
 import {isSignatureEvidence} from "./signature-evidence.ts";
-import type {OrganizationProfile} from "./custom-assurance.ts";
+import type {OrganizationProfile,PersonRecord} from "./custom-assurance.ts";
 
+export const presenceStatusOptions=["Present","Late arrival","Left early"] as const;
+export const notificationStatusOptions=["Not recorded","Received by chair","Received by minute taker","Pending acknowledgement"] as const;
 export const apologyStatusOptions=["Apology received","Absent (no apology)","Attendance unconfirmed"] as const;
 export const apologyReasonOptions=["Not specified","Leave","Different work site","Training","Operational duty","Travel","Unavailable","Other"] as const;
 
@@ -18,7 +20,7 @@ export function meetingAttendanceCounts(answers:FormAnswers){
 }
 /** Exclusive sets: a person cannot be both recorded present and absent.
  * New snapshots keep stable person IDs and do not silently change existing submitted records. */
-export function updateMeetingAttendance(answers:FormAnswers,group:"present"|"absent",ids:readonly string[],names:Readonly<Record<string,string>>={}):FormAnswers{
+export function updateMeetingAttendance(answers:FormAnswers,group:"present"|"absent",ids:readonly string[],names:Readonly<Record<string,string>>={},people:readonly PersonRecord[]=[]):FormAnswers{
  const desired=asPeople([...ids]);
  const previousPresent=asPeople(answers.participants);
  const previousAbsent=asPeople(answers.apology_person_ids);
@@ -27,12 +29,18 @@ export function updateMeetingAttendance(answers:FormAnswers,group:"present"|"abs
  const current=asRows(answers.apology_details);
  const apologyDetails=absent.map(id=>{
   const old=current.find(row=>row.person_id===id);
+  const person=people.find(p=>p.id===id);
   return {person_id:id,person_name:names[id]??String(old?.person_name??id),
+   department:person?.department??String(old?.department??""),job_title:person?.jobTitle??String(old?.job_title??""),
+   notification_status:String(old?.notification_status??"Not recorded"),
    absence_status:String(old?.absence_status??"Apology received"),
    absence_reason:String(old?.absence_reason??"Not specified"),
    absence_note:String(old?.absence_note??"")};
  });
- return {participants:present,apology_person_ids:absent,apology_details:apologyDetails};
+ const prior=asRows(answers.attendance_details);
+ const attendanceDetails=present.map(id=>{const old=prior.find(r=>r.person_id===id),person=people.find(p=>p.id===id);
+  return {person_id:id,person_name:names[id]??String(old?.person_name??id),department:person?.department??String(old?.department??""),job_title:person?.jobTitle??String(old?.job_title??""),attendance_status:String(old?.attendance_status??"Present"),arrival_time:String(old?.arrival_time??""),departure_time:String(old?.departure_time??"")};});
+ return {participants:present,attendance_details:attendanceDetails,apology_person_ids:absent,apology_details:apologyDetails};
 }
 export const meetingTypes=["SHE committee meeting","Toolbox safety talk","Pre-shift briefing","Contractor coordination","Incident learning review","Management SHE review","JSA / JRA team briefing","Emergency readiness meeting"] as const;
 export type MeetingType=typeof meetingTypes[number];
@@ -48,15 +56,21 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
    fld("meeting_site","Work area / room / location","text",true),
    fld("meeting_chair","Chairperson / facilitator","person"),
    fld("meeting_chair_manual","Chair name (if external or not in directory)","text"),
-   fld("meeting_recorder","Minute taker","text"),
+   fld("meeting_recorder","Minute taker (legacy name / external)","text"),
+   fld("meeting_recorder_id","Company minute taker","person"),
    fld("meeting_ref","Company meeting reference","text")
   ]},
   {id:"meeting-attendance",title:"Attendance and apologies",fields:[
    {...fld("participants","Company staff present","people"),helperText:"Use the directory to attribute meeting participation to individual profiles"},
+   {id:"attendance_details",label:"Staff attendance details",type:"repeat",children:[
+    fld("person_id","Employee ID","text"),fld("person_name","Employee name","text"),fld("department","Department","text"),fld("job_title","Job title","text"),
+    {...fld("attendance_status","Attendance status","select"),options:presenceStatusOptions},fld("arrival_time","Arrival time","text"),fld("departure_time","Departure time","text")
+   ]},
    {id:"attendees",label:"Manual attendees / external visitors",type:"repeat",required:false,children:[
     fld("attendee_name","Full name","text",true),
     fld("attendee_company","Company / department","text"),
     fld("attendee_role","Role","text"),
+    {...fld("attendee_status","Attendance status","select"),options:presenceStatusOptions},
     fld("attendee_ack","Attendance acknowledged (demo)","text")
    ]},
    {...fld("apology_person_ids","Staff who sent apologies or were absent","people"),
@@ -64,6 +78,8 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
    {id:"apology_details",label:"Staff apology details",type:"repeat",required:false,children:[
     fld("person_id","Person ID","text",true),
     fld("person_name","Employee name","text",true),
+    fld("department","Department","text"),fld("job_title","Job title","text"),
+    {...fld("notification_status","Notification status","select"),options:notificationStatusOptions},
     {...fld("absence_status","Attendance status","select"),options:apologyStatusOptions},
     {...fld("absence_reason","Reason category","select"),options:apologyReasonOptions},
     fld("absence_note","Comment","text")
@@ -72,7 +88,8 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
     fld("apology_name","Person name","text",true),
     fld("apology_company","Company / department","text"),
     {...fld("apology_status","Attendance status","select"),options:apologyStatusOptions},
-    {...fld("apology_reason","Reason category","select"),options:apologyReasonOptions}
+    {...fld("apology_reason","Reason category","select"),options:apologyReasonOptions},
+    {...fld("notification_status","Notification status","select"),options:notificationStatusOptions},fld("notes","Notes","text")
    ]},
    fld("apologies","Additional apology notes (legacy free text)","multiline")
   ]},
@@ -96,7 +113,7 @@ export function meetingTemplate(org:OrganizationProfile):FormTemplate&{organizat
    {id:"minute_taker_signature",label:"Minute taker drawn acknowledgement",type:"signature",required:false}
   ]}
  ];
- return {id:meetingTemplateId(org.id),version:3,title:"Meeting register & minutes",category:"Meetings",
+ return {id:meetingTemplateId(org.id),version:4,title:"Meeting register & minutes",category:"Meetings",
   status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds:[],assetClasses:[],
   sections,organizationId:org.id,companyNameSnapshot:org.name,logoSnapshot:org.logoDataUrl,
   accent:org.accent,referencePrefix:org.documentPrefix};
@@ -125,8 +142,15 @@ export function validateMeetingInput(a:FormAnswers){
  const details=asRows(a.apology_details);
  if(absent.some(id=>!details.some(row=>row.person_id===id)))throw Error("Choose the attendance status for each person in the apologies register.");
  if(details.some(row=>!absent.includes(String(row.person_id??""))))throw Error("Remove outdated apology details before submitting.");
+ if(details.some(r=>!apologyStatusOptions.includes(r.absence_status as typeof apologyStatusOptions[number])))throw Error("Choose a valid apology attendance status.");
+ if(new Set(details.map(r=>r.person_id)).size!==details.length)throw Error("Duplicate employee in apologies register.");
+ const attendance=asRows(a.attendance_details);
+ if(attendance.some(r=>!present.includes(String(r.person_id))||!presenceStatusOptions.includes(r.attendance_status as typeof presenceStatusOptions[number])))throw Error("Check staff attendance details and statuses.");
+ if(new Set(attendance.map(r=>r.person_id)).size!==attendance.length)throw Error("Duplicate employee in attendance register.");
  const manual=asRows(a.apology_entries);
  if(manual.some(row=>!String(row.apology_name??"").trim()))throw Error("Each external apology needs a person's name.");
+ const guests=[...asRows(a.attendees).map(r=>r.attendee_name),...manual.map(r=>r.apology_name)].map(n=>String(n??"").trim().toLowerCase()).filter(Boolean);
+ if(new Set(guests).size!==guests.length)throw Error("Duplicate guest in attendance or apologies. Keep each guest in one category.");
  const rows=Array.isArray(a.actions)?a.actions:[];
  for(const row of rows){if(!row||Array.isArray(row)||typeof row!=="object"||!String((row as Record<string,unknown>).action??"").trim()||!String((row as Record<string,unknown>).owner??"").trim())throw Error("Each action needs a description and accountable owner.");}
  for(const row of asRows(a.actions)){
@@ -161,4 +185,40 @@ export function carryForwardMeetingActions(current:FormAnswers,previous:FormAnsw
   seen.add(normalize(action));added++;
  }
  return {rows:existing,added};
+}
+
+/** Recorded attendance only, scoped to one browser/company. Apologies never count as attending. */
+export function buildMeetingAnalytics({forms,people,orgId,personId,site,month,today=new Date().toISOString().slice(0,10)}:{forms:readonly import("./assurance-forms.ts").FormSubmission[];people:readonly PersonRecord[];orgId:string;personId?:string;site?:string;month?:string;today?:string}){
+ const records=forms.filter(f=>f.templateSnapshot.category==="Meetings"&&
+  ((f.templateSnapshot as import("./assurance-forms.ts").FormTemplate&{organizationId?:string}).organizationId===orgId)&&
+  (!site||f.siteId===site)&&(!month||String(f.answers.meeting_date??f.submittedAt).startsWith(month)));
+ let present=0,absent=0,apologies=0,attended=0,open=0,overdue=0;
+ const departments=new Map<string,number>(),top=new Map<string,number>(),months=new Map<string,number>();
+ for(const f of records){
+  const a=f.answers,counts=meetingAttendanceCounts(a),ids=asPeople(a.participants),absentIds=asPeople(a.apology_person_ids);
+  const details=asRows(a.apology_details),attendance=asRows(a.attendance_details);
+  if(personId){
+   if(ids.includes(personId)){present++;attended++;}
+   if(absentIds.includes(personId))absent++;
+   if(details.some(r=>r.person_id===personId&&r.absence_status==="Apology received"))apologies++;
+  }else{present+=counts.present;absent+=counts.absent;apologies+=counts.apologyReceived;attended++;}
+  for(const id of ids){
+   if(personId&&id!==personId)continue;
+   const person=people.find(p=>p.id===id&&p.orgId===orgId);
+   const department=String(attendance.find(r=>r.person_id===id)?.department??person?.department??"Unspecified")||"Unspecified";
+   departments.set(department,(departments.get(department)??0)+1);top.set(id,(top.get(id)??0)+1);
+  }
+  const m=String(a.meeting_date??f.submittedAt).slice(0,7);
+  if(!personId||ids.includes(personId))months.set(m,(months.get(m)??0)+1);
+  for(const row of asRows(a.actions)){
+   if(personId&&row.owner_person_id!==personId)continue;
+   if(String(row.state??"").toLowerCase()==="closed")continue;
+   open++;if(/^\d{4}-\d{2}-\d{2}$/.test(String(row.due??""))&&String(row.due)<today)overdue++;
+  }
+ }
+ return {meetings:records.length,attended,present,absent,apologies,open,overdue,
+  attendanceRate:present+absent?Math.round(100*present/(present+absent)):null,
+  departments:[...departments].map(([name,count])=>({name,count})),
+  months:[...months].sort().map(([name,count])=>({name,count})),
+  topPeople:[...top].sort((a,b)=>b[1]-a[1]).map(([id,count])=>({id,name:people.find(p=>p.id===id)?.displayName??id,count}))};
 }

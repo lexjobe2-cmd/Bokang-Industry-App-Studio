@@ -31,7 +31,7 @@ test("Power Apps-style multi-person selections keep present and absent mutually 
 });
 test("meeting register v3 has structured apologies, people selection and manual entries",()=>{
  const t=meetingTemplate(org),fields=t.sections.flatMap(s=>s.fields);
- assert.equal(t.version,3);
+ assert.equal(t.version,4);
  assert.equal(fields.find(f=>f.id==="apology_person_ids")?.type,"people");
  assert.equal(fields.find(f=>f.id==="apology_entries")?.type,"repeat");
  assert.ok(fields.find(f=>f.id==="apology_details")?.children?.some(c=>c.id==="absence_status"));

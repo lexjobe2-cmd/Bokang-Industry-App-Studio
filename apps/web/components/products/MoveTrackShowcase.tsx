@@ -495,9 +495,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
-    {view==="forms"?<AssuranceFormsWorkspace />:null}
-    {view==="meetings"?<MeetingRegisterWorkspace />:null}
-    {view==="paper"?<PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/>:null}
+    <div hidden={view!=="forms"}><AssuranceFormsWorkspace /></div>
+    <div hidden={view!=="meetings"}><MeetingRegisterWorkspace /></div>
+    <div hidden={view!=="paper"}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></div>
     {view==="release"?<FleetReleaseWorkspace />:null}
     {view==="local-data"?<LocalWorkspacePanel />:null}
     {view==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}

@@ -17,7 +17,8 @@
     "./workspace-search": "./src/workspace-search.ts",
     "./paper-layout": "./src/paper-layout.ts",
     "./organization-directory": "./src/organization-directory.ts",
-    "./form-assist": "./src/form-assist.ts"
+    "./form-assist": "./src/form-assist.ts",
+    "./repeatable-register": "./src/repeatable-register.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",

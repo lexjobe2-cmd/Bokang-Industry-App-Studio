@@ -1,4 +1,8 @@
 "use client";
+import {QuickChoice,SmartMultiSelect,SearchableAssetPicker} from "./SmartFormInputs";
+import {RepeatableRowActions} from "./RepeatableRowActions";
+import {moveRegisterRow,duplicateRegisterRow} from "@bokang/domain-data/repeatable-register";
+
 
 import { useMemo, useState, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -219,9 +223,7 @@ export function AssuranceFormsWorkspace(){
         <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Job / work order ID
           <input style={input} value={jobReference} placeholder="WO-2026-001" onChange={e=>setJobReference(e.target.value)}/>
         </label>
-        {template.category==="Fleet"?<label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Link to asset
-          <select style={input} value={assetId} onChange={e=>setAssetId(e.target.value)}><option value="">Select asset (required)</option>{fleet.map(a=><option key={a.id} value={a.id}>{a.fleetNo} · {a.makeModel}</option>)}</select>
-        </label>:null}
+        {template.category==="Fleet"?<SearchableAssetPicker assets={fleet} value={assetId} onChange={setAssetId}/>:null}
       </div>
     </div>
     {workflow&&workflowLinks(workflow.id).length?<div style={{...tile,display:"grid",gap:8,background:"#f8fafc"}}>
@@ -289,27 +291,29 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
  </fieldset>;
  if(field.type==="pass_fail_na"||field.type==="yes_no"){
    const opts=field.type==="yes_no"?["YES","NO"]:["PASS","FAIL","NA"];
-   return <div style={fieldStyle}>{label}<div style={{display:"grid",gridTemplateColumns:`repeat(${opts.length},minmax(0,1fr))`,gap:8}}>
-     {opts.map(opt=><button key={opt} aria-pressed={value===opt} style={{...button,background:value===opt?(opt==="FAIL"||opt==="NO"?"#fee2e2":"#dbeafe"):"#fff",borderColor:value===opt?"#2563eb":"#cbd5e1",minWidth:0}} onClick={()=>onChange(opt)}>{opt}</button>)}
-   </div></div>;
+   return <div style={fieldStyle}>{label}<QuickChoice options={opts} value={typeof value==="string"?value:""} onChange={onChange}/></div>;
  }
  if(field.type==="repeat"){
    const rows=Array.isArray(value)&&value.every(v=>typeof v==="object"&&!Array.isArray(v))?value as Record<string,string|number|boolean|null>[]:[];
    const hasIdentityColumns=field.children?.some(child=>/name|employee|attendee|role|participant|department/i.test(child.label))??false;
    return <div style={{...fieldStyle,background:"#f8fafc",padding:13,borderRadius:13,border:"1px solid #e2e8f0"}}>{label}{rows.map((row,index)=><div key={index} style={{...tile,display:"grid",gap:9}}>
-     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><strong style={{fontSize:12}}>Entry {index+1}</strong><button type="button" style={{...button,padding:7,minHeight:34}} aria-label={"Remove entry "+(index+1)} onClick={()=>onChange(rows.filter((_,i)=>i!==index))}><Trash2 size={15}/></button></div>
+     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><strong style={{fontSize:12}}>Entry {index+1}</strong><RepeatableRowActions index={index} count={rows.length} onRemove={()=>onChange(rows.filter((_,i)=>i!==index))} onMove={direction=>onChange(moveRegisterRow(rows,index,direction))} onDuplicate={()=>onChange(duplicateRegisterRow(rows,index,(field.children??[]).filter(c=>c.critical||["pass_fail_na","yes_no","risk","signature","checkbox"].includes(c.type)).map(c=>c.id)))}/></div>
      {fastEntry&&hasIdentityColumns&&people.length?<label style={{...fieldStyle,fontSize:11,fontWeight:750,color:"#2563eb"}}>Fill attendee/worker details from directory
        <select aria-label={"Choose directory member for entry "+(index+1)} defaultValue="" style={input}
         onChange={e=>{const person=people.find(p=>p.id===e.target.value);if(!person)return;const data=personRegisterRow(field.children??[],person);onChange(rows.map((r,i)=>i===index?{...r,...data}:r));}}>
         <option value="">Choose a person — optional</option>{people.filter(p=>p.active).map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}
        </select>
       </label>:null}
-     {field.children?.map(child=><label key={child.id} style={{...fieldStyle,fontSize:12}}>{child.label}<input list={"repeat-"+field.id+"-"+child.id} type={child.type==="number"?"number":child.type==="date"?"date":"text"} value={String(row[child.id]??"")} onChange={e=>onChange(rows.map((r,i)=>i===index?{...r,[child.id]:child.type==="number"?Number(e.target.value):e.target.value}:r))} style={input}/>{fastEntry&&fieldQuickChoices(child.label,child.type).length?<datalist id={"repeat-"+field.id+"-"+child.id}>{fieldQuickChoices(child.label,child.type).map(c=><option value={c.value} key={c.value}/>)}</datalist>:null}</label>)}
+     {field.children?.map(child=>{
+      const update=(v:FormAnswer)=>{if(Array.isArray(v)||typeof v==="object"&&v!==null)return;onChange(rows.map((r,i)=>i===index?{...r,[child.id]:v}:r));};
+      // Render real choice controls in repeated rows rather than flattening every column to text.
+      return <FieldInput key={child.id} field={child} value={row[child.id]} onChange={update} people={people} scope={scope} fastEntry={fastEntry}/>;
+     })}
    </div>)}<button type="button" style={{...button,justifySelf:"start"}} onClick={()=>onChange([...rows,{}])}><Plus size={15} style={{display:"inline"}}/> Add {/attend|people|register/i.test(field.label)?"attendee":"row"}</button></div>;
  }
  if(field.type==="multiselect"){
    const selected=Array.isArray(value)?value as string[]:[];
-   return <div style={fieldStyle}>{label}<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{(field.options??[]).map(opt=><button key={opt} aria-pressed={selected.includes(opt)} style={{...button,background:selected.includes(opt)?"#dbeafe":"#fff"}} onClick={()=>onChange(selected.includes(opt)?selected.filter(v=>v!==opt):[...selected,opt])}>{opt}</button>)}</div></div>;
+   return <div style={fieldStyle}>{label}<SmartMultiSelect options={field.options??[]} value={selected} onChange={onChange} label={field.label}/></div>;
  }
  if(field.type==="risk"){
    const current:RiskAnswer=(value && typeof value==="object" && !Array.isArray(value) && "likelihood" in value && "consequence" in value) ? value as RiskAnswer : {likelihood:0,consequence:0,matrixId:defaultRiskMatrix.id,matrixVersion:defaultRiskMatrix.version};

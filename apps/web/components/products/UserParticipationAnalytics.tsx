@@ -2,6 +2,7 @@
 import {useMemo,useState} from "react";
 import {BarChart3,Users,ClipboardCheck,ShieldAlert,Download,UserRound,Search,Clock3,FileCheck2} from "lucide-react";
 import {usePersistentState} from "@bokang/persistence";
+import {buildMeetingAnalytics} from "@bokang/domain-data/meeting-register";
 import {buildAssuranceAnalytics,type ParticipationItem} from "@bokang/domain-data/participation-analytics";
 import {ASSURANCE_STORAGE,demoPeople,demoOrganization,type JobRiskAssessment,type PersonRecord,type OrganizationProfile} from "@bokang/domain-data/custom-assurance";
 import type {FormSubmission} from "@bokang/domain-data/assurance-forms";
@@ -35,6 +36,8 @@ export function UserParticipationAnalytics(){
  const [jras]=usePersistentState<JobRiskAssessment[]>(ASSURANCE_STORAGE.jras,[]);
  const [person,setPerson]=usePersistentState(ACTIVE_PERSON_KEY,"");
  const [view,setView]=useState<"mine"|"company">("mine");
+ const [meetingSite,setMeetingSite]=useState("");
+ const [meetingMonth,setMeetingMonth]=useState("");
  const [status,setStatus]=useState("All statuses");
  const [search,setSearch]=useState("");
  const [category,setCategory]=useState("All categories");
@@ -43,6 +46,7 @@ export function UserParticipationAnalytics(){
  const user=workers.find(p=>p.id===person);
  const scope=view==="mine"&&user?user.id:undefined;
  const a=useMemo(()=>buildAssuranceAnalytics({orgId:org.id,people,forms,jras,personId:scope}),[org.id,people,forms,jras,scope]);
+ const meetings=useMemo(()=>buildMeetingAnalytics({forms,people,orgId:org.id,personId:scope,site:meetingSite,month:meetingMonth}),[forms,people,org.id,scope,meetingSite,meetingMonth]);
  const filtered=a.items.filter(item=>(status==="All statuses"||item.status===status)&&(category==="All categories"||item.category===category)&&
   (item.title+" "+item.site+" "+item.jobId).toLowerCase().includes(search.trim().toLowerCase()));
  const recentMonths=a.months.slice(-8);
@@ -64,8 +68,28 @@ export function UserParticipationAnalytics(){
    <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap",alignItems:"start"}}>
     <div><div style={{fontSize:11,color:"#9ac5ff",fontWeight:900,letterSpacing:1.2}}>WORKFORCE · SAFETY PARTICIPATION INTELLIGENCE</div>
      <h2 style={{fontSize:25,margin:"6px 0"}}>Forms you joined. Risks your team recorded.</h2>
-     <p style={{color:"#cbd5e1",fontSize:12,margin:0,lineHeight:1.6}}>Personal participation histories and company-wide patterns, using actual locally saved forms and JRA team rosters. No invented activity.</p>
+     <p style={{color:"#cbd5e1",fontSize:12,margin:0,lineHeight:1.6}}>Personal participation histories and company patterns on this browser, using actual locally saved forms and JRA team rosters. No invented activity.</p>
     </div><BarChart3 size={29} color="#bfdbfe"/></div>
+  </div>
+  <div style={{...card,display:"grid",gap:12}}>
+   <strong>Meeting attendance & follow-ups</strong>
+   <p style={small}>This browser's recorded invitations: present ÷ (present + absent). Late arrivals and early departures count as attending. Apologies are separate. Missing invitations cannot be inferred.</p>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:9}}>
+    <label style={label}>Meeting site<select style={input} value={meetingSite} onChange={e=>setMeetingSite(e.target.value)}><option value="">All sites</option>{[...new Set(forms.filter(f=>(f.templateSnapshot as {organizationId?:string}).organizationId===org.id&&f.templateSnapshot.category==="Meetings").map(f=>f.siteId))].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label style={label}>Meeting month<input type="month" style={input} value={meetingMonth} onChange={e=>setMeetingMonth(e.target.value)}/></label>
+   </div>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:9}}>
+    <CountTile name={scope?"Meetings attended":"Meetings held"} value={meetings.attended}/>
+    <CountTile name="Attendance rate" value={meetings.attendanceRate===null?"—":meetings.attendanceRate+"%"}/>
+    <CountTile name="Apologies received" value={meetings.apologies}/>
+    <CountTile name="Outstanding actions" value={meetings.open}/>
+    <CountTile name="Overdue actions" value={meetings.overdue}/>
+   </div>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10}}>
+    <Breakdown title="Attendance by department" items={meetings.departments}/>
+    <Breakdown title="Meeting completion by month" items={meetings.months}/>
+    <Breakdown title="Frequent attendees" items={meetings.topPeople.map(p=>({name:p.name,count:p.count}))}/>
+   </div>
   </div>
   <div style={{...card,display:"grid",gap:10}}>
    <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>

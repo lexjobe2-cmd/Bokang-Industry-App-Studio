@@ -3,7 +3,7 @@ import {useMemo,useState} from "react";
 import {CalendarDays,UsersRound,ClipboardList,Plus,Trash2,CheckCircle2,FileText} from "lucide-react";
 import {usePersistentState} from "@bokang/persistence";
 import {ASSURANCE_STORAGE,demoOrganization,demoPeople,type PersonRecord,type OrganizationProfile} from "@bokang/domain-data/custom-assurance";
-import {meetingTypes,meetingTemplate,validateMeetingInput,updateMeetingAttendance,meetingAttendanceCounts,apologyStatusOptions,apologyReasonOptions,carryForwardMeetingActions,type MeetingType} from "@bokang/domain-data/meeting-register";
+import {meetingTypes,meetingTemplate,validateMeetingInput,updateMeetingAttendance,meetingAttendanceCounts,apologyStatusOptions,apologyReasonOptions,carryForwardMeetingActions,presenceStatusOptions,notificationStatusOptions,buildMeetingAnalytics,type MeetingType} from "@bokang/domain-data/meeting-register";
 import {makeSubmission,type FormAnswers,type FormSubmission,type PrimitiveAnswer} from "@bokang/domain-data/assurance-forms";
 import {buildFormDocument} from "../../lib/form-exports";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
@@ -11,6 +11,8 @@ import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
+import {RepeatableRowActions} from "./RepeatableRowActions";
+import {moveRegisterRow,duplicateRegisterRow} from "@bokang/domain-data/repeatable-register";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 
 const box:React.CSSProperties={background:"#fff",border:"1px solid #dbe4ee",padding:17,borderRadius:15};
@@ -51,6 +53,7 @@ export function MeetingRegisterWorkspace(){
  const apologyIds=Array.isArray(answers.apology_person_ids)?answers.apology_person_ids as string[]:[];
  const apologyDetails=rowValues(answers.apology_details),externalApologies=rowValues(answers.apology_entries);
  const attendance=meetingAttendanceCounts(answers);
+ const attendanceDetails=rowValues(answers.attendance_details);
  const attendees=rowValues(answers.attendees),actions=rowValues(answers.actions);
  const previousMeeting=useMemo(()=>forms.filter(f=>f.templateId===template.id&&
    ((f.templateSnapshot as typeof f.templateSnapshot&{organizationId?:string}).organizationId===org.id))
@@ -58,9 +61,10 @@ export function MeetingRegisterWorkspace(){
  const records=forms.filter(f=>f.templateSnapshot.category==="Meetings"&&
   ((f.templateSnapshot as typeof f.templateSnapshot & {organizationId?:string}).organizationId===org.id||
    (!(f.templateSnapshot as typeof f.templateSnapshot&{organizationId?:string}).organizationId&&org.id===demoOrganization.id)));
+ const meetingMetrics=buildMeetingAnalytics({forms:records,people:members,orgId:org.id});
  const allActions=records.flatMap(f=>rowValues(f.answers.actions));
  const openActions=allActions.filter(a=>String(a.state??"").toLowerCase()!=="closed");
- function listPatch(key:"attendees"|"actions"|"apology_entries"|"apology_details",idx:number,part:Partial<Row>){
+ function listPatch(key:"attendees"|"actions"|"apology_entries"|"apology_details"|"attendance_details",idx:number,part:Partial<Row>){
   const rows=rowValues(answers[key]);
   patch({[key]:rows.map((r,i)=>i===idx?{...r,...(Object.fromEntries(Object.entries(part).filter(([,v])=>v!==undefined)) as Row)}:r)});
  }
@@ -71,7 +75,7 @@ export function MeetingRegisterWorkspace(){
  function removeRow(key:"attendees"|"actions"|"apology_entries",index:number){patch({[key]:rowValues(answers[key]).filter((_,i)=>i!==index)});}
  function choosePresence(group:"present"|"absent",ids:string[]){
   const names=Object.fromEntries(members.map(p=>[p.id,p.displayName]));
-  patch(updateMeetingAttendance(answers,group,ids,names));
+  patch(updateMeetingAttendance(answers,group,ids,names,members));
  }
  function reuseMeetingPeople(){
   if(!previousMeeting)return;
@@ -99,7 +103,8 @@ export function MeetingRegisterWorkspace(){
   setMessage("");
   try{
    validateMeetingInput(answers);
-   const full=makeSubmission({id:"MEETING-"+crypto.randomUUID(),template,answers,siteId:textValue(answers.meeting_site)||org.siteIds[0]||"Meeting location",
+   const snapshotAnswers={...answers,meeting_people_snapshot:members.map(p=>({person_id:p.id,person_name:p.displayName,department:p.department,job_title:p.jobTitle}))};
+   const full=makeSubmission({id:"MEETING-"+crypto.randomUUID(),template,answers:snapshotAnswers,siteId:textValue(answers.meeting_site)||org.siteIds[0]||"Meeting location",
     taskId:textValue(answers.meeting_ref)||undefined,actorUid:"LOCAL-MEETING-OPERATOR",actorPersonId:actor||undefined,now:new Date().toISOString()});
    setForms(rs=>[full,...rs]);
    setMessage("Meeting register saved. It is now included in company/person analytics and can be exported as a filled PDF or Word file.");
@@ -121,7 +126,7 @@ export function MeetingRegisterWorkspace(){
    <p style={{fontSize:12,color:"#dbeafe",lineHeight:1.7,margin:0}}>Create toolbox talks, shift briefings, SHE committee registers and contractor meetings for {org.name}. Every record saves locally, contributes to participation analytics and exports in PDF, Word, CSV and JSON.</p>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:9}}>
-   {[["Meeting registers",records.length],["People on company directory",members.length],["Registered attendees",records.reduce((a,r)=>a+(Array.isArray(r.answers.participants)?r.answers.participants.length:0)+rowValues(r.answers.attendees).length,0)],["Apologies / absent",records.reduce((sum,r)=>sum+meetingAttendanceCounts(r.answers).absent,0)],["Open action items",openActions.length]].map(([name,n])=><div key={String(name)} style={box}><strong style={{fontSize:26,color:"#174b87"}}>{n}</strong><p style={{margin:"6px 0 0",fontWeight:800,color:"#64748b",fontSize:11}}>{name}</p></div>)}
+   {[["Meeting registers",records.length],["People on company directory",members.length],["Registered attendees",records.reduce((a,r)=>a+(Array.isArray(r.answers.participants)?r.answers.participants.length:0)+rowValues(r.answers.attendees).length,0)],["Apologies / absent",records.reduce((sum,r)=>sum+meetingAttendanceCounts(r.answers).absent,0)],["Open action items",openActions.length],["Attendance rate",meetingMetrics.attendanceRate===null?"—":meetingMetrics.attendanceRate+"%"],["Apologies received",meetingMetrics.apologies],["Overdue actions",meetingMetrics.overdue]].map(([name,n])=><div key={String(name)} style={box}><strong style={{fontSize:26,color:"#174b87"}}>{n}</strong><p style={{margin:"6px 0 0",fontWeight:800,color:"#64748b",fontSize:11}}>{name}</p></div>)}
   </div>
   <div style={{...box,display:"flex",gap:9,alignItems:"center",flexWrap:"wrap",justifyContent:"space-between"}}>
    <div><strong>Start from a meeting type</strong><p style={{fontSize:11,color:"#64748b",margin:"4px 0"}}>Prepared company format · not a verified attendance signature</p></div>
@@ -144,7 +149,9 @@ export function MeetingRegisterWorkspace(){
     <label style={label}>Work site / meeting room *<input list="movetrack-meeting-sites" style={input} value={textValue(answers.meeting_site)} onChange={e=>text("meeting_site",e.target.value)}/><datalist id="movetrack-meeting-sites">{org.siteIds.map(site=><option key={site} value={site}/>)}</datalist></label>
     <label style={label}>Reference<input style={input} value={textValue(answers.meeting_ref)} placeholder="SHE-MIN-2026-01" onChange={e=>text("meeting_ref",e.target.value)}/></label>
     <OrganizationPeopleComboBox people={members} orgId={org.id} label="Chairperson" value={textValue(answers.meeting_chair)?[textValue(answers.meeting_chair)]:[]} onChange={ids=>text("meeting_chair",ids[0]??"")}/>
-    <label style={label}>Minute taker<input style={input} list="movetrack-meeting-members" value={textValue(answers.meeting_recorder)} onChange={e=>text("meeting_recorder",e.target.value)}/><datalist id="movetrack-meeting-members">{members.map(p=><option key={p.id} value={p.displayName}/>)}</datalist></label>
+    <OrganizationPeopleComboBox people={members} orgId={org.id} label="Minute taker" value={textValue(answers.meeting_recorder_id)?[textValue(answers.meeting_recorder_id)]:[]} onChange={ids=>patch({meeting_recorder_id:ids[0]??"",meeting_recorder:members.find(p=>p.id===ids[0])?.displayName??""})}/>
+    {!textValue(answers.meeting_recorder_id)?<label style={label}>External / legacy minute taker<input style={input} value={textValue(answers.meeting_recorder)} onChange={e=>text("meeting_recorder",e.target.value)}/></label>:null}
+    {!textValue(answers.meeting_chair)?<label style={label}>External chairperson<input style={input} value={textValue(answers.meeting_chair_manual)} onChange={e=>text("meeting_chair_manual",e.target.value)}/></label>:null}
     <OrganizationPeopleComboBox people={members} orgId={org.id} label="Facilitator / submitted by" value={actor?[actor]:[]} onChange={ids=>setActor(ids[0]??"")}/>
 
    </div>
@@ -158,9 +165,16 @@ export function MeetingRegisterWorkspace(){
      <p style={{fontSize:11,color:"#64748b",margin:"0 0 4px"}}>{selected.length} present from {members.length} active people in {org.name}.</p>
      {previousMeeting?<button type="button" style={{...btn,padding:"7px 10px",minHeight:36,fontSize:11}} onClick={reuseMeetingPeople}>Reuse previous meeting crew</button>:null}
     </div>
+    {attendanceDetails.map((r,i)=><div key={String(r.person_id)} style={{...box,display:"grid",gap:9}}>
+     <strong>{textValue(r.person_name)}</strong><small>{[r.department,r.job_title].filter(Boolean).join(" · ")}</small>
+     <div style={grid}><label style={label}>Attendance status<select style={input} value={textValue(r.attendance_status)||"Present"} onChange={e=>listPatch("attendance_details",i,{attendance_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
+      <label style={label}>Arrival time<input type="time" style={input} value={textValue(r.arrival_time)} onChange={e=>listPatch("attendance_details",i,{arrival_time:e.target.value})}/></label>
+      <label style={label}>Departure time<input type="time" style={input} value={textValue(r.departure_time)} onChange={e=>listPatch("attendance_details",i,{departure_time:e.target.value})}/></label></div>
+    </div>)}
     <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><strong style={{fontSize:13}}>External/manual attendees ({attendees.length})</strong><button style={btn} onClick={()=>addRow("attendees")}><Plus size={14} style={{display:"inline"}}/> Add person</button></div>
     {attendees.map((r,i)=><div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
      {([["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]] as const).map(([key,title])=><label key={key} style={label}>{title}<input style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
+     <label style={label}>Attendance status<select style={input} value={textValue(r.attendee_status)||"Present"} onChange={e=>listPatch("attendees",i,{attendee_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
      <label style={label}>Attendance acknowledged (demo)<select style={input} value={textValue(r.attendee_ack)||"No"} onChange={e=>listPatch("attendees",i,{attendee_ack:e.target.value})}><option>No</option><option>Yes (unverified)</option></select></label>
      <button aria-label={"Remove attendee "+(i+1)} style={btn} onClick={()=>removeRow("attendees",i)}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
     </div>)}
@@ -180,7 +194,9 @@ export function MeetingRegisterWorkspace(){
         <strong style={{fontSize:12}}>{members.find(p=>p.id===r.person_id)?.displayName??textValue(r.person_name)}</strong>
         <button type="button" aria-label={"Remove absent person "+(i+1)} style={{...btn,minHeight:33,padding:"5px 9px"}} onClick={()=>choosePresence("absent",apologyIds.filter(id=>id!==r.person_id))}><Trash2 size={15}/></button>
        </div>
+       <small>{[r.department,r.job_title].filter(Boolean).join(" · ")}</small>
        <div style={{...grid,gridTemplateColumns:"repeat(auto-fit,minmax(185px,1fr))"}}>
+        <label style={label}>Notification status<select style={input} value={textValue(r.notification_status)||"Not recorded"} onChange={e=>listPatch("apology_details",i,{notification_status:e.target.value})}>{notificationStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
         <label style={label}>Attendance status<select style={input} value={textValue(r.absence_status)||"Apology received"} onChange={e=>listPatch("apology_details",i,{absence_status:e.target.value})}>{apologyStatusOptions.map(option=><option key={option}>{option}</option>)}</select></label>
         <label style={label}>Reason (optional category)<select style={input} value={textValue(r.absence_reason)||"Not specified"} onChange={e=>listPatch("apology_details",i,{absence_reason:e.target.value})}>{apologyReasonOptions.map(option=><option key={option}>{option}</option>)}</select></label>
        </div>
@@ -243,7 +259,7 @@ export function MeetingRegisterWorkspace(){
      </div>
      <label style={label}>Due date<input type="date" style={input} value={textValue(r.due)} onChange={e=>listPatch("actions",i,{due:e.target.value})}/></label>
      <label style={label}>Status<select style={input} value={textValue(r.state)||"Open"} onChange={e=>listPatch("actions",i,{state:e.target.value})}><option>Open</option><option>In progress</option><option>Closed</option></select></label>
-     <button style={btn} onClick={()=>removeRow("actions",i)}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
+     <RepeatableRowActions index={i} count={actions.length} onRemove={()=>removeRow("actions",i)} onMove={direction=>patch({actions:moveRegisterRow(actions,i,direction)})} onDuplicate={()=>patch({actions:duplicateRegisterRow(actions,i)})}/>
     </div>)}
     <div style={grid}><label style={label}>Next review / meeting<input type="date" style={input} value={textValue(answers.next_meeting)} onChange={e=>text("next_meeting",e.target.value)}/></label><label style={label}>Prepared by<input style={input} value={textValue(answers.prepared_by)} onChange={e=>text("prepared_by",e.target.value)}/></label></div>
    </div>
@@ -255,7 +271,7 @@ export function MeetingRegisterWorkspace(){
      onChange={signature=>patch({chair_signature:signature??null})}/>
     <SignatureApprovalTray compact label="Minute taker signature" value={isSignatureEvidence(answers.minute_taker_signature)?answers.minute_taker_signature:null}
      scope={textValue(answers.meeting_title)||"Meeting register"} role="Minute taker" intent="attendance"
-     defaultSignerName={textValue(answers.meeting_recorder)}
+     defaultSignerName={textValue(answers.meeting_recorder)} signerPersonId={textValue(answers.meeting_recorder_id)||undefined}
      onChange={signature=>patch({minute_taker_signature:signature??null})}/>
    </div>
    <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap",justifyContent:"space-between"}}>

@@ -50,7 +50,10 @@ export function buildFormDocument(args:{template:FormTemplate;mode:DocumentMode;
  const answers=args.mode==="blank"?{}:args.submission?.answers??args.answers??{};
  const companyName=(t as FormTemplate&{companyNameSnapshot?:string}).companyNameSnapshot??args.company?.name??"MoveTrack";
  const reference=(t as FormTemplate&{referencePrefix?:string}).referencePrefix??args.company?.documentPrefix??"SHE";
- const people=args.people??[];
+ const currentPeople=args.people??[];
+ const snapshots=Array.isArray(answers.meeting_people_snapshot)?answers.meeting_people_snapshot:[];
+ const people=currentPeople.map(p=>{const snapshot=snapshots.find(r=>r&&typeof r==="object"&&!Array.isArray(r)&&"person_id" in r&&r.person_id===p.id) as Record<string,unknown>|undefined;return snapshot?{...p,displayName:String(snapshot.person_name??p.displayName)}:p;});
+ for(const row of snapshots){if(row&&typeof row==="object"&&!Array.isArray(row)&&"person_id" in row&&"person_name" in row&&!people.some(p=>p.id===row.person_id))people.push({id:String(row.person_id),displayName:String(row.person_name)} as PersonRecord);}
  return {
   title:t.title,company:companyName,reference:reference+" · "+t.id+" · v"+t.version,
   mode:args.mode,status:args.submission?.decision??(args.mode==="blank"?"UNCOMPLETED TEMPLATE":"DRAFT · NOT SUBMITTED"),

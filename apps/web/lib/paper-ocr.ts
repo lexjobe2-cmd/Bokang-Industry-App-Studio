@@ -75,7 +75,10 @@ async function textFromPdf(file:File,progress:(value:PaperProgress)=>void){
  try{
   for(let i=1;i<=limit;i++){
    progress({phase:"Reading PDF page "+i+" of "+limit,percent:Math.round(8+70*(i-1)/limit)});
-   const page=await doc.getPage(i),viewport=page.getViewport({scale:1.65});
+   const page=await doc.getPage(i),nativeViewport=page.getViewport({scale:1});
+   // Bound allocation before rendering, including unusually large PDF page dimensions.
+   if(!Number.isFinite(nativeViewport.width)||!Number.isFinite(nativeViewport.height)||nativeViewport.width<=0||nativeViewport.height<=0)throw Error("Invalid PDF page dimensions.");
+   const viewport=page.getViewport({scale:Math.min(1.65,2200/Math.max(nativeViewport.width,nativeViewport.height))});
    const content=await page.getTextContent();
    const digital=positionedPdfLines(content.items,viewport,pdfjs,i);
    const text=digital.map(l=>l.text).join("\n").trim();

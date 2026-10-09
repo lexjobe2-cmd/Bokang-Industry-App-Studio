@@ -21,6 +21,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
  const [error,setError]=useState("");
  const [highlight,setHighlight]=useState(0);
  const wrap=useRef<HTMLDivElement>(null);
+ const triggerRef=useRef<HTMLButtonElement>(null);
  const searchRef=useRef<HTMLInputElement>(null);
  const selected=useMemo(()=>new Set(value),[value]);
  const scoped=useMemo(()=>people.filter(p=>p.orgId===orgId),[people,orgId]);
@@ -49,9 +50,14 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   const old=document.body.style.overflow;
   const mobile=window.matchMedia("(max-width: 700px)").matches;
   if(mobile)document.body.style.overflow="hidden";
+  const onKey=(e:KeyboardEvent)=>{
+   if(e.key==="Escape"){e.preventDefault();setOpened(false);triggerRef.current?.focus();}
+   if(e.key==="Tab"&&mobile){const nodes=Array.from(wrap.current?.querySelectorAll<HTMLElement>(".movetrack-people-panel button:not([disabled]),.movetrack-people-panel input,.movetrack-people-panel select")??[]);const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}
+  };
+  document.addEventListener("keydown",onKey);
   const handler=(e:PointerEvent)=>{if(wrap.current&&!wrap.current.contains(e.target as Node))setOpened(false);};
   document.addEventListener("pointerdown",handler);
-  return ()=>{document.body.style.overflow=old;document.removeEventListener("pointerdown",handler);};
+  return ()=>{document.body.style.overflow=old;document.removeEventListener("pointerdown",handler);document.removeEventListener("keydown",onKey);triggerRef.current?.focus();};
  },[opened]);
  const chosen=selected.size>0?value.map(id=>choices.find(p=>p.id===id)).filter((p):p is PersonRecord=>!!p):[];
  const missing=value.filter(id=>!choices.some(p=>p.id===id));
@@ -79,24 +85,24 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
    {chosen.map(person=><span key={person.id} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"5px 7px 5px 10px",border:"1px solid #bdd5ef",borderRadius:999,background:"#eaf3ff",color:"#173d68",fontSize:11,fontWeight:800,maxWidth:"100%"}}>
     <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{person.displayName}</span>
     <button type="button" aria-label={"Remove "+person.displayName} onClick={()=>onChange(value.filter(id=>id!==person.id))}
-     style={{border:0,borderRadius:999,display:"grid",placeItems:"center",background:"transparent",minWidth:27,minHeight:27,color:"#245387",cursor:"pointer"}}><X size={14}/></button>
+     style={{border:0,borderRadius:999,display:"grid",placeItems:"center",background:"transparent",minWidth:44,minHeight:44,color:"#245387",cursor:"pointer"}}><X size={14}/></button>
    </span>)}
    {missing.length?<span style={{fontSize:10,color:"#b45309",padding:5}}>{missing.length} selected IDs not found in current directory</span>:null}
   </div>:null}
   <button id={uid+"-trigger"} type="button" aria-expanded={opened} aria-controls={uid+"-options"} aria-haspopup="listbox"
-    onClick={()=>opened?setOpened(false):open()} style={{...input,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",fontSize:13,fontWeight:750,minHeight:48}}>
+    ref={triggerRef} onClick={()=>opened?setOpened(false):open()} style={{...input,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",fontSize:13,fontWeight:750,minHeight:48}}>
    <span style={{display:"flex",gap:8,alignItems:"center",minWidth:0}}><Search size={16} color="#64748b"/><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{placeholder??(multiple?"Search and select employees":"Find a person by name or email")}</span></span>
    <ChevronDown size={17} color="#64748b"/>
   </button>
   {opened?<div className="movetrack-people-panel" id={uid+"-options"} role="group" aria-label={label+" search options"}>
    <div className="movetrack-people-panel-head">
     <strong style={{fontSize:14}}>Find organization people</strong>
-    <button type="button" aria-label="Close people picker" onClick={()=>setOpened(false)} style={{border:0,background:"#edf2f8",color:"#24415e",borderRadius:10,width:38,height:38,display:"grid",placeItems:"center"}}><X size={20}/></button>
+    <button type="button" aria-label="Close people picker" onClick={()=>setOpened(false)} style={{border:0,background:"#edf2f8",color:"#24415e",borderRadius:10,width:44,height:44,display:"grid",placeItems:"center"}}><X size={20}/></button>
    </div>
    <div className="movetrack-people-search">
     <div style={{display:"flex",alignItems:"center",gap:7,border:"1px solid #c6d6e8",borderRadius:12,background:"#fff",padding:"0 10px"}}>
      <Search size={18} color="#64748b"/><input ref={searchRef} role="combobox" aria-label="Search people by name, UPN, email, department or city" aria-autocomplete="list"
-       aria-expanded={opened} aria-controls={uid+"-list"} type="search" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={keyboard}
+       aria-expanded={opened} aria-controls={uid+"-list"} aria-activedescendant={options[highlight]?uid+"-option-"+highlight:undefined} type="search" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={keyboard}
        placeholder="Name, department, email, city..." autoComplete="off"
        style={{border:0,outline:"none",width:"100%",minHeight:49,font:"inherit",fontSize:13,color:"#153553",background:"transparent"}}/>
     </div>
@@ -112,7 +118,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
    <div aria-live="polite" style={{fontSize:10,color:"#64748b",padding:"8px 13px 6px"}}>{busy?"Searching directory…":result.total+" matching people"} · {provider?.mode==="CONNECTED"?"Connected directory":"Local organization directory"}</div>
    {error?<div role="alert" style={{fontSize:11,color:"#b42318",padding:12}}>{error}</div>:null}
    <div className="movetrack-people-options" id={uid+"-list"} role="listbox" aria-label={"People matching "+label} aria-multiselectable={multiple}>
-    {options.map((p,i)=><button type="button" role="option" key={p.id} aria-selected={selected.has(p.id)} aria-disabled={!p.active} disabled={!p.active}
+    {options.map((p,i)=><button type="button" role="option" id={uid+"-option-"+i} key={p.id} aria-selected={selected.has(p.id)} aria-disabled={!p.active} disabled={!p.active}
       onMouseEnter={()=>setHighlight(i)} onClick={()=>pick(p)} className={selected.has(p.id)?"movetrack-person-option selected":"movetrack-person-option"}>
      <span className="movetrack-person-avatar"><UserRound size={18}/></span>
      <span style={{flex:1,minWidth:0,display:"grid",gap:3}}>
@@ -128,8 +134,9 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
    <div className="movetrack-people-footer">
     <small style={{fontSize:10,color:"#64748b"}}>{value.length} {multiple?"people":"person"} selected · matched by stable directory ID</small>
     <div style={{display:"flex",gap:7}}>
-     {value.length?<button type="button" onClick={clear} style={{padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"#fff",fontSize:11,fontWeight:850}}>Clear</button>:null}
-     <button type="button" onClick={()=>setOpened(false)} style={{padding:"9px 13px",borderRadius:10,border:0,background:"#174fa8",color:"#fff",fontSize:11,fontWeight:850}}>Done</button>
+     {multiple?<button type="button" style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"#fff",fontSize:11,fontWeight:850}} onClick={()=>onChange([...new Set([...value,...options.filter(p=>p.active).map(p=>p.id)])])}>Select visible</button>:null}
+     {value.length?<button type="button" onClick={clear} style={{minHeight:44,padding:"9px 11px",borderRadius:10,border:"1px solid #d3dfec",background:"#fff",fontSize:11,fontWeight:850}}>Clear</button>:null}
+     <button type="button" onClick={()=>setOpened(false)} style={{minHeight:44,padding:"9px 13px",borderRadius:10,border:0,background:"#174fa8",color:"#fff",fontSize:11,fontWeight:850}}>Done</button>
     </div>
    </div>
   </div>:null}
