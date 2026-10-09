@@ -11,6 +11,7 @@ import {
 } from "@bokang/domain-data/custom-assurance";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
+import {taskQuickChoices,hazardSuggestions,consequenceQuickChoices,controlSuggestions} from "@bokang/domain-data/form-assist";
 import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
@@ -155,8 +156,10 @@ export function JraWorkspace(){
       <label style={label}>Site<select style={input} value={job.siteId} onChange={e=>patch({siteId:e.target.value})}>{org.siteIds.map(x=><option key={x}>{x}</option>)}</select></label>
       <label style={label}>Work area / asset<input style={input} value={job.location} onChange={e=>patch({location:e.target.value})} placeholder="Workshop bay 4"/></label>
       <OrganizationPeopleComboBox people={persons} orgId={org.id} label="JRA supervisor" value={job.supervisorId?[job.supervisorId]:[]} onChange={ids=>patch({supervisorId:ids[0]??""})}/>
-      <label style={label}>Start date<input type="date" style={input} value={job.startDate} onChange={e=>patch({startDate:e.target.value})}/></label>
-      <label style={label}>End date<input type="date" style={input} value={job.endDate} onChange={e=>patch({endDate:e.target.value})}/></label>
+      <label style={label}>Start date<input type="date" style={input} value={job.startDate} onChange={e=>patch({startDate:e.target.value})}/>
+      <button type="button" style={{...btn,fontSize:11,minHeight:31,padding:"5px 8px",justifySelf:"start"}} onClick={()=>patch({startDate:new Date().toLocaleDateString("en-CA")})}>Today</button></label>
+      <label style={label}>End date<input type="date" style={input} value={job.endDate} onChange={e=>patch({endDate:e.target.value})}/>
+      <button type="button" style={{...btn,fontSize:11,minHeight:31,padding:"5px 8px",justifySelf:"start"}} onClick={()=>patch({endDate:job.startDate||new Date().toLocaleDateString("en-CA")})}>Same as start</button></label>
      </div>
      <label style={label}>Scope of work<textarea style={{...input,minHeight:91}} value={job.scope} onChange={e=>patch({scope:e.target.value})} placeholder="Describe task, boundaries, location and expected outcome"/></label>
      <label style={label}>Method / safe sequence<textarea style={{...input,minHeight:73}} value={job.method} onChange={e=>patch({method:e.target.value})} placeholder="Work execution approach"/></label>
@@ -198,8 +201,12 @@ export function JraWorkspace(){
         <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
          <h3 style={{margin:0,fontSize:16}}>Step {index+1}</h3><button style={{...btn,color:"#b42318"}} onClick={()=>patch({tasks:job.tasks.filter(t=>t.id!==step.id).map((s,i)=>({...s,sequence:i+1}))})}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
         </div>
-        <label style={{...label,marginTop:12}}>Task/activity description<textarea style={{...input,minHeight:66}} value={step.description} onChange={e=>updateTask(step.id,t=>({...t,description:e.target.value}))} placeholder="Isolate, inspect, replace or test a component…"/></label>
-        <label style={{...label,marginTop:10}}>Equipment / tools (comma-separated)<input style={input} value={step.equipment.join(", ")} onChange={e=>updateTask(step.id,t=>({...t,equipment:e.target.value.split(",").map(v=>v.trim()).filter(Boolean)}))} placeholder="LOTO kit, spanners, hydraulic jack"/></label>
+        <label style={{...label,marginTop:12}}>Task/activity description<textarea style={{...input,minHeight:66}} value={step.description} onChange={e=>updateTask(step.id,t=>({...t,description:e.target.value}))} placeholder="Choose a task below or describe the activity"/></label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:7,marginTop:8}} aria-label="Quick task steps">{taskQuickChoices.map(text=><button key={text} type="button" style={{...btn,minHeight:34,fontSize:11,padding:"6px 9px",background:step.description===text?"#dbeafe":"#fff"}} onClick={()=>updateTask(step.id,t=>({...t,description:text}))}>{text}</button>)}</div>
+        <label style={{...label,marginTop:10}}>Equipment / tools (comma-separated)<input style={input} value={step.equipment.join(", ")} onChange={e=>updateTask(step.id,t=>({...t,equipment:e.target.value.split(",").map(v=>v.trim()).filter(Boolean)}))} placeholder="Or tap equipment below"/></label>
+        <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}} aria-label="Select equipment and tools">
+         {["Hand tools","LOTO kit","Barricades","Access platform","Lifting equipment","Inspection kit","Gas detector","Fire extinguisher","PPE"].map(tool=><button type="button" key={tool} aria-pressed={step.equipment.includes(tool)} style={{...btn,padding:"6px 9px",minHeight:33,fontSize:11,background:step.equipment.includes(tool)?"#dbeafe":"#fff"}} onClick={()=>updateTask(step.id,t=>({...t,equipment:step.equipment.includes(tool)?t.equipment.filter(x=>x!==tool):[...new Set([...t.equipment,tool])] }))}>{step.equipment.includes(tool)?"✓ ":""}{tool}</button>)}
+        </div>
         <div style={{display:"grid",gap:10,marginTop:14}}>
          {step.hazards.map((hazard,hi)=>{
           let residual:ReturnType<typeof scoreRisk>|null=null;try{residual=scoreRisk(defaultRiskMatrix,hazard.residual);}catch{}
@@ -207,8 +214,14 @@ export function JraWorkspace(){
            <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:13}}>Hazard {hi+1}</strong><button style={{...btn,padding:7,minHeight:33,color:"#b42318"}} aria-label="Remove hazard" onClick={()=>updateTask(step.id,t=>({...t,hazards:t.hazards.filter(h=>h.id!==hazard.id)}))}><Trash2 size={15}/></button></div>
            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:9}}>
             <label style={label}>Hazard category<select style={input} value={hazard.category} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,category:e.target.value}))}>{dictionary.hazardCategories.map(v=><option key={v}>{v}</option>)}</select></label>
-            <label style={label}>What can go wrong?<input style={input} value={hazard.hazard} placeholder="Unintended equipment movement" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,hazard:e.target.value}))}/></label>
-            <label style={label}>Potential consequence<input style={input} value={hazard.consequence} placeholder="Crush injury / equipment damage" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,consequence:e.target.value}))}/></label>
+            <label style={label}>What can go wrong?<input style={input} value={hazard.hazard} placeholder="Choose a hazard or enter another" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,hazard:e.target.value}))}/>
+             <select aria-label="Choose a suggested hazard" style={{...input,fontSize:11}} value="" onChange={e=>{if(e.target.value)changeHazard(step.id,hazard.id,h=>({...h,hazard:e.target.value}));}}>
+               <option value="">Quick-pick common hazard…</option>{hazardSuggestions(hazard.category).map(x=><option value={x} key={x}>{x}</option>)}
+             </select></label>
+            <label style={label}>Potential consequence<input style={input} value={hazard.consequence} placeholder="Choose or describe consequence" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,consequence:e.target.value}))}/>
+             <select aria-label="Choose a suggested consequence" style={{...input,fontSize:11}} value="" onChange={e=>{if(e.target.value)changeHazard(step.id,hazard.id,h=>({...h,consequence:e.target.value}));}}>
+              <option value="">Quick-pick consequence…</option>{consequenceQuickChoices.map(x=><option key={x}>{x}</option>)}
+             </select></label>
            </div>
            <div><strong style={{fontSize:12}}>People exposed to this hazard</strong>
             {job.participants.length===0?<p style={{color:"#b45309",fontSize:11}}>Add job participants on Team tab first.</p>:<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:7}}>{job.participants.map(p=><button key={p.personId} aria-pressed={hazard.exposedPersonIds.includes(p.personId)} style={{...btn,fontSize:11,padding:"7px 10px",background:hazard.exposedPersonIds.includes(p.personId)?"#dbeafe":"#fff"}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,exposedPersonIds:unique(h.exposedPersonIds,p.personId,!h.exposedPersonIds.includes(p.personId))}))}>{p.nameSnapshot}</button>)}</div>}
@@ -218,7 +231,12 @@ export function JraWorkspace(){
             <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:12}}>Remedies / preventive controls</strong><button style={{...btn,fontSize:11,padding:"7px 9px",minHeight:33}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:[...h.controls,{id:"ctrl-"+crypto.randomUUID(),hierarchy:dictionary.hierarchyOfControls[2],description:"",verified:false}]}))}><Plus size={13} style={{display:"inline"}}/> Add control</button></div>
             {hazard.controls.map(control=><div key={control.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:7,marginTop:8}}>
              <select aria-label="Hierarchy of control" style={input} value={control.hierarchy} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,hierarchy:e.target.value}:c)}))}>{dictionary.hierarchyOfControls.map(v=><option key={v}>{v}</option>)}</select>
-             <input aria-label="Control or remedy" style={input} value={control.description} placeholder="Install physical isolation" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,description:e.target.value}:c)}))}/>
+             <div style={{display:"grid",gap:5}}>
+              <input aria-label="Control or remedy" style={input} value={control.description} placeholder="Select proposed control or enter another" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,description:e.target.value,verified:false}:c)}))}/>
+              <select aria-label="Quick-pick a proposed control" style={{...input,fontSize:11}} value="" onChange={e=>{const selected=e.target.value;if(selected)changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,description:selected,verified:false}:c)}));}}>
+               <option value="">Quick-pick proposed control…</option>{controlSuggestions(hazard.category).map(x=><option key={x}>{x}</option>)}
+              </select>
+             </div>
              <select aria-label="Responsible person" style={input} value={control.ownerId??""} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,ownerId:e.target.value}:c)}))}><option value="">Owner</option>{job.participants.map(p=><option key={p.personId} value={p.personId}>{p.nameSnapshot}</option>)}</select>
              <label style={{fontSize:11,display:"flex",gap:4,alignItems:"center"}}><input type="checkbox" checked={control.verified} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,verified:e.target.checked}:c)}))}/> Verified</label>
              <button aria-label="Delete control" style={{...btn,padding:7}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.filter(c=>c.id!==control.id)}))}><Trash2 size={15}/></button>
@@ -230,6 +248,7 @@ export function JraWorkspace(){
           </div>;
          })}
          <button style={{...btn,justifySelf:"start"}} onClick={()=>updateTask(step.id,t=>({...t,hazards:[...t.hazards,blankHazard()]}))}><Plus size={15} style={{display:"inline"}}/> Add hazard to this step</button>
+         <p style={{fontSize:11,color:"#64748b",margin:0}}>Suggested hazards and proposed controls are text-entry aids only. Each exposure, risk score and actual control verification still needs individual assessment and review.</p>
         </div>
       </motion.section>)}
       <button style={{...primary,justifySelf:"end"}} onClick={()=>setPage("review")}>Next · Review risk assessment →</button>
