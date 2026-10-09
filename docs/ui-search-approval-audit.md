@@ -44,3 +44,7 @@ Reviewed the existing `MoveTrackDemoLab`, `MoveTrackShowcase`, `MoveTrackWorkspa
 - A proper organization search backend + delegated provider connectors with per-user access controls and incremental indexing, when company APIs/storage are connected.
 - Screen-reader, mobile landscape and low-connectivity acceptance tests with real users; WCAG accessibility audit.
 - Remove remaining legacy inline styling in favor of consistent reusable design tokens.
+
+### Final risk-revision safeguard
+- When the JRA job scope, site, method, risk controls, permits or tasks change after local signing, earlier crew and independent reviewer marks are revoked from the active working revision. Each participant must acknowledge the amended work before demo review can proceed. This is tested against an immutable pre-change object.
+- Approval/status gates reject missing signatures, mismatched reviewer IDs, wrong signing intent and stale job/site scope. Signatures cannot be used as a substitute for actual safety verification or enterprise authentication.
