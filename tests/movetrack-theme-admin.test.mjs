@@ -9,6 +9,7 @@ const main=readFileSync(new URL("../apps/web/components/products/MoveTrackDemoLa
 const showcase=readFileSync(new URL("../apps/web/components/products/MoveTrackShowcase.tsx",import.meta.url),"utf8");
 const workflow=readFileSync(new URL("../apps/web/components/products/OperationalGraphPanel.tsx",import.meta.url),"utf8");
 const routes=readFileSync(new URL("../apps/web/components/products/useMoveTrackScreen.ts",import.meta.url),"utf8");
+const driverUi=readFileSync(new URL("../apps/web/components/products/MoveTrackDriverApp.tsx",import.meta.url),"utf8");
 
 function relativeLuminance(color){
  const colors=color.match(/#[0-9a-fA-F]{6}/)?.[0]?.slice(1).match(/.{2}/g);
@@ -65,4 +66,13 @@ test("the independent Admin route is deep-linkable in Pages and standalone app f
  assert.deepEqual(fromMoveTrackPath("/app/admin"),{kind:"workspace",view:"admin"});
  assert.match(routes,/window\.location\.hash\.slice\(1\)/);
  assert.match(routes,/window\.history\.pushState/);
+});
+
+test("driver app follows the same local theme and offers a mobile light/dark toggle",()=>{
+ assert.match(driverUi,/className="movetrack-root movetrack-driver-theme"/);
+ assert.match(driverUi,/data-theme=\{theme\}/);
+ assert.match(driverUi,/MOVETRACK_THEME_KEY/);
+ assert.match(driverUi,/Switch driver app to light mode/);
+ assert.match(driverUi,/Switch driver app to dark mode/);
+ assert.match(theme,/movetrack-driver-theme\[data-theme="dark"\] nav\[aria-label="Driver mobile primary navigation"\]/);
 });
