@@ -92,7 +92,8 @@ test("admin forms and driver assignment cards reuse existing workspaces",()=>{
  const driverUI=readFileSync(new URL("../apps/web/components/products/MoveTrackShowcase.tsx",import.meta.url),"utf8");
  const workforceUI=readFileSync(new URL("../apps/web/components/products/WorkforceDirectoryWorkspace.tsx",import.meta.url),"utf8");
  assert.match(driverUI,/updateDriverDetails\(drivers,editingDriverId,editDriverDetails,assignments\)/);
- assert.match(driverUI,/VehicleDocuments label="Driver documents" readOnly=\{!adminMode\}/);
+ assert.match(driverUI,/adminMode\?<VehicleDocuments label="Driver documents"/);
+ assert.match(driverUI,/linked to an inactive or missing company workforce identity/);
  assert.match(driverUI,/Assignments · \{current.length\} active/);
  assert.match(driverUI,/status:"Available"/);
  assert.match(workforceUI,/CompanyDirectoryImport org=\{org\} people=\{people\} setPeople=\{setPeople\}/);
