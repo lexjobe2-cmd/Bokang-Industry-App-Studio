@@ -16,9 +16,9 @@ import {WorkspaceSteps} from "./WorkspaceSteps";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY} from "./OperationalGraphPanel";
 
-const root:React.CSSProperties={border:"1px solid #d9e5f0",borderRadius:17,background:"#fff",padding:17};
-const input:React.CSSProperties={width:"100%",minHeight:43,padding:"10px 12px",border:"1px solid #cbd5e1",borderRadius:11,font:"inherit",background:"#fff",color:"#152d50"};
-const btn:React.CSSProperties={border:"1px solid #cad6e3",padding:"10px 13px",background:"#fff",borderRadius:10,color:"#1e3a5f",minHeight:43,fontWeight:850,cursor:"pointer"};
+const root:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:17,background:"var(--mt-surface,#fff)",padding:17,color:"var(--mt-ink,#172b46)"};
+const input:React.CSSProperties={width:"100%",minHeight:44,padding:"10px 12px",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:11,font:"inherit",background:"var(--mt-surface-soft,#f8fafc)",color:"var(--mt-ink,#172b46)"};
+const btn:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",padding:"10px 13px",background:"var(--mt-surface,#fff)",borderRadius:10,color:"var(--mt-ink,#172b46)",minHeight:44,fontWeight:850,cursor:"pointer"};
 const primary:React.CSSProperties={...btn,background:"#1d4ed8",color:"#fff",borderColor:"#1d4ed8"};
 const label:React.CSSProperties={fontSize:12,fontWeight:800,color:"#344054",display:"grid",gap:6};
 type PaperDraft={id:string;sourceName:string;kind:string;title:string;category:FormCategory;sections:FormSection[];rawText:string;warnings:string[];confidence:number|null;pages:number;orgId:string;elements?:DetectedElement[];summary?:LayoutProposal["summary"]};
