@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import {Home,Truck,ClipboardCheck,AlertTriangle,UserRound,Menu,X,ChevronRight,ArrowLeft} from "lucide-react";
+import {Home,Truck,ClipboardCheck,AlertTriangle,UserRound,Menu,X,ChevronRight,ArrowLeft,Sun,Moon} from "lucide-react";
 import { usePersistentState } from "@bokang/persistence";
 import {MultiImageEvidence} from "./MultiImageEvidence";
+import {MoveTrackThemeStyles} from "./MoveTrackThemeStyles";
+import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
 import type {LocalEvidenceImage} from "../../lib/image-evidence";
 import {credentialAlerts,driverEligibilityReasons} from "../../lib/driver-competency";
 import { miningCriticalChecks, miningPrestartChecks } from "@bokang/domain-data";
@@ -24,6 +26,7 @@ import {
 } from "../../lib/move-track";
 
 export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
+  const [theme,setTheme]=usePersistentState<MoveTrackTheme>(MOVETRACK_THEME_KEY,"light");
   const [fleet,setFleet] = usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
   const [drivers,setDrivers] = usePersistentState<FleetDriver[]>(MOVE_TRACK_KEYS.drivers,starterDrivers);
   const [assignments,setAssignments] = usePersistentState<FleetAssignment[]>(MOVE_TRACK_KEYS.assignments,[]);
@@ -210,13 +213,18 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
 
   const complianceColor=activeAssignment?.status==="Grounded"||vehicle?.status==="No-go"?"#b42318":activeAssignment?.status==="Cleared"?"#027a48":"#1d4ed8";
 
-  return <main style={{maxWidth:720,margin:"0 auto",padding:"12px clamp(10px,3vw,20px) calc(106px + env(safe-area-inset-bottom))",minHeight:"100vh",background:"#f8fafc",overflowX:"clip"}}>
-    <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+  return <main className="movetrack-root movetrack-driver-theme" data-theme={theme} style={{maxWidth:720,margin:"0 auto",padding:"12px clamp(10px,3vw,20px) calc(106px + env(safe-area-inset-bottom))",minHeight:"100vh",background:theme==="dark"?"#081323":"#f8fafc",color:theme==="dark"?"#f0f6ff":"#15233a",overflowX:"clip"}}>
+    <MoveTrackThemeStyles/>
+    <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",marginBottom:14}}>
      <button ref={drawerButtonRef} type="button" aria-label="Open driver navigation menu" aria-expanded={drawerOpen} aria-controls="movetrack-driver-drawer"
       onClick={()=>setDrawerOpen(true)} style={{display:"flex",gap:8,alignItems:"center",minHeight:45,border:"1px solid #cbd9e9",background:"#fff",borderRadius:12,color:"#173764",padding:"10px 12px",fontWeight:850,cursor:"pointer"}}>
       <Menu size={22}/> Menu
      </button>
-     <strong style={{fontSize:12,color:"#64748b"}}>Driver · {driverTabs.find(t=>t.key===tab)?.description}</strong>
+     <strong style={{fontSize:12,color:"var(--mt-muted,#64748b)",flex:"1 1 92px",textAlign:"right"}}>Driver · {driverTabs.find(t=>t.key===tab)?.description}</strong>
+     <button type="button" aria-label={theme==="dark"?"Switch driver app to light mode":"Switch driver app to dark mode"} onClick={()=>setTheme(theme==="dark"?"light":"dark")}
+       style={{display:"grid",placeItems:"center",minHeight:44,minWidth:44,border:"1px solid var(--mt-border,#cbd9e9)",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#173764)",borderRadius:12,cursor:"pointer"}}>
+       {theme==="dark"?<Sun size={20}/>:<Moon size={20}/>}
+     </button>
     </div>
     {drawerOpen?<div style={{position:"fixed",inset:0,zIndex:130}}>
      <button aria-label="Close driver navigation menu" onClick={()=>setDrawerOpen(false)} style={{position:"absolute",inset:0,width:"100%",height:"100%",background:"rgba(8,23,42,.58)",border:0}}/>
