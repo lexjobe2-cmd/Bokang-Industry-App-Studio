@@ -1,6 +1,6 @@
 import type {ExportDocument,DocumentRow} from "./form-exports";
 import {Document,Packer,Paragraph,TextRun,HeadingLevel,Table,TableRow,TableCell,WidthType,BorderStyle,
- Header,Footer,AlignmentType,PageNumber} from "docx";
+ Header,Footer,AlignmentType,PageNumber,ImageRun} from "docx";
 
 const navy="10233F",ink="223147",slate="53667F",blue="2563B6",border="DFE7F0",light="F4F7FB";
 function rgb(hex?:string){return /^#?[0-9a-f]{6}$/i.test(hex??"")?(hex??"").replace("#","").toUpperCase():blue;}
@@ -16,7 +16,25 @@ const normal=(text:string,color=ink,size=19)=>new TextRun({text,color,size,font:
 function tableParagraph(label:string,text:string,row:number){
  return new Paragraph({spacing:{before:75,after:75},children:[new TextRun({text,color:row<0?navy:ink,size:19,font:"Aptos",bold:row<0})]});
 }
+function signatureBytes(dataUrl:string):Uint8Array{
+ const base64=dataUrl.split(",")[1]??"";
+ const binary=atob(base64),bytes=new Uint8Array(binary.length);
+ for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+ return bytes;
+}
 function pairRow(row:DocumentRow,index:number){
+ if(row.signature){
+  let signatureRun:ImageRun|TextRun;
+  try{signatureRun=new ImageRun({data:signatureBytes(row.signature.imageDataUrl),type:"png",transformation:{width:190,height:76}});}
+  catch{signatureRun=normal("Signature image unavailable",slate,17);}
+  return new TableRow({cantSplit:true,children:[
+   new TableCell({width:{size:38,type:WidthType.PERCENTAGE},shading:{fill:light},margins:{top:160,bottom:140,left:140,right:110},
+     children:[new Paragraph({children:[bold(row.label,ink,18)]})]}),
+   new TableCell({width:{size:62,type:WidthType.PERCENTAGE},margins:{top:130,bottom:140,left:140,right:100},
+     children:[new Paragraph({children:[signatureRun]}),new Paragraph({children:[bold(row.signature.signerName,navy,18),
+       normal("  |  "+row.signature.role,slate,16)]}),new Paragraph({children:[normal("LOCAL DRAWN MARK  /  IDENTITY NOT VERIFIED", "996326",15)]})]})
+  ]});
+ }
  const title=row.label.replace(/\s+\*$/,"");
  const nested=/^\s{2,}/.test(row.label);
  const group=/\brow\s+\d+\b/i.test(row.label)&&!row.value.trim();
