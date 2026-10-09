@@ -1,4 +1,4 @@
-import type {SignatureEvidence} from "./signature-evidence.ts";
+import {isSignatureEvidence,type SignatureEvidence} from "./signature-evidence.ts";
 import type { FormCategory, FormField, FormSection, FormTemplate } from "./assurance-forms.ts";
 import {defaultRiskMatrix,scoreRisk,type RiskAnswer} from "./risk-matrix.ts";
 
@@ -234,14 +234,16 @@ export function assessJra(jra:JobRiskAssessment):{decision:JraDecision;missing:s
 }
 export function canSimulateApproval(jra:JobRiskAssessment):boolean{
  return assessJra(jra).decision==="READY_FOR_DEMO_REVIEW"&&Boolean(jra.reviewerId)&&
-  jra.reviewerId!==jra.supervisorId&&jra.participants.every(p=>p.acknowledged);
+  jra.reviewerId!==jra.supervisorId&&jra.participants.every(p=>p.acknowledged&&isSignatureEvidence(p.signature)&&
+   p.signature.signerPersonId===p.personId&&p.signature.intent==="acknowledgement"&&
+   p.signature.scope===(jra.reference||jra.title||"JRA task review"));
 }
 
 export type TemplateRecipe={id:string;title:string;description:string;category:FormCategory;sections:FormSection[]};
 const q=(id:string,label:string,type:FormField["type"]="text",required=true):FormField=>({id,label,type,required});
 const check=(id:string,label:string,critical=false):FormField=>({...q(id,label,"pass_fail_na"),critical});
 const repeat=(id:string,label:string,columns:Array<[string,string]>):FormField=>({...q(id,label,"repeat"),children:columns.map(([key,name])=>q(key,name))});
-export const templateRecipes:readonly TemplateRecipe[]=[
+const templateRecipeBase:readonly TemplateRecipe[]=[
  {id:"permit-to-work",title:"Permit to Work — Work Authorization",category:"Safety",description:"Scope, permits, isolation, preconditions, duty holder and handback",sections:[
   {id:"work",title:"Work authorization",fields:[q("job_ref","Work order / task ID"),q("area","Work area / location"),q("activity","Scope of permitted work","multiline"),q("start","Start date","datetime"),q("finish","Expiry date","datetime")]},
   {id:"permits",title:"Critical permit controls",fields:[check("isolation","Energy sources isolated",true),check("barricade","Barricade and exclusion zone",true),check("induction","Workforce inducted and competent",true),q("authoriser","Permit issuer"),q("receivers","Responsible job holder")]}]},
@@ -267,6 +269,18 @@ export const templateRecipes:readonly TemplateRecipe[]=[
   {id:"shift",title:"Shift information",fields:[q("date","Handover time","datetime"),q("outgoing","Outgoing shift lead"),q("incoming","Incoming shift lead")]},
   {id:"outstanding",title:"Items carried over",fields:[repeat("tasks","Incomplete work",[["ref","Job / asset"],["action","Outstanding work"],["owner","Owner"]]),q("grounded","Grounded assets","multiline"),q("hazards","Unresolved hazards","multiline"),check("accepted","Incoming shift understands the open risks",true)]}]}
 ];
+/** Independent local review is attached to specialist editable recipes that imply
+ * a supervisor verification/approval action. Vehicle pre-start is operator-owned. */
+const recipeReviewIds=new Set(["permit-to-work","lifting","loto","meeting","fatigue","incident","handover"]);
+export const templateRecipes:readonly TemplateRecipe[]=templateRecipeBase.map(recipe=>!recipeReviewIds.has(recipe.id)?recipe:{
+ ...recipe,sections:[...recipe.sections,{
+  id:"review-signature",title:"Independent reviewer acknowledgement",fields:[
+   {id:"recipe_reviewer",label:"Responsible reviewing supervisor",type:"person",required:true},
+   {id:"recipe_review_signature",label:"Supervisor review and acknowledgement",type:"signature",required:true,signerFieldId:"recipe_reviewer"}
+  ]
+ }]
+});
+
 
 /** Rich fictional example suitable for testing risk, crew acknowledgements and mitigation UI. */
 export function sampleBrakeMaintenanceJra(org:OrganizationProfile,people:readonly PersonRecord[],now:string):JobRiskAssessment{
