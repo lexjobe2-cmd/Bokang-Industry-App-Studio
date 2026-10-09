@@ -58,7 +58,7 @@ test("Admin is in the mobile dock and home hero, and the destination navigates t
  assert.match(showcase,/view==="admin"/);
  assert.match(showcase,/aria-label="Admin workspace"/);
  assert.match(showcase,/Vehicle onboarding & asset media/);
- assert.match(showcase,/adminMode\?driv/); // amended below
+ assert.match(showcase,/contentView=adminMode\?adminArea:view/);
 });
 test("the independent Admin route is deep-linkable in Pages and standalone app flows",()=>{
  assert.equal(moveTrackPath({kind:"workspace",view:"admin"}),"/app/admin");
