@@ -129,6 +129,10 @@ export function validateMeetingInput(a:FormAnswers){
  if(manual.some(row=>!String(row.apology_name??"").trim()))throw Error("Each external apology needs a person's name.");
  const rows=Array.isArray(a.actions)?a.actions:[];
  for(const row of rows){if(!row||Array.isArray(row)||typeof row!=="object"||!String((row as Record<string,unknown>).action??"").trim()||!String((row as Record<string,unknown>).owner??"").trim())throw Error("Each action needs a description and accountable owner.");}
+ for(const row of asRows(a.actions)){
+  if(row.carried_from && !/^\d{4}-\d{2}-\d{2}$/.test(String(row.due??"")))
+   throw Error("Confirm a new due date for every carried-forward action before submitting this meeting.");
+ }
  return true;
 }
 
