@@ -31,7 +31,7 @@ const summary=(text:unknown,max=110)=>String(text??"").replace(/\s+/g," ").slice
 export function buildWorkspaceIndex(data:WorkspaceSearchSources):SearchHit[]{
  const result:SearchHit[]=[];
  const push=(r:Omit<SearchHit,"searchText">,details:string[])=>result.push({...r,searchText:norm([r.title,r.subtitle,r.kind,r.tag??"",...details].join(" "))});
- const person=id=>data.people.find(p=>p.id===id)?.displayName??id;
+ const person=(id:string)=>data.people.find(p=>p.id===id)?.displayName??id;
  for(const company of data.organizations)push({key:"organization:"+company.id,id:company.id,kind:"Company",group:"Organizations",title:company.name,subtitle:company.businessUnit||company.domain,view:"analytics"},[company.domain,company.industry??"",...company.siteIds]);
  for(const worker of data.people.filter(p=>p.orgId===data.orgId))push({key:"person:"+worker.id,id:worker.id,kind:"Worker",group:"People",title:worker.displayName,subtitle:worker.jobTitle+" · "+worker.department,view:"analytics"},[worker.employeeNumber??"",worker.email,worker.location]);
  for(const form of data.forms){
@@ -83,7 +83,7 @@ export function buildWorkspaceIndex(data:WorkspaceSearchSources):SearchHit[]{
   updatedAt:repair.recordedAt},[repair.evidenceReference,repair.repairedBy,...repair.incidentIds]);
  for(const reinspection of data.reinspections??[])push({key:"reinspection:"+reinspection.id,id:reinspection.id,kind:"Independent reinspection",group:"Fleet",
   title:"Reinspection · "+reinspection.vehicleId,subtitle:reinspection.inspectionBy+" · "+reinspection.verdict,view:"release",
-  updatedAt:reinspection.inspectedAt,tag:reinspection.verdict},[reinspection.id]);
+  updatedAt:reinspection.performedAt,tag:reinspection.verdict},[reinspection.id]);
  return result;
 }
 export function searchWorkspace(index:readonly SearchHit[],query:string,group:"All"|SearchGroup="All",limit=30){
