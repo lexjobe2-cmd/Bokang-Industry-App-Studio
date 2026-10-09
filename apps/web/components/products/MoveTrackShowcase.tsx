@@ -507,9 +507,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           <span style={{fontSize:11,color:"#667085"}}>{policy.additionalCriticalChecks.length} extra critical controls</span>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:8,marginTop:12}}>
-          <label style={checkRow}><span>Require site/open-pit permit</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireOpenPitPermit} onChange={e=>editPolicy(policy,d=>({...d,requireOpenPitPermit:e.target.checked}))}/></label>
-          <label style={checkRow}><span>Require first-aid training</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireFirstAid} onChange={e=>editPolicy(policy,d=>({...d,requireFirstAid:e.target.checked}))}/></label>
-          <label style={checkRow}><span>Require defensive driving</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireDefensiveDriving} onChange={e=>editPolicy(policy,d=>({...d,requireDefensiveDriving:e.target.checked}))}/></label>
+          <label style={checkRow}><span>Require site/open-pit permit</span><input type="checkbox" disabled={!adminMode} checked={(siteDrafts[policy.id]??policy).requireOpenPitPermit} onChange={e=>editPolicy(policy,d=>({...d,requireOpenPitPermit:e.target.checked}))}/></label>
+          <label style={checkRow}><span>Require first-aid training</span><input type="checkbox" disabled={!adminMode} checked={(siteDrafts[policy.id]??policy).requireFirstAid} onChange={e=>editPolicy(policy,d=>({...d,requireFirstAid:e.target.checked}))}/></label>
+          <label style={checkRow}><span>Require defensive driving</span><input type="checkbox" disabled={!adminMode} checked={(siteDrafts[policy.id]??policy).requireDefensiveDriving} onChange={e=>editPolicy(policy,d=>({...d,requireDefensiveDriving:e.target.checked}))}/></label>
         </div>
         <div style={{marginTop:12}}>
           <div style={{fontSize:11,fontWeight:850,color:"#667085",marginBottom:7}}>Additional critical vehicle controls</div>
@@ -523,10 +523,10 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
               "Reflective strips / vehicle identification visible",
               "No critical fluid leaks",
               "Cargo secured"
-            ].map((label)=><label key={label} style={checkRow}><span>{label}</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).additionalCriticalChecks.includes(label)} onChange={e=>editPolicy(policy,d=>({...d,additionalCriticalChecks:e.target.checked?[...d.additionalCriticalChecks,label]:d.additionalCriticalChecks.filter(x=>x!==label)}))}/></label>)}
+            ].map((label)=><label key={label} style={checkRow}><span>{label}</span><input type="checkbox" disabled={!adminMode} checked={(siteDrafts[policy.id]??policy).additionalCriticalChecks.includes(label)} onChange={e=>editPolicy(policy,d=>({...d,additionalCriticalChecks:e.target.checked?[...d.additionalCriticalChecks,label]:d.additionalCriticalChecks.filter(x=>x!==label)}))}/></label>)}
           </div>
         </div>
-        {siteDrafts[policy.id]?<div style={{display:"grid",gap:9,marginTop:14,paddingTop:12,borderTop:"1px solid #dbe4ef"}}>
+        {adminMode&&siteDrafts[policy.id]?<div style={{display:"grid",gap:9,marginTop:14,paddingTop:12,borderTop:"1px solid #dbe4ef"}}>
           <p style={{fontSize:11,color:"#b45309",margin:0}}>Policy changes are staged. A supervisor must review before they affect simulated dispatch.</p>
           <SignatureApprovalTray label="Supervisor review site policy" value={siteSignatures[policy.id]??null}
             onChange={sig=>setSiteSignatures(xs=>({...xs,[policy.id]:sig}))} role="Site safety supervisor"
@@ -554,14 +554,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     </section>:null}
 
     {contentView==="jobs"?<div style={{display:"grid",gap:12}}>
-      <DesktopModalDisclosure title="New logistics job" mobileExpanded><section style={panel}><h2 style={{marginTop:0}}>New logistics job</h2><div style={formGrid}>
+      {adminMode?<DesktopModalDisclosure title="New logistics job" mobileExpanded><section style={panel}><h2 style={{marginTop:0}}>New logistics job</h2><div style={formGrid}>
         <Field label="Client"><input list="movetrack-clients" value={client} onChange={(e)=>setClient(e.target.value)} style={input} placeholder="Choose a recent client or type another"/>
          <datalist id="movetrack-clients">{[...new Set(jobs.map(j=>j.client))].map(item=><option key={item} value={item}/>)}</datalist></Field>
         <Field label="Job type"><select value={jobType} onChange={(e)=>setJobType(e.target.value as typeof jobType)} style={input}>{logisticsJobTypes.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="From"><select value={from} onChange={(e)=>setFrom(e.target.value as typeof from)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="To"><select value={to} onChange={(e)=>setTo(e.target.value as typeof to)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
-      </div><button onClick={addJob} style={primaryButton}>Create job</button></section></DesktopModalDisclosure>
-      <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
+      </div><button onClick={addJob} style={primaryButton}>Create job</button></section></DesktopModalDisclosure>:<p style={{...panel,fontSize:12}}>New work orders are created in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("jobs")}>Admin → Jobs</button>.</p>}
+      <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
     <div hidden={contentView!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace /></Suspense>:null}</div>
@@ -569,7 +569,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     <div hidden={contentView!=="paper"}>{visited.has("paper")?<Suspense fallback={<p role="status">Loading document workspace…</p>}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></Suspense>:null}</div>
     {contentView==="release"?<FleetReleaseWorkspace />:null}
     {contentView==="local-data"?<LocalWorkspacePanel />:null}
-    {contentView==="workforce"?<WorkforceDirectoryWorkspace/>:null}
+    {contentView==="workforce"?<WorkforceDirectoryWorkspace adminMode={adminMode}/>:null}
     {contentView==="profile"?<MoveTrackLocalProfile/>:null}
     {contentView==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}
 
