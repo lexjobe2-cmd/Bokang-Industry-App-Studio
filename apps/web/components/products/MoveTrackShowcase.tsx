@@ -417,7 +417,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div><strong style={{fontSize:12}}>Management tools are available</strong>
        <p style={{fontSize:11,color:"var(--mt-muted,#516078)",margin:"4px 0 0",lineHeight:1.5}}>This view shows operational records. Create, edit, upload or approve organizational records in Admin. The demo Admin workspace is accessible without sign-in.</p>
       </div>
-      <button type="button" onClick={()=>openAdminArea(view)} style={{...secondaryButton,minHeight:44,background:"#174fa8",color:"#fff",borderColor:"#174fa8"}}>Open Admin → {view==="paper"?"Paper to digital":view==="workforce"?"Workforce":view==="forms"?"Forms & templates":view==="release"?"Defects & release":view.charAt(0).toUpperCase()+view.slice(1)}</button>
+      <button type="button" onClick={()=>openAdminArea(view)} className="movetrack-ui-button" data-mt-variant="primary" style={{...secondaryButton,minHeight:44,background:"#174fa8",color:"#fff",borderColor:"#174fa8"}}>Open Admin → {view==="paper"?"Paper to digital":view==="workforce"?"Workforce":view==="forms"?"Forms & templates":view==="release"?"Defects & release":view.charAt(0).toUpperCase()+view.slice(1)}</button>
      </aside>:null}
 
 
@@ -426,7 +426,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
        <div><p style={{fontSize:11,color:"var(--mt-link,#1d4ed8)",fontWeight:900,letterSpacing:1.2,margin:0}}>ADMIN · LOCAL DEMONSTRATION</p>
         <h2 style={{fontSize:22,margin:"6px 0"}}>{adminArea==="overview"?"Organization administration":adminArea==="company"?"Company management":adminArea==="fleet"?"Vehicle onboarding & asset media":adminArea==="drivers"?"Driver onboarding":adminArea==="workforce"?"Employee directory":adminArea==="sites"?"Site policies":adminArea==="forms"?"Form & template management":"Manage "+adminArea}</h2>
         <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Set up and manage every organizational workspace here. This frontend uses local demo access, not verified admin authentication.</p></div>
-       {adminArea!=="overview"?<button type="button" onClick={()=>setAdminArea("overview")} style={secondaryButton}>← All admin tools</button>:null}
+       {adminArea!=="overview"?<button type="button" onClick={()=>setAdminArea("overview")} className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton}>← All admin tools</button>:null}
       </div>
       {adminArea==="overview"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:9}}>
        {([
@@ -481,8 +481,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             {last?.result==="NO-GO"?<div style={{fontSize:11,color:"var(--mt-danger,#b42318)"}}>{last.reasons.join(" · ")}</div>:null}
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {driver?<a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={primaryLink}>Open driver app</a>:null}
-              {assignment.status==="Grounded"?<button onClick={()=>setView("release")} style={secondaryButton}>Open repair and reinspection workflow</button>:null}
-              {adminMode&&assignment.status!=="In use"?<button onClick={()=>cancelAssignment(assignment)} style={{...secondaryButton,color:"var(--mt-danger,#b42318)"}}>Cancel assignment</button>:null}
+              {assignment.status==="Grounded"?<button onClick={()=>setView("release")} className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton}>Open repair and reinspection workflow</button>:null}
+              {adminMode&&assignment.status!=="In use"?<button onClick={()=>cancelAssignment(assignment)} className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,color:"var(--mt-danger,#b42318)"}}>Cancel assignment</button>:null}
             </div>
           </div>;
         })}
@@ -507,7 +507,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
                 scope={"Incident "+item.id+" · corrective action: "+(resolutionNotes[item.id]??"").trim()}
                 onChange={signature=>setIncidentSignatures(current=>({...current,[item.id]:signature??undefined}))}/>
               <button onClick={()=>resolveIncident(item.id)} disabled={!isSignatureEvidence(incidentSignatures[item.id])}
-                style={{...secondaryButton,opacity:isSignatureEvidence(incidentSignatures[item.id])?1:.6}}>Resolve reviewed defect (demo)</button>
+                className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,opacity:isSignatureEvidence(incidentSignatures[item.id])?1:.6}}>Resolve reviewed defect (demo)</button>
             </div>
           </div>;
         })}
@@ -530,8 +530,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Roadworthy expiry"><input type="date" value={vehicleDraft.roadworthyExpiry} onChange={(e)=>setVehicleDraft((c)=>({...c,roadworthyExpiry:e.target.value}))} style={input}/></Field>
         <Field label="Extinguisher service due"><input type="date" value={vehicleDraft.extinguisherServiceDue} onChange={(e)=>setVehicleDraft((c)=>({...c,extinguisherServiceDue:e.target.value}))} style={input}/></Field>
        <MultiImageEvidence label="Vehicle onboarding photos" images={vehiclePhotos} onChange={setVehiclePhotos}/>
-      </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></section></DesktopModalDisclosure>
-      :<div style={{...panel,fontSize:12}}>Vehicle records are visible here. Onboarding and vehicle editing are handled in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("fleet")}>Admin → Vehicles</button>.</div>}
+      </div><button onClick={addVehicle} className="movetrack-ui-button" data-mt-variant="primary" style={primaryButton}>Add vehicle</button></section></DesktopModalDisclosure>
+      :<div style={{...panel,fontSize:12}}>Vehicle records are visible here. Onboarding and vehicle editing are handled in <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton} onClick={()=>openAdminArea("fleet")}>Admin → Vehicles</button>.</div>}
 
       <div className="movetrack-fleet-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
         {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid var(--mt-danger,#fecaca)":"1px solid var(--mt-border,#dbeafe)"}}>
@@ -545,8 +545,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             <span>Fire extinguisher service due: <strong>{vehicle.extinguisherServiceDue}</strong></span>
             <span>Odometer: <strong>{vehicle.odometerKm.toLocaleString()} km</strong></span>
           </div>
-          {adminMode?<button type="button" style={{...secondaryButton,marginTop:12,minHeight:44}} onClick={()=>beginVehicleEdit(vehicle)}>Edit vehicle details</button>:null}
-          {vehicle.status==="No-go"?<button onClick={()=>setView("release")} style={{...secondaryButton,marginTop:12}}>Recheck baseline after corrective action</button>:null}
+          {adminMode?<button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,marginTop:12,minHeight:44}} onClick={()=>beginVehicleEdit(vehicle)}>Edit vehicle details</button>:null}
+          {vehicle.status==="No-go"?<button onClick={()=>setView("release")} className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,marginTop:12}}>Recheck baseline after corrective action</button>:null}
         </article>)}
       </div>
       {adminMode?<DesktopModal title="Edit vehicle details" open={Boolean(editingVehicleId&&editDetails)} onClose={()=>{setEditingVehicleId(null);setEditDetails(null);}}>
@@ -563,8 +563,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
          <Field label="Extinguisher service due"><input aria-label="Edit extinguisher due" type="date" style={input} value={editDetails.extinguisherServiceDue==="Not set"?"":editDetails.extinguisherServiceDue} onChange={event=>setEditDetails(current=>current?{...current,extinguisherServiceDue:event.target.value||"Not set"}:current)}/></Field>
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:9}}>
-         <button type="button" style={{...primaryButton,marginTop:0,minHeight:44}} onClick={saveVehicleEdit}>Save vehicle details</button>
-         <button type="button" style={{...secondaryButton,minHeight:44}} onClick={()=>{setEditingVehicleId(null);setEditDetails(null);}}>Cancel</button>
+         <button type="button" className="movetrack-ui-button" data-mt-variant="primary" style={{...primaryButton,marginTop:0,minHeight:44}} onClick={saveVehicleEdit}>Save vehicle details</button>
+         <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,minHeight:44}} onClick={()=>{setEditingVehicleId(null);setEditDetails(null);}}>Cancel</button>
         </div>
        </div>:null}
       </DesktopModal>:null}
@@ -579,8 +579,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
          </select></Field>
         <Field label="Phone"><input type="tel" autoComplete="tel" value={driverDraft.phone} onChange={(e)=>setDriverDraft((c)=>({...c,phone:e.target.value}))} style={input}/></Field>
         <Field label="Licence / reference"><input value={driverDraft.licenceNo} onChange={(e)=>setDriverDraft((c)=>({...c,licenceNo:e.target.value}))} style={input}/></Field>
-      </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section></DesktopModalDisclosure>
-      :<div style={{...panel,fontSize:12}}>Onboard company drivers under <button type="button" style={secondaryButton} onClick={()=>openAdminArea("drivers")}>Admin → Drivers</button>.</div>}
+      </div><button onClick={addDriver} className="movetrack-ui-button" data-mt-variant="primary" style={primaryButton}>Add driver</button></section></DesktopModalDisclosure>
+      :<div style={{...panel,fontSize:12}}>Onboard company drivers under <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton} onClick={()=>openAdminArea("drivers")}>Admin → Drivers</button>.</div>}
       {adminMode?<section aria-label="Driver credential reminders" style={{...panel,display:"grid",gap:7,borderColor:"var(--mt-warning,#fde68a)"}}>
         <strong style={{fontSize:14}}>Licence, permit and training reminders</strong>
         <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Visible on this device when Admin → Drivers is opened. No email, push notifications or background monitoring is configured.</p>
@@ -599,7 +599,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       </section>:null}
       {adminMode&&focusedDriverId?<div style={{...panel,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
         <strong style={{fontSize:12}}>Showing selected driver from the compliance overview</strong>
-        <button type="button" style={{...secondaryButton,minHeight:44}} onClick={()=>setFocusedDriverId(null)}>Show all drivers</button>
+        <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,minHeight:44}} onClick={()=>setFocusedDriverId(null)}>Show all drivers</button>
       </div>:null}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
         {(adminMode&&focusedDriverId?drivers.filter(driver=>driver.id===focusedDriverId):drivers).map((driver)=><article key={driver.id} style={panel}>
@@ -615,7 +615,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
                 {fleet.find(v=>v.id===a.vehicleId)?.fleetNo??a.vehicleId} · {a.site} · <strong>{a.status}</strong>
               </div>):<span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>No active assignment</span>}
               {history.length>current.length?<small style={{color:"var(--mt-muted,#64748b)"}}>Previous: {history.filter(a=>a.status==="Returned"||a.status==="Cancelled").slice(0,2).map(a=>a.status+" · "+(fleet.find(v=>v.id===a.vehicleId)?.fleetNo??a.vehicleId)).join("; ")||"Previous records available"}</small>:null}
-              {adminMode?<button type="button" style={{...secondaryButton,minHeight:44,marginTop:4}} onClick={()=>setView("assign")}>Open assignments</button>:null}
+              {adminMode?<button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,minHeight:44,marginTop:4}} onClick={()=>setView("assign")}>Open assignments</button>:null}
             </div>;
           })()}
           {adminMode?<VehicleDocuments label="Driver documents" documents={driver.documents??[]} onChange={documents=>{
@@ -627,7 +627,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             }
             setDrivers(current=>current.map(item=>item.id===driver.id?{...item,documents}:item));
           }}/>:null}
-          {adminMode?<button type="button" style={{...secondaryButton,marginTop:11,minHeight:44}} onClick={()=>beginDriverEdit(driver)}>Edit driver profile</button>:null}
+          {adminMode?<button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,marginTop:11,minHeight:44}} onClick={()=>beginDriverEdit(driver)}>Edit driver profile</button>:null}
           <DriverCompetencyPanel driver={driver} adminMode={adminMode} draft={competencyDrafts[driver.id]} evidenceDraft={competencyEvidenceDrafts[driver.id]}
             onChange={(key,date)=>editDriverCompetency(driver,key,date)} onEvidenceChange={(key,id)=>editDriverEvidence(driver,key,id)}/>
           <div style={{display:"grid",gap:7,marginTop:12}}>
@@ -642,10 +642,10 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
               value={authorizationSignatures[driver.id]??null} onChange={sig=>setAuthorizationSignatures(xs=>({...xs,[driver.id]:sig}))}
               scope={driverScope(driver,authorizationDrafts[driver.id]!)} role="Site supervisor"/>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-              <button type="button" style={{...secondaryButton,background:"#173764",color:"#fff"}}
+              <button type="button" className="movetrack-ui-button" data-mt-variant="primary" style={{...secondaryButton,background:"#173764",color:"#fff"}}
                 disabled={!isSignatureEvidence(authorizationSignatures[driver.id])||authorizationSignatures[driver.id]?.scope!==driverScope(driver,authorizationDrafts[driver.id]!)}
                 onClick={()=>saveDriverAuthorization(driver)}>Save reviewed competency</button>
-              <button type="button" style={secondaryButton} onClick={()=>discardDriverReview(driver.id)}>Discard</button>
+              <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton} onClick={()=>discardDriverReview(driver.id)}>Discard</button>
             </div>
            </div>:driver.authorizationReview?<small style={{display:"block",marginTop:9,color:"var(--mt-success,#047857)"}}>Demo supervisor acknowledgement recorded · {new Date(driver.authorizationReview.signedAt).toLocaleDateString()}</small>:null}
           <a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={{...primaryLink,marginTop:12}}>Open driver app</a>
@@ -661,8 +661,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
          <Field label="Licence / reference"><input aria-label="Edit driver licence" style={input} value={editDriverDetails.licenceNo} onChange={event=>setEditDriverDetails(current=>current?{...current,licenceNo:event.target.value}:current)}/></Field>
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:9}}>
-         <button type="button" style={{...primaryButton,minHeight:44,marginTop:0}} onClick={saveDriverEdit}>Save driver profile</button>
-         <button type="button" style={{...secondaryButton,minHeight:44}} onClick={()=>{setEditingDriverId(null);setEditDriverDetails(null);setDriverEditError("");}}>Cancel</button>
+         <button type="button" className="movetrack-ui-button" data-mt-variant="primary" style={{...primaryButton,minHeight:44,marginTop:0}} onClick={saveDriverEdit}>Save driver profile</button>
+         <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...secondaryButton,minHeight:44}} onClick={()=>{setEditingDriverId(null);setEditDriverDetails(null);setDriverEditError("");}}>Cancel</button>
         </div>
        </div>:null}
       </DesktopModal>:null}
@@ -706,9 +706,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             onChange={sig=>setSiteSignatures(xs=>({...xs,[policy.id]:sig}))} role="Site safety supervisor"
             scope={policyScope(siteDrafts[policy.id]!)} description="Assess the site requirements and preserve safety-critical controls; the local signature is not a verified authorization."/>
           <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-           <button type="button" style={{...secondaryButton,background:"#173764",color:"#fff"}} onClick={()=>saveSitePolicy(policy)}
+           <button type="button" className="movetrack-ui-button" data-mt-variant="primary" style={{...secondaryButton,background:"#173764",color:"#fff"}} onClick={()=>saveSitePolicy(policy)}
              disabled={!isSignatureEvidence(siteSignatures[policy.id])||siteSignatures[policy.id]?.scope!==policyScope(siteDrafts[policy.id]!)}>Save reviewed policy</button>
-           <button type="button" style={secondaryButton} onClick={()=>{setSiteDrafts(xs=>{const next={...xs};delete next[policy.id];return next;});setSiteSignatures(xs=>({...xs,[policy.id]:null}));}}>Discard</button>
+           <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton} onClick={()=>{setSiteDrafts(xs=>{const next={...xs};delete next[policy.id];return next;});setSiteSignatures(xs=>({...xs,[policy.id]:null}));}}>Discard</button>
           </div>
         </div>:policy.policyReview?<small style={{display:"block",marginTop:10,color:"var(--mt-success,#047857)"}}>Last demo supervisor review · {new Date(policy.policyReview.signedAt).toLocaleDateString()}</small>:null}
       </article>)}
@@ -723,8 +723,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Driver"><select value={assignDriver} onChange={(e)=>setAssignDriver(e.target.value)} style={input}><option value="">Select driver</option>{drivers.filter((item)=>item.status==="Available").map((item)=><option key={item.id} value={item.id}>{item.name}{!item.siteAuthorised?" · authorisation pending":""}</option>)}</select></Field>
         <Field label="Job (optional)"><select value={assignJob} onChange={(e)=>setAssignJob(e.target.value)} style={input}><option value="">No job linked</option>{jobs.filter((job)=>!["Delivered","Closed"].includes(job.state)).map((job)=><option key={job.id} value={job.id}>{job.id} · {job.client}</option>)}</select></Field>
         <Field label="Site / destination"><input value={assignSite} onChange={(e)=>setAssignSite(e.target.value)} style={input}/></Field>
-      </div>:<p style={{...panel,fontSize:12,marginTop:12}}>Vehicle and driver assignment is managed in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("assign")}>Admin → Assignments</button>. Assigned work remains visible in the operations dashboard.</p>}
-      {adminMode?<button onClick={createAssignment} style={primaryButton}>Assign and require driver pre-start</button>:null}
+      </div>:<p style={{...panel,fontSize:12,marginTop:12}}>Vehicle and driver assignment is managed in <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton} onClick={()=>openAdminArea("assign")}>Admin → Assignments</button>. Assigned work remains visible in the operations dashboard.</p>}
+      {adminMode?<button onClick={createAssignment} className="movetrack-ui-button" data-mt-variant="primary" style={primaryButton}>Assign and require driver pre-start</button>:null}
     </section>:null}
 
     {contentView==="jobs"?<div style={{display:"grid",gap:12}}>
@@ -734,7 +734,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Job type"><select value={jobType} onChange={(e)=>setJobType(e.target.value as typeof jobType)} style={input}>{logisticsJobTypes.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="From"><select value={from} onChange={(e)=>setFrom(e.target.value as typeof from)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="To"><select value={to} onChange={(e)=>setTo(e.target.value as typeof to)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
-      </div><button onClick={addJob} style={primaryButton}>Create job</button></section></DesktopModalDisclosure>:<p style={{...panel,fontSize:12}}>New work orders are created in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("jobs")}>Admin → Jobs</button>.</p>}
+      </div><button onClick={addJob} className="movetrack-ui-button" data-mt-variant="primary" style={primaryButton}>Create job</button></section></DesktopModalDisclosure>:<p style={{...panel,fontSize:12}}>New work orders are created in <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={secondaryButton} onClick={()=>openAdminArea("jobs")}>Admin → Jobs</button>.</p>}
       <div style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid var(--mt-border,#eff6ff)",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
