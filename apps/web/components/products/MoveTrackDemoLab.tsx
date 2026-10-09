@@ -113,7 +113,8 @@ export function MoveTrackDemoLab(){
     <h1 style={{fontSize:"clamp(30px,5vw,49px)",maxWidth:850,lineHeight:1.08,margin:"0 0 12px"}}>Fleet + SHE Operational Assurance</h1>
     <p style={{maxWidth:780,color:"#cbd5e1",fontSize:14,lineHeight:1.75,margin:0}}>Your company, fleet and safety work in one workspace. Start inspections, record meetings and follow up on actions. Choose a workspace below to get started. Your company records and drafts save on this browser.</p>
     <div style={{display:"flex",gap:9,flexWrap:"wrap",marginTop:22}}>
-     <a href="/driver/move-track?driver=DRV-001" style={{...style,display:"flex",gap:7,alignItems:"center",padding:"11px 14px",color:"#fff",background:"#2563eb",fontSize:13,fontWeight:850,textDecoration:"none",border:0}}>Open driver mobile app <ArrowUpRight size={17}/></a>
+     <button type="button" onClick={()=>goWorkspace("admin")} style={{...style,display:"flex",gap:7,alignItems:"center",padding:"11px 14px",color:"#fff",background:"#2563eb",fontSize:13,fontWeight:850,border:0,cursor:"pointer"}}>Open Admin test workspace <ArrowUpRight size={17}/></button>
+     <a href="/driver/move-track?driver=DRV-001" style={{...style,display:"flex",gap:7,alignItems:"center",padding:"11px 14px",color:"#fff",background:"#203550",fontSize:13,fontWeight:850,textDecoration:"none",border:"1px solid #58708f"}}>Open driver mobile app <ArrowUpRight size={17}/></a>
      <span style={{...style,padding:"11px 14px",color:"#cbd5e1",background:"#203550",border:"1px solid #58708f",fontSize:12}}>Demo site: Jwaneng mine profile</span>
     </div>
    </div>

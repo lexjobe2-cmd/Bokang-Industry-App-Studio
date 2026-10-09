@@ -8,14 +8,15 @@ import {
 import {motion,useReducedMotion} from "framer-motion";
 import {navigationGroups,type MoveTrackView} from "./MoveTrackWorkspaceNav";
 
-export type PrimaryDestination="home"|"fleet"|"forms"|"analytics"|"profile";
-export const MOBILE_DESTINATIONS:readonly PrimaryDestination[]=["home","fleet","forms","analytics","profile"];
+export type PrimaryDestination="home"|"fleet"|"forms"|"analytics"|"profile"|"admin";
+export const MOBILE_DESTINATIONS:readonly PrimaryDestination[]=["home","fleet","forms","analytics","profile","admin"];
 const destinations=[
  {key:"home" as const,label:"Home",icon:Home},
  {key:"fleet" as const,label:"Fleet",icon:Truck},
  {key:"forms" as const,label:"Forms",icon:ClipboardCheck},
  {key:"analytics" as const,label:"Analytics",icon:BarChart3},
- {key:"profile" as const,label:"Profile",icon:UserRound}
+ {key:"profile" as const,label:"Profile",icon:UserRound},
+ {key:"admin" as const,label:"Admin",icon:ShieldCheck}
 ] as const;
 const labelFor=(view:MoveTrackView)=>navigationGroups.flatMap(group=>group.items.map(item=>({view:item.view,label:item.label,description:item.description}))).find(x=>x.view===view)?.label??"Workspaces";
 
@@ -45,6 +46,7 @@ export function MoveTrackAppShellNav({
  function press(destination:PrimaryDestination){
   if(destination==="home"){home();return;}
   if(destination==="profile"){navigate("profile");return;}
+  if(destination==="admin"){navigate("admin");return;}
   navigate(destination);
  }
  useEffect(()=>{
@@ -90,8 +92,8 @@ export function MoveTrackAppShellNav({
 
   <nav style={keyboardOpen?{display:"none"}:undefined} className="movetrack-mobile-dock" aria-label="MoveTrack mobile primary navigation">
    {destinations.map(item=>{
-    const active=!screenLabel&&(item.key==="home"?atHome:item.key==="profile"?!atHome&&activeView==="profile":!atHome&&(item.key==="forms"?["forms","meetings","paper"].includes(activeView):item.key==="fleet"?["control","fleet","drivers","sites","assign","jobs","release"].includes(activeView):activeView===item.key));
-    return <button type="button" key={item.key} className={active?"movetrack-dock-action is-active":"movetrack-dock-action"} aria-current={active?"page":undefined} onClick={()=>press(item.key)}>
+    const active=!screenLabel&&(item.key==="home"?atHome:item.key==="profile"?!atHome&&activeView==="profile":item.key==="admin"?!atHome&&activeView==="admin":!atHome&&(item.key==="forms"?["forms","meetings","paper"].includes(activeView):item.key==="fleet"?["control","fleet","drivers","sites","assign","jobs","release"].includes(activeView):activeView===item.key));
+    return <button type="button" key={item.key} aria-label={item.key==="admin"?"Open Admin test workspace":item.label} className={active?"movetrack-dock-action is-active":"movetrack-dock-action"} aria-current={active?"page":undefined} onClick={()=>press(item.key)}>
      <item.icon size={24} strokeWidth={active?2.6:1.95}/>
      <span>{item.label}</span>
     </button>;
