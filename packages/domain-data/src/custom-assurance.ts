@@ -13,6 +13,8 @@ export const dictionary={
  categories:["Fleet","Safety","Meetings","Risk","Handover","Inspections"] as const,
  sources:["MANUAL","MICROSOFT_365","CSV_IMPORT","LOCAL_DEMO"] as const,
  inputTypes:[
+ {id:"checkbox",label:"Single checkbox",purpose:"One independent tick / confirmation"},
+ {id:"radio",label:"Radio choices",purpose:"Select one among mutually exclusive options"},
  {id:"text",label:"Short text",purpose:"Names, permit numbers, workplace"},
  {id:"multiline",label:"Long text",purpose:"Incident details, action descriptions"},
  {id:"number",label:"Number",purpose:"Engine hours, people count, meter reading"},
