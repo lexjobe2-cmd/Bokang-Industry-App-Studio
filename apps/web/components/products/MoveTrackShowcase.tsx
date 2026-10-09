@@ -8,6 +8,13 @@ import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
 import {MoveTrackWorkspaceNav,type MoveTrackView} from "./MoveTrackWorkspaceNav";
+import {MoveTrackGlobalSearch} from "./MoveTrackGlobalSearch";
+import {makeSearchProvider,workspaceIndex,type SearchHit} from "@bokang/domain-data/workspace-search";
+import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
+import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY,recipeTemplateId} from "./OperationalGraphPanel";
+import {ASSURANCE_STORAGE,demoOrganization,demoPeople,type OrganizationProfile,type PersonRecord,type CustomTemplate,type JobRiskAssessment} from "@bokang/domain-data/custom-assurance";
+import {starterAssuranceTemplates,type FormSubmission} from "@bokang/domain-data/assurance-forms";
+import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance";
 import {MoveTrackHelpCenter} from "./MoveTrackHelpCenter";
 import { UserParticipationAnalytics } from "./UserParticipationAnalytics";
 import { PaperToDigitalWorkspace } from "./PaperToDigitalWorkspace";
@@ -49,6 +56,15 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   const [prestarts]=usePersistentState<PrestartRecord[]>(MOVE_TRACK_KEYS.prestarts,[]);
   const [incidents,setIncidents]=usePersistentState<FleetIncident[]>(MOVE_TRACK_KEYS.incidents,[]);
   const [policies,setPolicies]=usePersistentState<FleetSitePolicy[]>(MOVE_TRACK_KEYS.policies,starterPolicies);
+  const [orgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
+  const [directory]=usePersistentState<PersonRecord[]>(ASSURANCE_STORAGE.directory,demoPeople);
+  const [customTemplates]=usePersistentState<CustomTemplate[]>(ASSURANCE_STORAGE.templates,[]);
+  const [forms]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
+  const [riskAssessments]=usePersistentState<JobRiskAssessment[]>(ASSURANCE_STORAGE.jras,[]);
+  const [,setOpenedTemplate]=usePersistentState<string|null>(ACTIVE_WORKFLOW_KEY,null);
+  const [,setFormsTab]=usePersistentState<"library"|"records"|"designer"|"jra">(ACTIVE_FORMS_TAB_KEY,"library");
+  const [,setOpenedJra]=usePersistentState<JobRiskAssessment|null>("bokang-studio.move-track.jra.working.v1",null);
+
 
   const [view,setView]=useState<MoveTrackView>(initialView);
   const [notice,setNotice]=useState("");
@@ -79,6 +95,52 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
     due:fleet.filter((item)=>item.status==="Inspection due").length,
     openIncidents:incidents.filter((item)=>item.status!=="Resolved").length,
   }),[fleet,incidents]);
+
+
+  // Live local search. Each collection maps arbitrary source records into the same
+  // schema; no fixed keywords, endpoint keys or vendor index requirement.
+  const searchIndex=useMemo(()=>workspaceIndex([
+   makeSearchProvider({id:"safety-workflows",category:"Safety workflows",target:"forms",items:additionalAssuranceRecipes,
+    toDocument:r=>({id:r.id,title:r.title,description:r.trigger,fields:[r.area,...r.criticalControls],priority:8,recordId:recipeTemplateId(orgId,r.id)})}),
+   makeSearchProvider({id:"form-library",category:"Form templates",target:"forms",items:starterAssuranceTemplates,
+    toDocument:r=>({id:r.id,title:r.title,description:"Reusable blank SHE form",fields:[r.category,...r.sections.flatMap(s=>s.fields.map(f=>f.label))],recordId:r.id})}),
+   makeSearchProvider({id:"custom-forms",category:"Company templates",target:"forms",items:customTemplates.filter(t=>t.organizationId===orgId),
+    toDocument:r=>({id:r.id,title:r.title,description:r.description||"Branded company form",status:r.status,fields:r.sections.flatMap(s=>s.fields.map(f=>f.label)),recordId:r.id})}),
+   makeSearchProvider({id:"submissions",category:"Saved forms",target:"forms",items:forms.filter(r=>((r.templateSnapshot as typeof r.templateSnapshot&{organizationId?:string}).organizationId??demoOrganization.id)===orgId),
+    toDocument:r=>({id:r.id,title:r.templateSnapshot.title,description:r.taskId||r.siteId,status:r.decision,fields:[r.siteId,r.taskId??"",r.submittedAt],recordId:r.templateId,priority:3})}),
+   makeSearchProvider({id:"workforce",category:"People",target:"drivers",items:directory.filter(p=>p.orgId===orgId),
+    toDocument:p=>({id:p.id,title:p.displayName,description:p.jobTitle||p.department,fields:[p.department,p.location,p.employeeNumber??"",p.email],status:p.active?"Active":"Inactive"})}),
+   makeSearchProvider({id:"risk-assessments",category:"Job risk assessments",target:"forms",items:riskAssessments.filter(j=>j.orgId===orgId),
+    toDocument:j=>({id:j.id,title:j.title||j.reference,description:j.scope||j.jobId,fields:[j.reference,j.jobId,j.location,j.siteId,...j.tasks.flatMap(t=>[t.description,...t.hazards.map(h=>h.hazard)])],status:j.status,recordId:j.id,priority:5})}),
+   makeSearchProvider({id:"vehicles",category:"Fleet assets",target:"fleet",items:fleet,
+    toDocument:v=>({id:v.id,title:v.fleetNo+" · "+v.makeModel,description:v.registration,fields:[v.type,v.site,v.status,v.registration],status:v.status})}),
+   makeSearchProvider({id:"drivers",category:"Drivers",target:"drivers",items:drivers,
+    toDocument:d=>({id:d.id,title:d.name,description:d.licenceNo,fields:[d.phone,d.status],status:d.status})}),
+   makeSearchProvider({id:"assignments",category:"Assignments",target:"assign",items:assignments,
+    toDocument:a=>({id:a.id,title:"Assignment "+a.id,description:a.site,fields:[a.vehicleId,a.driverId,a.jobId??"",a.status],status:a.status})}),
+   makeSearchProvider({id:"work-orders",category:"Jobs",target:"jobs",items:jobs,
+    toDocument:j=>({id:j.id,title:j.id+" · "+j.client,description:j.type,fields:[j.from,j.to,j.driver,j.state],status:j.state})}),
+   makeSearchProvider({id:"incidents",category:"Safety defects",target:"control",items:incidents,
+    toDocument:i=>({id:i.id,title:i.category+" · "+i.id,description:i.description,fields:[i.vehicleId,i.severity,i.resolutionNote??"",i.status],status:i.status,priority:4})}),
+   makeSearchProvider({id:"sites",category:"Sites",target:"sites",items:policies,
+    toDocument:p=>({id:p.id,title:p.name,description:"Fleet site safety policy",fields:p.additionalCriticalChecks})}),
+   makeSearchProvider({id:"prestarts",category:"Pre-start checks",target:"fleet",items:prestarts,
+    toDocument:p=>({id:p.id,title:"Pre-start "+p.id,description:p.vehicleId,fields:[p.driverId,p.assignmentId,p.notes,...p.reasons],status:p.result})})
+  ]),[orgId,customTemplates,forms,directory,riskAssessments,fleet,drivers,assignments,jobs,incidents,policies,prestarts]);
+  function openSearchResult(result:SearchHit){
+   const target=result.target as MoveTrackView;
+   if(result.source==="safety-workflows"||result.source==="form-library"||result.source==="custom-forms"){
+    setOpenedTemplate(result.recordId??result.id);setFormsTab(result.source==="custom-forms"&&result.status==="DRAFT"?"designer":"library");
+   }else if(result.source==="submissions"){
+    setOpenedTemplate(result.recordId??null);setFormsTab("records");
+   }else if(result.source==="risk-assessments"){
+    const selected=riskAssessments.find(j=>j.id===result.id);
+    if(selected)setOpenedJra(selected);
+    setFormsTab("jra");
+   }else if(target==="forms"){setFormsTab("library");}
+   setView(target);
+   setNotice("Opened "+result.category+": "+result.title+". Demo record context is stored on this device.");
+  }
 
   function addVehicle(){
     if(!vehicleDraft.fleetNo.trim()||!vehicleDraft.registration.trim()||!vehicleDraft.makeModel.trim()){
@@ -173,6 +235,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   }
 
   return <section style={{marginTop:28,display:"grid",gap:18}}>
+    <MoveTrackGlobalSearch documents={searchIndex} onOpen={openSearchResult}/>
     <MoveTrackWorkspaceNav view={view} onChange={setView}/>
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
