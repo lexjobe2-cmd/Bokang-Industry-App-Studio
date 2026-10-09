@@ -1,4 +1,5 @@
 import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
+import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { miningPrestartChecks } from "@bokang/domain-data";
 
 export type FleetVehicleStatus =
@@ -36,6 +37,7 @@ export type FleetDriver = {
   firstAid: boolean;
   defensiveDriving: boolean;
   status: DriverStatus;
+  authorizationReview?:{signedAt:string;signature:SignatureEvidence};
 };
 
 export type AssignmentStatus =
@@ -84,6 +86,7 @@ export type FleetSitePolicy = {
   requireFirstAid: boolean;
   requireDefensiveDriving: boolean;
   additionalCriticalChecks: string[];
+  policyReview?:{signedAt:string;signature:SignatureEvidence};
 };
 
 export type FleetIncident = {
