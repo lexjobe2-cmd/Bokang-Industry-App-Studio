@@ -210,7 +210,7 @@ export function MoveTrackThemeStyles(){
  .movetrack-appbar-hamburger {padding:9px;min-width:44px;justify-content:center;}
  .movetrack-appbar-mode {min-width:43px;justify-content:center;padding:9px;}
  .movetrack-brand-mark {width:34px;height:34px;}
- .movetrack-mobile-dock {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;
+ .movetrack-mobile-dock {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;
   z-index:85;width:100%;height:calc(70px + env(safe-area-inset-bottom));padding:7px 7px calc(8px + env(safe-area-inset-bottom));
   background:rgba(255,255,255,.97);border-top:1px solid #d9e4f0;box-shadow:0 -7px 22px rgba(13,36,68,.08);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
@@ -243,6 +243,13 @@ export function MoveTrackThemeStyles(){
 
  .movetrack-root .movetrack-workspace-switcher {padding:12px !important;}
  .movetrack-root [style*="grid-template-columns"] {min-width:0;}
+}
+@media(max-width:360px) {
+ .movetrack-mobile-dock {padding-inline:3px;}
+ .movetrack-dock-action {font-size:9px;gap:2px;padding-inline:1px;}
+ .movetrack-dock-action svg {width:21px;height:21px;}
+ .movetrack-appbar-brand {gap:6px;}
+ .movetrack-brand-name b {font-size:13px;}
 }
 @media(prefers-reduced-motion:reduce) {
  .movetrack-nav-drawer {animation:none;}
