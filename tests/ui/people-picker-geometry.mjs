@@ -96,6 +96,10 @@ try{
   assert.ok(result.listScrollable,JSON.stringify({width,height,theme,result}));
   checks.push({width,height,theme,...result});
   console.log("Picker geometry OK",JSON.stringify(checks.at(-1)));
+  if(width===390){
+   const screenshot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+   await writeFile("ui-geometry-people-picker-"+theme+".png",Buffer.from(screenshot.data,"base64"));
+  }
  }
 
  // App-wide entry state audit: this is diagnostic, not certification of every open dialog.
@@ -112,7 +116,7 @@ try{
   "const visible=e=>e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';",
   "const elements=[...document.querySelectorAll('main,nav,section,article,button,input,select,textarea')].filter(visible);",
   "const outside=elements.filter(e=>{const r=e.getBoundingClientRect();return r.right>vw+2||r.left< -2;}).slice(0,8).map(e=>({kind:e.tagName,label:(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,55)}));",
-  "const narrow=elements.filter(e=>['INPUT','SELECT','TEXTAREA'].includes(e.tagName)&&e.getBoundingClientRect().width<90).slice(0,8).map(e=>({kind:e.tagName,label:e.getAttribute('aria-label')||e.getAttribute('placeholder')||'',width:Math.round(e.getBoundingClientRect().width)}));",
+  "const narrow=elements.filter(e=>['INPUT','SELECT','TEXTAREA'].includes(e.tagName)&&!['checkbox','radio','hidden','color'].includes(e.getAttribute('type'))&&e.getBoundingClientRect().width<90).slice(0,8).map(e=>({kind:e.tagName,label:e.getAttribute('aria-label')||e.getAttribute('placeholder')||'',width:Math.round(e.getBoundingClientRect().width)}));",
   "const clipped=elements.filter(e=>e.tagName==='BUTTON'&&e.scrollWidth>e.clientWidth+3&&getComputedStyle(e).overflowX==='hidden').slice(0,8).map(e=>(e.textContent||'').trim().slice(0,55));",
   "return {viewport:vw,page:document.documentElement.scrollWidth,outside,narrow,clipped,theme:document.querySelector('.movetrack-root')?.getAttribute('data-theme')||'unknown'};",
   "})()"
