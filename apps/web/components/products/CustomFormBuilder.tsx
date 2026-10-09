@@ -16,9 +16,9 @@ import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance
 import {unreviewedPaperFields,paperPublicationIssues} from "@bokang/domain-data/paper-forms";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 
-const card:React.CSSProperties={background:"#fff",border:"1px solid #d9e2ec",borderRadius:16,padding:17};
-const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",minHeight:43,font:"inherit",background:"#fff",color:"#101828"};
-const btn:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:10,padding:"10px 13px",minHeight:42,fontWeight:780,background:"#fff",color:"#101828",cursor:"pointer"};
+const card:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid #d9e2ec",borderRadius:16,padding:17};
+const input:React.CSSProperties={width:"100%",border:"1px solid #cbd5e1",borderRadius:10,padding:"11px 12px",minHeight:43,font:"inherit",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#101828)"};
+const btn:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:10,padding:"10px 13px",minHeight:42,fontWeight:780,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#101828)",cursor:"pointer"};
 const blue:React.CSSProperties={...btn,background:"#173764",borderColor:"#173764",color:"#fff"};
 const label:React.CSSProperties={fontSize:12,fontWeight:800,display:"grid",gap:6};
 const newField=():FormField=>({id:"field-"+crypto.randomUUID().slice(0,9),label:"New question",type:"text",required:true});
@@ -103,14 +103,14 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
  return <section aria-label="Custom forms designer" style={{display:"grid",gap:13}}>
   <div style={{...card,background:"#101d33",color:"#fff",border:0}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
-    <div><p style={{color:"#9ac4ff",fontSize:11,fontWeight:900,letterSpacing:1.2,margin:0}}>FORM DESIGN STUDIO</p><h2 style={{fontSize:20,margin:"6px 0"}}>Company form designer</h2></div>
+    <div><p style={{color:"var(--mt-link,#9ac4ff)",fontSize:11,fontWeight:900,letterSpacing:1.2,margin:0}}>FORM DESIGN STUDIO</p><h2 style={{fontSize:20,margin:"6px 0"}}>Company form designer</h2></div>
     <span style={{alignSelf:"start",padding:"7px 11px",borderRadius:999,border:"1px solid #536985",fontSize:11,color:"#dbeafe"}}>FRONTEND ONLY</span>
    </div>
   </div>
   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
    {([{key:"create",text:"Form builder",icon:FilePlus2},{key:"branding",text:"Company branding",icon:Palette},{key:"people",text:"Organization people",icon:UsersRound},{key:"dictionary",text:"Data dictionary",icon:BookOpen}] as const).map(item=><button key={item.key} style={{...btn,background:panel===item.key?"#173764":"#fff",color:panel===item.key?"white":"#344054",display:"inline-flex",alignItems:"center",gap:7}} onClick={()=>setPanel(item.key)}><item.icon size={15}/>{item.text}</button>)}
   </div>
-  {notice?<div role="status" style={{...card,background:"#eff6ff",fontSize:12,color:"#1e40af"}}>{notice}</div>:null}
+  {notice?<div role="status" style={{...card,background:"var(--mt-surface-soft,#eff6ff)",fontSize:12,color:"var(--mt-link,#1e40af)"}}>{notice}</div>:null}
   {panel==="branding"?<div style={{...card,display:"grid",gap:14}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><h3 style={{margin:0}}>Organization onboarding / branding</h3><button style={blue} onClick={addOrganization}><Plus size={15} style={{display:"inline"}}/> Add another company</button></div>
    <label style={label}>Current company<select style={input} value={org.id} onChange={e=>setOrgId(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
@@ -124,14 +124,14 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    </div>
    <label style={label}>Document footer / disclaimer<input style={input} value={org.footer} onChange={e=>patchOrg({footer:e.target.value})}/></label>
    <div style={{border:"1px solid #e2e8f0",borderTop:"5px solid "+org.accent,borderRadius:12,padding:18,display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
-    {org.logoDataUrl?<img src={org.logoDataUrl} alt={org.name+" logo preview"} style={{maxWidth:100,maxHeight:66,objectFit:"contain"}}/>:<div style={{width:68,height:58,background:"#e2e8f0",display:"grid",placeItems:"center",borderRadius:9,fontWeight:900,color:"#475569"}}>LOGO</div>}
-    <div><strong style={{display:"block",fontSize:17}}>{org.name}</strong><span style={{color:"#64748b",fontSize:12}}>{org.documentPrefix} · {org.businessUnit} · Demo controlled form</span></div>
+    {org.logoDataUrl?<img src={org.logoDataUrl} alt={org.name+" logo preview"} style={{maxWidth:100,maxHeight:66,objectFit:"contain"}}/>:<div style={{width:68,height:58,background:"var(--mt-surface-soft,#e2e8f0)",display:"grid",placeItems:"center",borderRadius:9,fontWeight:900,color:"var(--mt-muted,#475569)"}}>LOGO</div>}
+    <div><strong style={{display:"block",fontSize:17}}>{org.name}</strong><span style={{color:"var(--mt-muted,#64748b)",fontSize:12}}>{org.documentPrefix} · {org.businessUnit} · Demo controlled form</span></div>
     {org.logoDataUrl?<button style={{...btn,marginLeft:"auto"}} onClick={()=>patchOrg({logoDataUrl:undefined,logoName:undefined})}>Remove logo</button>:null}
    </div>
-   <p style={{fontSize:11,color:"#667085",margin:0}}>Company branding is snapshotted at publication; updating a logo later does not silently rewrite older published forms. Logos stored locally as small image data.</p>
+   <p style={{fontSize:11,color:"var(--mt-muted,#667085)",margin:0}}>Company branding is snapshotted at publication; updating a logo later does not silently rewrite older published forms. Logos stored locally as small image data.</p>
   </div>:null}
   {panel==="people"?<div style={{display:"grid",gap:12}}>
-    <div style={card}><h3 style={{marginTop:0}}>Company directory — demo data</h3><p style={{fontSize:12,color:"#667085",lineHeight:1.6}}>Directory is ready to map Microsoft Graph users and organization-owner records later. No Microsoft login or directory API is called in this frontend demonstration.</p>
+    <div style={card}><h3 style={{marginTop:0}}>Company directory — demo data</h3><p style={{fontSize:12,color:"var(--mt-muted,#667085)",lineHeight:1.6}}>Directory is ready to map Microsoft Graph users and organization-owner records later. No Microsoft login or directory API is called in this frontend demonstration.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:9}}>
        <label style={label}>Employee name<input style={input} value={name} onChange={e=>setName(e.target.value)} placeholder="Employee full name"/></label>
        <label style={label}>Job title<input style={input} value={jobTitle} onChange={e=>setJobTitle(e.target.value)} placeholder="Rigger"/></label>
@@ -140,10 +140,10 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
       </div><button style={{...blue,marginTop:12}} onClick={addPerson}><Plus size={15} style={{display:"inline"}}/> Add company person</button>
     </div>
     <div style={card}><strong>{people.filter(p=>p.orgId===org.id).length} members in {org.name}</strong>
-      <p style={{fontSize:12,color:"#667085"}}>Set organization owners separately from job supervisors. Future Microsoft 365 organization administrators can be mapped to these profiles after tenant authorization; none are fetched now.</p>
+      <p style={{fontSize:12,color:"var(--mt-muted,#667085)"}}>Set organization owners separately from job supervisors. Future Microsoft 365 organization administrators can be mapped to these profiles after tenant authorization; none are fetched now.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:9,marginTop:14}}>
-       {people.filter(p=>p.orgId===org.id).map(p=><div key={p.id} style={{padding:12,borderRadius:11,background:"#f8fafc",display:"flex",gap:9,justifyContent:"space-between"}}>
-         <div><strong style={{fontSize:12}}>{p.displayName}</strong><p style={{fontSize:11,color:"#667085",margin:"4px 0"}}>{p.jobTitle} · {p.department}</p><span style={{fontSize:10,color:"#2563eb"}}>{p.source.replaceAll("_"," ")}</span></div>
+       {people.filter(p=>p.orgId===org.id).map(p=><div key={p.id} style={{padding:12,borderRadius:11,background:"var(--mt-surface-soft,#f8fafc)",display:"flex",gap:9,justifyContent:"space-between"}}>
+         <div><strong style={{fontSize:12}}>{p.displayName}</strong><p style={{fontSize:11,color:"var(--mt-muted,#667085)",margin:"4px 0"}}>{p.jobTitle} · {p.department}</p><span style={{fontSize:10,color:"var(--mt-link,#2563eb)"}}>{p.source.replaceAll("_"," ")}</span></div>
          <label style={{fontSize:11,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}><input type="checkbox" checked={org.ownerIds.includes(p.id)} onChange={e=>patchOrg({ownerIds:e.target.checked?[...new Set([...org.ownerIds,p.id])]:org.ownerIds.filter(id=>id!==p.id)})}/> Org owner</label>
          <button style={{...btn,padding:7,minHeight:31}} aria-label={"Remove "+p.displayName} onClick={()=>setPeople(xs=>xs.filter(item=>item.id!==p.id))}><Trash2 size={14}/></button>
        </div>)}
@@ -151,7 +151,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
     </div>
   </div>:null}
   {panel==="dictionary"?<div style={{...card,display:"grid",gap:16}}>
-   <div><h3 style={{margin:"0 0 6px"}}>Reusable data dictionary</h3><p style={{fontSize:12,color:"#64748b",margin:0}}>Standard options help staff build consistent inspections without manually typing every answer.</p></div>
+   <div><h3 style={{margin:"0 0 6px"}}>Reusable data dictionary</h3><p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Standard options help staff build consistent inspections without manually typing every answer.</p></div>
    {[
     {name:"Question types",items:dictionary.inputTypes.map(t=>t.label+" — "+t.purpose)},
     {name:"Job types",items:[...dictionary.jobTypes]},
@@ -160,19 +160,19 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
     {name:"PPE and equipment",items:[...dictionary.ppe]},
     {name:"Participant job roles",items:[...dictionary.jobRoles]},
     {name:"Organization source",items:["Local sample directory","Manual additions","Future Microsoft Graph /users","Future Microsoft Graph /organization"]}
-   ].map(group=><div key={group.name}><strong style={{fontSize:13}}>{group.name}</strong><div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}}>{group.items.map(item=><span key={item} style={{fontSize:11,border:"1px solid #d9e2ec",padding:"7px 10px",borderRadius:9,background:"#f8fafc"}}>{item}</span>)}</div></div>)}
+   ].map(group=><div key={group.name}><strong style={{fontSize:13}}>{group.name}</strong><div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}}>{group.items.map(item=><span key={item} style={{fontSize:11,border:"1px solid #d9e2ec",padding:"7px 10px",borderRadius:9,background:"var(--mt-surface-soft,#f8fafc)"}}>{item}</span>)}</div></div>)}
   </div>:null}
   {panel==="create"?<div style={{display:"grid",gap:12}}>
    <nav className="movetrack-step-nav" aria-label="Designer views">{([['library','Templates'],['properties','Properties'],['fields','Questions'],['publish','Preview & publish']] as const).map(([key,name])=><button type="button" key={key} aria-current={builderPage===key?"step":undefined} onClick={()=>setBuilderPage(key)}>{name}</button>)}</nav>
    <div hidden={builderPage!=="library"} style={card}>
-    <div><h3 style={{margin:"0 0 4px"}}>Start from a real operations workflow</h3><p style={{fontSize:12,color:"#64748b",margin:0}}>Select a professionally structured form recipe. You can customize every field to match a job or industry.</p></div>
+    <div><h3 style={{margin:"0 0 4px"}}>Start from a real operations workflow</h3><p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Select a professionally structured form recipe. You can customize every field to match a job or industry.</p></div>
     <label style={{display:"grid",gap:6,fontSize:12,fontWeight:800,marginTop:12}}>Search 29 editable workflow recipes
        <input style={input} placeholder="Working at heights, scaffold, emergency..." value={recipeFilter} onChange={e=>{setRecipeFilter(e.target.value);setRecipePage(0);}}/>
     </label>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,170px),1fr))",gap:9,marginTop:12}}>
      {recipes.slice(safeRecipePage*recipeSize,(safeRecipePage+1)*recipeSize).map(r=><button key={r.id} style={{...btn,textAlign:"left",display:"grid",gap:6,minHeight:90}} onClick={()=>startRecipe(r.id)}>
-      <span style={{fontSize:10,color:"#2563eb",fontWeight:900}}>{r.category.toUpperCase()}</span>
-      <strong style={{fontSize:12}}>{r.title}</strong><span style={{fontSize:10,color:"#64748b"}}>{r.sections.reduce((n,s)=>n+s.fields.length,0)} initial questions</span>
+      <span style={{fontSize:10,color:"var(--mt-link,#2563eb)",fontWeight:900}}>{r.category.toUpperCase()}</span>
+      <strong style={{fontSize:12}}>{r.title}</strong><span style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}>{r.sections.reduce((n,s)=>n+s.fields.length,0)} initial questions</span>
      </button>)}
     </div>
    </div>
@@ -192,21 +192,21 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
     summary={<><strong>{title||"Untitled form"}</strong><p>{sections.length} sections · {fieldIndex.length} questions</p><p>Editing one question at a time. Changes autosave locally.</p><button style={btn} onClick={()=>setBuilderPage("properties")}>Template properties</button><button style={btn} onClick={()=>setBuilderPage("publish")}>Review & publish</button></>}>
    {sections.map((section,si)=>selectedField?.si===si?<motion.section initial={reduced?false:{opacity:0,y:5}} animate={{opacity:1,y:0}} key={section.id} style={card}>
      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-      <span style={{fontSize:11,color:"#2563eb",fontWeight:900}}>SECTION {si+1}</span>
+      <span style={{fontSize:11,color:"var(--mt-link,#2563eb)",fontWeight:900}}>SECTION {si+1}</span>
       <input aria-label={"Section "+(si+1)+" title"} style={{...input,flex:"1 1 250px"}} value={section.title} onChange={e=>patchSection(si,{title:e.target.value})}/>
       <button aria-label="Move section up" disabled={si===0} onClick={()=>setSections(xs=>swap(xs,si,si-1))} style={{...btn,padding:7}}><ChevronUp size={16}/></button>
       <button aria-label="Move section down" disabled={si===sections.length-1} onClick={()=>setSections(xs=>swap(xs,si,si+1))} style={{...btn,padding:7}}><ChevronDown size={16}/></button>
-      <button aria-label="Remove section" disabled={sections.length===1} onClick={()=>setSections(xs=>xs.filter((_,i)=>i!==si))} style={{...btn,padding:7,color:"#b42318"}}><Trash2 size={16}/></button>
+      <button aria-label="Remove section" disabled={sections.length===1} onClick={()=>setSections(xs=>xs.filter((_,i)=>i!==si))} style={{...btn,padding:7,color:"var(--mt-danger,#b42318)"}}><Trash2 size={16}/></button>
      </div>
      <div style={{display:"grid",gap:9,marginTop:12}}>
-      {section.fields.map((f,fi)=>selectedField?.field.id===f.id?<div key={f.id} style={{padding:13,border:"1px solid #e2e8f0",borderRadius:12,background:"#f8fafc",display:"grid",gap:10}}>
+      {section.fields.map((f,fi)=>selectedField?.field.id===f.id?<div key={f.id} style={{padding:13,border:"1px solid #e2e8f0",borderRadius:12,background:"var(--mt-surface-soft,#f8fafc)",display:"grid",gap:10}}>
         <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-         <strong style={{fontSize:11,color:"#475569"}}>QUESTION {fi+1}</strong>
+         <strong style={{fontSize:11,color:"var(--mt-muted,#475569)"}}>QUESTION {fi+1}</strong>
          <div style={{display:"flex",gap:5}}>
           <button style={{...btn,padding:6,minHeight:33}} onClick={()=>patchSection(si,{fields:swap(section.fields,fi,fi-1)})} disabled={fi===0} aria-label="Move question up"><ChevronUp size={15}/></button>
           <button style={{...btn,padding:6,minHeight:33}} onClick={()=>patchSection(si,{fields:swap(section.fields,fi,fi+1)})} disabled={fi===section.fields.length-1} aria-label="Move question down"><ChevronDown size={15}/></button>
           <button style={{...btn,padding:6,minHeight:33}} onClick={()=>patchSection(si,{fields:[...section.fields.slice(0,fi+1),{...f,id:"field-"+crypto.randomUUID().slice(0,8)},...section.fields.slice(fi+1)]})} aria-label="Duplicate question"><Copy size={15}/></button>
-          <button style={{...btn,padding:6,minHeight:33,color:"#b42318"}} onClick={()=>removeField(si,fi)} aria-label="Remove question"><Trash2 size={15}/></button>
+          <button style={{...btn,padding:6,minHeight:33,color:"var(--mt-danger,#b42318)"}} onClick={()=>removeField(si,fi)} aria-label="Remove question"><Trash2 size={15}/></button>
          </div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,165px),1fr))",gap:10}}>
@@ -244,10 +244,10 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    </TaskWorkspace>:null}
    <div hidden={builderPage!=="publish"} style={card}><h3>Template preview</h3><p>{title} · {category} · {org.name}</p><table className="movetrack-compact-table"><thead><tr><th>Section</th><th>Questions</th></tr></thead><tbody>{sections.map(sec=><tr key={sec.id}><td>{sec.title}</td><td>{sec.fields.length}</td></tr>)}</tbody></table><p>Download the blank design to review every question before publishing.</p></div>
    <div hidden={builderPage!=="publish"} style={{...card,display:"flex",gap:9,flexWrap:"wrap",justifyContent:"space-between",alignItems:"center"}}>
-    <div><strong>{sections.reduce((n,s)=>n+s.fields.length,0)} questions · {sections.length} sections</strong><p style={{fontSize:11,color:"#64748b",margin:"3px 0"}}>Changes to this designer autosave locally as you type. Publishing updates the active custom version; completed submissions preserve historical snapshots.</p></div>
+    <div><strong>{sections.reduce((n,s)=>n+s.fields.length,0)} questions · {sections.length} sections</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"3px 0"}}>Changes to this designer autosave locally as you type. Publishing updates the active custom version; completed submissions preserve historical snapshots.</p></div>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
      <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap"}}>
-      <span style={{fontSize:11,color:"#64748b",fontWeight:800}}>Download this unpublished design (blank)</span>
+      <span style={{fontSize:11,color:"var(--mt-muted,#64748b)",fontWeight:800}}>Download this unpublished design (blank)</span>
       <DocumentDownloadActions document={buildFormDocument({template:previewTemplate,mode:"blank",company:org,people})} compact/>
      </div>
      <button style={btn} onClick={()=>save(false)}><Save size={15} style={{display:"inline"}}/> Save draft</button>
@@ -256,7 +256,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    </div>
    {templates.length?<div hidden={builderPage!=="library"} style={card}><h3 style={{marginTop:0}}>Custom template library</h3>
     <div style={{display:"grid",gap:8}}>{templates.map(t=><div key={t.id} style={{display:"flex",gap:12,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",padding:10,border:"1px solid #e2e8f0",borderRadius:10}}>
-      <div><strong style={{fontSize:13}}>{t.title}</strong><p style={{fontSize:11,color:"#64748b",margin:"4px 0"}}>{t.companyNameSnapshot} · {t.category} · v{t.version} · {t.status}</p></div>
+      <div><strong style={{fontSize:13}}>{t.title}</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"4px 0"}}>{t.companyNameSnapshot} · {t.category} · v{t.version} · {t.status}</p></div>
       <div style={{display:"flex",gap:6}}><button style={btn} onClick={()=>load(t)}>Edit</button><button style={btn} onClick={()=>{if(window.confirm("Remove this custom template? Historical submissions remain saved."))setTemplates(xs=>xs.filter(x=>x.id!==t.id));}}>Delete</button></div>
     </div>)}</div>
    </div>:null}

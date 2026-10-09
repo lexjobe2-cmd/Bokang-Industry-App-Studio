@@ -24,11 +24,11 @@ import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
 import {LifeBuoy,LayoutDashboard,BarChart3} from "lucide-react";
 
 type Scenario="assignment"|"grounded"|"reset";
-const style:React.CSSProperties={border:"1px solid #dce4ef",borderRadius:17,padding:17,background:"#fff"};
+const style:React.CSSProperties={border:"1px solid #dce4ef",borderRadius:17,padding:17,background:"var(--mt-surface,#fff)"};
 const scenarios=[
- {key:"assignment" as const,title:"Driver pre-start",desc:"A vehicle is assigned to K. Dube. Complete PASS/FAIL inspections in the driver app.",icon:Truck,color:"#2563eb"},
- {key:"grounded" as const,title:"Grounded equipment",desc:"A critical brake defect blocks release. Record corrective action, repair, reinspection and approval.",icon:AlertTriangle,color:"#b42318"},
- {key:"reset" as const,title:"Reset fleet scenario",desc:"Restore sample fleet and clear test inspections. Preserve custom companies, templates and JRA drafts.",icon:RotateCcw,color:"#64748b"},
+ {key:"assignment" as const,title:"Driver pre-start",desc:"A vehicle is assigned to K. Dube. Complete PASS/FAIL inspections in the driver app.",icon:Truck,color:"var(--mt-link,#2563eb)"},
+ {key:"grounded" as const,title:"Grounded equipment",desc:"A critical brake defect blocks release. Record corrective action, repair, reinspection and approval.",icon:AlertTriangle,color:"var(--mt-danger,#b42318)"},
+ {key:"reset" as const,title:"Reset fleet scenario",desc:"Restore sample fleet and clear test inspections. Preserve custom companies, templates and JRA drafts.",icon:RotateCcw,color:"var(--mt-muted,#64748b)"},
 ];
 export function MoveTrackDemoLab(){
  const reducedMotion=useReducedMotion();
@@ -110,7 +110,7 @@ export function MoveTrackDemoLab(){
       <span style={{fontSize:11,color:"#a9d3ff",fontWeight:850}}>WORKPLACE SAFETY  /  FLEET INTELLIGENCE</span>
       <span style={{padding:"7px 10px",border:"1px solid #6481a4",borderRadius:999,fontSize:10,fontWeight:850,letterSpacing:.7}}>LOCAL DEMO · NO SIGN-IN</span>
     </div>
-    <p style={{color:"#93c5fd",letterSpacing:1.8,fontSize:11,fontWeight:900,textTransform:"uppercase",margin:"28px 0 8px"}}>Bokang Industry App Studio / MoveTrack AI</p>
+    <p style={{color:"var(--mt-link,#93c5fd)",letterSpacing:1.8,fontSize:11,fontWeight:900,textTransform:"uppercase",margin:"28px 0 8px"}}>Bokang Industry App Studio / MoveTrack AI</p>
     <h1 style={{fontSize:"clamp(30px,5vw,49px)",maxWidth:850,lineHeight:1.08,margin:"0 0 12px"}}>Fleet + SHE Operational Assurance</h1>
     <p style={{maxWidth:780,color:"#cbd5e1",fontSize:14,lineHeight:1.75,margin:0}}>Your company, fleet and safety work in one workspace. Start inspections, record meetings and follow up on actions. Choose a workspace below to get started. Your company records and drafts save on this browser.</p>
     <div style={{display:"flex",gap:9,flexWrap:"wrap",marginTop:22}}>
@@ -123,9 +123,9 @@ export function MoveTrackDemoLab(){
   <div className="movetrack-content" style={{maxWidth:1250,margin:"-24px auto 0",padding:"0 20px",position:"relative",display:"grid",gap:19}}>
    <MoveTrackCompanySummary onManage={()=>goWorkspace("admin")} onWorkforce={()=>goWorkspace("admin")}/>
    <section aria-label="Workspace quick access" style={{...style,display:"grid",gap:12}}>
-    <div><p style={{fontSize:10,color:"#2563eb",fontWeight:900,letterSpacing:1.2,margin:0}}>YOUR MOVE TRACK WORKSPACE</p>
+    <div><p style={{fontSize:10,color:"var(--mt-link,#2563eb)",fontWeight:900,letterSpacing:1.2,margin:0}}>YOUR MOVE TRACK WORKSPACE</p>
      <h2 style={{fontSize:21,margin:"5px 0"}}>What would you like to do?</h2>
-     <p style={{fontSize:12,color:"#64748b",margin:0}}>Pick your work area first. Your saved records remain available across all views.</p>
+     <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Pick your work area first. Your saved records remain available across all views.</p>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:9}}>
      {([{key:"control",title:"Operations dashboard",desc:"Fleet, assets and site jobs",icon:LayoutDashboard},
@@ -138,7 +138,7 @@ export function MoveTrackDemoLab(){
         {key:"paper",title:"Convert a paper form",desc:"Upload, review and publish a template",icon:ClipboardCheck}] as const).map(item=>
        <button type="button" key={item.key} onClick={()=>{goWorkspace(item.key);}}
          style={{...style,textAlign:"left",cursor:"pointer",display:"flex",gap:11,alignItems:"start",borderColor:"#b6cde8"}}>
-         <item.icon size={20} color="#2563eb"/><span><strong style={{display:"block",fontSize:14}}>{item.title}</strong><small style={{display:"block",fontSize:11,color:"#64748b",marginTop:4}}>{item.desc}</small></span>
+         <item.icon size={20} color="#2563eb"/><span><strong style={{display:"block",fontSize:14}}>{item.title}</strong><small style={{display:"block",fontSize:11,color:"var(--mt-muted,#64748b)",marginTop:4}}>{item.desc}</small></span>
        </button>)}
     </div>
    </section>
@@ -151,7 +151,7 @@ export function MoveTrackDemoLab(){
       {label:"Active assignments",value:assignments.filter(a=>!["Returned","Cancelled"].includes(a.status)).length,icon:ClipboardCheck},
       {label:"Grounded vehicles",value:fleet.filter(v=>v.status==="No-go").length,icon:AlertTriangle},
       {label:"Open defect reports",value:incidents.filter(i=>i.status!=="Resolved").length,icon:ShieldCheck}
-    ].map(item=><div key={item.label} style={style}><item.icon size={17} color="#2563eb"/><strong style={{display:"block",fontSize:26,margin:"7px 0 1px"}}>{hydrated?item.value:"—"}</strong><span style={{fontSize:11,color:"#667085",fontWeight:800}}>{item.label}</span></div>)}
+    ].map(item=><div key={item.label} style={style}><item.icon size={17} color="#2563eb"/><strong style={{display:"block",fontSize:26,margin:"7px 0 1px"}}>{hydrated?item.value:"—"}</strong><span style={{fontSize:11,color:"var(--mt-muted,#667085)",fontWeight:800}}>{item.label}</span></div>)}
    </section>
   </div></div>
   <div className="movetrack-workspace-content">
@@ -164,7 +164,7 @@ export function MoveTrackDemoLab(){
    <div hidden={screen.kind!=="workspace"||screen.view!=="local-data"}>
    <details style={style}><summary style={{cursor:"pointer",minHeight:44,fontWeight:850}}>Demo scenarios and test data</summary><section aria-label="Demo scenarios">
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
-      <div><p style={{fontSize:11,fontWeight:900,letterSpacing:1.3,color:"#2563eb",textTransform:"uppercase",margin:0}}>Quick start</p><h2 style={{fontSize:21,margin:"4px 0"}}>Choose a test scenario</h2><p style={{fontSize:12,color:"#64748b",margin:0}}>Each scenario loads connected demo records into the same fleet and driver app.</p></div>
+      <div><p style={{fontSize:11,fontWeight:900,letterSpacing:1.3,color:"var(--mt-link,#2563eb)",textTransform:"uppercase",margin:0}}>Quick start</p><h2 style={{fontSize:21,margin:"4px 0"}}>Choose a test scenario</h2><p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Each scenario loads connected demo records into the same fleet and driver app.</p></div>
       <span style={{fontWeight:850,fontSize:12,color:hydrated?"#087f5b":"#64748b"}}>{hydrated?"● Browser workspace ready":"Loading local demo…"}</span>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:10}}>
@@ -172,14 +172,14 @@ export function MoveTrackDemoLab(){
       style={{...style,cursor:hydrated?"pointer":"wait",textAlign:"left",borderColor:active===item.key?item.color:"#dce4ef",background:active===item.key?"#f1f5f9":"#fff",minHeight:147}}>
        <item.icon size={21} color={item.color}/>
        <strong style={{display:"block",fontSize:15,margin:"10px 0 6px"}}>{item.title}</strong>
-       <span style={{fontSize:12,color:"#667085",lineHeight:1.55}}>{item.desc}</span>
+       <span style={{fontSize:12,color:"var(--mt-muted,#667085)",lineHeight:1.55}}>{item.desc}</span>
       </motion.button>)}
     </div>
-    {notice?<div role="status" style={{padding:"12px 14px",border:"1px solid #bfdbfe",borderRadius:12,background:"#eff6ff",marginTop:14,fontSize:12,fontWeight:750,color:"#1d4ed8"}}>{notice}</div>:null}
+    {notice?<div role="status" style={{padding:"12px 14px",border:"1px solid #bfdbfe",borderRadius:12,background:"var(--mt-surface-soft,#eff6ff)",marginTop:14,fontSize:12,fontWeight:750,color:"var(--mt-link,#1d4ed8)"}}>{notice}</div>:null}
    </section>
    </details>
    </div>
-   <p style={{fontSize:11,color:"#64748b",textAlign:"center",margin:"12px 0"}}>Preview / simulation only. Locally submitted records cannot authorize real work or equipment movement. Designed and developed by Bokang Jobe. <button type="button" style={{marginLeft:10,border:0,background:"transparent",textDecoration:"underline",cursor:"pointer",font:"inherit",color:"#2563eb"}} onClick={()=>{goWorkspace("settings");}}>Support · Privacy · Terms · FAQ</button></p>
+   <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",textAlign:"center",margin:"12px 0"}}>Preview / simulation only. Locally submitted records cannot authorize real work or equipment movement. Designed and developed by Bokang Jobe. <button type="button" style={{marginLeft:10,border:0,background:"transparent",textDecoration:"underline",cursor:"pointer",font:"inherit",color:"var(--mt-link,#2563eb)"}} onClick={()=>{goWorkspace("settings");}}>Support · Privacy · Terms · FAQ</button></p>
   </div>
 
  </main>;

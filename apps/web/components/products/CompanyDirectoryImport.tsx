@@ -46,26 +46,26 @@ export function CompanyDirectoryImport({org,people,setPeople}:{
   <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
    <div style={{display:"flex",gap:10,alignItems:"center"}}>
     <span style={{background:"var(--mt-surface-soft,#eaf3ff)",color:"var(--mt-link,#1d4ed8)",padding:9,borderRadius:12}}><UsersRound size={22}/></span>
-    <div><strong style={{fontSize:14}}>Organization people directory</strong><div style={{color:"#64748b",fontSize:11,marginTop:3}}>{count} active local people · departments, cities, email and UPN</div></div>
+    <div><strong style={{fontSize:14}}>Organization people directory</strong><div style={{color:"var(--mt-muted,#64748b)",fontSize:11,marginTop:3}}>{count} active local people · departments, cities, email and UPN</div></div>
    </div>
    <button type="button" aria-expanded={open} onClick={()=>setOpen(v=>!v)} style={{...btn,display:"flex",gap:6,alignItems:"center"}}>Import staff directory <ChevronDown size={16}/></button>
   </div>
   <DesktopModal title="Import staff directory" open={open} onClose={()=>setOpen(false)}><div style={{borderTop:"1px solid #e2e8f0",paddingTop:12,display:"grid",gap:11}}>
-   <p style={{fontSize:12,color:"#475569",margin:0,lineHeight:1.6}}>Bring a company-authorized employee CSV and immediately make staff searchable in all participant, chairperson, supervisor and responsible-person pickers. Column names such as <strong>DisplayName, Mail, UserPrincipalName, Department, JobTitle, City, OfficeLocation and EmployeeId</strong> are recognized.</p>
-   <p style={{fontSize:11,color:"#a16207",margin:0}}>No Microsoft 365 sign-in or synchronization is active. Do not import confidential employee information into this public demo; browser storage is not enterprise-secured.</p>
+   <p style={{fontSize:12,color:"var(--mt-muted,#475569)",margin:0,lineHeight:1.6}}>Bring a company-authorized employee CSV and immediately make staff searchable in all participant, chairperson, supervisor and responsible-person pickers. Column names such as <strong>DisplayName, Mail, UserPrincipalName, Department, JobTitle, City, OfficeLocation and EmployeeId</strong> are recognized.</p>
+   <p style={{fontSize:11,color:"var(--mt-warning,#a16207)",margin:0}}>No Microsoft 365 sign-in or synchronization is active. Do not import confidential employee information into this public demo; browser storage is not enterprise-secured.</p>
    <div style={{display:"flex",gap:9,flexWrap:"wrap",alignItems:"center"}}>
     <button type="button" onClick={downloadTemplate} style={{...btn,display:"flex",alignItems:"center",gap:6}}><Download size={16}/> Download CSV template</button>
     <label style={{...btn,display:"flex",alignItems:"center",gap:7,cursor:"pointer"}}><Upload size={16}/> Choose CSV file<input type="file" accept=".csv,text/csv" style={{display:"none"}} onChange={e=>void read(e.target.files?.[0])}/></label>
    </div>
-   {error?<div role="alert" style={{fontSize:12,color:"#b42318"}}><AlertTriangle size={16} style={{display:"inline"}}/> {error}</div>:null}
+   {error?<div role="alert" style={{fontSize:12,color:"var(--mt-danger,#b42318)"}}><AlertTriangle size={16} style={{display:"inline"}}/> {error}</div>:null}
    {result?<div style={{padding:12,borderRadius:12,background:"var(--mt-surface-soft,#f0f6ff)",color:"var(--mt-ink,#172b46)",display:"grid",gap:8}}>
     <strong style={{fontSize:13}}>Preview — {sourceName}</strong>
     <p style={{fontSize:12,margin:0}}>{result.records.length} people ready · {result.duplicates} duplicate rows ignored · {result.warnings.length} warnings</p>
-    {result.records.slice(0,5).map(p=><div key={p.id} style={{fontSize:11,color:"#475569"}}>{p.displayName} · {p.department||"No department"} · {p.city||p.location||"No city"} · {p.email||p.userPrincipalName||"No email"}</div>)}
-    {result.warnings.slice(0,4).map((w,i)=><small key={i} style={{color:"#9a670a"}}>{w}</small>)}
+    {result.records.slice(0,5).map(p=><div key={p.id} style={{fontSize:11,color:"var(--mt-muted,#475569)"}}>{p.displayName} · {p.department||"No department"} · {p.city||p.location||"No city"} · {p.email||p.userPrincipalName||"No email"}</div>)}
+    {result.warnings.slice(0,4).map((w,i)=><small key={i} style={{color:"var(--mt-warning,#9a670a)"}}>{w}</small>)}
     <button type="button" style={{...btn,background:"#174fa8",color:"#fff",justifySelf:"start",borderColor:"#174fa8"}} onClick={save}>Confirm import of {result.records.length} people</button>
    </div>:null}
-   {notice?<div role="status" style={{display:"flex",gap:7,color:"#047857",fontSize:12,alignItems:"center"}}><CheckCircle2 size={16}/>{notice}</div>:null}
+   {notice?<div role="status" style={{display:"flex",gap:7,color:"var(--mt-success,#047857)",fontSize:12,alignItems:"center"}}><CheckCircle2 size={16}/>{notice}</div>:null}
   </div></DesktopModal>
  </section>;
 }
