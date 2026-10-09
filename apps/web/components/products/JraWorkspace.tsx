@@ -57,7 +57,14 @@ export function JraWorkspace(){
  function start(){
   const now=new Date().toISOString();setCurrent(blankJra(org,now));setEditing(null);setPage("job");setMessage("JRA draft started. Choose a team, add job steps and evaluate each hazard.");
  }
- function patch(fields:Partial<JobRiskAssessment>){setCurrent(x=>x?{...x,...fields,updatedAt:new Date().toISOString()}:x);}
+ function patch(fields:Partial<JobRiskAssessment>){
+  // Changing reviewed job content makes an existing local reviewer mark stale.
+  const materialChange=Object.keys(fields).some(key=>["title","jobId","siteId","location","scope","method","ppe","permits","emergencyPlan","tasks","participants","supervisorId","reviewerNote","reviewerId"].includes(key));
+  setCurrent(current=>current?{
+   ...current,...fields,updatedAt:new Date().toISOString(),
+   ...(materialChange?{reviewSignature:undefined,status:current.status==="APPROVED_DEMO"?"IN_REVIEW" as const:current.status}: {})
+  }:current);
+ }
  function addTask(){patch({tasks:[...job.tasks,blankJraTask(job.tasks.length+1)]});setPage("risks");}
  function updateTask(id:string,fn:(task:JraTask)=>JraTask){patch({tasks:job.tasks.map(s=>s.id===id?fn(s):s)});}
  function changeHazard(stepId:string,hazardId:string,fn:(hazard:HazardEntry)=>HazardEntry){
