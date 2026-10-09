@@ -232,6 +232,16 @@ export function assessJra(jra:JobRiskAssessment):{decision:JraDecision;missing:s
  return {decision:missing.length?"INCOMPLETE":(highRisks||unverifiedControls)?"REVIEW_REQUIRED":"READY_FOR_DEMO_REVIEW",
  missing,maxResidual,highRisks,unverifiedControls};
 }
+/** Any change in JRA risk content requires the crew to acknowledge the revised record again.
+ * This deliberately keeps a reviewable trail of only the current (demo) state; a production
+ * implementation must persist earlier revisions to an append-only audit log. */
+export function invalidateJraAcknowledgements(jra:JobRiskAssessment):JobRiskAssessment {
+ return {...jra,
+  reviewSignature:undefined,reviewedAt:undefined,
+  status:jra.status==="APPROVED_DEMO"?"IN_REVIEW":jra.status,
+  participants:jra.participants.map(p=>({...p,signature:undefined,acknowledged:false,acknowledgedAt:undefined}))
+ };
+}
 export function canSimulateApproval(jra:JobRiskAssessment):boolean{
  return assessJra(jra).decision==="READY_FOR_DEMO_REVIEW"&&Boolean(jra.reviewerId)&&
   jra.reviewerId!==jra.supervisorId&&jra.participants.every(p=>p.acknowledged&&isSignatureEvidence(p.signature)&&
