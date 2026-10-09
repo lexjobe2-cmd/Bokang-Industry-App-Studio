@@ -251,6 +251,19 @@ export function MoveTrackThemeStyles(){
  .movetrack-appbar-brand {gap:6px;}
  .movetrack-brand-name b {font-size:13px;}
 }
+/* Driver app shares theme preference but retains its own compact five-action mobile dock. */
+.movetrack-driver-theme[data-theme="dark"] nav[aria-label="Driver mobile primary navigation"] {
+ background:rgba(12,27,46,.98) !important;border-color:#385574 !important;
+}
+.movetrack-driver-theme[data-theme="dark"] nav[aria-label="Driver mobile primary navigation"] button {
+ color:#c4d6eb !important;background:transparent !important;
+}
+.movetrack-driver-theme[data-theme="dark"] nav[aria-label="Driver mobile primary navigation"] button[aria-current="page"] {
+ color:#a9d2ff !important;background:#193e68 !important;
+}
+.movetrack-driver-theme[data-theme="dark"] #movetrack-driver-drawer button[aria-current="page"] {
+ color:#f0f6ff !important;background:#254569 !important;
+}
 @media(prefers-reduced-motion:reduce) {
  .movetrack-nav-drawer {animation:none;}
 }
