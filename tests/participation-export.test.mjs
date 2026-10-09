@@ -92,3 +92,30 @@ test("long safety checklists paginate rather than losing fields, and blank repor
  const result=await renderProfessionalWord(pageDoc);
  assert.ok((await result.arrayBuffer()).byteLength>3000);
 });
+
+test("local drawn signatures require consent, declared identity, timestamp and actual PNG image",async()=>{
+ const {isSignatureEvidence,createSignatureEvidence}=await import("../packages/domain-data/src/signature-evidence.ts");
+ const imageDataUrl="data:image/png;base64,"+"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFX".repeat(3);
+ const common={imageDataUrl,signerName:"Kagiso Dube",signerPersonId:"p1",role:"Supervisor",intent:"review",scope:"WORK-123",signedAt:"2026-10-09T09:00:00.000Z",consent:true};
+ assert.equal(isSignatureEvidence("Kagiso Dube"),false);
+ assert.equal(isSignatureEvidence({...common,consent:true,kind:"drawn-signature-v1",verification:"LOCAL_UNVERIFIED"}),true);
+ assert.throws(()=>createSignatureEvidence({...common,consent:false}),/Draw a signature/);
+ const signed=createSignatureEvidence(common);
+ assert.equal(signed.verification,"LOCAL_UNVERIFIED");
+ const {isAnswered}=await import("../packages/domain-data/src/assurance-forms.ts");
+ assert.equal(isAnswered({id:"sign",type:"signature",label:"Sign",required:true},"typed name"),false);
+ assert.equal(isAnswered({id:"sign",type:"signature",label:"Sign",required:true},signed),true);
+ const {buildFormDocument}=await import("../apps/web/lib/form-exports.ts");
+ const t={...template,sections:[{id:"signatures",title:"Attestation",fields:[{id:"sign",type:"signature",label:"Reviewed by",required:false}]}]};
+ const doc=buildFormDocument({template:t,mode:"draft",answers:{sign:signed},people,company:org});
+ assert.equal(doc.sections[1].rows[0].signature.signerName,"Kagiso Dube");
+ assert.ok(!doc.sections[1].rows[0].value.includes("base64"));
+});
+test("safety workflow library includes drawn acknowledgement and review fields",async()=>{
+ const {additionalAssuranceRecipes}=await import("../packages/domain-data/src/expanded-assurance.ts");
+ assert.equal(additionalAssuranceRecipes.length,21);
+ for(const w of additionalAssuranceRecipes){
+  const signatures=w.sections.flatMap(s=>s.fields).filter(f=>f.type==="signature");
+  assert.ok(signatures.length>=2,w.id+" missing signatures");
+ }
+});
