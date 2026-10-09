@@ -1,4 +1,5 @@
 "use client";
+import {DesktopModal} from "./DesktopModal";
 import {useState} from "react";
 import {motion,useReducedMotion} from "framer-motion";
 import {Building2,ChevronRight,Users,Palette,CheckCircle2,Plus,Trash2,Shield,ArrowRight,Edit3} from "lucide-react";
@@ -91,11 +92,12 @@ export function OrganizationOnboarding(){
   </div>
   <CompanyDirectoryImport org={currentOrg} people={people} setPeople={setPeople}/>
   {notice?<div role="status" style={{...card,color:"#174fa8",fontSize:12,background:"#eff6ff"}}>{notice}</div>:null}
-  {open?<motion.div initial={reduceMotion?false:{opacity:0,y:10}} animate={{opacity:1,y:0}} style={{...card,display:"grid",gap:15,borderTop:"4px solid "+draft.accent}}>
+  <DesktopModal title={editingId?"Edit company":"Company onboarding"} open={open} onClose={()=>setOpen(false)}><motion.div initial={reduceMotion?false:{opacity:0,y:10}} animate={{opacity:1,y:0}} style={{...card,display:"grid",gap:15,borderTop:"4px solid "+draft.accent}}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
      <div><strong style={{fontSize:18}}>{editingId?"Edit company":"Company onboarding"}</strong><p style={{fontSize:11,color:"#64748b",margin:"3px 0"}}>Autosaved draft · no login or external network connection</p></div>
-     <button style={button} onClick={()=>setOpen(false)}>Close</button>
+
     </div>
+    {notice?<p role="status">{notice}</p>:null}
     <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
      {["Company","Branding","People & owners","Review"].map((name,i)=><button key={name} style={{...button,fontSize:11,minHeight:36,padding:"7px 12px",background:step===i?"#174fa8":"#f8fafc",color:step===i?"#fff":"#475569"}} onClick={()=>setStep(i)}>{i+1}. {name}</button>)}
     </div>
@@ -159,7 +161,7 @@ export function OrganizationOnboarding(){
      {step<3?<button style={primary} onClick={next}>Continue <ChevronRight size={16} style={{display:"inline",verticalAlign:"middle"}}/></button>:
       <button style={primary} onClick={save}><CheckCircle2 size={16} style={{display:"inline",verticalAlign:"middle"}}/> Save company locally</button>}
     </div>
-  </motion.div>:null}
+  </motion.div></DesktopModal>
   {!open&&isFirst?<p style={{fontSize:11,color:"#b45309",margin:"0 2px"}}>You're using a fictional demo company. Create your own local company above to test branded forms and company-specific workers.</p>:null}
  </section>;
 }

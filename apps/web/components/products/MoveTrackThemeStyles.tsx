@@ -2,6 +2,19 @@
 /** Override legacy inline light surfaces inside MoveTrack only, without changing report styling or other App Studio products. */
 export function MoveTrackThemeStyles(){
  return <style>{`
+.movetrack-desktop-modal {box-sizing:border-box;color:inherit;background:#fff;border:1px solid #cbd5e1;padding:0;border-radius:18px;}
+.movetrack-desktop-modal:not([open]) {display:none;}
+.movetrack-desktop-modal.is-desktop[open] {display:flex;flex-direction:column;width:min(880px,calc(100vw - 64px));max-width:calc(100vw - 64px);max-height:calc(100dvh - 64px);overflow:hidden;position:fixed;margin:auto;}
+.movetrack-desktop-modal::backdrop {background:rgb(8 19 35 / .62);}
+.movetrack-modal-header {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid #cbd5e1;flex:none;}
+.movetrack-modal-header h2 {font-size:19px;margin:0;overflow-wrap:anywhere;}
+.movetrack-modal-header button,.movetrack-modal-launcher > button {min-height:44px;min-width:44px;padding:10px 16px;border:1px solid #b9cce4;border-radius:10px;background:#fff;color:#173764;font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.movetrack-modal-body {min-height:0;min-width:0;padding:20px;overflow-y:auto;overscroll-behavior:contain;}
+.movetrack-desktop-modal.is-inline {position:static;width:100%;max-width:100%;max-height:none;margin:12px 0;}
+.movetrack-desktop-modal.is-inline .movetrack-modal-body {padding:12px;overflow:visible;}
+.movetrack-root[data-theme="dark"] .movetrack-desktop-modal {background:#14253b;color:#e9f1fb;border-color:#38506b;}
+.movetrack-root[data-theme="dark"] .movetrack-modal-header {border-color:#38506b;}
+.movetrack-root[data-theme="dark"] :is(.movetrack-modal-header button,.movetrack-modal-launcher > button) {background:#1d324d;color:#eff6ff;border-color:#49627e;}
 .movetrack-root { color-scheme: light; transition: background-color .2s ease; }
 .movetrack-root[data-theme="dark"] { color-scheme: dark; background: #081323 !important; color: #e9f1fb !important; }
 .movetrack-root[data-theme="dark"] [style*="background: rgb(255, 255, 255)"],

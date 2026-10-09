@@ -1,4 +1,5 @@
 "use client";
+import {DesktopModalDisclosure} from "./DesktopModal";
 import {useMemo,useState} from "react";
 import {CalendarDays,UsersRound,ClipboardList,Plus,Trash2,CheckCircle2,FileText} from "lucide-react";
 import {usePersistentState} from "@bokang/persistence";
@@ -143,11 +144,11 @@ export function MeetingRegisterWorkspace(){
    <p style={{fontSize:12,color:"#dbeafe",lineHeight:1.7,margin:0}}>Create toolbox talks, shift briefings, SHE committee registers and contractor meetings for {org.name}. Every record saves locally, contributes to participation analytics and exports in PDF, Word, CSV and JSON.</p>
   </div>
   <nav className="movetrack-step-nav" aria-label="Meeting workspace pages"><button type="button" aria-current={page==="draft"?"step":undefined} onClick={()=>{setPage("draft");setEditing(true);}}>Edit meeting</button><button type="button" aria-current={page==="records"?"step":undefined} onClick={()=>setPage("records")}>Saved records ({records.length})</button></nav>
-  <details style={box} aria-label="Recurring meeting series"><summary style={{fontWeight:800,minHeight:44}}>Departmental meeting series</summary>
+  <DesktopModalDisclosure title="Departmental meeting series"><div style={box}>
    <h3 style={{margin:"0 0 8px"}}>Departmental meeting series</h3><p style={{fontSize:12}}>Monthly, weekly or quarterly continuity. Start the next occurrence from a saved series, review previous minutes and track open actions.</p>
    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{seriesHeads.map(r=><button type="button" key={String(r.answers.meeting_series_id)} style={btn} onClick={()=>startOccurrence(r)}>Next: {textValue(r.answers.meeting_series_name)} · {textValue(r.answers.meeting_department)}</button>)}</div>
    {!seriesHeads.length?<p style={{fontSize:12}}>Enable a recurring series in Meeting details, then save its first meeting.</p>:null}
-  </details>
+  </div></DesktopModalDisclosure>
   <div hidden={page!=="records"} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:9}}>
    {[["Meeting registers",records.length],["People on company directory",members.length],["Registered attendees",records.reduce((a,r)=>a+(Array.isArray(r.answers.participants)?r.answers.participants.length:0)+rowValues(r.answers.attendees).length,0)],["Apologies / absent",records.reduce((sum,r)=>sum+meetingAttendanceCounts(r.answers).absent,0)],["Open action items",openActions.length],["Attendance rate",meetingMetrics.attendanceRate===null?"—":meetingMetrics.attendanceRate+"%"],["Apologies received",meetingMetrics.apologies],["Overdue actions",meetingMetrics.overdue]].map(([name,n])=><div key={String(name)} style={box}><strong style={{fontSize:26,color:"#174b87"}}>{n}</strong><p style={{margin:"6px 0 0",fontWeight:800,color:"#64748b",fontSize:11}}>{name}</p></div>)}
   </div>
@@ -257,7 +258,7 @@ export function MeetingRegisterWorkspace(){
    <div hidden={step!==2} style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
     <h3 style={{fontSize:17,margin:0}}><FileText size={18} style={{display:"inline",verticalAlign:"middle"}}/> Agenda and minutes</h3>
     {previousMeeting?<section style={box} aria-label="Adopt previous minutes"><h4 style={{margin:0}}>Previous minutes · {textValue(previousMeeting.answers.meeting_date)}</h4>
-     <p>{textValue(previousMeeting.answers.meeting_title)}</p><details><summary>Read previous minutes and decisions</summary><p style={{whiteSpace:"pre-wrap"}}>{textValue(previousMeeting.answers.minutes)}</p><p style={{whiteSpace:"pre-wrap"}}>{textValue(previousMeeting.answers.decisions)}</p></details>
+     <p>{textValue(previousMeeting.answers.meeting_title)}</p><DesktopModalDisclosure title="Read previous minutes and decisions"><p style={{whiteSpace:"pre-wrap"}}>{textValue(previousMeeting.answers.minutes)}</p><p style={{whiteSpace:"pre-wrap"}}>{textValue(previousMeeting.answers.decisions)}</p></DesktopModalDisclosure>
      <label style={label}>Previous minutes adoption<select style={input} value={textValue(answers.minutes_adoption)||"Pending review"} onChange={e=>text("minutes_adoption",e.target.value)}>{["Pending review","Adopted","Adopted with amendments","Deferred"].map(v=><option key={v}>{v}</option>)}</select></label>
      <label style={label}>Amendments / adoption notes<textarea style={input} value={textValue(answers.minutes_amendments)} onChange={e=>text("minutes_amendments",e.target.value)}/></label>
      <OrganizationPeopleComboBox people={members} orgId={org.id} label="Adoption recorded by (unverified)" value={textValue(answers.minutes_adopted_by)?[textValue(answers.minutes_adopted_by)]:[]} onChange={ids=>patch({minutes_adopted_by:ids[0]??"",minutes_adopted_date:new Date().toISOString().slice(0,10)})}/>

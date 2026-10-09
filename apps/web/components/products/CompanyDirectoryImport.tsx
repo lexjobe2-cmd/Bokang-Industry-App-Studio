@@ -1,4 +1,5 @@
 "use client";
+import {DesktopModal} from "./DesktopModal";
 import {useState} from "react";
 import {FileSpreadsheet,UsersRound,Download,Upload,ChevronDown,CheckCircle2,AlertTriangle} from "lucide-react";
 import type {OrganizationProfile,PersonRecord} from "@bokang/domain-data/custom-assurance";
@@ -49,7 +50,7 @@ export function CompanyDirectoryImport({org,people,setPeople}:{
    </div>
    <button type="button" aria-expanded={open} onClick={()=>setOpen(v=>!v)} style={{...btn,display:"flex",gap:6,alignItems:"center"}}>Import staff directory <ChevronDown size={16}/></button>
   </div>
-  {open?<div style={{borderTop:"1px solid #e2e8f0",paddingTop:12,display:"grid",gap:11}}>
+  <DesktopModal title="Import staff directory" open={open} onClose={()=>setOpen(false)}><div style={{borderTop:"1px solid #e2e8f0",paddingTop:12,display:"grid",gap:11}}>
    <p style={{fontSize:12,color:"#475569",margin:0,lineHeight:1.6}}>Bring a company-authorized employee CSV and immediately make staff searchable in all participant, chairperson, supervisor and responsible-person pickers. Column names such as <strong>DisplayName, Mail, UserPrincipalName, Department, JobTitle, City, OfficeLocation and EmployeeId</strong> are recognized.</p>
    <p style={{fontSize:11,color:"#a16207",margin:0}}>No Microsoft 365 sign-in or synchronization is active. Do not import confidential employee information into this public demo; browser storage is not enterprise-secured.</p>
    <div style={{display:"flex",gap:9,flexWrap:"wrap",alignItems:"center"}}>
@@ -65,6 +66,6 @@ export function CompanyDirectoryImport({org,people,setPeople}:{
     <button type="button" style={{...btn,background:"#174fa8",color:"#fff",justifySelf:"start",borderColor:"#174fa8"}} onClick={save}>Confirm import of {result.records.length} people</button>
    </div>:null}
    {notice?<div role="status" style={{display:"flex",gap:7,color:"#047857",fontSize:12,alignItems:"center"}}><CheckCircle2 size={16}/>{notice}</div>:null}
-  </div>:null}
+  </div></DesktopModal>
  </section>;
 }

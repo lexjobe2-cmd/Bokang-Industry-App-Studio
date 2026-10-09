@@ -1,4 +1,5 @@
 "use client";
+import {DesktopModalDisclosure} from "./DesktopModal";
 
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { usePersistentState } from "@bokang/persistence";
@@ -369,7 +370,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     </div>:null}
 
     {view==="fleet"?<div style={{display:"grid",gap:14}}>
-      <details style={panel}><summary style={{fontWeight:850,minHeight:44,cursor:"pointer"}}>Add fleet vehicle</summary><h2 style={{marginTop:10}}>Onboard fleet vehicle</h2>
+      <DesktopModalDisclosure title="Add fleet vehicle"><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:10}}>Onboard fleet vehicle</h2>
        <p style={{fontSize:12,color:"#64748b"}}>Choose from company work sites and common vehicle details; only asset identity and verified expiry dates require direct entry.</p>
        <div className="movetrack-fleet-entry" style={formGrid}>
         <Field label="Fleet number"><input value={vehicleDraft.fleetNo} onChange={(e)=>setVehicleDraft((c)=>({...c,fleetNo:e.target.value}))} style={input} placeholder="LV-031"/></Field>
@@ -383,7 +384,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
          </Field>
         <Field label="Roadworthy expiry"><input type="date" value={vehicleDraft.roadworthyExpiry} onChange={(e)=>setVehicleDraft((c)=>({...c,roadworthyExpiry:e.target.value}))} style={input}/></Field>
         <Field label="Extinguisher service due"><input type="date" value={vehicleDraft.extinguisherServiceDue} onChange={(e)=>setVehicleDraft((c)=>({...c,extinguisherServiceDue:e.target.value}))} style={input}/></Field>
-      </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></details>
+      </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></section></DesktopModalDisclosure>
 
       <div className="movetrack-fleet-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
         {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid #fecaca":"1px solid #dbeafe"}}>
@@ -401,7 +402,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     </div>:null}
 
     {view==="drivers"?<div style={{display:"grid",gap:14}}>
-      <section style={panel}><h2 style={{marginTop:0}}>Onboard driver</h2><div style={formGrid}>
+      <DesktopModalDisclosure title="Add driver" mobileExpanded><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:0}}>Onboard driver</h2><div style={formGrid}>
         <Field label="Driver name"><input value={driverDraft.name} onChange={(e)=>setDriverDraft((c)=>({...c,name:e.target.value}))} style={input} placeholder="Choose a worker or type a name"/>
          <select aria-label="Choose driver from company directory" defaultValue="" style={{...input,marginTop:7,width:"100%"}} onChange={e=>{const person=directory.find(p=>p.id===e.target.value);if(person)setDriverDraft(d=>({...d,name:person.displayName}));}}>
           <option value="">Choose from {currentOrg.name} directory…</option>
@@ -409,7 +410,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
          </select></Field>
         <Field label="Phone"><input type="tel" autoComplete="tel" value={driverDraft.phone} onChange={(e)=>setDriverDraft((c)=>({...c,phone:e.target.value}))} style={input}/></Field>
         <Field label="Licence / reference"><input value={driverDraft.licenceNo} onChange={(e)=>setDriverDraft((c)=>({...c,licenceNo:e.target.value}))} style={input}/></Field>
-      </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section>
+      </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section></DesktopModalDisclosure>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
         {drivers.map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
@@ -497,13 +498,13 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     </section>:null}
 
     {view==="jobs"?<div style={{display:"grid",gap:12}}>
-      <section style={panel}><h2 style={{marginTop:0}}>New logistics job</h2><div style={formGrid}>
+      <DesktopModalDisclosure title="New logistics job" mobileExpanded><section style={panel}><h2 style={{marginTop:0}}>New logistics job</h2><div style={formGrid}>
         <Field label="Client"><input list="movetrack-clients" value={client} onChange={(e)=>setClient(e.target.value)} style={input} placeholder="Choose a recent client or type another"/>
          <datalist id="movetrack-clients">{[...new Set(jobs.map(j=>j.client))].map(item=><option key={item} value={item}/>)}</datalist></Field>
         <Field label="Job type"><select value={jobType} onChange={(e)=>setJobType(e.target.value as typeof jobType)} style={input}>{logisticsJobTypes.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="From"><select value={from} onChange={(e)=>setFrom(e.target.value as typeof from)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="To"><select value={to} onChange={(e)=>setTo(e.target.value as typeof to)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
-      </div><button onClick={addJob} style={primaryButton}>Create job</button></section>
+      </div><button onClick={addJob} style={primaryButton}>Create job</button></section></DesktopModalDisclosure>
       <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
