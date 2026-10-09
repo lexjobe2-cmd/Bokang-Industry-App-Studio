@@ -49,7 +49,7 @@ const starterJobs:Job[]=[
 
 
 
-export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrackView}={}){
+export function MoveTrackShowcase({initialView="control",selectedView,onViewChange}:{initialView?:MoveTrackView;selectedView?:MoveTrackView;onViewChange?:(view:MoveTrackView)=>void}={}){
   const [jobs,setJobs]=usePersistentState<Job[]>("bokang-studio.move-track.jobs.v1",starterJobs);
   const [fleet,setFleet]=usePersistentState<FleetVehicle[]>(MOVE_TRACK_KEYS.fleet,starterFleet);
   const [drivers,setDrivers]=usePersistentState<FleetDriver[]>(MOVE_TRACK_KEYS.drivers,starterDrivers);
@@ -75,8 +75,10 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   const [authorizationSignatures,setAuthorizationSignatures]=useState<Record<string,SignatureEvidence|null>>({});
   const [siteDrafts,setSiteDrafts]=useState<Record<string,FleetSitePolicy>>({});
   const [siteSignatures,setSiteSignatures]=useState<Record<string,SignatureEvidence|null>>({});
-  const [view,setView]=useState<MoveTrackView>(initialView);
-  useEffect(()=>setView(initialView),[initialView]);
+  const [localView,setLocalView]=useState<MoveTrackView>(initialView);
+  const view=selectedView??localView;
+  function setView(next:MoveTrackView){setLocalView(next);onViewChange?.(next);}
+  useEffect(()=>{if(!selectedView)setLocalView(initialView);},[initialView,selectedView]);
   const [notice,setNotice]=useState("");
   const [resolutionNotes,setResolutionNotes]=useState<Record<string,string>>({});
   const [incidentSignatures,setIncidentSignatures]=useState<Record<string,SignatureEvidence|undefined>>({});
