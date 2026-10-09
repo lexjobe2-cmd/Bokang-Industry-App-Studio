@@ -330,6 +330,43 @@ export function MoveTrackThemeStyles(){
  background-color:var(--mt-surface) !important;
  border-color:var(--mt-border) !important;
 }
+
+/* Form review, choice, due/overdue and completion strips should not retain pale light-mode
+   fills after their foreground changes to pale accessible dark-mode colors. */
+.movetrack-root[data-theme="dark"] [style*="background: #ecfdf3"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(236, 253, 243)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fef3f2"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(254, 243, 242)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f2f4f7"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(242, 244, 247)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fff7ed"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 247, 237)"],
+.movetrack-root[data-theme="dark"] [style*="background: #e8f1ff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(232, 241, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #eaf2fc"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(234, 242, 252)"],
+.movetrack-root[data-theme="dark"] [style*="background: #e6efff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(230, 239, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #e7eef7"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(231, 238, 247)"],
+.movetrack-root[data-theme="dark"] [style*="background: #ecfdf5"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(236, 253, 245)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fffaf0"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 250, 240)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fff5e8"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 245, 232)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fff3e0"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 243, 224)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f0fdf4"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(240, 253, 244)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f0f9ff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(240, 249, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fff8e6"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 248, 230)"] {
+ background:var(--mt-surface-soft) !important;
+ background-color:var(--mt-surface-soft) !important;
+ border-color:var(--mt-border) !important;
+}
 /* Semantic text colors: override only legacy hard-coded ink/muted/status/link values.
    Intentionally white-on-blue actions and dark-hero headings are untouched. */
 .movetrack-root[data-theme="dark"] :is([style^="color: #101827"],[style*="; color: #101827"],[style*=";color: #101827"]),
