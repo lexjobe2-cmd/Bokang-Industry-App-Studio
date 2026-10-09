@@ -272,11 +272,17 @@ export function MoveTrackThemeStyles(){
 /* Shared MoveTrack semantic contrast tokens: dark colors remain readable even in legacy inline components.
    Reports and print documents deliberately do not inherit this scope. */
 .movetrack-root[data-theme="light"] {
+ --mt-company-hero-bg:linear-gradient(110deg,#ffffff,#eaf2ff);
+ --mt-company-hero-ink:#172b46;--mt-company-hero-muted:#516078;
+ --mt-company-hero-border:#bfd4fa;
  --mt-ink:#172b46;--mt-muted:#516078;--mt-link:#174fa8;--mt-surface:#fff;
  --mt-surface-soft:#f3f7fc;--mt-border:#d8e3f0;
  --mt-danger:#a51d2d;--mt-warning:#905a09;--mt-success:#087454;
 }
 .movetrack-root[data-theme="dark"] {
+ --mt-company-hero-bg:linear-gradient(110deg,#172e4b,#1a3a63);
+ --mt-company-hero-ink:#f5f9ff;--mt-company-hero-muted:#c5d7ed;
+ --mt-company-hero-border:#4f709b;
  --mt-ink:#f0f6ff;--mt-muted:#becee2;--mt-link:#a9d2ff;--mt-surface:#162940;
  --mt-surface-soft:#1d344f;--mt-border:#496380;
  --mt-danger:#ffabb5;--mt-warning:#fbd58b;--mt-success:#86efc0;

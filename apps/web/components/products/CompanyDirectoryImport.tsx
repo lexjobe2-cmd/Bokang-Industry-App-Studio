@@ -5,7 +5,7 @@ import {FileSpreadsheet,UsersRound,Download,Upload,ChevronDown,CheckCircle2,Aler
 import type {OrganizationProfile,PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {parseOrganizationDirectoryCsv,mergeOrganizationDirectory,type DirectoryCsvResult} from "@bokang/domain-data/organization-directory";
 
-const btn:React.CSSProperties={background:"#fff",border:"1px solid #bfd1e8",borderRadius:10,minHeight:43,padding:"9px 13px",fontSize:12,fontWeight:800,color:"#174272",cursor:"pointer"};
+const btn:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid var(--mt-border,#bfd1e8)",borderRadius:10,minHeight:44,padding:"9px 13px",fontSize:12,fontWeight:800,color:"var(--mt-ink,#174272)",cursor:"pointer"};
 const sample=[
  ["DisplayName","Mail","UserPrincipalName","Department","JobTitle","City","OfficeLocation","EmployeeId","AccountEnabled"],
  ["Boitumelo Demo","boitumelo@sample.invalid","boitumelo@sample.invalid","Engineering","Shift Supervisor","Gaborone","Workshop","STAFF-001","true"],
@@ -42,10 +42,10 @@ export function CompanyDirectoryImport({org,people,setPeople}:{
   const href=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=href;a.download="movetrack-directory-template.csv";document.body.appendChild(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(href),1000);
  }
- return <section aria-label="Company directory import" style={{border:"1px solid #d4e2ef",borderRadius:15,background:"#fff",padding:13,display:"grid",gap:9}}>
+ return <section aria-label="Company directory import" style={{border:"1px solid var(--mt-border,#d4e2ef)",borderRadius:15,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",padding:13,display:"grid",gap:9}}>
   <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
    <div style={{display:"flex",gap:10,alignItems:"center"}}>
-    <span style={{background:"#eaf3ff",color:"#1d4ed8",padding:9,borderRadius:12}}><UsersRound size={22}/></span>
+    <span style={{background:"var(--mt-surface-soft,#eaf3ff)",color:"var(--mt-link,#1d4ed8)",padding:9,borderRadius:12}}><UsersRound size={22}/></span>
     <div><strong style={{fontSize:14}}>Organization people directory</strong><div style={{color:"#64748b",fontSize:11,marginTop:3}}>{count} active local people · departments, cities, email and UPN</div></div>
    </div>
    <button type="button" aria-expanded={open} onClick={()=>setOpen(v=>!v)} style={{...btn,display:"flex",gap:6,alignItems:"center"}}>Import staff directory <ChevronDown size={16}/></button>
@@ -58,7 +58,7 @@ export function CompanyDirectoryImport({org,people,setPeople}:{
     <label style={{...btn,display:"flex",alignItems:"center",gap:7,cursor:"pointer"}}><Upload size={16}/> Choose CSV file<input type="file" accept=".csv,text/csv" style={{display:"none"}} onChange={e=>void read(e.target.files?.[0])}/></label>
    </div>
    {error?<div role="alert" style={{fontSize:12,color:"#b42318"}}><AlertTriangle size={16} style={{display:"inline"}}/> {error}</div>:null}
-   {result?<div style={{padding:12,borderRadius:12,background:"#f0f6ff",display:"grid",gap:8}}>
+   {result?<div style={{padding:12,borderRadius:12,background:"var(--mt-surface-soft,#f0f6ff)",color:"var(--mt-ink,#172b46)",display:"grid",gap:8}}>
     <strong style={{fontSize:13}}>Preview — {sourceName}</strong>
     <p style={{fontSize:12,margin:0}}>{result.records.length} people ready · {result.duplicates} duplicate rows ignored · {result.warnings.length} warnings</p>
     {result.records.slice(0,5).map(p=><div key={p.id} style={{fontSize:11,color:"#475569"}}>{p.displayName} · {p.department||"No department"} · {p.city||p.location||"No city"} · {p.email||p.userPrincipalName||"No email"}</div>)}

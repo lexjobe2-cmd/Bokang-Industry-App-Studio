@@ -8,11 +8,11 @@ import {CompanyDirectoryImport} from "./CompanyDirectoryImport";
 import {ASSURANCE_STORAGE,demoOrganization,demoPeople,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
 
 export const ACTIVE_ORGANIZATION_KEY="bokang-studio.move-track.active-organization.v1";
-const input:React.CSSProperties={width:"100%",minHeight:44,border:"1px solid #cbd5e1",borderRadius:10,padding:"10px 12px",font:"inherit",background:"#fff",color:"#102033"};
-const button:React.CSSProperties={border:"1px solid #cbd5e1",background:"#fff",minHeight:44,padding:"10px 15px",borderRadius:10,fontWeight:780,color:"#183454",cursor:"pointer"};
-const primary:React.CSSProperties={...button,border:0,color:"#fff",background:"#174fa8"};
-const card:React.CSSProperties={background:"#fff",border:"1px solid #dae4f0",borderRadius:16,padding:17};
-const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,fontWeight:800,color:"#344054"};
+const input:React.CSSProperties={width:"100%",minHeight:44,border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:10,padding:"10px 12px",font:"inherit",background:"var(--mt-surface-soft,#fff)",color:"var(--mt-ink,#102033)"};
+const button:React.CSSProperties={border:"1px solid var(--mt-border,#cbd5e1)",background:"var(--mt-surface,#fff)",minHeight:44,padding:"10px 15px",borderRadius:10,fontWeight:780,color:"var(--mt-ink,#183454)",cursor:"pointer"};
+const primary:React.CSSProperties={...button,border:0,color:"#fff",background:"#2152b3"};
+const card:React.CSSProperties={background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",border:"1px solid var(--mt-border,#dae4f0)",borderRadius:16,padding:17};
+const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,fontWeight:800,color:"var(--mt-ink,#344054)"};
 type Draft=OrganizationProfile & {industry:string};
 const initial=():Draft=>({...demoOrganization,id:"",name:"",domain:"",businessUnit:"",siteIds:[],ownerIds:[],logoDataUrl:undefined,logoName:undefined,documentPrefix:"SHE",footer:"Uncontrolled when printed · Operational approval required",accent:"#155eef",source:"MANUAL" as const,industry:"Mining & resources",updatedAt:""});
 type PersonDraft={id?:string;name:string;jobTitle:string;email:string;department:string;city:string;upn:string;employeeNumber:string;owner:boolean};
@@ -74,21 +74,21 @@ export function OrganizationOnboarding(){
   setActiveOrg(id);setEditingId(null);setOpen(false);setStep(0);setNotice(priorOrg?"Company updated locally.":"Company created locally. Your operational workspaces now use its branding and personnel.");
  }
  return <section aria-label="Company onboarding" style={{display:"grid",gap:11}}>
-  <div style={{...card,background:"linear-gradient(110deg,#fff,#eaf2ff)",borderColor:"#c4d8ff",display:"flex",justifyContent:"space-between",gap:13,alignItems:"center",flexWrap:"wrap"}}>
+  <div data-testid="company-setup-hero" style={{...card,background:"var(--mt-company-hero-bg,linear-gradient(110deg,#fff,#eaf2ff))",color:"var(--mt-company-hero-ink,#172b46)",borderColor:"var(--mt-company-hero-border,#c4d8ff)",display:"flex",justifyContent:"space-between",gap:13,alignItems:"center",flexWrap:"wrap"}}>
    <div style={{display:"flex",gap:12,alignItems:"center"}}>
-    {currentOrg.logoDataUrl?<img src={currentOrg.logoDataUrl} alt={currentOrg.name+" logo"} style={{width:62,height:58,objectFit:"contain"}}/>:<div style={{width:53,height:53,borderRadius:14,background:"#dbeafe",display:"grid",placeItems:"center"}}><Building2 size={24} color="#174fa8"/></div>}
-    <div><p style={{fontSize:10,fontWeight:900,letterSpacing:1.2,color:"#2563eb",margin:"0 0 4px"}}>STEP 01 · YOUR ORGANIZATION</p><h2 style={{fontSize:20,margin:0}}>Set up your company workspace</h2><p style={{fontSize:12,color:"#64748b",margin:"6px 0 0"}}>Company profile, logos, work sites, owners and staff feed into your live SHE checklists.</p></div>
+    {currentOrg.logoDataUrl?<img src={currentOrg.logoDataUrl} alt={currentOrg.name+" logo"} style={{width:62,height:58,objectFit:"contain"}}/>:<div style={{width:53,height:53,borderRadius:14,background:"var(--mt-surface-soft,#dbeafe)",display:"grid",placeItems:"center"}}><Building2 size={24} color="var(--mt-link,#174fa8)"/></div>}
+    <div><p style={{fontSize:10,fontWeight:900,letterSpacing:1.2,color:"var(--mt-link,#2563eb)",margin:"0 0 4px"}}>STEP 01 · YOUR ORGANIZATION</p><h2 style={{fontSize:20,margin:0,color:"var(--mt-company-hero-ink,#172b46)"}}>Set up your company workspace</h2><p style={{fontSize:12,color:"var(--mt-company-hero-muted,#516078)",margin:"6px 0 0"}}>Company profile, logos, work sites, owners and staff feed into your live SHE checklists.</p></div>
    </div>
    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
     <button style={primary} onClick={resetDraft}><Plus size={15} style={{display:"inline",verticalAlign:"middle"}}/> Add company</button>
-    <button style={button} onClick={()=>editCompany(currentOrg)}><Edit3 size={15} style={{display:"inline",verticalAlign:"middle"}}/> Edit active</button>
+    <button style={{...button,color:"var(--mt-ink,#183454)",background:"var(--mt-surface,#fff)"}} onClick={()=>editCompany(currentOrg)}><Edit3 size={15} style={{display:"inline",verticalAlign:"middle"}}/> Edit active</button>
    </div>
   </div>
   <div style={{...card,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
    <strong style={{fontSize:12}}>Working as</strong>
    <select aria-label="Active organization" value={activeOrg} onChange={e=>{setActiveOrg(e.target.value);setNotice("Organization switched for future work.");}} style={{...input,flex:"1 1 220px",maxWidth:370}}>{orgs.map(o=><option value={o.id} key={o.id}>{o.name}{o.id===demoOrganization.id?" (demo)":""}</option>)}</select>
    <span style={{fontSize:11,color:"#64748b"}}>{customOrgs.length} locally onboarded · {people.filter(p=>p.orgId===activeOrg).length} people</span>
-   {isFirst?<button style={{...button,border:"1px solid #bfdbfe",background:"#eff6ff"}} onClick={resetDraft}>New? Start 4-step onboarding →</button>:null}
+   {isFirst?<button style={{...button,border:"1px solid var(--mt-border,#bfdbfe)",background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-ink,#183454)"}} onClick={resetDraft}>New? Start 4-step onboarding →</button>:null}
   </div>
   <CompanyDirectoryImport org={currentOrg} people={people} setPeople={setPeople}/>
   {notice?<div role="status" style={{...card,color:"#174fa8",fontSize:12,background:"#eff6ff"}}>{notice}</div>:null}
@@ -99,7 +99,7 @@ export function OrganizationOnboarding(){
     </div>
     {notice?<p role="status">{notice}</p>:null}
     <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-     {["Company","Branding","People & owners","Review"].map((name,i)=><button key={name} style={{...button,fontSize:11,minHeight:36,padding:"7px 12px",background:step===i?"#174fa8":"#f8fafc",color:step===i?"#fff":"#475569"}} onClick={()=>setStep(i)}>{i+1}. {name}</button>)}
+     {["Company","Branding","People & owners","Review"].map((name,i)=><button key={name} style={{...button,fontSize:11,minHeight:36,padding:"7px 12px",background:step===i?"#2152b3":"var(--mt-surface-soft,#f8fafc)",color:step===i?"#fff":"var(--mt-ink,#475569)"}} onClick={()=>setStep(i)}>{i+1}. {name}</button>)}
     </div>
     {step===0?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,190px),1fr))",gap:12}}>
      <label style={label}>Company legal/trading name *<input style={input} value={draft.name} onChange={e=>patch({name:e.target.value})} placeholder="Kalahari Mining Services"/></label>
