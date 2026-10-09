@@ -68,18 +68,18 @@ export function proposePaperControls(lines:readonly PaperLine[],marks:readonly V
  }
  // OCR sometimes recognizes printed box symbols even when the geometric outline is faint.
  for(const l of sorted){
-  if(!/☐|☑|□|◯|○|\\[\\s*[xX]?\\s*\\]|\\(\\s*\\)/.test(l.text))continue;
+  if(!/☐|☑|□|◯|○|\[\s*[xX]?\s*\]|\(\s*\)/.test(l.text))continue;
   const label=clean(l.text);if(label.length<3)continue;
   if(output.some(o=>o.page===l.page&&norm(o.label)===norm(label)))continue;
-  const symbols=l.text.match(/☐|☑|□|◯|○|\\[\\s*[xX]?\\s*\\]|\\(\\s*\\)/g)??[];
-  const kind=/(◯|○|\\(\\s*\\))/.test(l.text)?"radio" as const:"checkbox" as const;
+  const symbols=l.text.match(/☐|☑|□|◯|○|\[\s*[xX]?\s*\]|\(\s*\)/g)??[];
+  const kind=/(◯|○|\(\s*\))/.test(l.text)?"radio" as const:"checkbox" as const;
   const inferred=inferQuestionType(l.text,Array.from({length:symbols.length},()=>kind));
   output.push({id:"text-control-"+idHash(l.page+"|"+l.y+"|"+label),page:l.page,bounds:{x:l.x,y:l.y,width:l.width,height:l.height},
    source:"ocr-layout",label,type:inferred.type,options:inferred.options,confidence:.67});
  }
  // Ruled or OCR-recognized table headers become a repeatable register, not a text field.
  for(const l of sorted){
-  const columns=l.text.split(/\\s*\\|\\s*|\\t+/).map(clean).filter(c=>c.length>=2&&c.length<=45);
+  const columns=l.text.split(/\s*\|\s*|\t+/).map(clean).filter(c=>c.length>=2&&c.length<=45);
   if(columns.length<3||columns.length>12||l.text.length>180||!columns.some(c=>/name|date|time|description|item|employee|action|status|signature|quantity/i.test(c)))continue;
   const label="Register: "+columns.slice(0,3).join(" / ");
   output.push({id:"table-"+idHash(l.page+"|"+l.y+"|"+label),page:l.page,bounds:{x:l.x,y:l.y,width:l.width,height:l.height},
