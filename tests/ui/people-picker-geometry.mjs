@@ -204,7 +204,9 @@ try{
   "const outside=elements.filter(e=>{const r=e.getBoundingClientRect();return r.right>vw+2||r.left< -2;}).slice(0,8).map(e=>({kind:e.tagName,label:(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,55)}));",
   "const narrow=elements.filter(e=>['INPUT','SELECT','TEXTAREA'].includes(e.tagName)&&!['checkbox','radio','hidden','color'].includes(e.getAttribute('type'))&&e.getBoundingClientRect().width<90).slice(0,8).map(e=>({kind:e.tagName,label:e.getAttribute('aria-label')||e.getAttribute('placeholder')||'',width:Math.round(e.getBoundingClientRect().width)}));",
   "const clipped=elements.filter(e=>e.tagName==='BUTTON'&&e.scrollWidth>e.clientWidth+3&&getComputedStyle(e).overflowX==='hidden').slice(0,8).map(e=>(e.textContent||'').trim().slice(0,55));",
-  "return {viewport:vw,page:document.documentElement.scrollWidth,outside,narrow,clipped,theme:document.querySelector('.movetrack-root')?.getAttribute('data-theme')||'unknown'};",
+  "function lum(css){const v=css.match(/[0-9.]+/g)?.slice(0,3).map(Number);if(!v||v.length!==3)return null;const c=v.map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;});return c[0]*.2126+c[1]*.7152+c[2]*.0722;}",
+  "const lowContrast=elements.filter(e=>e.tagName==='BUTTON'&&e.textContent.trim()&&!e.disabled).map(e=>{const s=getComputedStyle(e);const bg=s.backgroundColor;const fg=s.color;if(!bg.startsWith('rgb(')||!fg.startsWith('rgb('))return null;const a=lum(bg),b=lum(fg);if(a===null||b===null)return null;const ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);return ratio<4.5?{label:e.textContent.trim().slice(0,65),contrast:+ratio.toFixed(2),fg,bg,shared:e.classList.contains('movetrack-ui-button')}:null;}).filter(Boolean).slice(0,20);",
+  "return {viewport:vw,page:document.documentElement.scrollWidth,outside,narrow,clipped,lowContrast,theme:document.querySelector('.movetrack-root')?.getAttribute('data-theme')||'unknown'};",
   "})()"
  ].join("\n");
  for(const width of [320,390]){
@@ -217,7 +219,7 @@ try{
     const metrics=await evaluate(scanExpression);
     const item={route,width,requestedTheme:theme,...metrics};
     entryResults.push(item);
-    if(metrics.page>metrics.viewport+2||metrics.outside.length||metrics.clipped.length||metrics.narrow.length)
+    if(metrics.page>metrics.viewport+2||metrics.outside.length||metrics.clipped.length||metrics.narrow.length||metrics.lowContrast.length)
      console.log("UI AUDIT FINDING",JSON.stringify(item));
     if(width===390&&theme==="dark"&&["/","/app/admin","/app/fleet","/app/forms","/app/meetings","/app/analytics","/workflows","/search"].includes(route)){
      const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
@@ -231,7 +233,10 @@ try{
  const overflowing=entryResults.filter(x=>x.page>x.viewport+2||x.outside.length);
  const clipped=entryResults.filter(x=>x.clipped.length);
  const narrow=entryResults.filter(x=>x.narrow.length);
- console.log("ENTRY MATRIX:",entryResults.length,"rendered entry states;",overflowing.length,"out-of-bounds;",clipped.length,"potentially clipped buttons;",narrow.length,"narrow inputs. Detailed evidence saved to artifact.");
+ const contrastFindings=entryResults.filter(x=>x.lowContrast.length);
+ const sharedContrastFailures=entryResults.flatMap(x=>x.lowContrast.filter(v=>v.shared).map(v=>({...v,route:x.route,width:x.width,theme:x.requestedTheme})));
+ assert.equal(sharedContrastFailures.length,0,"Shared controls must pass AA text contrast: "+JSON.stringify(sharedContrastFailures));
+ console.log("ENTRY MATRIX:",entryResults.length,"rendered entry states;",overflowing.length,"out-of-bounds;",clipped.length,"potentially clipped buttons;",narrow.length,"narrow inputs;",contrastFindings.length,"entry states with button contrast findings. Detailed evidence saved to artifact.");
  console.log("PASSED",checks.length,"real Chromium people-picker geometry cases; physical Safari still unverified.");
 }finally{
  if(ws)ws.close();
