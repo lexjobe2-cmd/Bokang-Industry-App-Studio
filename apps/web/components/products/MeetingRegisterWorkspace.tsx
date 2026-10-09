@@ -168,23 +168,23 @@ export function MeetingRegisterWorkspace(){
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>{if(window.confirm("Clear this meeting draft? Saved records will remain.")){patch(newDraft(org.siteIds[0]??""));goStep(0);}}}>Clear draft</button></div>
    </div>
    <div hidden={step!==0} style={grid}>
-    <label style={label}>Meeting title *<input style={input} value={textValue(answers.meeting_title)} placeholder="Weekly SHE committee" onChange={e=>text("meeting_title",e.target.value)}/></label>
-    <label style={label}>Meeting type *<select style={input} value={kind} onChange={e=>text("meeting_type",e.target.value)}>{meetingTypes.map(k=><option key={k}>{k}</option>)}</select></label>
+    <label style={label}>Meeting title *<input className="movetrack-ui-field" style={input} value={textValue(answers.meeting_title)} placeholder="Weekly SHE committee" onChange={e=>text("meeting_title",e.target.value)}/></label>
+    <label style={label}>Meeting type *<select className="movetrack-ui-field" style={input} value={kind} onChange={e=>text("meeting_type",e.target.value)}>{meetingTypes.map(k=><option key={k}>{k}</option>)}</select></label>
     <label style={label}>Date *<input type="date" style={input} value={textValue(answers.meeting_date)} onChange={e=>text("meeting_date",e.target.value)}/></label>
     <label style={label}>Time<input type="time" style={input} value={textValue(answers.meeting_time)} onChange={e=>text("meeting_time",e.target.value)}/></label>
     <label style={label}>Work site / meeting room *<input list="movetrack-meeting-sites" style={input} value={textValue(answers.meeting_site)} onChange={e=>text("meeting_site",e.target.value)}/><datalist id="movetrack-meeting-sites">{org.siteIds.map(site=><option key={site} value={site}/>)}</datalist></label>
-    <label style={label}>Reference<input style={input} value={textValue(answers.meeting_ref)} placeholder="SHE-MIN-2026-01" onChange={e=>text("meeting_ref",e.target.value)}/></label>
+    <label style={label}>Reference<input className="movetrack-ui-field" style={input} value={textValue(answers.meeting_ref)} placeholder="SHE-MIN-2026-01" onChange={e=>text("meeting_ref",e.target.value)}/></label>
     <label style={label}><span><input type="checkbox" checked={!!answers.meeting_series_id} onChange={e=>patch(e.target.checked?{meeting_series_id:"SERIES-"+crypto.randomUUID(),meeting_series_name:textValue(answers.meeting_title),meeting_cadence:"Monthly",meeting_department:""}:{meeting_series_id:"",meeting_series_name:"",meeting_department:"",meeting_cadence:"",previous_meeting_id:"",previous_meeting_title:"",previous_meeting_date:"",minutes_adoption:"",minutes_amendments:""})}/> Recurring departmental meeting</span></label>
     {answers.meeting_series_id?<>
-     <label style={label}>Series name *<input style={input} value={textValue(answers.meeting_series_name)} onChange={e=>text("meeting_series_name",e.target.value)}/></label>
-     <label style={label}>Department *<input style={input} list="meeting-departments" value={textValue(answers.meeting_department)} onChange={e=>text("meeting_department",e.target.value)}/><datalist id="meeting-departments">{[...new Set(members.map(p=>p.department).filter(Boolean))].map(d=><option key={d} value={d}/>)}</datalist></label>
-     <label style={label}>Recurrence<select style={input} value={textValue(answers.meeting_cadence)||"Monthly"} onChange={e=>text("meeting_cadence",e.target.value)}>{["Monthly","Weekly","Quarterly"].map(v=><option key={v}>{v}</option>)}</select></label>
-     <label style={label}>Previous meeting in this series<select style={input} value={textValue(answers.previous_meeting_id)} onChange={e=>{const r=seriesRecords.find(r=>r.id===e.target.value);patch({previous_meeting_id:r?.id??"",previous_meeting_title:r?textValue(r.answers.meeting_title):"",previous_meeting_date:r?textValue(r.answers.meeting_date):"",minutes_adoption:r?"Pending review":"",minutes_amendments:"",minutes_adopted_by:"",minutes_adopted_date:""});}}><option value="">First meeting / no previous record</option>{seriesRecords.map(r=><option key={r.id} value={r.id}>{textValue(r.answers.meeting_date)} · {textValue(r.answers.meeting_title)}</option>)}</select></label>
+     <label style={label}>Series name *<input className="movetrack-ui-field" style={input} value={textValue(answers.meeting_series_name)} onChange={e=>text("meeting_series_name",e.target.value)}/></label>
+     <label style={label}>Department *<input className="movetrack-ui-field" style={input} list="meeting-departments" value={textValue(answers.meeting_department)} onChange={e=>text("meeting_department",e.target.value)}/><datalist id="meeting-departments">{[...new Set(members.map(p=>p.department).filter(Boolean))].map(d=><option key={d} value={d}/>)}</datalist></label>
+     <label style={label}>Recurrence<select className="movetrack-ui-field" style={input} value={textValue(answers.meeting_cadence)||"Monthly"} onChange={e=>text("meeting_cadence",e.target.value)}>{["Monthly","Weekly","Quarterly"].map(v=><option key={v}>{v}</option>)}</select></label>
+     <label style={label}>Previous meeting in this series<select className="movetrack-ui-field" style={input} value={textValue(answers.previous_meeting_id)} onChange={e=>{const r=seriesRecords.find(r=>r.id===e.target.value);patch({previous_meeting_id:r?.id??"",previous_meeting_title:r?textValue(r.answers.meeting_title):"",previous_meeting_date:r?textValue(r.answers.meeting_date):"",minutes_adoption:r?"Pending review":"",minutes_amendments:"",minutes_adopted_by:"",minutes_adopted_date:""});}}><option value="">First meeting / no previous record</option>{seriesRecords.map(r=><option key={r.id} value={r.id}>{textValue(r.answers.meeting_date)} · {textValue(r.answers.meeting_title)}</option>)}</select></label>
     </>:null}
     <OrganizationPeopleComboBox people={members} orgId={org.id} label="Chairperson" value={textValue(answers.meeting_chair)?[textValue(answers.meeting_chair)]:[]} onChange={ids=>text("meeting_chair",ids[0]??"")}/>
     <OrganizationPeopleComboBox people={members} orgId={org.id} label="Minute taker" value={textValue(answers.meeting_recorder_id)?[textValue(answers.meeting_recorder_id)]:[]} onChange={ids=>patch({meeting_recorder_id:ids[0]??"",meeting_recorder:members.find(p=>p.id===ids[0])?.displayName??""})}/>
-    {!textValue(answers.meeting_recorder_id)?<label style={label}>External / legacy minute taker<input style={input} value={textValue(answers.meeting_recorder)} onChange={e=>text("meeting_recorder",e.target.value)}/></label>:null}
-    {!textValue(answers.meeting_chair)?<label style={label}>External chairperson<input style={input} value={textValue(answers.meeting_chair_manual)} onChange={e=>text("meeting_chair_manual",e.target.value)}/></label>:null}
+    {!textValue(answers.meeting_recorder_id)?<label style={label}>External / legacy minute taker<input className="movetrack-ui-field" style={input} value={textValue(answers.meeting_recorder)} onChange={e=>text("meeting_recorder",e.target.value)}/></label>:null}
+    {!textValue(answers.meeting_chair)?<label style={label}>External chairperson<input className="movetrack-ui-field" style={input} value={textValue(answers.meeting_chair_manual)} onChange={e=>text("meeting_chair_manual",e.target.value)}/></label>:null}
     <OrganizationPeopleComboBox people={members} orgId={org.id} label="Facilitator / submitted by" value={actor?[actor]:[]} onChange={ids=>setActor(ids[0]??"")}/>
 
    </div>
@@ -199,18 +199,18 @@ export function MeetingRegisterWorkspace(){
      <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"0 0 4px"}}>{selected.length} present from {members.length} active people in {org.name}.</p>
      {previousMeeting?<button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,padding:"7px 10px",minHeight:36,fontSize:11}} onClick={reuseMeetingPeople}>Reuse previous meeting crew</button>:null}
     </div>
-    {desktop&&attendanceDetails.length?<label style={label}>Edit attendee details<select style={input} value={attendanceDetails.some(r=>r.person_id===personFocus)?personFocus:String(attendanceDetails[0]?.person_id??"")} onChange={e=>setPersonFocus(e.target.value)}>{attendanceDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.attendance_status)}</option>)}</select></label>:null}
+    {desktop&&attendanceDetails.length?<label style={label}>Edit attendee details<select className="movetrack-ui-field" style={input} value={attendanceDetails.some(r=>r.person_id===personFocus)?personFocus:String(attendanceDetails[0]?.person_id??"")} onChange={e=>setPersonFocus(e.target.value)}>{attendanceDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.attendance_status)}</option>)}</select></label>:null}
     {attendanceDetails.map((r,i)=>(!desktop||r.person_id===(attendanceDetails.some(row=>row.person_id===personFocus)?personFocus:attendanceDetails[0]?.person_id))?<div key={String(r.person_id)} style={{...box,display:"grid",gap:9}}>
      <strong>{textValue(r.person_name)}</strong><small>{[r.department,r.job_title].filter(Boolean).join(" · ")}</small>
-     <div style={grid}><label style={label}>Attendance status<select style={input} value={textValue(r.attendance_status)||"Present"} onChange={e=>listPatch("attendance_details",i,{attendance_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
+     <div style={grid}><label style={label}>Attendance status<select className="movetrack-ui-field" style={input} value={textValue(r.attendance_status)||"Present"} onChange={e=>listPatch("attendance_details",i,{attendance_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
       <label style={label}>Arrival time<input type="time" style={input} value={textValue(r.arrival_time)} onChange={e=>listPatch("attendance_details",i,{arrival_time:e.target.value})}/></label>
       <label style={label}>Departure time<input type="time" style={input} value={textValue(r.departure_time)} onChange={e=>listPatch("attendance_details",i,{departure_time:e.target.value})}/></label></div>
     </div>:null)}
     <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><strong style={{fontSize:13}}>External/manual attendees ({attendees.length})</strong><button className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>addRow("attendees")}><Plus size={14} style={{display:"inline"}}/> Add person</button></div>
     {attendees.map((r,i)=><div key={i} style={{...grid,background:"var(--mt-surface-soft,#f8fafc)",padding:10,borderRadius:12}}>
-     {([["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]] as const).map(([key,title])=><label key={key} style={label}>{title}<input style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
-     <label style={label}>Attendance status<select style={input} value={textValue(r.attendee_status)||"Present"} onChange={e=>listPatch("attendees",i,{attendee_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
-     <label style={label}>Attendance acknowledged (demo)<select style={input} value={textValue(r.attendee_ack)||"No"} onChange={e=>listPatch("attendees",i,{attendee_ack:e.target.value})}><option>No</option><option>Yes (unverified)</option></select></label>
+     {([["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]] as const).map(([key,title])=><label key={key} style={label}>{title}<input className="movetrack-ui-field" style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
+     <label style={label}>Attendance status<select className="movetrack-ui-field" style={input} value={textValue(r.attendee_status)||"Present"} onChange={e=>listPatch("attendees",i,{attendee_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
+     <label style={label}>Attendance acknowledged (demo)<select className="movetrack-ui-field" style={input} value={textValue(r.attendee_ack)||"No"} onChange={e=>listPatch("attendees",i,{attendee_ack:e.target.value})}><option>No</option><option>Yes (unverified)</option></select></label>
      <button aria-label={"Remove attendee "+(i+1)} className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>removeRow("attendees",i)}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
     </div>)}
     <div style={{border:"1px solid #bfdbfe",borderRadius:14,background:"var(--mt-surface-soft,#f0f6ff)",padding:15,display:"grid",gap:12}}>
@@ -224,7 +224,7 @@ export function MeetingRegisterWorkspace(){
        label="Select staff who apologized or are absent"
        placeholder="Find absent colleagues"
        value={apologyIds} onChange={ids=>choosePresence("absent",ids)}/>
-     {desktop&&apologyDetails.length?<label style={label}>Edit apology details<select style={input} value={apologyDetails.some(r=>r.person_id===apologyFocus)?apologyFocus:String(apologyDetails[0]?.person_id??"")} onChange={e=>setApologyFocus(e.target.value)}>{apologyDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.absence_status)}</option>)}</select></label>:null}
+     {desktop&&apologyDetails.length?<label style={label}>Edit apology details<select className="movetrack-ui-field" style={input} value={apologyDetails.some(r=>r.person_id===apologyFocus)?apologyFocus:String(apologyDetails[0]?.person_id??"")} onChange={e=>setApologyFocus(e.target.value)}>{apologyDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.absence_status)}</option>)}</select></label>:null}
      {apologyDetails.map((r,i)=>(!desktop||r.person_id===(apologyDetails.some(row=>row.person_id===apologyFocus)?apologyFocus:apologyDetails[0]?.person_id))?<div key={String(r.person_id??i)} style={{...box,display:"grid",gap:9,background:"var(--mt-surface,#fff)",padding:12}}>
        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:9}}>
         <strong style={{fontSize:12}}>{members.find(p=>p.id===r.person_id)?.displayName??textValue(r.person_name)}</strong>
@@ -232,11 +232,11 @@ export function MeetingRegisterWorkspace(){
        </div>
        <small>{[r.department,r.job_title].filter(Boolean).join(" · ")}</small>
        <div style={{...grid,gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,185px),1fr))"}}>
-        <label style={label}>Notification status<select style={input} value={textValue(r.notification_status)||"Not recorded"} onChange={e=>listPatch("apology_details",i,{notification_status:e.target.value})}>{notificationStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
-        <label style={label}>Attendance status<select style={input} value={textValue(r.absence_status)||"Apology received"} onChange={e=>listPatch("apology_details",i,{absence_status:e.target.value})}>{apologyStatusOptions.map(option=><option key={option}>{option}</option>)}</select></label>
-        <label style={label}>Reason (optional category)<select style={input} value={textValue(r.absence_reason)||"Not specified"} onChange={e=>listPatch("apology_details",i,{absence_reason:e.target.value})}>{apologyReasonOptions.map(option=><option key={option}>{option}</option>)}</select></label>
+        <label style={label}>Notification status<select className="movetrack-ui-field" style={input} value={textValue(r.notification_status)||"Not recorded"} onChange={e=>listPatch("apology_details",i,{notification_status:e.target.value})}>{notificationStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
+        <label style={label}>Attendance status<select className="movetrack-ui-field" style={input} value={textValue(r.absence_status)||"Apology received"} onChange={e=>listPatch("apology_details",i,{absence_status:e.target.value})}>{apologyStatusOptions.map(option=><option key={option}>{option}</option>)}</select></label>
+        <label style={label}>Reason (optional category)<select className="movetrack-ui-field" style={input} value={textValue(r.absence_reason)||"Not specified"} onChange={e=>listPatch("apology_details",i,{absence_reason:e.target.value})}>{apologyReasonOptions.map(option=><option key={option}>{option}</option>)}</select></label>
        </div>
-       <label style={label}>Notes (optional)<input style={input} value={textValue(r.absence_note)} onChange={e=>listPatch("apology_details",i,{absence_note:e.target.value})} placeholder="Additional context only if needed"/></label>
+       <label style={label}>Notes (optional)<input className="movetrack-ui-field" style={input} value={textValue(r.absence_note)} onChange={e=>listPatch("apology_details",i,{absence_note:e.target.value})} placeholder="Additional context only if needed"/></label>
       </div>:null)}
      <div style={{display:"flex",justifyContent:"space-between",gap:9,alignItems:"center",flexWrap:"wrap"}}>
       <strong style={{fontSize:12}}>External / contractor apologies ({externalApologies.length})</strong>
@@ -244,14 +244,14 @@ export function MeetingRegisterWorkspace(){
      </div>
      {externalApologies.map((r,i)=><div key={i} style={{...box,display:"grid",gap:9,background:"var(--mt-surface,#fff)",padding:12}}>
        <div style={{...grid}}>
-        <label style={label}>Person name *<input style={input} value={textValue(r.apology_name)} onChange={e=>listPatch("apology_entries",i,{apology_name:e.target.value})} placeholder="External visitor / contractor"/></label>
-        <label style={label}>Company / department<input style={input} value={textValue(r.apology_company)} onChange={e=>listPatch("apology_entries",i,{apology_company:e.target.value})}/></label>
-        <label style={label}>Attendance status<select style={input} value={textValue(r.apology_status)||"Apology received"} onChange={e=>listPatch("apology_entries",i,{apology_status:e.target.value})}>{apologyStatusOptions.map(option=><option key={option}>{option}</option>)}</select></label>
-        <label style={label}>Reason<select style={input} value={textValue(r.apology_reason)||"Not specified"} onChange={e=>listPatch("apology_entries",i,{apology_reason:e.target.value})}>{apologyReasonOptions.map(option=><option key={option}>{option}</option>)}</select></label>
+        <label style={label}>Person name *<input className="movetrack-ui-field" style={input} value={textValue(r.apology_name)} onChange={e=>listPatch("apology_entries",i,{apology_name:e.target.value})} placeholder="External visitor / contractor"/></label>
+        <label style={label}>Company / department<input className="movetrack-ui-field" style={input} value={textValue(r.apology_company)} onChange={e=>listPatch("apology_entries",i,{apology_company:e.target.value})}/></label>
+        <label style={label}>Attendance status<select className="movetrack-ui-field" style={input} value={textValue(r.apology_status)||"Apology received"} onChange={e=>listPatch("apology_entries",i,{apology_status:e.target.value})}>{apologyStatusOptions.map(option=><option key={option}>{option}</option>)}</select></label>
+        <label style={label}>Reason<select className="movetrack-ui-field" style={input} value={textValue(r.apology_reason)||"Not specified"} onChange={e=>listPatch("apology_entries",i,{apology_reason:e.target.value})}>{apologyReasonOptions.map(option=><option key={option}>{option}</option>)}</select></label>
        </div>
        <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start",minHeight:35}} onClick={()=>removeRow("apology_entries",i)}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
       </div>)}
-     <label style={label}>Additional apology notes (optional)<textarea style={{...input,minHeight:60}} value={textValue(answers.apologies)} onChange={e=>text("apologies",e.target.value)} placeholder="Only if information is not covered above"/></label>
+     <label style={label}>Additional apology notes (optional)<textarea className="movetrack-ui-field" style={{...input,minHeight:60}} value={textValue(answers.apologies)} onChange={e=>text("apologies",e.target.value)} placeholder="Only if information is not covered above"/></label>
      <p style={{fontSize:11,color:"var(--mt-muted,#53647e)",margin:0}}>An absent person is not counted as present or marked as having participated in the meeting. You can switch someone between Present and Absent using the two pickers.</p>
     </div>
    </div>
@@ -259,8 +259,8 @@ export function MeetingRegisterWorkspace(){
     <h3 style={{fontSize:17,margin:0}}><FileText size={18} style={{display:"inline",verticalAlign:"middle"}}/> Agenda and minutes</h3>
     {previousMeeting?<section style={box} aria-label="Adopt previous minutes"><h4 style={{margin:0}}>Previous minutes · {textValue(previousMeeting.answers.meeting_date)}</h4>
      <p>{textValue(previousMeeting.answers.meeting_title)}</p><DesktopModalDisclosure title="Read previous minutes and decisions"><p style={{whiteSpace:"pre-wrap"}}>{textValue(previousMeeting.answers.minutes)}</p><p style={{whiteSpace:"pre-wrap"}}>{textValue(previousMeeting.answers.decisions)}</p></DesktopModalDisclosure>
-     <label style={label}>Previous minutes adoption<select style={input} value={textValue(answers.minutes_adoption)||"Pending review"} onChange={e=>text("minutes_adoption",e.target.value)}>{["Pending review","Adopted","Adopted with amendments","Deferred"].map(v=><option key={v}>{v}</option>)}</select></label>
-     <label style={label}>Amendments / adoption notes<textarea style={input} value={textValue(answers.minutes_amendments)} onChange={e=>text("minutes_amendments",e.target.value)}/></label>
+     <label style={label}>Previous minutes adoption<select className="movetrack-ui-field" style={input} value={textValue(answers.minutes_adoption)||"Pending review"} onChange={e=>text("minutes_adoption",e.target.value)}>{["Pending review","Adopted","Adopted with amendments","Deferred"].map(v=><option key={v}>{v}</option>)}</select></label>
+     <label style={label}>Amendments / adoption notes<textarea className="movetrack-ui-field" style={input} value={textValue(answers.minutes_amendments)} onChange={e=>text("minutes_amendments",e.target.value)}/></label>
      <OrganizationPeopleComboBox people={members} orgId={org.id} label="Adoption recorded by (unverified)" value={textValue(answers.minutes_adopted_by)?[textValue(answers.minutes_adopted_by)]:[]} onChange={ids=>patch({minutes_adopted_by:ids[0]??"",minutes_adopted_date:new Date().toISOString().slice(0,10)})}/>
     </section>:null}
     <div style={{display:"grid",gap:7}}>
@@ -272,7 +272,7 @@ export function MeetingRegisterWorkspace(){
      </div>
     </div>
     {([["agenda","Agenda / planned topics *"],["safety_highlights","Safety moment / hazards"],["minutes","Meeting discussions and minutes *"],["decisions","Decisions / resolutions"],["outstanding","Outstanding matters / closeout"]] as const).map(([key,title])=>
-      <label key={key} style={label}>{title}<textarea style={{...input,minHeight:85}} value={textValue(answers[key])} onChange={e=>text(key,e.target.value)}/></label>)}
+      <label key={key} style={label}>{title}<textarea className="movetrack-ui-field" style={{...input,minHeight:85}} value={textValue(answers[key])} onChange={e=>text(key,e.target.value)}/></label>)}
     <OperationalTextAssist value={textValue(answers.minutes)} people={members} onAction={candidate=>{
      if(actions.some(r=>textValue(r.action).trim().toLowerCase()===candidate.action.trim().toLowerCase())){setMessage("That action is already in the register.");return;}
      patch({actions:[...actions,{action:candidate.action,owner:candidate.owner,owner_person_id:candidate.owner_person_id,due:candidate.due,state:"Open",action_id:"ACTION-"+crypto.randomUUID(),nlp_source:candidate.source,nlp_reviewed:false}]});setMessage("Text suggestion added as an editable open action. Review owner and due date in Actions.");
@@ -290,7 +290,7 @@ export function MeetingRegisterWorkspace(){
     {actions.length===0?<p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>No actions recorded yet. Add an action with its responsible owner, due date and status when necessary.</p>:null}
     {desktop&&actions.length?<table className="movetrack-compact-table" aria-label="Desktop meeting action register"><thead><tr><th>Action</th><th>Status</th><th>Edit</th></tr></thead><tbody>{actions.map((r,i)=><tr key={String(r.action_id??i)}><td>{textValue(r.action)||"New action"}</td><td>{textValue(r.state)||"Open"}</td><td><button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={()=>setActionFocus(i)} aria-label={"Edit action "+(i+1)}>Edit</button></td></tr>)}</tbody></table>:null}
     {actions.map((r,i)=>(!desktop||i===Math.min(actionFocus,actions.length-1))?<div key={i} style={{...grid,background:"var(--mt-surface-soft,#f8fafc)",padding:10,borderRadius:12}}>
-     <label style={label}>Action description *<input style={input} value={textValue(r.action)} onChange={e=>listPatch("actions",i,{action:e.target.value})}/></label>
+     <label style={label}>Action description *<input className="movetrack-ui-field" style={input} value={textValue(r.action)} onChange={e=>listPatch("actions",i,{action:e.target.value})}/></label>
      <div style={{display:"grid",gap:7}}>
       <OrganizationPeopleComboBox people={members} orgId={org.id} label="Accountable employee"
        value={members.some(p=>p.id===r.owner_person_id)?[String(r.owner_person_id)]:[]}
@@ -300,16 +300,16 @@ export function MeetingRegisterWorkspace(){
        }} placeholder="Find supervisor, technician or responsible employee"/>
       {(!r.owner_person_id||!members.some(p=>p.id===r.owner_person_id))?
        <label style={label}>Or external / manual action owner *
-        <input style={input} value={textValue(r.owner)} onChange={e=>listPatch("actions",i,{owner:e.target.value,owner_person_id:""})} placeholder="External person or contractor name"/>
+        <input className="movetrack-ui-field" style={input} value={textValue(r.owner)} onChange={e=>listPatch("actions",i,{owner:e.target.value,owner_person_id:""})} placeholder="External person or contractor name"/>
        </label>:null}
       {r.carried_from?<small style={{fontSize:11,color:"var(--mt-warning,#9a670d)"}}>{textValue(r.carried_from)}</small>:null}
      </div>
      {r.nlp_source?<label style={label}><span><input type="checkbox" checked={r.nlp_reviewed===true} onChange={e=>listPatch("actions",i,{nlp_reviewed:e.target.checked})}/> I reviewed this text suggestion, owner and due date</span><small>Source: {textValue(r.nlp_source)}</small></label>:null}
      <label style={label}>Due date<input type="date" style={input} value={textValue(r.due)} onChange={e=>listPatch("actions",i,{due:e.target.value})}/></label>
-     <label style={label}>Status<select style={input} value={textValue(r.state)||"Open"} onChange={e=>listPatch("actions",i,{state:e.target.value})}><option>Open</option><option>In progress</option><option>Closed</option></select></label>
+     <label style={label}>Status<select className="movetrack-ui-field" style={input} value={textValue(r.state)||"Open"} onChange={e=>listPatch("actions",i,{state:e.target.value})}><option>Open</option><option>In progress</option><option>Closed</option></select></label>
      <RepeatableRowActions index={i} count={actions.length} onRemove={()=>removeRow("actions",i)} onMove={direction=>patch({actions:moveRegisterRow(actions,i,direction)})} onDuplicate={()=>patch({actions:duplicateRegisterRow(actions,i,["action_id","origin_meeting_id","previous_due","carried_from","nlp_reviewed","state"])})}/>
     </div>:null)}
-    <div style={grid}><label style={label}>Next review / meeting<input type="date" style={input} value={textValue(answers.next_meeting)} onChange={e=>text("next_meeting",e.target.value)}/></label><label style={label}>Prepared by<input style={input} value={textValue(answers.prepared_by)} onChange={e=>text("prepared_by",e.target.value)}/></label></div>
+    <div style={grid}><label style={label}>Next review / meeting<input type="date" style={input} value={textValue(answers.next_meeting)} onChange={e=>text("next_meeting",e.target.value)}/></label><label style={label}>Prepared by<input className="movetrack-ui-field" style={input} value={textValue(answers.prepared_by)} onChange={e=>text("prepared_by",e.target.value)}/></label></div>
    </div>
    <section hidden={step!==4} aria-label="Review meeting" style={{display:"grid",gap:12}}>
     <h3 style={{margin:0}}>Review before saving</h3><p style={{margin:0,fontSize:13}}>{textValue(answers.meeting_title)||"Untitled meeting"} · {textValue(answers.meeting_date)} · {attendance.present} present · {attendance.absent} absent/apologies · {actions.length} actions</p>
