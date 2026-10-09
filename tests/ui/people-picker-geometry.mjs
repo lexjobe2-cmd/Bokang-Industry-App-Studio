@@ -96,6 +96,30 @@ try{
   assert.ok(result.listScrollable,JSON.stringify({width,height,theme,result}));
   checks.push({width,height,theme,...result});
   console.log("Picker geometry OK",JSON.stringify(checks.at(-1)));
+  // Stress dynamic text at accessible larger sizes, including an unbroken identifier.
+  if(width===320&&theme==="dark"){
+   const stress=await evaluate(String.raw`(()=>{
+    const rows=[...document.querySelectorAll('.movetrack-person-option')];
+    const detail=rows[0]?.querySelector('.movetrack-person-details');
+    if(!detail)return {error:'No employee detail'};
+    const nodes=[...detail.children];
+    nodes[0].textContent='Very long employee display name '.repeat(10);
+    nodes[1].textContent='Heavy-duty mechanical maintenance and operational compliance division '.repeat(3);
+    nodes[2].textContent='unbroken.staff.directory.identifier.'+'x'.repeat(240)+'@example.invalid';
+    nodes[3].textContent='Francistown North work site, Botswana '.repeat(4);
+    for(const node of nodes)node.style.fontSize='20px';
+    const a=rows[0].getBoundingClientRect(),b=rows[1].getBoundingClientRect();
+    return {height:a.height,nextStart:b.top,firstEnd:a.bottom,
+     textBottom:Math.max(...nodes.map(x=>x.getBoundingClientRect().bottom)),
+     textWidth:Math.max(...nodes.map(x=>x.getBoundingClientRect().width)),
+     pageWidth:document.documentElement.scrollWidth,viewport:innerWidth};
+   })()`);
+   assert.ok(stress.height>200,JSON.stringify(stress));
+   assert.ok(stress.firstEnd<=stress.nextStart+.5,JSON.stringify(stress));
+   assert.ok(stress.textBottom<=stress.firstEnd+.5,JSON.stringify(stress));
+   assert.ok(stress.pageWidth<=stress.viewport+2,JSON.stringify(stress));
+   console.log("LONG TEXT / LARGE TYPE PASSED",JSON.stringify(stress));
+  }
   if(width===390){
    const screenshot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
    await writeFile("ui-geometry-people-picker-"+theme+".png",Buffer.from(screenshot.data,"base64"));
