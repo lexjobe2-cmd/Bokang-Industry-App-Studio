@@ -41,7 +41,16 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
   useEffect(()=>{
    if(!drawerOpen)return;
    const prior=document.body.style.overflow;document.body.style.overflow="hidden";drawerCloseRef.current?.focus();
-   const onKey=(e:KeyboardEvent)=>{if(e.key==="Escape")setDrawerOpen(false);};
+   const onKey=(e:KeyboardEvent)=>{
+    if(e.key==="Escape"){e.preventDefault();setDrawerOpen(false);}
+    if(e.key==="Tab"){
+     const available=Array.from(document.querySelectorAll<HTMLElement>("#movetrack-driver-drawer button:not([disabled]),#movetrack-driver-drawer a[href]"));
+     if(!available.length)return;
+     const first=available[0]!,last=available[available.length-1]!;
+     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+   };
    document.addEventListener("keydown",onKey);
    return ()=>{document.body.style.overflow=prior;document.removeEventListener("keydown",onKey);drawerButtonRef.current?.focus();};
   },[drawerOpen]);
