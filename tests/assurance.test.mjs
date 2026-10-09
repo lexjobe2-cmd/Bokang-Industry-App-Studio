@@ -277,3 +277,22 @@ test("reviewer identity, signed intent and exact site/job scope must agree befor
  assert.equal(evaluateForm(template,base,[],scope+" / different-site").decision,"INCOMPLETE");
  assert.throws(()=>makeSubmission({id:"s1",template,answers:base,siteId:"Other site",actorUid:"demo",signatureScopePrefix:scope+" / different-site",now:"2026-10-09T09:00:00Z"}),/Required/);
 });
+
+test("material JRA changes revoke earlier crew marks and reviewer approval",async()=>{
+ const {invalidateJraAcknowledgements}=await import("../packages/domain-data/src/custom-assurance.ts");
+ const jra=blankJra(demoOrganization,"2026-10-09T08:30:00Z");
+ jra.status="APPROVED_DEMO";
+ jra.reviewSignature={...localSupervisorReview,scope:jra.reference,role:"Independent reviewer"};
+ jra.reviewedAt="2026-10-09T08:30:00Z";
+ jra.participants=[{personId:"demo-person",nameSnapshot:"Worker",role:"Operator",
+   acknowledged:true,acknowledgedAt:"2026-10-09T08:30:00Z",
+   signature:{...localSupervisorReview,signerPersonId:"demo-person",intent:"acknowledgement",scope:jra.reference},manual:true}];
+ const reset=invalidateJraAcknowledgements(jra);
+ assert.equal(reset.status,"IN_REVIEW");
+ assert.equal(reset.reviewSignature,undefined);
+ assert.equal(reset.reviewedAt,undefined);
+ assert.equal(reset.participants[0].acknowledged,false);
+ assert.equal(reset.participants[0].signature,undefined);
+ assert.equal(reset.participants[0].acknowledgedAt,undefined);
+ assert.equal(jra.participants[0].acknowledged,true,"previous snapshot must remain unchanged");
+});
