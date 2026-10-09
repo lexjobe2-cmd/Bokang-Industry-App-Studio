@@ -36,3 +36,29 @@ test("facets and sources limit cross-scope results, no accidental substring from
  assert.equal(searchDocuments(docs,"fall",{limit:1}).length,1);
  assert.equal(searchDocuments(docs,"ZZZZZ").length,0);
 });
+
+test("MoveTrack adapter indexes new live records and routes results without provider lock-in",async()=>{
+ const {buildWorkspaceIndex,searchWorkspace}=await import("../apps/web/lib/workspace-search.ts");
+ const data={
+  orgId:"org-1",organizations:[],people:[],templates:[],jras:[],
+  forms:[{
+   id:"FORM-10",templateId:"custom-1",templateSnapshot:{title:"Tyre cage inspection",category:"Safety",organizationId:"org-1",sections:[{id:"s",fields:[{id:"note",label:"Defect observation"}]}]},
+   answers:{note:"Valve leak on haul unit DUMP-77"},siteId:"South yard",taskId:"WO-100",decision:"NO_GO",submittedAt:"2026-10-09T08:00:00Z"
+  },{
+   id:"FORM-PRIVATE",templateId:"private",templateSnapshot:{title:"Other company private incident",category:"Safety",organizationId:"org-2",sections:[]},
+   answers:{},siteId:"Elsewhere",decision:"REVIEW",submittedAt:"2026-10-09T08:00:00Z"
+  }],
+  fleet:[{id:"V-9",fleetNo:"DT-900",makeModel:"CAT haul truck",registration:"DEMO-V9",type:"Dump truck",site:"South yard",status:"No-go"}],
+  drivers:[],incidents:[{id:"INC-19",vehicleId:"V-9",category:"Defect",severity:"High",status:"Open",description:"Hydraulic pressure sensor fault",createdAt:"2026-10-09T08:00:00Z"}],
+  assignments:[],prestarts:[],sites:[],
+  jobs:[{id:"WO-100",client:"Mine service",type:"Maintenance",from:"Yard",to:"Pit",driver:"Unassigned",state:"Open"}]
+ };
+ const index=buildWorkspaceIndex(data);
+ assert.equal(index.filter(x=>x.kind==="Safety workflow").length,21);
+ assert.ok(searchWorkspace(index,"haul unit dump 77").some(x=>x.key==="submission:FORM-10"));
+ assert.ok(searchWorkspace(index,"DT-900").some(x=>x.key==="asset:V-9"));
+ assert.ok(searchWorkspace(index,"Hydraulic sensor").some(x=>x.key==="incident:INC-19"));
+ assert.ok(searchWorkspace(index,"mine service").some(x=>x.key==="job:WO-100"));
+ assert.equal(searchWorkspace(index,"private incident").some(x=>x.key==="submission:FORM-PRIVATE"),false);
+ assert.equal(searchWorkspace(index,"").length,0);
+});
