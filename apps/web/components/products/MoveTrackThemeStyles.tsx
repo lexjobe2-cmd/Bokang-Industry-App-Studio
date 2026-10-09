@@ -156,7 +156,8 @@ export function MoveTrackThemeStyles(){
 .movetrack-workspace-heading small {color:#64748b;font-size:11px;}
 .movetrack-workspace-shortcuts {min-width:0;max-width:100%;display:flex;gap:7px;align-items:center;flex-wrap:wrap;flex:1;}
 .movetrack-workspace-shortcuts button {display:flex;gap:7px;align-items:center;min-height:40px;background:#fff;border:1px solid #d4e2f0;border-radius:12px;padding:8px 11px;color:#315479;font-size:11px;font-weight:830;cursor:pointer;}
-.movetrack-workspace-mobile-switch {display:none;}
+.movetrack-workspace-mobile-switch {display:grid;gap:5px;flex:0 1 220px;min-width:190px;font-size:12px;font-weight:750;}
+.movetrack-workspace-mobile-switch select {width:100%;min-height:44px;padding:9px;border:1px solid var(--mt-border,#cbd5e1);border-radius:10px;background:var(--mt-surface,#fff);color:var(--mt-ink,#173764);font:inherit;}
 .movetrack-workspace-hint {font-size:10px;color:#64748b;}
 .movetrack-mobile-dock {display:none;}
 .movetrack-drawer-layer {position:fixed;inset:0;z-index:120;}

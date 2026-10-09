@@ -412,6 +412,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     <MoveTrackWorkspaceNav view={adminMode&&adminArea!=="overview"&&adminArea!=="company"?adminArea:view} onChange={setView}/>
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
+    {!adminMode&&(["fleet","drivers","workforce","sites","assign","jobs","forms","paper","meetings","release"].includes(view))?
+     <aside aria-label="Open management tools" style={{display:"flex",alignItems:"center",gap:10,justifyContent:"space-between",flexWrap:"wrap",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:12,padding:12}}>
+      <div><strong style={{fontSize:12}}>Management tools are available</strong>
+       <p style={{fontSize:11,color:"var(--mt-muted,#516078)",margin:"4px 0 0",lineHeight:1.5}}>This view shows operational records. Create, edit, upload or approve organizational records in Admin. The demo Admin workspace is accessible without sign-in.</p>
+      </div>
+      <button type="button" onClick={()=>openAdminArea(view)} style={{...secondaryButton,minHeight:44,background:"#174fa8",color:"#fff",borderColor:"#174fa8"}}>Open Admin → {view==="paper"?"Paper to digital":view==="workforce"?"Workforce":view==="forms"?"Forms & templates":view==="release"?"Defects & release":view.charAt(0).toUpperCase()+view.slice(1)}</button>
+     </aside>:null}
+
 
     {view==="admin"?<section aria-label="Admin workspace" style={{...panel,display:"grid",gap:13,borderColor:"#93c5fd"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
