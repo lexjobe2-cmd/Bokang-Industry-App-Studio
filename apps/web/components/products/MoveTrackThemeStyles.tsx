@@ -691,5 +691,102 @@ export function MoveTrackThemeStyles(){
 }
 .movetrack-root .movetrack-rich-content a {color:var(--mt-link,#174fa8);text-decoration:underline;text-underline-offset:2px;}
 
+
+/* MoveTrack reusable native control contract.
+ * Only opted-in controls are affected; no global button recoloring.
+ * Explicit variants replace fragile inline light-theme color assumptions.
+ */
+.movetrack-root {
+ --mt-action-bg:#ffffff;
+ --mt-action-fg:#172b46;
+ --mt-action-border:#a9bdd7;
+ --mt-action-hover:#e8f1ff;
+ --mt-action-primary:#1d4ed8;
+ --mt-action-primary-hover:#1e40af;
+ --mt-action-primary-fg:#ffffff;
+ --mt-action-selected:#dceaff;
+ --mt-action-selected-fg:#173b74;
+ --mt-action-danger-bg:#fff1f2;
+ --mt-action-danger-fg:#a51d2d;
+}
+.movetrack-root[data-theme="dark"] {
+ --mt-action-bg:#203652;
+ --mt-action-fg:#f0f6ff;
+ --mt-action-border:#6883a5;
+ --mt-action-hover:#2b4769;
+ --mt-action-primary:#3769ca;
+ --mt-action-primary-hover:#447be4;
+ --mt-action-primary-fg:#ffffff;
+ --mt-action-selected:#2a4f80;
+ --mt-action-selected-fg:#f3f8ff;
+ --mt-action-danger-bg:#40212d;
+ --mt-action-danger-fg:#ffbdc6;
+}
+.movetrack-root .movetrack-ui-button {
+ box-sizing:border-box;
+ display:inline-flex;align-items:center;justify-content:center;gap:0.45rem;
+ max-width:100%;min-width:44px;min-height:44px;
+ padding:0.6rem 0.85rem;border-radius:0.7rem;
+ font:inherit;font-size:0.875rem;font-weight:750;line-height:1.4;
+ text-align:center;white-space:normal;overflow-wrap:anywhere;
+ background:var(--mt-action-bg) !important;
+ color:var(--mt-action-fg) !important;
+ border:1px solid var(--mt-action-border) !important;
+ cursor:pointer;
+}
+.movetrack-root .movetrack-ui-button[data-mt-variant="primary"] {
+ background:var(--mt-action-primary) !important;
+ color:var(--mt-action-primary-fg) !important;
+ border-color:var(--mt-action-primary) !important;
+}
+.movetrack-root .movetrack-ui-button[data-mt-variant="selected"],
+.movetrack-root .movetrack-ui-button[aria-pressed="true"]:not([data-mt-variant="primary"]) {
+ background:var(--mt-action-selected) !important;
+ color:var(--mt-action-selected-fg) !important;
+ border-color:var(--mt-action-border) !important;
+}
+.movetrack-root .movetrack-ui-button[data-mt-variant="danger"] {
+ background:var(--mt-action-danger-bg) !important;
+ color:var(--mt-action-danger-fg) !important;
+ border-color:var(--mt-action-danger-fg) !important;
+}
+.movetrack-root .movetrack-ui-button[data-mt-variant="ghost"] {
+ background:transparent !important;
+ color:var(--mt-action-fg) !important;
+ border-color:transparent !important;
+}
+.movetrack-root .movetrack-ui-button:is(:hover,:focus-visible):not(:disabled):not([data-mt-variant="primary"]):not([data-mt-variant="danger"]) {
+ background:var(--mt-action-hover) !important;
+ color:var(--mt-action-fg) !important;
+}
+.movetrack-root .movetrack-ui-button[data-mt-variant="primary"]:hover:not(:disabled) {
+ background:var(--mt-action-primary-hover) !important;
+ color:var(--mt-action-primary-fg) !important;
+}
+.movetrack-root .movetrack-ui-button:focus-visible {
+ outline:3px solid #93c5fd !important;outline-offset:2px;
+}
+.movetrack-root .movetrack-ui-button:disabled {
+ cursor:not-allowed;opacity:0.65;
+}
+.movetrack-root .movetrack-ui-panel {
+ min-width:0;max-width:100%;height:auto;overflow-wrap:anywhere;
+ color:var(--mt-ink,#172b46) !important;
+ background:var(--mt-surface,#fff) !important;
+ border:1px solid var(--mt-border,#d8e3f0) !important;
+ border-radius:0.9rem;padding:1rem;
+}
+.movetrack-root .movetrack-ui-panel[data-mt-surface="soft"] {
+ background:var(--mt-surface-soft,#f3f7fc) !important;
+}
+.movetrack-root :is(input,select,textarea).movetrack-ui-field {
+ box-sizing:border-box;min-width:0;max-width:100%;min-height:44px;
+ background:var(--mt-surface-soft,#f3f7fc) !important;
+ color:var(--mt-ink,#172b46) !important;
+ border:1px solid var(--mt-border,#d8e3f0) !important;
+ border-radius:0.65rem;padding:0.65rem 0.75rem;
+ font:inherit;line-height:1.45;
+}
+
 `}</style>;
 }
