@@ -3,9 +3,10 @@ import {useEffect,useMemo,useState} from "react";
 import {motion,useReducedMotion} from "framer-motion";
 import {ScanText,FileUp,FileImage,FileText,RefreshCw,Plus,Trash2,Save,CheckCircle2,ExternalLink,AlertTriangle} from "lucide-react";
 import {usePersistentState} from "@bokang/persistence";
-import {ASSURANCE_STORAGE,demoOrganization,demoPeople,makeCustomTemplate,type CustomTemplate,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
+import {ASSURANCE_STORAGE,demoOrganization,demoPeople,makeCustomTemplate,dictionary,type CustomTemplate,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {type FormCategory,type FormField,type FormSection,type FormTemplate} from "@bokang/domain-data/assurance-forms";
 import {detectPaperCategory,parsePaperText,validatePaperSections,type PaperExtraction} from "@bokang/domain-data/paper-forms";
+import {mergePaperLayout,type DetectedElement,type LayoutProposal} from "@bokang/domain-data/paper-layout";
 import {readPaperDocument,acceptedPaperFile,downloadSourcePdf,type PaperProgress} from "../../lib/paper-ocr";
 import {savePaperOriginal,getPaperOriginal,deletePaperOriginal} from "../../lib/paper-source-store";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
@@ -18,10 +19,10 @@ const input:React.CSSProperties={width:"100%",minHeight:43,padding:"10px 12px",b
 const btn:React.CSSProperties={border:"1px solid #cad6e3",padding:"10px 13px",background:"#fff",borderRadius:10,color:"#1e3a5f",minHeight:43,fontWeight:850,cursor:"pointer"};
 const primary:React.CSSProperties={...btn,background:"#1d4ed8",color:"#fff",borderColor:"#1d4ed8"};
 const label:React.CSSProperties={fontSize:12,fontWeight:800,color:"#344054",display:"grid",gap:6};
-type PaperDraft={id:string;sourceName:string;kind:string;title:string;category:FormCategory;sections:FormSection[];rawText:string;warnings:string[];confidence:number|null;pages:number;orgId:string};
+type PaperDraft={id:string;sourceName:string;kind:string;title:string;category:FormCategory;sections:FormSection[];rawText:string;warnings:string[];confidence:number|null;pages:number;orgId:string;elements?:DetectedElement[];summary?:LayoutProposal["summary"]};
 const kinds:FormCategory[]=["Fleet","Safety","Meetings","Risk","Handover","Inspections"];
-const typeOptions:FormField["type"][]=["text","multiline","number","date","datetime","pass_fail_na","yes_no","person","people","signature"];
-export function PaperToDigitalWorkspace(){
+const typeOptions:FormField["type"][]=["checkbox","radio","yes_no","pass_fail_na","select","multiselect","text","multiline","number","date","datetime","repeat","person","people","signature","risk"];
+export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>void}={}){
  const reduced=useReducedMotion();
  const [orgs]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
  const [orgId]=usePersistentState(ACTIVE_ORGANIZATION_KEY,demoOrganization.id);
@@ -34,6 +35,13 @@ export function PaperToDigitalWorkspace(){
  const [busy,setBusy]=useState(false);
  const [message,setMessage]=useState("");
  const [rawOpen,setRawOpen]=useState(false);
+ const [preview,setPreview]=useState(false);
+ const [previewValues,setPreviewValues]=useState<Record<string,string|boolean|string[]>>({});
+ const [,designerEdit]=usePersistentState<string|null>("bokang-studio.move-track.designer.editing.v1",null);
+ const [,designerTitle]=usePersistentState("bokang-studio.move-track.designer.title.v1","");
+ const [,designerDescription]=usePersistentState("bokang-studio.move-track.designer.description.v1","");
+ const [,designerCategory]=usePersistentState<FormCategory>("bokang-studio.move-track.designer.category.v1","Inspections");
+ const [,designerSections]=usePersistentState<FormSection[]>("bokang-studio.move-track.designer.sections.v1",[]);
  const [,setActive]=usePersistentState<string|null>(ACTIVE_WORKFLOW_KEY,null);
  const [,setTab]=usePersistentState<"library"|"records"|"designer"|"jra">(ACTIVE_FORMS_TAB_KEY,"library");
  const org=orgs.find(o=>o.id===orgId)??orgs[0]??demoOrganization;
@@ -56,6 +64,7 @@ export function PaperToDigitalWorkspace(){
   try{
    const parsed=await readPaperDocument(file,setProgress);
    const next:PaperDraft={...parsed,id:"paper-"+crypto.randomUUID(),kind:parsed.kind,category:detectPaperCategory(parsed.kind),orgId:org.id};
+   setPreviewValues({});
    setDraft(next);
    try{
     await savePaperOriginal(next.id,org.id,file);
@@ -70,12 +79,15 @@ export function PaperToDigitalWorkspace(){
   if(!visibleDraft)return;
   const parsed=parsePaperText(visibleDraft.sourceName,visibleDraft.rawText,visibleDraft.confidence,visibleDraft.pages);
   if(!window.confirm("Re-detect questions from edited text? This replaces your manual question edits."))return;
-  patch({sections:parsed.sections,warnings:parsed.warnings,kind:parsed.kind});
+  const joined=mergePaperLayout(parsed,visibleDraft.elements??[]);
+  patch({sections:joined.sections,warnings:joined.warnings,kind:parsed.kind,summary:joined.summary});
  }
  function create(publish:boolean){
   if(!visibleDraft)return;
   try{
    validatePaperSections(visibleDraft.sections);
+   if(publish&&visibleDraft.sections.flatMap(s=>s.fields).some(f=>f.source&&!f.source.reviewed))
+    throw Error("Review detected graphical fields against the original and mark them checked before publishing.");
    if(visibleDraft.title.trim().length<4)throw Error("Enter a descriptive form title.");
    const now=new Date().toISOString();
    const before=templates.find(t=>t.id===visibleDraft.id);
@@ -90,6 +102,19 @@ export function PaperToDigitalWorkspace(){
    if(publish){setActive(fresh.id);setTab("library");}
   }catch(e){setMessage(e instanceof Error?e.message:"Form validation failed.");}
  }
+ function reviewAll(){
+  if(!visibleDraft||!window.confirm("Have you compared EVERY detected question, its choices and its safety meaning with the original page? This only marks the draft reviewed; it does not authorize work."))return;
+  patch({sections:visibleDraft.sections.map(s=>({...s,fields:s.fields.map(f=>f.source?{...f,source:{...f.source,reviewed:true}}:f)}))});
+  setMessage("All detected elements marked reviewed in this local draft. Inspect high-risk questions before publishing.");
+ }
+ function handoff(){
+  if(!visibleDraft)return;
+  try{validatePaperSections(visibleDraft.sections);}catch(e){setMessage(e instanceof Error?e.message:"Review the form sections first.");return;}
+  if(!window.confirm("Copy the reconstructed form to the full custom designer? It will replace the current unsaved designer draft but retain this paper import."))return;
+  designerEdit(null);designerTitle(visibleDraft.title);designerDescription("Imported from "+visibleDraft.sourceName);
+  designerCategory(visibleDraft.category);designerSections(structuredClone(visibleDraft.sections));
+  setTab("designer");onOpenDesigner?.();setMessage("Editable UI form copied into the custom form designer.");
+ }
  function reset(){if(window.confirm("Discard this paper import and its locally archived original? Previously published forms stay saved.")){
    if(visibleDraft?.id)void deletePaperOriginal(visibleDraft.id).catch(()=>{});
    setDraft(null);setFile(null);setProgress(null);setMessage("");
@@ -101,12 +126,12 @@ export function PaperToDigitalWorkspace(){
     <h2 style={{fontSize:24,margin:0}}>Use the checklist your company already has.</h2>
    </div></div>
    <p style={{fontSize:12,lineHeight:1.7,color:"#cbd5e1",maxWidth:850,margin:"13px 0 0"}}>
-    Import a photograph or scanned PDF, extract printed text, rebuild editable questions, review them against the original, and generate new blank/filled branded PDFs or Word documents. The original file is archived in your browser for comparison; the extracted fields are saved locally.</p>
+    Import a photograph, PDF or scanned form. Detect printed checkbox squares, radio choices, answer lines, fillable PDF widgets, text labels and table registers; turn them into working UI elements for editing and review. Generate company-branded blank and filled PDFs or Word documents. The original file is archived in your browser for comparison; the extracted fields are saved locally.</p>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:13}}>
    <div style={{...root,display:"grid",gap:11,alignContent:"start"}}>
     <strong style={{fontSize:17}}>1 · Upload a paper document</strong>
-    <p style={{fontSize:12,color:"#64748b",margin:0}}>Image or PDF up to 12 MB. Up to five PDF pages per import. Printed English OCR; no paid API.</p>
+    <p style={{fontSize:12,color:"#64748b",margin:0}}>JPG, PNG, WebP or PDF (12 MB maximum, five pages). OCR + page geometry + fillable PDF controls; browser-only, no paid API.</p>
     <label style={label}>Scan, mobile photo, or PDF
      <input type="file" accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.png,.jpg,.jpeg,.webp" style={input}
       onChange={e=>{const next=e.target.files?.[0]??null;if(!next)return;try{acceptedPaperFile(next);setFile(next);setProgress(null);setMessage("");}catch(err){setMessage(String(err));e.target.value="";}}}/>
@@ -126,7 +151,12 @@ export function PaperToDigitalWorkspace(){
    <div style={{...root,display:"grid",gap:13,alignContent:"start"}}>
     <strong style={{fontSize:17}}>2 · Review the detected structure</strong>
     {!visibleDraft?<p style={{fontSize:12,color:"#64748b"}}>No paper processed for {org.name}. Upload a source to review detected headings and questions.</p>:<>
-     <p style={{fontSize:11,color:"#475569",margin:0}}>{visibleDraft.pages} page(s) · {fieldCount} proposed fields · OCR confidence {visibleDraft.confidence===null?"digital text / unavailable":Math.round(visibleDraft.confidence)+"%"}.</p>
+     <p style={{fontSize:11,color:"#475569",margin:0}}>{visibleDraft.pages} page(s) · {fieldCount} editable questions · {visibleDraft.elements?.length??0} detected graphical controls · OCR confidence {visibleDraft.confidence===null?"digital text / unavailable":Math.round(visibleDraft.confidence)+"%"}.</p>
+     {visibleDraft.summary?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(115px,1fr))",gap:7}}>
+      {([{label:"Checkbox choices",value:visibleDraft.summary.checkbox},{label:"Radio & decisions",value:visibleDraft.summary.radio},{label:"Text inputs",value:visibleDraft.summary.text},{label:"Signatures",value:visibleDraft.summary.signature},{label:"Tables/registers",value:visibleDraft.summary.table}] as const).map(item=><div key={item.label} style={{background:"#f1f5fa",padding:10,borderRadius:9}}>
+       <strong style={{fontSize:18,color:"#174fa8"}}>{item.value}</strong><div style={{fontSize:10,color:"#64748b"}}>{item.label}</div>
+      </div>)}
+     </div>:null}
      <label style={label}>Form name<input style={input} value={visibleDraft.title} onChange={e=>patch({title:e.target.value})}/></label>
      <label style={label}>Document type<select style={input} value={visibleDraft.category} onChange={e=>patch({category:e.target.value as FormCategory})}>{kinds.map(k=><option key={k}>{k}</option>)}</select></label>
      {visibleDraft.warnings.map((w,i)=><p key={i} style={{padding:"9px 10px",fontSize:11,color:"#915b16",background:"#fffbeb",borderRadius:9,margin:0}}><AlertTriangle size={13} style={{display:"inline",verticalAlign:"middle"}}/> {w}</p>)}
@@ -140,7 +170,7 @@ export function PaperToDigitalWorkspace(){
   </div>
   {visibleDraft?<div style={{...root,display:"grid",gap:12}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap",alignItems:"center"}}>
-    <div><h3 style={{fontSize:18,margin:"0 0 3px"}}>3 · Check, edit and approve every field</h3><p style={{fontSize:12,color:"#64748b",margin:0}}>Drag-free editing works on mobile. Match the paper headings and add missing columns/questions manually.</p></div>
+    <div><h3 style={{fontSize:18,margin:"0 0 3px"}}>3 · Reconstruct and review UI components</h3><p style={{fontSize:12,color:"#64748b",margin:0}}>Drag-free editing works on mobile. Match the paper headings and add missing columns/questions manually.</p></div>
     <button style={btn} onClick={()=>patch({sections:[...visibleDraft.sections,{id:"ocr-section-"+crypto.randomUUID().slice(0,7),title:"New section",fields:[{id:"ocr-"+crypto.randomUUID().slice(0,6),label:"New question",type:"text",required:false}]}]})}><Plus size={16} style={{display:"inline"}}/> Add section</button>
    </div>
    {visibleDraft.sections.map((section,index)=><motion.div key={section.id} initial={reduced?false:{opacity:0,y:5}} animate={{opacity:1,y:0}} style={{border:"1px solid #dbe5ef",borderRadius:12,overflow:"hidden"}}>
@@ -150,18 +180,53 @@ export function PaperToDigitalWorkspace(){
      <button style={btn} aria-label="Remove section" onClick={()=>patch({sections:visibleDraft.sections.filter(s=>s.id!==section.id)})}><Trash2 size={16}/></button>
     </div>
     <div style={{padding:12,display:"grid",gap:8}}>
-     {section.fields.map((f,i)=><div key={f.id} style={{display:"grid",gridTemplateColumns:"minmax(160px,1fr) minmax(130px,160px) auto",gap:7,alignItems:"center"}}>
+     {section.fields.map((f,i)=><div key={f.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:9,alignItems:"center",padding:10,border:"1px solid #e2e8f0",borderRadius:10,background:f.source?.reviewed?"#f0fdf4":"#fff"}}>
       <input aria-label={"Question "+(i+1)} style={input} value={f.label} onChange={e=>editField(section.id,f.id,v=>({...v,label:e.target.value}))}/>
       <select aria-label={"Input type "+(i+1)} style={input} value={f.type} onChange={e=>editField(section.id,f.id,v=>({...v,type:e.target.value as FormField["type"]}))}>{typeOptions.map(t=><option key={t} value={t}>{t.replaceAll("_"," / ")}</option>)}</select>
       <button style={btn} aria-label="Remove question" onClick={()=>editSection(section.id,s=>({...s,fields:s.fields.filter(x=>x.id!==f.id)}))}><Trash2 size={15}/></button>
+      {f.source?<label style={{fontSize:11,color:f.source.reviewed?"#047857":"#b45309",gridColumn:"1 / -1",display:"flex",gap:8,alignItems:"center"}}>
+       <input type="checkbox" checked={!!f.source.reviewed} onChange={e=>editField(section.id,f.id,v=>({...v,source:v.source?{...v.source,reviewed:e.target.checked}:undefined}))}/>
+       {f.source.reviewed?"Checked against source":"Needs source review"} · Page {f.source.page} · {Math.round(f.source.confidence*100)}% detection confidence · {f.source.kind.replaceAll("-"," ")}
+      </label>:null}
+      {(f.type==="radio"||f.type==="select"||f.type==="multiselect")?<label style={{...label,gridColumn:"1 / -1"}}>Choice labels (one per line)
+       <textarea style={{...input,minHeight:72}} value={(f.options??[]).join("\n")} onChange={e=>editField(section.id,f.id,v=>({...v,options:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)}))}/>
+      </label>:null}
+      {f.type==="repeat"?<div style={{gridColumn:"1 / -1",display:"grid",gap:6}}>
+        <strong style={{fontSize:11}}>Detected table columns</strong>
+        {(f.children??[]).map((child,ci)=><div key={child.id} style={{display:"flex",gap:6}}>
+          <input style={input} aria-label={"Register column "+(ci+1)} value={child.label} onChange={e=>editField(section.id,f.id,v=>({...v,children:v.children?.map((c,j)=>j===ci?{...c,label:e.target.value}:c)}))}/>
+          <button style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:v.children?.filter((_,j)=>j!==ci)}))}>Remove</button>
+         </div>)}
+        <button style={btn} onClick={()=>editField(section.id,f.id,v=>({...v,children:[...(v.children??[]),{id:"column-"+crypto.randomUUID().slice(0,6),label:"New column",type:"text",required:false}]}))}>Add table column</button>
+      </div>:null}
       <label style={{fontSize:11,color:"#475569",display:"flex",gap:6,alignItems:"center",gridColumn:"1 / -1"}}><input type="checkbox" checked={!!f.required} onChange={e=>editField(section.id,f.id,v=>({...v,required:e.target.checked}))}/> Required response</label>
       {(f.type==="pass_fail_na"||f.type==="yes_no")?<label style={{fontSize:11,color:"#b42318",display:"flex",gap:6,alignItems:"center",gridColumn:"1 / -1"}}><input type="checkbox" checked={!!f.critical} onChange={e=>editField(section.id,f.id,v=>({...v,critical:e.target.checked}))}/> Critical safety check (FAIL / NO → NO-GO)</label>:null}
      </div>)}
      <button style={{...btn,justifySelf:"start"}} onClick={()=>editSection(section.id,s=>({...s,fields:[...s.fields,{id:"ocr-"+crypto.randomUUID().slice(0,7),label:"New question",type:"text",required:false}]}))}><Plus size={14} style={{display:"inline"}}/> Add missing question</button>
     </div>
    </motion.div>)}
+   <div style={{...root,display:"grid",gap:10,background:"#f8fbff"}}>
+    <div style={{display:"flex",gap:8,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
+      <div><strong>Live form element preview</strong><p style={{fontSize:11,color:"#64748b",margin:"4px 0"}}>Test the reconstructed checkboxes, radio choices and text fields before creating a reusable template.</p></div>
+      <button style={btn} onClick={()=>setPreview(v=>!v)}>{preview?"Hide preview":"Preview reconstructed UI"}</button>
+    </div>
+    {preview?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10}}>
+      {visibleDraft.sections.flatMap(sec=>sec.fields.map(field=><div key={field.id} style={{padding:12,background:"#fff",border:"1px solid #dde7f2",borderRadius:10,display:"grid",gap:8}}>
+        <strong style={{fontSize:12}}>{field.label}</strong>
+        {field.type==="checkbox"?<label style={{fontSize:12}}><input type="checkbox" checked={previewValues[field.id]===true} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.checked}))}/> Check</label>:
+        field.type==="radio"||field.type==="multiselect"?<div style={{display:"grid",gap:4}}>{(field.options??["Option 1","Option 2"]).map(choice=><label key={choice} style={{fontSize:12}}><input type={field.type==="radio"?"radio":"checkbox"} name={field.id} checked={field.type==="radio"?previewValues[field.id]===choice:Array.isArray(previewValues[field.id])&&(previewValues[field.id] as string[]).includes(choice)} onChange={()=>setPreviewValues(v=>({...v,[field.id]:field.type==="radio"?choice:(Array.isArray(v[field.id])&&(v[field.id] as string[]).includes(choice)?(v[field.id] as string[]).filter(x=>x!==choice):[...(Array.isArray(v[field.id])?v[field.id] as string[]:[]),choice])}))}/> {choice}</label>)}</div>:
+        field.type==="pass_fail_na"||field.type==="yes_no"?<select style={input} value={String(previewValues[field.id]??"")} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.value}))}><option value="">Choose</option>{(field.type==="yes_no"?["YES","NO"]:["PASS","FAIL","NA"]).map(x=><option key={x}>{x}</option>)}</select>:
+        field.type==="repeat"?<small style={{color:"#64748b"}}>Repeating table with {(field.children??[]).length} editable columns</small>:
+        <input style={input} type={field.type==="date"?"date":field.type==="number"?"number":"text"} placeholder="Type a sample answer" value={String(previewValues[field.id]??"")} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.value}))}/>}
+      </div>))}</div>:null}
+   </div>
+   <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
+     <strong>{visibleDraft.sections.flatMap(s=>s.fields).filter(f=>f.source&&!f.source.reviewed).length} detected controls awaiting review</strong>
+     <button style={btn} onClick={reviewAll}>Mark reviewed after source check</button>
+     <button style={btn} onClick={handoff}>Continue in full custom form designer →</button>
+   </div>
    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",padding:"11px 0"}}>
-    <strong style={{fontSize:12}}>4 · Recreate & download</strong>
+    <strong style={{fontSize:12}}>4 · Save or publish the reconstructed form</strong>
     {template?<DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:people.filter(p=>p.orgId===org.id)})}/>:null}
     <button style={btn} onClick={()=>create(false)}><Save size={15} style={{display:"inline"}}/> Save reusable draft</button>
     <button style={primary} onClick={()=>create(true)}><CheckCircle2 size={15} style={{display:"inline"}}/> Publish to SHE Forms</button>
@@ -170,6 +235,6 @@ export function PaperToDigitalWorkspace(){
    <p style={{fontSize:11,color:"#64748b",margin:0}}>The generated PDF/Word reproduces the reviewed questions and sections in MoveTrack's controlled layout. An exact pixel-for-pixel copy of the original is only available through “Export unchanged source PDF” while the source file is still selected.</p>
   </div>:null}
   {message?<p role="status" style={{padding:13,background:"#eff6ff",color:"#1e40af",borderRadius:12,fontSize:12}}>{message}</p>:null}
-  <div style={{...root,background:"#f8fafc",fontSize:11,color:"#64748b"}}>Free/open-source OCR: text-bearing PDF pages are extracted directly; scanned pages and photos use Tesseract.js. The first OCR run may download English recognition files. The original scan archive uses local IndexedDB and is not included in the JSON workspace backup. There is no server upload in this prototype. Never treat OCR-derived safety checks as verified until a qualified person reviews them.</div>
+  <div style={{...root,background:"#f8fafc",fontSize:11,color:"#64748b"}}>Free/open-source OCR: text-bearing PDF pages are extracted directly; scanned pages and photos use Tesseract.js. Checkbox/radio graphics and answer lines use local pixel geometry; interactive PDF controls are read from the original PDF. The first OCR run may download English recognition files. The original scan archive uses local IndexedDB and is not included in the JSON workspace backup. There is no server upload in this prototype. Never treat OCR-derived safety checks as verified until a qualified person reviews them.</div>
  </section>;
 }
