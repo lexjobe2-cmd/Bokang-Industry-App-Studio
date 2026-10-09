@@ -84,7 +84,7 @@ export function buildJraDocument(jra:JobRiskAssessment,people:readonly PersonRec
    {label:"PPE",value:jra.ppe.join("; ")},{label:"Permits",value:jra.permits.join("; ")},
    {label:"Reviewer notes",value:jra.reviewerNote}
   ]},
-  {title:"Team and participation",rows:jra.participants.map(p=>({label:person(p.personId),value:p.role+" · "+(p.acknowledged?"DEMO acknowledged":"Not acknowledged")}))}
+  {title:"Team and participation",rows:[...jra.participants.map(p=>({label:person(p.personId),value:p.role+" · "+(p.acknowledged?"Drawn acknowledgement captured locally":"Not acknowledged"),signature:isSignatureEvidence(p.signature)?p.signature:undefined})),...(isSignatureEvidence(jra.reviewSignature)?[{label:"Independent reviewer acknowledgement",value:"Local mark / reviewer "+person(jra.reviewerId),signature:jra.reviewSignature}]:[])]}
  ];
  for(const [i,task] of jra.tasks.entries()){
   const stepRows:DocumentRow[]=[{label:"Job step",value:task.description},{label:"Equipment",value:task.equipment.join("; ")},{label:"Required permits",value:task.permitRequired.join("; ")}];
