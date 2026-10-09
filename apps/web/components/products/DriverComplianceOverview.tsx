@@ -17,15 +17,22 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
  const siteOptions=[...new Set([...sites,...policies.map(policy=>policy.name)].filter(Boolean))];
  const [site,setSite]=useState(siteOptions[0]??"");
  const [filter,setFilter]=useState<Filter>("all");
+ const [query,setQuery]=useState("");
+ const [page,setPage]=useState(1);
  const selectedSite=siteOptions.includes(site)?site:siteOptions[0]??"";
  const summary=useMemo(()=>buildDriverComplianceSummary({drivers,assignments,directory,orgId,site:selectedSite,policies}),[drivers,assignments,directory,orgId,selectedSite,policies]);
  const rows=summary.rows.filter(row=>{
+  if(query.trim()&&!([row.id,row.name,row.driverStatus,...row.blockingReasons].join(" ").toLowerCase().includes(query.trim().toLowerCase())))return false;
   if(filter==="blocked")return row.state==="blocked";
   if(filter==="due")return row.dueSoon.length>0||row.expired.length>0;
   if(filter==="evidence")return row.missingEvidence.length>0;
   if(filter==="ready")return row.state==="ready";
   return true;
  });
+ const perPage=12;
+ const pages=Math.max(1,Math.ceil(rows.length/perPage));
+ const activePage=Math.min(page,pages);
+ const visibleRows=rows.slice((activePage-1)*perPage,activePage*perPage);
  const numbers=[
   {label:"All drivers",value:summary.counts.total},
   {label:"Recorded criteria met",value:summary.counts.ready},
@@ -54,7 +61,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
   </div>
   <div style={{display:"flex",gap:10,alignItems:"end",justifyContent:"space-between",flexWrap:"wrap"}}>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800}}>Show driver records
-    <select aria-label="Filter driver compliance records" value={filter} onChange={event=>setFilter(event.target.value as Filter)} style={{minHeight:44,maxWidth:"100%",border:"1px solid #a8bfdc",borderRadius:10,background:"#fff",padding:10,font:"inherit"}}>
+    <select aria-label="Filter driver compliance records" value={filter} onChange={event=>{setFilter(event.target.value as Filter);setPage(1);}} style={{minHeight:44,maxWidth:"100%",border:"1px solid #a8bfdc",borderRadius:10,background:"#fff",padding:10,font:"inherit"}}>
      <option value="all">All drivers</option>
      <option value="blocked">Not meeting criteria</option>
      <option value="due">Due soon or expired</option>
@@ -62,10 +69,13 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
      <option value="ready">Recorded criteria met</option>
     </select>
    </label>
-   <span role="status" style={{fontSize:12,color:"#475569"}}>{rows.length} of {summary.counts.total} drivers shown</span>
+   <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800}}>Search drivers
+    <input type="search" value={query} aria-label="Find driver in compliance overview" placeholder="Name or driver ID" onChange={event=>{setQuery(event.target.value);setPage(1);}} style={{minHeight:44,maxWidth:"100%",padding:10,border:"1px solid #a8bfdc",borderRadius:10,background:"#fff",font:"inherit"}}/>
+   </label>
+   <span role="status" style={{fontSize:12,color:"#475569"}}>{rows.length} matching of {summary.counts.total} drivers</span>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,310px),1fr))",gap:10}}>
-   {rows.map((row:DriverComplianceRow)=>{
+   {visibleRows.map((row:DriverComplianceRow)=>{
     const status=statuses[row.state];
     return <article key={row.id} style={{display:"grid",gap:9,alignContent:"start",padding:13,border:"1px solid "+border,borderRadius:12,background:"#fff",minWidth:0}}>
      <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap"}}>
@@ -87,6 +97,11 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
    })}
    {!rows.length?<p style={{fontSize:12,color:"#64748b"}}>{summary.counts.total?"No drivers match this filter.":"No drivers onboarded yet. Use Admin → Drivers to add them."}</p>:null}
   </div>
+  {pages>1?<div aria-label="Compliance result pages" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
+   <button type="button" disabled={activePage<=1} onClick={()=>setPage(current=>Math.max(1,current-1))} style={{minHeight:44,border:"1px solid #a8bfdc",borderRadius:9,background:"#fff",padding:"8px 12px",fontWeight:800}}>← Previous</button>
+   <span style={{fontSize:12,color:"#475569"}}>Page {activePage} of {pages}</span>
+   <button type="button" disabled={activePage>=pages} onClick={()=>setPage(current=>Math.min(pages,current+1))} style={{minHeight:44,border:"1px solid #a8bfdc",borderRadius:9,background:"#fff",padding:"8px 12px",fontWeight:800}}>Next →</button>
+  </div>:null}
   <small style={{color:"#64748b",fontSize:11}}>Read-only calculation from browser-local driver, workforce and assignment records. Counts reflect the records currently saved on this device and are recalculated on opening this view. No external certificate verification or automated notifications are active.</small>
  </section>;
 }
