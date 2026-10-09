@@ -157,7 +157,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   .movetrack-person-avatar{flex:none;width:38px;height:38px;border-radius:11px;background:#e5edf8;display:grid;place-items:center;color:#2563eb;}
   .movetrack-person-check{color:#0b7a54;display:grid;place-items:center;width:22px;}
   .movetrack-people-footer{flex-wrap:wrap;border-top:1px solid #dfe8f2;border-bottom:0;}
-  @media(max-width:700px){
+  @media(max-width:700px), (max-width:900px) and (max-height:520px){
     .movetrack-people-panel{position:fixed;inset:0;width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;
      display:flex;flex-direction:column;z-index:130;padding-top:env(safe-area-inset-top);}
     .movetrack-people-options{flex:1;min-height:0;max-height:none;grid-auto-rows:max-content;align-content:start;overflow-y:auto;-webkit-overflow-scrolling:touch;}
