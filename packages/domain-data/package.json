@@ -15,7 +15,8 @@
     "./meeting-register": "./src/meeting-register.ts",
     "./signature-evidence": "./src/signature-evidence.ts",
     "./workspace-search": "./src/workspace-search.ts",
-    "./paper-layout": "./src/paper-layout.ts"
+    "./paper-layout": "./src/paper-layout.ts",
+    "./organization-directory": "./src/organization-directory.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
