@@ -247,5 +247,190 @@ export function MoveTrackThemeStyles(){
 @media(prefers-reduced-motion:reduce) {
  .movetrack-nav-drawer {animation:none;}
 }
+
+/* Shared MoveTrack semantic contrast tokens: dark colors remain readable even in legacy inline components.
+   Reports and print documents deliberately do not inherit this scope. */
+.movetrack-root[data-theme="light"] {
+ --mt-ink:#172b46;--mt-muted:#516078;--mt-link:#174fa8;--mt-surface:#fff;
+ --mt-surface-soft:#f3f7fc;--mt-border:#d8e3f0;
+ --mt-danger:#a51d2d;--mt-warning:#905a09;--mt-success:#087454;
+}
+.movetrack-root[data-theme="dark"] {
+ --mt-ink:#f0f6ff;--mt-muted:#becee2;--mt-link:#a9d2ff;--mt-surface:#162940;
+ --mt-surface-soft:#1d344f;--mt-border:#496380;
+ --mt-danger:#ffabb5;--mt-warning:#fbd58b;--mt-success:#86efc0;
+}
+.movetrack-root[data-theme="dark"] :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+ background-color:var(--mt-surface-soft) !important;
+ color:var(--mt-ink) !important;
+ border-color:var(--mt-border) !important;
+}
+.movetrack-root[data-theme="dark"] :is(input,textarea)::placeholder {color:var(--mt-muted) !important;opacity:1;}
+.movetrack-root[data-theme="dark"] :is(button,a,summary) {text-decoration-color:currentColor;}
+.movetrack-root[data-theme="dark"] :is(button,input,select,textarea):disabled {opacity:.7;}
+/* Light panels, info strips and tinted cards must remain distinct from the surrounding dark shell. */
+.movetrack-root[data-theme="dark"] [style*="background: #fff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 255, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #ffffff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 255, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f8fafc"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(248, 250, 252)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f8fbff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(248, 251, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f3f7fc"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(243, 247, 252)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f3f5f7"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(243, 245, 247)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f1f5f9"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(241, 245, 249)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f1f5fa"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(241, 245, 250)"],
+.movetrack-root[data-theme="dark"] [style*="background: #f0f6ff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(240, 246, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #eff6ff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(239, 246, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #eaf2ff"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(234, 242, 255)"],
+.movetrack-root[data-theme="dark"] [style*="background: #eef4fd"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(238, 244, 253)"],
+.movetrack-root[data-theme="dark"] [style*="background: #ecfdf5"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(236, 253, 245)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fff1f2"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 241, 242)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fef2f2"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(254, 242, 242)"],
+.movetrack-root[data-theme="dark"] [style*="background: #fffbeb"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(255, 251, 235)"],
+.movetrack-root[data-theme="dark"] [style*="background: #dbeafe"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(219, 234, 254)"],
+.movetrack-root[data-theme="dark"] [style*="background: #e2e8f0"],
+.movetrack-root[data-theme="dark"] [style*="background: rgb(226, 232, 240)"] {
+ background:var(--mt-surface) !important;
+ background-color:var(--mt-surface) !important;
+ border-color:var(--mt-border) !important;
+}
+/* Semantic text colors: override only legacy hard-coded ink/muted/status/link values.
+   Intentionally white-on-blue actions and dark-hero headings are untouched. */
+.movetrack-root[data-theme="dark"] [style*="color: #101827"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(16, 24, 39)"],
+.movetrack-root[data-theme="dark"] [style*="color: #101828"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(16, 24, 40)"],
+.movetrack-root[data-theme="dark"] [style*="color: #102033"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(16, 32, 51)"],
+.movetrack-root[data-theme="dark"] [style*="color: #111827"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(17, 24, 39)"],
+.movetrack-root[data-theme="dark"] [style*="color: #111c2e"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(17, 28, 46)"],
+.movetrack-root[data-theme="dark"] [style*="color: #142236"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(20, 34, 54)"],
+.movetrack-root[data-theme="dark"] [style*="color: #142946"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(20, 41, 70)"],
+.movetrack-root[data-theme="dark"] [style*="color: #15233a"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 35, 58)"],
+.movetrack-root[data-theme="dark"] [style*="color: #152d50"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 45, 80)"],
+.movetrack-root[data-theme="dark"] [style*="color: #153455"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(21, 52, 85)"],
+.movetrack-root[data-theme="dark"] [style*="color: #16375b"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(22, 55, 91)"],
+.movetrack-root[data-theme="dark"] [style*="color: #172b4d"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 43, 77)"],
+.movetrack-root[data-theme="dark"] [style*="color: #173764"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 55, 100)"],
+.movetrack-root[data-theme="dark"] [style*="color: #17406b"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 64, 107)"],
+.movetrack-root[data-theme="dark"] [style*="color: #174272"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 66, 114)"],
+.movetrack-root[data-theme="dark"] [style*="color: #174b87"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 75, 135)"],
+.movetrack-root[data-theme="dark"] [style*="color: #182b49"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 43, 73)"],
+.movetrack-root[data-theme="dark"] [style*="color: #183454"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(24, 52, 84)"],
+.movetrack-root[data-theme="dark"] [style*="color: #193756"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(25, 55, 86)"],
+.movetrack-root[data-theme="dark"] [style*="color: #1e3a5f"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(30, 58, 95)"],
+.movetrack-root[data-theme="dark"] [style*="color: #243e60"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(36, 62, 96)"],
+.movetrack-root[data-theme="dark"] [style*="color: #244260"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(36, 66, 96)"],
+.movetrack-root[data-theme="dark"] [style*="color: #315479"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(49, 84, 121)"],
+.movetrack-root[data-theme="dark"] [style*="color: #344054"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(52, 64, 84)"],
+.movetrack-root[data-theme="dark"] [style*="color: #364152"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(54, 65, 82)"],
+.movetrack-root[data-theme="dark"] [style*="color: #1e426a"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(30, 66, 106)"],
+.movetrack-root[data-theme="dark"] [style*="color: #425974"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(66, 89, 116)"]{color:var(--mt-ink) !important;}
+.movetrack-root[data-theme="dark"] [style*="color: #475467"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(71, 84, 103)"],
+.movetrack-root[data-theme="dark"] [style*="color: #475569"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(71, 85, 105)"],
+.movetrack-root[data-theme="dark"] [style*="color: #51627b"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(81, 98, 123)"],
+.movetrack-root[data-theme="dark"] [style*="color: #52677f"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(82, 103, 127)"],
+.movetrack-root[data-theme="dark"] [style*="color: #53647e"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(83, 100, 126)"],
+.movetrack-root[data-theme="dark"] [style*="color: #64748b"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(100, 116, 139)"],
+.movetrack-root[data-theme="dark"] [style*="color: #667085"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(102, 112, 133)"],
+.movetrack-root[data-theme="dark"] [style*="color: #98a2b3"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(152, 162, 179)"],
+.movetrack-root[data-theme="dark"] [style*="color: #9fb2ca"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(159, 178, 202)"],
+.movetrack-root[data-theme="dark"] [style*="color: #8296ad"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(130, 150, 173)"]{color:var(--mt-muted) !important;}
+.movetrack-root[data-theme="dark"] [style*="color: #1d4ed8"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(29, 78, 216)"],
+.movetrack-root[data-theme="dark"] [style*="color: #2563eb"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(37, 99, 235)"],
+.movetrack-root[data-theme="dark"] [style*="color: #1e40af"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(30, 64, 175)"],
+.movetrack-root[data-theme="dark"] [style*="color: #174fa8"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 79, 168)"],
+.movetrack-root[data-theme="dark"] [style*="color: #143b66"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(20, 59, 102)"],
+.movetrack-root[data-theme="dark"] [style*="color: #174b87"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(23, 75, 135)"]{color:var(--mt-link) !important;}
+.movetrack-root[data-theme="dark"] [style*="color: #b42318"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(180, 35, 24)"]{color:var(--mt-danger) !important;}
+.movetrack-root[data-theme="dark"] [style*="color: #b45309"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(180, 83, 9)"],
+.movetrack-root[data-theme="dark"] [style*="color: #a16207"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(161, 98, 7)"],
+.movetrack-root[data-theme="dark"] [style*="color: #92400e"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(146, 64, 14)"],
+.movetrack-root[data-theme="dark"] [style*="color: #9a670a"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(154, 103, 10)"],
+.movetrack-root[data-theme="dark"] [style*="color: #9a670d"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(154, 103, 13)"],
+.movetrack-root[data-theme="dark"] [style*="color: #915b16"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(145, 91, 22)"],
+.movetrack-root[data-theme="dark"] [style*="color: #9a6310"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(154, 99, 16)"]{color:var(--mt-warning) !important;}
+.movetrack-root[data-theme="dark"] [style*="color: #047857"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(4, 120, 87)"],
+.movetrack-root[data-theme="dark"] [style*="color: #087f5b"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(8, 127, 91)"],
+.movetrack-root[data-theme="dark"] [style*="color: #087e8b"],
+.movetrack-root[data-theme="dark"] [style*="color: rgb(8, 126, 139)"]{color:var(--mt-success) !important;}
+.movetrack-root[data-theme="dark"] :is(.movetrack-step-nav button,.movetrack-step-footer button,.movetrack-task-outline button) {
+ color:var(--mt-ink) !important;
+}
+.movetrack-root[data-theme="dark"] :is(.movetrack-step-nav button[aria-current="step"],.movetrack-step-footer button:last-child,
+.movetrack-task-outline button[aria-current="step"]) {color:#fff !important;}
+.movetrack-root[data-theme="dark"] .movetrack-desktop-modal {background:var(--mt-surface);color:var(--mt-ink);}
+.movetrack-root[data-theme="dark"] :is(.movetrack-desktop-modal,.movetrack-modal-body,.movetrack-task-editor) {color:var(--mt-ink);}
+.movetrack-root[data-theme="dark"] :is(.movetrack-compact-table th,.movetrack-compact-table td) {color:var(--mt-ink);border-color:var(--mt-border);}
+.movetrack-root[data-theme="dark"] .movetrack-workspace-heading small {color:var(--mt-muted);}
+.movetrack-root[data-theme="dark"] .movetrack-appbar-brand b {color:#f0f6ff;}
+/* Theme tokens also keep common secondary action labels visible on dark cards. */
+.movetrack-root[data-theme="dark"] :is(.movetrack-task-mobile-nav,.movetrack-task-mobile-summary) {color:var(--mt-ink);}
+
 `}</style>;
 }
