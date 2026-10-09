@@ -1,6 +1,7 @@
 import type {FormCategory,FormField,FormSection} from "./assurance-forms.ts";
+import type {DetectedElement,LayoutProposal} from "./paper-layout.ts";
 export type PaperDocumentKind="Checklist"|"Meeting register"|"Toolbox briefing"|"JSA / JRA"|"Inspection"|"Other";
-export type PaperExtraction={sourceName:string;pages:number;rawText:string;confidence:number|null;kind:PaperDocumentKind;title:string;sections:FormSection[];warnings:string[];};
+export type PaperExtraction={sourceName:string;pages:number;rawText:string;confidence:number|null;kind:PaperDocumentKind;title:string;sections:FormSection[];warnings:string[];elements?:DetectedElement[];summary?:LayoutProposal["summary"];};
 const meaningful=(s:string)=>s.replace(/[\t\r]+/g," ").replace(/\s+/g," ").trim();
 const label=(s:string)=>meaningful(s.replace(/^[\s0-9]+[.):-]\s*/,"").replace(/^[\[\]☐☑□■•*✓]+\s*/g,"").replace(/[\s._:：-]+$/g,""));
 function fieldType(s:string):FormField["type"]{
