@@ -1,7 +1,7 @@
 "use client";
-import {LayoutDashboard,Activity,ClipboardCheck,UsersRound,FileScan,Truck,HardHat,MapPinned,CalendarCheck,BriefcaseBusiness,ShieldCheck,Database,Settings2,UserRound} from "lucide-react";
+import {LayoutDashboard,Activity,ClipboardCheck,UsersRound,FileScan,Truck,HardHat,MapPinned,CalendarCheck,BriefcaseBusiness,ShieldCheck,Database,Settings2,UserRound,ShieldEllipsis} from "lucide-react";
 
-export type MoveTrackView="control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"meetings"|"paper"|"release"|"local-data"|"settings"|"profile"|"workforce";
+export type MoveTrackView="control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"meetings"|"paper"|"release"|"local-data"|"settings"|"profile"|"workforce"|"admin";
 export const navigationGroups=[
  {id:"overview",label:"Overview",items:[
   {view:"control",label:"Control center",description:"What needs attention",icon:LayoutDashboard},
@@ -19,7 +19,8 @@ export const navigationGroups=[
   {view:"assign",label:"Assignments",description:"Allocate and dispatch",icon:CalendarCheck},
   {view:"jobs",label:"Jobs & work orders",description:"Logistics pipeline",icon:BriefcaseBusiness},
   {view:"release",label:"Repair & release",description:"Grounded-asset controls",icon:ShieldCheck}]},
- {id:"administration",label:"Documents & settings",items:[
+ {id:"administration",label:"Administration",items:[
+  {view:"admin",label:"Admin workspace",description:"Company setup, fleet onboarding, images and all management tools",icon:ShieldEllipsis},
   {view:"local-data",label:"Local data & backup",description:"Import and export workspace",icon:Database},
   {view:"settings",label:"Settings & help",description:"Appearance, support and legal",icon:Settings2}]}
 ] as const;

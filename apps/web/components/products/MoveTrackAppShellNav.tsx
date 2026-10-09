@@ -82,6 +82,7 @@ export function MoveTrackAppShellNav({
      <button type="button" onClick={()=>navigate("forms")}>Forms</button>
      <button type="button" onClick={()=>{close();onSearch();}}>Search</button>
      <button type="button" onClick={()=>navigate("analytics")}>Insights</button>
+     <button type="button" onClick={()=>navigate("admin")}>Admin</button>
     </div>
     <button type="button" className="movetrack-appbar-mode" onClick={onToggleTheme} aria-label={theme==="dark"?"Switch to light mode":"Switch to dark mode"}>{theme==="dark"?<Sun size={18}/>:<Moon size={18}/>}<span className="movetrack-hamburger-label">{theme==="dark"?"Light":"Dark"}</span></button>
    </div>
@@ -108,7 +109,7 @@ export function MoveTrackAppShellNav({
      <div className="movetrack-drawer-primary">
       <button type="button" onClick={home}><Home size={20}/> Home <ChevronRight size={16}/></button>
       <button type="button" onClick={()=>{close();onSearch();}}><Search size={20}/> Global search <ChevronRight size={16}/></button>
-      <button type="button" onClick={()=>{close();onCompany();}}><Building2 size={20}/> Company management <ChevronRight size={16}/></button>
+      <button type="button" onClick={()=>navigate("admin")}><Building2 size={20}/> Admin · company and asset setup <ChevronRight size={16}/></button>
       <button type="button" onClick={()=>{close();onWorkflow();}}><ScanLine size={20}/> Safety workflow library <ChevronRight size={16}/></button>
      </div>
      {navigationGroups.map(group=><section key={group.id} aria-label={group.label} className="movetrack-drawer-group">
