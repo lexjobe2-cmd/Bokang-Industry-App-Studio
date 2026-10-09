@@ -11,7 +11,7 @@ test("mobile employee rows grow to content height instead of overlapping neighbo
  assert.match(picker,/\.movetrack-person-option\{[^}]*align-items:flex-start;/);
  assert.match(picker,/\.movetrack-person-option \.movetrack-person-details\{[^}]*overflow-wrap:anywhere;line-height:1\.45/);
  assert.match(picker,/gridAutoRows:"max-content",alignContent:"start"/);
- assert.match(picker,/@media\(max-width:700px\)\{/);
+ assert.match(picker,/@media\(max-width:700px\), \(max-width:900px\) and \(max-height:520px\)\{/);
  assert.match(picker,/\.movetrack-people-options\{flex:1;min-height:0;max-height:none;grid-auto-rows:max-content;align-content:start;overflow-y:auto;/);
  assert.doesNotMatch(picker,/\.movetrack-person-option\{[^}]*min-height:68px/);
 });
