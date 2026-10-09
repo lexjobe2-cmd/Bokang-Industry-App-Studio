@@ -666,7 +666,7 @@ export function MoveTrackThemeStyles(){
 .movetrack-root .movetrack-readable-text,.movetrack-root .movetrack-rich-content {
  min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere;word-break:normal;white-space:normal;line-height:1.55;
 }
-.movetrack-root .movetrack-readable-text {display:block;}
+.movetrack-root .movetrack-readable-text {display:block;margin:0;}
 .movetrack-root .movetrack-readable-text[data-variant="heading"] {font-weight:800;line-height:1.3;text-wrap:pretty;}
 .movetrack-root .movetrack-readable-text[data-variant="meta"] {font-size:0.8rem;line-height:1.5;}
 .movetrack-root .movetrack-readable-text[data-preserve-lines="true"] {white-space:pre-wrap;}
@@ -676,7 +676,7 @@ export function MoveTrackThemeStyles(){
 .movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="danger"] {color:var(--mt-danger,#a51d2d);}
 .movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="warning"] {color:var(--mt-warning,#905a09);}
 .movetrack-root :is(.movetrack-readable-text,.movetrack-rich-content)[data-tone="success"] {color:var(--mt-success,#087454);}
-.movetrack-root .movetrack-rich-content {display:grid;gap:0.65rem;}
+.movetrack-root .movetrack-rich-content {display:grid;gap:0.65rem;font-size:0.875rem;}
 .movetrack-root .movetrack-rich-content :is(p,h2,h3,ul,ol,blockquote,li) {
  min-width:0;max-width:100%;overflow-wrap:anywhere;white-space:normal;line-height:1.65;margin:0;
 }
