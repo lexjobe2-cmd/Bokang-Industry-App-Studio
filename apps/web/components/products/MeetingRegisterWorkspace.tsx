@@ -8,6 +8,8 @@ import {makeSubmission,type FormAnswers,type FormSubmission,type PrimitiveAnswer
 import {buildFormDocument} from "../../lib/form-exports";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
+import {SignatureCapture} from "./SignatureCapture";
+import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 
 const box:React.CSSProperties={background:"#fff",border:"1px solid #dbe4ee",padding:17,borderRadius:15};
@@ -133,8 +135,19 @@ export function MeetingRegisterWorkspace(){
     </div>)}
     <div style={grid}><label style={label}>Next review / meeting<input type="date" style={input} value={textValue(answers.next_meeting)} onChange={e=>text("next_meeting",e.target.value)}/></label><label style={label}>Prepared by<input style={input} value={textValue(answers.prepared_by)} onChange={e=>text("prepared_by",e.target.value)}/></label></div>
    </div>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:12}}>
+    <SignatureCapture compact value={isSignatureEvidence(answers.chair_signature)?answers.chair_signature:null}
+     scope={textValue(answers.meeting_title)||"Meeting register"} role="Meeting chairperson" intent="attendance"
+     defaultSignerName={members.find(p=>p.id===answers.meeting_chair)?.displayName||textValue(answers.meeting_chair_manual)}
+     signerPersonId={typeof answers.meeting_chair==="string"?answers.meeting_chair:undefined}
+     onChange={signature=>patch({chair_signature:signature??null})}/>
+    <SignatureCapture compact value={isSignatureEvidence(answers.minute_taker_signature)?answers.minute_taker_signature:null}
+     scope={textValue(answers.meeting_title)||"Meeting register"} role="Minute taker" intent="attendance"
+     defaultSignerName={textValue(answers.meeting_recorder)}
+     onChange={signature=>patch({minute_taker_signature:signature??null})}/>
+   </div>
    <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap",justifyContent:"space-between"}}>
-    <span style={{fontSize:11,color:"#64748b"}}>Draft autosaves in this browser. No authentic signatures or server approvals.</span>
+    <span style={{fontSize:11,color:"#64748b"}}>Signature marks and drafts save locally; identity and authorization are not verified.</span>
     <button style={primary} onClick={submit}><CheckCircle2 size={16} style={{display:"inline",verticalAlign:"middle"}}/> Save meeting register & minutes</button>
    </div>
   </div>:<div style={{...box,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
