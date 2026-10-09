@@ -41,6 +41,7 @@ export const dictionary={
 export type DirectorySource=(typeof dictionary.sources)[number];
 export type OrganizationProfile={
  id:string; name:string; domain:string; businessUnit:string; industry?:string; siteIds:string[];
+ departments?:string[]; cities?:string[]; principalEmail?:string; tenantId?:string;
  accent:string; logoDataUrl?:string; logoName?:string;
  documentPrefix:string; footer:string; ownerIds:string[];
  source:DirectorySource; updatedAt:string;
@@ -48,6 +49,7 @@ export type OrganizationProfile={
 export type PersonRecord={
  id:string; externalId?:string; source:DirectorySource; orgId:string;
  displayName:string; email:string; department:string; jobTitle:string; location:string;
+ city?:string; userPrincipalName?:string; officeLocation?:string; managerId?:string;
  employeeNumber?:string; active:boolean;
 };
 export type ParticipantAssignment={
@@ -81,11 +83,12 @@ export type CustomTemplate = FormTemplate & {
 export type GraphUser={
  id:string;displayName?:string|null;mail?:string|null;userPrincipalName?:string|null;
  jobTitle?:string|null;department?:string|null;officeLocation?:string|null;employeeId?:string|null;
+ city?:string|null;managerId?:string|null;
  accountEnabled?:boolean|null;
 };
 export type GraphOrganization={id:string;displayName?:string|null;verifiedDomains?:Array<{name?:string;isDefault?:boolean}>};
 export const GRAPH_DIRECTORY_ROUTES={
- users:"/v1.0/users?$select=id,displayName,mail,userPrincipalName,jobTitle,department,officeLocation,employeeId,accountEnabled&$top=100",
+ users:"/v1.0/users?$select=id,displayName,mail,userPrincipalName,jobTitle,department,officeLocation,city,employeeId,accountEnabled&$top=100",
  organization:"/v1.0/organization?$select=id,displayName,verifiedDomains",
  branding:"/v1.0/organization/{organizationId}/branding",
  directoryRoleAssignments:"/v1.0/roleManagement/directory/roleAssignments",
@@ -96,8 +99,9 @@ export function mapGraphUser(user:GraphUser,orgId:string):PersonRecord{
  return {id:"m365:"+user.id,externalId:user.id,source:"MICROSOFT_365",orgId,
   displayName:(user.displayName||user.userPrincipalName||"Unknown").trim(),
   email:(user.mail||user.userPrincipalName||"").trim(),
-  department:user.department||"",jobTitle:user.jobTitle||"",location:user.officeLocation||"",
-  employeeNumber:user.employeeId||undefined,active:user.accountEnabled!==false};
+  department:user.department||"",jobTitle:user.jobTitle||"",location:user.officeLocation||user.city||"",
+  city:user.city||"",officeLocation:user.officeLocation||"",userPrincipalName:user.userPrincipalName||"",
+  managerId:user.managerId||undefined,employeeNumber:user.employeeId||undefined,active:user.accountEnabled!==false};
 }
 export function mapGraphOrganization(org:GraphOrganization,now:string):OrganizationProfile{
  if(!org.id||!org.displayName)throw new Error("Invalid Microsoft organization");
@@ -116,6 +120,7 @@ export function mapDirectoryAdminCandidates(assignments:readonly GraphRoleAssign
 }
 export const demoOrganization:OrganizationProfile={
  id:"demo-mining",name:"Demo Mining Operations",domain:"demo.invalid",businessUnit:"Mining Operations",
+ principalEmail:"she.manager@demo.invalid",departments:["Engineering","Mining","SHE","Operations","Logistics","Plant","Maintenance","Compliance","Management","Contractors"],cities:["Jwaneng","Orapa","Gaborone"],
  siteIds:["Jwaneng mine · demo profile","Orapa mine · demo profile","Gaborone workshop"],
  accent:"#155eef",documentPrefix:"DMO-SHE",footer:"Demonstration only · not approved for operational use",
  ownerIds:["demo-p01","demo-p02"],source:"LOCAL_DEMO",updatedAt:"2026-10-08T00:00:00Z"
@@ -139,7 +144,7 @@ const names:[string,string,string,string,string][]=[
 export const demoPeople:PersonRecord[]=names.map(([displayName,jobTitle,department,location,employeeNumber],i)=>({
  id:"demo-p"+String(i+1).padStart(2,"0"),source:"LOCAL_DEMO",orgId:demoOrganization.id,
  displayName,email:displayName.toLowerCase().replaceAll(" ",".")+"@demo.invalid",
- department,jobTitle,location,employeeNumber,active:true
+ department,jobTitle,location,city:location,officeLocation:location,userPrincipalName:displayName.toLowerCase().replaceAll(" ",".")+"@demo.invalid",employeeNumber,active:true
 }));
 export function makeCustomTemplate(input:{
  id:string;organization:OrganizationProfile;title:string;category:FormCategory;description:string;
