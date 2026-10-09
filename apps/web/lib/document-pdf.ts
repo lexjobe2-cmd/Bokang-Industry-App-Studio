@@ -106,6 +106,17 @@ export function renderProfessionalPdf(doc:ExportDocument):Blob {
    lines(words(label,160,8,true).slice(0,1),LEFT+5,y+5.7,8,3.6,true,NAVY);
    y+=11;return;
   }
+  if(r.signature){
+   // Keep the captured visual mark and its attribution within one report row.
+   reserve(44);
+   setFill(rowIndex%2===0?PALE:WHITE);pdf.roundedRect(LEFT,y,CONTENT_W,41,1.5,1.5,"F");
+   lines(words(label,70,8.4,true),LEFT+5,y+7,8.4,4.1,true,MUTED);
+   try{pdf.addImage(r.signature.imageDataUrl,"PNG",LEFT+77,y+3,57,23,undefined,"FAST");}
+   catch{lines(["Signature image unavailable"],LEFT+77,y+12,8,4,false,MUTED);}
+   lines(words("Signed: "+r.signature.signerName+"  /  "+r.signature.role,90,8,true),LEFT+77,y+30,8,4,true,INK);
+   lines(["LOCAL / UNVERIFIED"],LEFT+77,y+36,7,4,false,[153,95,35]);
+   y+=43;rowIndex++;return;
+  }
   const longValue=value.length>120||value.includes("\n");
   const smallLabel=isNested?65:61;
   const lLines=words(label,smallLabel-5,8.4,true);
