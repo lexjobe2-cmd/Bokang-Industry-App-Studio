@@ -5,7 +5,7 @@ import {ScanText,FileUp,FileImage,FileText,RefreshCw,Plus,Trash2,Save,CheckCircl
 import {usePersistentState} from "@bokang/persistence";
 import {ASSURANCE_STORAGE,demoOrganization,demoPeople,makeCustomTemplate,dictionary,type CustomTemplate,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {type FormCategory,type FormField,type FormSection,type FormTemplate} from "@bokang/domain-data/assurance-forms";
-import {detectPaperCategory,parsePaperText,validatePaperSections,unreviewedPaperFields,type PaperExtraction} from "@bokang/domain-data/paper-forms";
+import {detectPaperCategory,parsePaperText,validatePaperSections,unreviewedPaperFields,paperPublicationIssues,type PaperExtraction} from "@bokang/domain-data/paper-forms";
 import {mergePaperLayout,type DetectedElement,type LayoutProposal} from "@bokang/domain-data/paper-layout";
 import {readPaperDocument,acceptedPaperFile,downloadSourcePdf,type PaperProgress} from "../../lib/paper-ocr";
 import {savePaperOriginal,getPaperOriginal,deletePaperOriginal} from "../../lib/paper-source-store";
@@ -86,8 +86,10 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
   if(!visibleDraft)return;
   try{
    validatePaperSections(visibleDraft.sections);
-   if(publish&&unreviewedPaperFields(visibleDraft.sections).length>0)
-    throw Error("Review detected graphical fields against the original and mark them checked before publishing.");
+   if(publish){
+    const issues=paperPublicationIssues(visibleDraft.sections);
+    if(issues.length)throw Error("Resolve "+issues.length+" import review issue(s) before publishing: "+issues.slice(0,3).join("; "));
+   }
    if(visibleDraft.title.trim().length<4)throw Error("Enter a descriptive form title.");
    const now=new Date().toISOString();
    const before=templates.find(t=>t.id===visibleDraft.id);
@@ -220,6 +222,11 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
         <input style={input} type={field.type==="date"?"date":field.type==="number"?"number":"text"} placeholder="Type a sample answer" value={String(previewValues[field.id]??"")} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.value}))}/>}
       </div>))}</div>:null}
    </div>
+   {paperPublicationIssues(visibleDraft.sections).length>0?<div style={{border:"1px solid #f6d6a9",borderRadius:11,background:"#fffbeb",padding:12,display:"grid",gap:5}}>
+     <strong style={{fontSize:12,color:"#9a6310"}}>Complete before publishing · {paperPublicationIssues(visibleDraft.sections).length} issue(s)</strong>
+     {paperPublicationIssues(visibleDraft.sections).slice(0,8).map((issue,i)=><span key={i} style={{fontSize:11,color:"#9a6310"}}>• {issue}</span>)}
+     <span style={{fontSize:11,color:"#64748b"}}>You can save a draft while fixing these choices. Placeholder options, missing columns and unreconciled OCR controls cannot become published company forms.</span>
+    </div>:null}
    <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
      <strong>{unreviewedPaperFields(visibleDraft.sections).length} detected controls awaiting review</strong>
      <button style={btn} onClick={reviewAll}>Mark reviewed after source check</button>
