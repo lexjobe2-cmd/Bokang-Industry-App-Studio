@@ -3,6 +3,7 @@ import {useState} from "react";
 import {motion,useReducedMotion} from "framer-motion";
 import {Building2,ChevronRight,Users,Palette,CheckCircle2,Plus,Trash2,Shield,ArrowRight,Edit3} from "lucide-react";
 import {usePersistentState} from "@bokang/persistence";
+import {CompanyDirectoryImport} from "./CompanyDirectoryImport";
 import {ASSURANCE_STORAGE,demoOrganization,demoPeople,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
 
 export const ACTIVE_ORGANIZATION_KEY="bokang-studio.move-track.active-organization.v1";
@@ -13,8 +14,8 @@ const card:React.CSSProperties={background:"#fff",border:"1px solid #dae4f0",bor
 const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,fontWeight:800,color:"#344054"};
 type Draft=OrganizationProfile & {industry:string};
 const initial=():Draft=>({...demoOrganization,id:"",name:"",domain:"",businessUnit:"",siteIds:[],ownerIds:[],logoDataUrl:undefined,logoName:undefined,documentPrefix:"SHE",footer:"Uncontrolled when printed · Operational approval required",accent:"#155eef",source:"MANUAL" as const,industry:"Mining & resources",updatedAt:""});
-type PersonDraft={id?:string;name:string;jobTitle:string;email:string;department:string;owner:boolean};
-const emptyMember=():PersonDraft=>({name:"",jobTitle:"",department:"",email:"",owner:false});
+type PersonDraft={id?:string;name:string;jobTitle:string;email:string;department:string;city:string;upn:string;employeeNumber:string;owner:boolean};
+const emptyMember=():PersonDraft=>({name:"",jobTitle:"",department:"",email:"",city:"",upn:"",employeeNumber:"",owner:false});
 export function OrganizationOnboarding(){
  const reduceMotion=useReducedMotion();
  const [orgs,setOrgs,loaded]=usePersistentState<OrganizationProfile[]>(ASSURANCE_STORAGE.organizations,[demoOrganization]);
@@ -32,8 +33,8 @@ export function OrganizationOnboarding(){
  function patch(data:Partial<Draft>){setDraft(d=>({...d,...data}));}
  function resetDraft(){setDraft(initial());setMembers([emptyMember()]);setStep(0);setEditingId(null);setNotice("");setOpen(true);}
  function editCompany(org:OrganizationProfile){
-  const related=people.filter(p=>p.orgId===org.id);
-  setDraft({...initial(),...org});setMembers(related.map(p=>({id:p.id,name:p.displayName,jobTitle:p.jobTitle,email:p.email,department:p.department,owner:org.ownerIds.includes(p.id)})));
+  const related=people.filter(p=>p.orgId===org.id&&!["CSV_IMPORT","MICROSOFT_365"].includes(p.source));
+  setDraft({...initial(),...org});setMembers(related.map(p=>({id:p.id,name:p.displayName,jobTitle:p.jobTitle,email:p.email,department:p.department,city:p.city||p.location,upn:p.userPrincipalName||"",employeeNumber:p.employeeNumber||"",owner:org.ownerIds.includes(p.id)})));
   setStep(0);setEditingId(org.id);setOpen(true);setNotice("");
  }
  function upload(file:File|undefined){
@@ -59,15 +60,16 @@ export function OrganizationOnboarding(){
   const valid=members.filter(m=>m.name.trim()&&m.jobTitle.trim());
   const roster=valid.map((m,i):PersonRecord=>{
    const old=m.id?existingMembers.find(p=>p.id===m.id):undefined;
-   return {id:old?.id??"worker-"+crypto.randomUUID(),orgId:id,source:"MANUAL",displayName:m.name.trim(),
-    jobTitle:m.jobTitle.trim(),department:m.department.trim(),location:draft.siteIds[0]||"",email:m.email.trim(),active:true};
+   return {...old,id:old?.id??"worker-"+crypto.randomUUID(),orgId:id,source:"MANUAL",displayName:m.name.trim(),
+    jobTitle:m.jobTitle.trim(),department:m.department.trim(),location:m.city.trim()||draft.siteIds[0]||"",city:m.city.trim(),
+    userPrincipalName:m.upn.trim(),employeeNumber:m.employeeNumber.trim(),email:m.email.trim(),active:true};
   });
-  const ownerIds=roster.filter((_,i)=>valid[i]?.owner).map(p=>p.id);
+  const ownerIds=[...new Set([...draft.ownerIds.filter(id=>!existingMembers.some(p=>p.id===id&&p.source==="MANUAL")),...roster.filter((_,i)=>valid[i]?.owner).map(p=>p.id)])];
   const org:OrganizationProfile={...draft,id,name:draft.name.trim(),domain:draft.domain.trim().toLowerCase(),
    siteIds:[...new Set(draft.siteIds.map(s=>s.trim()).filter(Boolean))],
    ownerIds,updatedAt:now,source:"MANUAL"};
   setOrgs(xs=>[...xs.filter(o=>o.id!==id),org]);
-  setPeople(xs=>[...xs.filter(p=>p.orgId!==id),...roster]);
+  setPeople(xs=>[...xs.filter(p=>p.orgId!==id||["CSV_IMPORT","MICROSOFT_365"].includes(p.source)),...roster]);
   setActiveOrg(id);setEditingId(null);setOpen(false);setStep(0);setNotice(priorOrg?"Company updated locally.":"Company created locally. Your operational workspaces now use its branding and personnel.");
  }
  return <section aria-label="Company onboarding" style={{display:"grid",gap:11}}>
@@ -87,6 +89,7 @@ export function OrganizationOnboarding(){
    <span style={{fontSize:11,color:"#64748b"}}>{customOrgs.length} locally onboarded · {people.filter(p=>p.orgId===activeOrg).length} people</span>
    {isFirst?<button style={{...button,border:"1px solid #bfdbfe",background:"#eff6ff"}} onClick={resetDraft}>New? Start 4-step onboarding →</button>:null}
   </div>
+  <CompanyDirectoryImport org={currentOrg} people={people} setPeople={setPeople}/>
   {notice?<div role="status" style={{...card,color:"#174fa8",fontSize:12,background:"#eff6ff"}}>{notice}</div>:null}
   {open?<motion.div initial={reduceMotion?false:{opacity:0,y:10}} animate={{opacity:1,y:0}} style={{...card,display:"grid",gap:15,borderTop:"4px solid "+draft.accent}}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
@@ -101,6 +104,9 @@ export function OrganizationOnboarding(){
      <label style={label}>Company email domain (not verified)<input style={input} value={draft.domain} onChange={e=>patch({domain:e.target.value})} placeholder="company.co.bw"/></label>
      <label style={label}>Industry<select style={input} value={draft.industry} onChange={e=>patch({industry:e.target.value})}>{["Mining & resources","Construction","Logistics & fleet","Manufacturing","Energy & utilities","Agriculture","Healthcare","Facilities","Government","Other"].map(x=><option key={x}>{x}</option>)}</select></label>
      <label style={label}>Business unit<input style={input} value={draft.businessUnit} onChange={e=>patch({businessUnit:e.target.value})} placeholder="Maintenance & operations"/></label>
+     <label style={label}>Principal contact email (not verified)<input type="email" style={input} value={draft.principalEmail??""} onChange={e=>patch({principalEmail:e.target.value})} placeholder="she.manager@company.co.bw"/></label>
+     <label style={{...label,gridColumn:"1 / -1"}}>Departments (one per line)<textarea style={{...input,minHeight:75}} value={(draft.departments??[]).join("\n")} onChange={e=>patch({departments:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)})} placeholder="Engineering\nOperations\nSHE\nHuman Resources"/></label>
+     <label style={{...label,gridColumn:"1 / -1"}}>Cities (one per line)<textarea style={{...input,minHeight:70}} value={(draft.cities??[]).join("\n")} onChange={e=>patch({cities:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)})} placeholder="Gaborone\nJwaneng\nOrapa"/></label>
      <label style={{...label,gridColumn:"1 / -1"}}>Operating sites * (one per line)<textarea style={{...input,minHeight:95}} value={draft.siteIds.join("\n")} onChange={e=>patch({siteIds:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)})} placeholder="Jwaneng Site\nGaborone Workshop"/></label>
     </div>:null}
     {step===1?<div style={{display:"grid",gap:13}}>
@@ -122,6 +128,9 @@ export function OrganizationOnboarding(){
        <label style={label}>Job title<input style={input} value={person.jobTitle} placeholder="Supervisor" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,jobTitle:e.target.value}:p))}/></label>
        <label style={label}>Department<input style={input} value={person.department} placeholder="Engineering" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,department:e.target.value}:p))}/></label>
        <label style={label}>Email<input style={input} value={person.email} placeholder="person@company.co.bw" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,email:e.target.value}:p))}/></label>
+       <label style={label}>City<input style={input} value={person.city??""} placeholder="Gaborone" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,city:e.target.value}:p))}/></label>
+       <label style={label}>User principal name (UPN)<input style={input} value={person.upn??""} placeholder="person@tenant.onmicrosoft.com" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,upn:e.target.value}:p))}/></label>
+       <label style={label}>Employee number<input style={input} value={person.employeeNumber??""} placeholder="EMP-001" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,employeeNumber:e.target.value}:p))}/></label>
        <label style={{fontSize:12,display:"flex",alignItems:"center",gap:7}}><input type="checkbox" checked={person.owner} onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,owner:e.target.checked}:p))}/> Organization owner (demo)</label>
        <button style={{...button,justifySelf:"start",color:"#b42318"}} onClick={()=>setMembers(xs=>xs.filter((_,j)=>i!==j))}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
       </div>)}
