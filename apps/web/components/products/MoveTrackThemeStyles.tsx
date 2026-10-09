@@ -639,6 +639,12 @@ export function MoveTrackThemeStyles(){
 .movetrack-root :is(.movetrack-company-add) {
  color:#fff !important;background:#2152b3 !important;border-color:#2152b3 !important;
 }
+.movetrack-root[data-theme="light"] .movetrack-company-import {
+ color:#172b46 !important;background:#f1f6ff !important;border-color:#b3c8e7 !important;
+}
+.movetrack-root[data-theme="dark"] .movetrack-company-import {
+ color:#f5f9ff !important;background:#253e5e !important;border-color:#6a88ab !important;
+}
 .movetrack-root[data-theme="light"] .movetrack-control-stat {
  background:#fff !important;color:#172b46 !important;border-color:#d8e3f0 !important;
 }
