@@ -154,6 +154,11 @@ test("rich JRA demands people, hazard controls and valid initial/residual risk",
  assert.deepEqual(assessJra(jra).missing,[]);
  assert.equal(assessJra(jra).decision,"READY_FOR_DEMO_REVIEW");
  jra.reviewerId=demoPeople[0].id;
+ // A checked box by itself is not a drawn acknowledgement.
+ assert.equal(canSimulateApproval(jra),false);
+ jra.participants[0].signature={...localSupervisorReview,signerPersonId:jra.participants[0].personId,
+  signerName:jra.participants[0].nameSnapshot,intent:"acknowledgement",
+  scope:jra.reference||jra.title||"JRA task review"};
  assert.equal(canSimulateApproval(jra),true);
  jra.reviewerId=jra.supervisorId;
  assert.equal(canSimulateApproval(jra),false);
