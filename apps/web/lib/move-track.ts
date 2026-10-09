@@ -1,5 +1,4 @@
 import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
-import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import { miningPrestartChecks } from "@bokang/domain-data";
 
 export type FleetVehicleStatus =
