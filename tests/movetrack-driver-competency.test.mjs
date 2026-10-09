@@ -82,5 +82,6 @@ test("UI binds expiry review signature and guards both dispatch and checkout",()
  assert.match(admin,/credentialKeys.map\(key=>key\+":"\+/);
  assert.match(driverApp,/driverEligibilityReasons\(driver,/);
  assert.match(driverApp,/Cannot start shift; qualifications or vehicle validity changed/);
+ assert.match(driverApp,/Driver competency or authorisations changed after the GO pre-start/);
  assert.match(panel,/DesktopModal title=\{/);
 });
