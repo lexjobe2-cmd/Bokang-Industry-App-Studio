@@ -43,7 +43,7 @@ function connected(raster:Raster){
   const perimeter=2*boxW+2*boxH-4;
   const sideRatio=boundary/perimeter;
   const cRadius=Math.max(1,Math.round(Math.min(boxW,boxH)*.18));
-  for(const [cx,cy] of [[0,0],[boxW-1,0],[0,boxH-1],[boxW-1,boxH-1]]){
+  for(const [cx,cy] of ([[0,0],[boxW-1,0],[0,boxH-1],[boxW-1,boxH-1]] as Array<[number,number]>)){
    for(let dx=0;dx<cRadius;dx++)for(let dy=0;dy<cRadius;dy++)if(border(Math.min(boxW-1,cx===0?dx:cx-dx),Math.min(boxH-1,cy===0?dy:cy-dy)))corners++;
   }
   for(let j=3;j<boxH-3;j++)for(let i=3;i<boxW-3;i++){inside+=border(i,j)?1:0;totalInside++;}
