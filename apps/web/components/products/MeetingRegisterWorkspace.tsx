@@ -3,7 +3,7 @@ import {useMemo,useState} from "react";
 import {CalendarDays,UsersRound,ClipboardList,Plus,Trash2,CheckCircle2,FileText} from "lucide-react";
 import {usePersistentState} from "@bokang/persistence";
 import {ASSURANCE_STORAGE,demoOrganization,demoPeople,type PersonRecord,type OrganizationProfile} from "@bokang/domain-data/custom-assurance";
-import {meetingTypes,meetingTemplate,validateMeetingInput,updateMeetingAttendance,meetingAttendanceCounts,apologyStatusOptions,apologyReasonOptions,type MeetingType} from "@bokang/domain-data/meeting-register";
+import {meetingTypes,meetingTemplate,validateMeetingInput,updateMeetingAttendance,meetingAttendanceCounts,apologyStatusOptions,apologyReasonOptions,carryForwardMeetingActions,type MeetingType} from "@bokang/domain-data/meeting-register";
 import {makeSubmission,type FormAnswers,type FormSubmission,type PrimitiveAnswer} from "@bokang/domain-data/assurance-forms";
 import {buildFormDocument} from "../../lib/form-exports";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
@@ -81,6 +81,19 @@ export function MeetingRegisterWorkspace(){
   // Attendance is never automatically confirmed: operator explicitly chooses to reuse this list.
   choosePresence("present",ids);
   setMessage("Previous crew copied into this editable draft. Verify today's attendance before saving.");
+ }
+ function reuseOpenActions(){
+  if(!previousMeeting)return;
+  const {rows,added}=carryForwardMeetingActions(answers,previousMeeting.answers,members);
+  if(!added){setMessage("No new unresolved actions to carry forward. Existing actions were preserved.");return;}
+  patch({actions:rows as Row[]});
+  setMessage(added+" open action(s) copied. Verify each owner, new due date and status before recording today's minutes.");
+ }
+ function reuseAgenda(){
+  if(!previousMeeting)return;
+  if(textValue(answers.agenda).trim()&&!window.confirm("Replace the current agenda with last meeting's topics? Current minutes and signatures will not be copied."))return;
+  patch({agenda:textValue(previousMeeting.answers.agenda)});
+  setMessage("Agenda topics copied for editing. Meeting minutes, attendance and signatures remain specific to this meeting.");
  }
  function submit(){
   setMessage("");
@@ -195,20 +208,39 @@ export function MeetingRegisterWorkspace(){
     <div style={{display:"grid",gap:7}}>
      <strong style={{fontSize:12}}>Build an agenda with one tap</strong>
      <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{quickAgenda.map(topic=><button key={topic} type="button" style={{...btn,minHeight:35,fontSize:11,padding:"7px 10px"}} onClick={()=>addAgendaTopic(topic)}>+ {topic}</button>)}</div>
-     <span style={{fontSize:11,color:"#64748b"}}>Suggested headings only. Minutes and acknowledgements must still be recorded by the people present.</span>
+     <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
+      {previousMeeting?<button style={{...btn,minHeight:35,fontSize:11}} type="button" onClick={reuseAgenda}>Reuse previous agenda topics</button>:null}
+      <span style={{fontSize:11,color:"#64748b"}}>Suggested headings only. Today's minutes and acknowledgements are never copied.</span>
+     </div>
     </div>
     {([["agenda","Agenda / planned topics *"],["safety_highlights","Safety moment / hazards"],["minutes","Meeting discussions and minutes *"],["decisions","Decisions / resolutions"],["outstanding","Outstanding matters / closeout"]] as const).map(([key,title])=>
       <label key={key} style={label}>{title}<textarea style={{...input,minHeight:85}} value={textValue(answers[key])} onChange={e=>text(key,e.target.value)}/></label>)}
    </div>
    <div style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
-    <div style={{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap",alignItems:"center"}}><h3 style={{fontSize:17,margin:0}}><ClipboardList size={18} style={{display:"inline",verticalAlign:"middle"}}/> Corrective actions</h3><button style={btn} onClick={()=>addRow("actions")}><Plus size={15} style={{display:"inline"}}/> Add action</button></div>
+    <div style={{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap",alignItems:"center"}}>
+     <h3 style={{fontSize:17,margin:0}}><ClipboardList size={18} style={{display:"inline",verticalAlign:"middle"}}/> Corrective actions</h3>
+     <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+      {previousMeeting?<button type="button" style={{...btn,minHeight:38,fontSize:11}} onClick={reuseOpenActions}>Carry forward open actions</button>:null}
+      <button style={btn} onClick={()=>addRow("actions")}><Plus size={15} style={{display:"inline"}}/> Add action</button>
+     </div>
+    </div>
+    <p style={{fontSize:11,color:"#64748b",margin:0}}>Assign staff by searching the company directory, or enter an external owner. Carried-forward items stay open and require a fresh due date.</p>
     {actions.length===0?<p style={{fontSize:12,color:"#64748b",margin:0}}>No actions recorded yet. Add an action with its responsible owner, due date and status when necessary.</p>:null}
     {actions.map((r,i)=><div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
      <label style={label}>Action description *<input style={input} value={textValue(r.action)} onChange={e=>listPatch("actions",i,{action:e.target.value})}/></label>
-     <label style={label}>Accountable owner *
-      <input list={"movetrack-action-owners-"+i} style={input} value={textValue(r.owner)} onChange={e=>listPatch("actions",i,{owner:e.target.value})} placeholder="Pick from employees or type an external person"/>
-      <datalist id={"movetrack-action-owners-"+i}>{members.map(p=><option key={p.id} value={p.displayName}/>)}</datalist>
-     </label>
+     <div style={{display:"grid",gap:7}}>
+      <OrganizationPeopleComboBox people={members} orgId={org.id} label="Accountable employee"
+       value={members.some(p=>p.id===r.owner_person_id)?[String(r.owner_person_id)]:[]}
+       onChange={ids=>{
+        const id=ids[0]??"";
+        listPatch("actions",i,{owner_person_id:id,owner:members.find(p=>p.id===id)?.displayName??""});
+       }} placeholder="Find supervisor, technician or responsible employee"/>
+      {(!r.owner_person_id||!members.some(p=>p.id===r.owner_person_id))?
+       <label style={label}>Or external / manual action owner *
+        <input style={input} value={textValue(r.owner)} onChange={e=>listPatch("actions",i,{owner:e.target.value,owner_person_id:""})} placeholder="External person or contractor name"/>
+       </label>:null}
+      {r.carried_from?<small style={{fontSize:11,color:"#9a670d"}}>{textValue(r.carried_from)}</small>:null}
+     </div>
      <label style={label}>Due date<input type="date" style={input} value={textValue(r.due)} onChange={e=>listPatch("actions",i,{due:e.target.value})}/></label>
      <label style={label}>Status<select style={input} value={textValue(r.state)||"Open"} onChange={e=>listPatch("actions",i,{state:e.target.value})}><option>Open</option><option>In progress</option><option>Closed</option></select></label>
      <button style={btn} onClick={()=>removeRow("actions",i)}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
