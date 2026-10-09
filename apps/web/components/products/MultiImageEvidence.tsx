@@ -65,7 +65,7 @@ export function MultiImageEvidence({images,onChange,label="Photo evidence",readO
    {images.map((photo)=><figure key={photo.id} style={{margin:0,minWidth:0,background:"#f8fafc",border:"1px solid #cbd5e1",borderRadius:11,padding:5}}>
     <img src={photo.dataUrl} alt={photo.name} loading="lazy" style={{width:"100%",height:93,objectFit:"cover",borderRadius:7}}/>
     <figcaption title={photo.name} style={{fontSize:10,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{photo.name}</figcaption>
-    {!readOnly&&onChange?<button type="button" style={{marginTop:4,minHeight:36,width:"100%",background:"#fff",border:"1px solid #fecaca",borderRadius:7,color:"#b42318",fontSize:11}} onClick={()=>onChange(images.filter(item=>item.id!==photo.id))} aria-label={"Remove "+photo.name}>Remove</button>:null}
+    {!readOnly&&onChange?<button type="button" style={{marginTop:4,minHeight:44,width:"100%",background:"#fff",border:"1px solid #fecaca",borderRadius:7,color:"#b42318",fontSize:11}} onClick={()=>onChange(images.filter(item=>item.id!==photo.id))} aria-label={"Remove "+photo.name}>Remove</button>:null}
    </figure>)}
   </div>:<small style={{color:"#64748b"}}>No photographs attached yet.</small>}
   {!readOnly?<small style={{color:"#64748b"}}>JPEG, PNG or WebP; up to 8 MB each. Photos are compressed and stored on this browser only. They are not verified safety approvals.</small>:null}
