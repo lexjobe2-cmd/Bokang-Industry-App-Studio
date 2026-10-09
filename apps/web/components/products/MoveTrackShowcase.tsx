@@ -564,9 +564,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
-    <div hidden={contentView!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace /></Suspense>:null}</div>
+    <div hidden={contentView!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace adminMode={adminMode}/></Suspense>:null}</div>
     <div hidden={contentView!=="meetings"}>{visited.has("meetings")?<Suspense fallback={<p role="status">Loading meeting workspace…</p>}><MeetingRegisterWorkspace /></Suspense>:null}</div>
-    <div hidden={contentView!=="paper"}>{visited.has("paper")?<Suspense fallback={<p role="status">Loading document workspace…</p>}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></Suspense>:null}</div>
+    <div hidden={contentView!=="paper"}>{visited.has("paper")?<Suspense fallback={<p role="status">Loading document workspace…</p>}><PaperToDigitalWorkspace adminMode={adminMode} onOpenDesigner={()=>setView("forms")}/></Suspense>:null}</div>
     {contentView==="release"?<FleetReleaseWorkspace />:null}
     {contentView==="local-data"?<LocalWorkspacePanel />:null}
     {contentView==="workforce"?<WorkforceDirectoryWorkspace adminMode={adminMode}/>:null}
