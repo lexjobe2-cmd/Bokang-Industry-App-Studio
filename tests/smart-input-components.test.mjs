@@ -1,15 +1,30 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,existsSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import vm from 'node:vm';
 const require=createRequire(new URL('../apps/assurance-demo/package.json',import.meta.url));
 const rootRequire=createRequire(new URL('../package.json',import.meta.url));
 const ts=rootRequire('typescript'),React=require('react'),{renderToStaticMarkup}=require('react-dom/server');
+const modules=new Map();
 function load(path){
- const source=readFileSync(new URL(path,import.meta.url),'utf8');
+ const url=path instanceof URL?path:new URL(path,import.meta.url);
+ if(modules.has(url.href))return modules.get(url.href).exports;
+ const source=readFileSync(url,'utf8');
  const code=ts.transpileModule(source,{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
- const module={exports:{}};vm.runInNewContext(code,{require:(name)=>name==="./MoveTrackWorkspaceNav"?load("../apps/web/components/products/MoveTrackWorkspaceNav.tsx"):require(name),module,exports:module.exports});return module.exports;
+ const module={exports:{}};
+ modules.set(url.href,module);
+ // Resolve any local TSX component through the importing file's location,
+ // rather than maintaining fragile per-component mocks.
+ const localRequire=(name)=>{
+  if(name.startsWith('.')){
+   const candidate=new URL(name+(name.endsWith('.tsx')?'':'.tsx'),url);
+   if(existsSync(candidate))return load(candidate);
+  }
+  return require(name);
+ };
+ vm.runInNewContext(code,{require:localRequire,module,exports:module.exports});
+ return module.exports;
 }
 const {QuickChoice,SmartMultiSelect,SearchableAssetPicker}=load('../apps/web/components/products/SmartFormInputs.tsx');
 const {RepeatableRowActions}=load('../apps/web/components/products/RepeatableRowActions.tsx');
