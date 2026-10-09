@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
+import * as requireModule from "node:module";
+import * as vmModule from "node:vm";
 
 const product=(name)=>readFileSync(new URL("../apps/web/components/products/"+name+".tsx",import.meta.url),"utf8");
 const content=product("MoveTrackReadableContent");
@@ -44,4 +46,32 @@ test("React-controlled workforce inputs and saved values are not replaced by sta
  assert.match(picker,/value=\{query\} onChange=\{e=>setQuery\(e.target.value\)\}/);
  assert.match(picker,/onChange\(next\)/);
  assert.match(picker,/onChange\(\[\]\)/);
+});
+
+test("rich renderer is safe at runtime and preserves actual semantic document blocks",()=>{
+ const {createRequire}=requireModule;
+ const localRequire=createRequire(new URL("../apps/assurance-demo/package.json",import.meta.url));
+ const ts=createRequire(new URL("../package.json",import.meta.url))("typescript");
+ const vm=vmModule;
+ const source=product("MoveTrackReadableContent");
+ const js=ts.transpileModule(source,{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+ const module={exports:{}};
+ vm.runInNewContext(js,{require:localRequire,exports:module.exports,module});
+ const {safeMoveTrackHref,MoveTrackRichContent}=module.exports;
+ const React=localRequire("react"),{renderToStaticMarkup}=localRequire("react-dom/server");
+ assert.equal(safeMoveTrackHref("javascript:alert(1)"),undefined);
+ assert.equal(safeMoveTrackHref("//attacker.invalid"),undefined);
+ assert.equal(safeMoveTrackHref("data:text/html,hello"),undefined);
+ assert.equal(safeMoveTrackHref("/app/fleet"),"/app/fleet");
+ assert.equal(safeMoveTrackHref("https://example.com/guide"),"https://example.com/guide");
+ const html=renderToStaticMarkup(React.createElement(MoveTrackRichContent,{blocks:[
+  {type:"heading",level:2,content:[{text:"Safety review"}]},
+  {type:"paragraph",content:[{text:"Hazard "},{text:"critical",bold:true},{text:" <script>alert(1)</script>"}]},
+  {type:"list",ordered:false,items:[[{text:"Use required PPE"}],[{text:"View policy",href:"/app/forms"}]]},
+  {type:"paragraph",content:[{text:"Do not open",href:"javascript:alert(1)"}]}
+ ]}));
+ assert.match(html,/<h2[^>]*>/);assert.match(html,/<strong>critical<\/strong>/);
+ assert.match(html,/<ul>/);assert.match(html,/href="\/app\/forms"/);
+ assert.ok(!html.includes('href="javascript:'));
+ assert.ok(html.includes("&lt;script&gt;alert(1)&lt;/script&gt;"));
 });
