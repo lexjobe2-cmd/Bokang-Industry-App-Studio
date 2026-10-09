@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePersistentState } from "@bokang/persistence";
 import { ShieldAlert, Wrench, ClipboardCheck, CheckCircle2, FileCheck2 } from "lucide-react";
-import {SignatureCapture} from "./SignatureCapture";
+import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {type SignatureEvidence,isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import {
   MOVE_TRACK_KEYS, starterFleet, dateIsCurrent,
@@ -120,7 +120,7 @@ export function FleetReleaseWorkspace(){
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><FileCheck2 size={19}/> 3 · Supervisor review</h3>
        <label style={{display:"grid",gap:6,fontSize:12,marginBottom:12}}>Approving supervisor<input style={input} value={approver} onChange={e=>setApprover(e.target.value)} placeholder="Independent supervisor"/></label>
-       <SignatureCapture compact value={releaseSignature} onChange={setReleaseSignature}
+       <SignatureApprovalTray compact label="Review evidence & sign release" value={releaseSignature} onChange={setReleaseSignature}
         defaultSignerName={approver} scope={"Local fleet release review "+(vehicle?.fleetNo??"")} role="Supervisor" intent="review"/>
        <div style={{padding:11,borderRadius:10,background:"#f8fafc",fontSize:12}}>
         <strong>{assessment?.allowed?"Ready for simulated release":"Release blocked"}</strong>
