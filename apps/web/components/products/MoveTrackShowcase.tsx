@@ -5,6 +5,8 @@ import { usePersistentState } from "@bokang/persistence";
 import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
 import { LocalWorkspacePanel } from "./LocalWorkspacePanel";
+import {MoveTrackWorkspaceNav,type MoveTrackView} from "./MoveTrackWorkspaceNav";
+import {MoveTrackHelpCenter} from "./MoveTrackHelpCenter";
 import { UserParticipationAnalytics } from "./UserParticipationAnalytics";
 import { PaperToDigitalWorkspace } from "./PaperToDigitalWorkspace";
 import { MeetingRegisterWorkspace } from "./MeetingRegisterWorkspace";
@@ -35,7 +37,7 @@ const starterJobs:Job[]=[
   {id:"MT-602",client:"Northside Pharmacy",type:"Local delivery",from:"Gaborone",to:"Tlokweng",driver:"Unassigned",state:"Scheduled"},
 ];
 
-type MoveTrackView = "control"|"fleet"|"drivers"|"sites"|"assign"|"jobs"|"analytics"|"forms"|"meetings"|"paper"|"release"|"local-data";
+
 
 export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrackView}={}){
   const [jobs,setJobs]=usePersistentState<Job[]>("bokang-studio.move-track.jobs.v1",starterJobs);
@@ -164,11 +166,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
   }
 
   return <section style={{marginTop:28,display:"grid",gap:18}}>
-    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-      {([
-        ["control","Fleet control"],["fleet","Fleet"],["drivers","Drivers"],["sites","Site policies"],["assign","Assign vehicle"],["jobs","Jobs"],["analytics","Analytics"],["meetings","Meeting registers"],["paper","Paper → digital OCR"],["forms","SHE forms"],["release","Repair & release"],["local-data","Local data"]
-      ] as const).map(([key,label])=><button key={key} onClick={()=>setView(key)} style={{border:"1px solid #bfdbfe",background:view===key?"#1d4ed8":"#fff",color:view===key?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{label}</button>)}
-    </div>
+    <MoveTrackWorkspaceNav view={view} onChange={setView}/>
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
 
@@ -326,6 +324,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
     {view==="paper"?<PaperToDigitalWorkspace />:null}
     {view==="release"?<FleetReleaseWorkspace />:null}
     {view==="local-data"?<LocalWorkspacePanel />:null}
+    {view==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}
 
     {view==="analytics"?<div style={{display:"grid",gap:15}}><UserParticipationAnalytics/><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
       {[
