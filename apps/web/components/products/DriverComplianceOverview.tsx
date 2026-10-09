@@ -1,12 +1,10 @@
 "use client";
 import {useMemo,useState} from "react";
 import {DesktopModal} from "./DesktopModal";
-import {buildSupervisorRenewalActions,complianceExportFilename,driverComplianceCsv,supervisorActionsCsv} from "../../lib/driver-compliance-export";
+import {buildSupervisorRenewalActions,complianceExportFilename,driverComplianceCsv,supervisorActionsCsv,type SupervisorActionPriority} from "../../lib/driver-compliance-export";
 import type {PersonRecord} from "@bokang/domain-data/custom-assurance";
 import type {FleetAssignment,FleetDriver,FleetSitePolicy} from "../../lib/move-track";
 import {buildDriverComplianceSummary,missingEvidenceLabels,type DriverComplianceRow} from "../../lib/driver-compliance";
-import {buildSupervisorRenewalActions,complianceSummaryCsv,supervisorActionsCsv,supervisorPriorityLabels,type SupervisorPriority} from "../../lib/driver-compliance-report";
-import {DesktopModal} from "./DesktopModal";
 import {credentialLabels} from "../../lib/driver-competency";
 
 type Filter="all"|"blocked"|"due"|"evidence"|"ready";
@@ -36,8 +34,7 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
  const [actionsOpen,setActionsOpen]=useState(false);
  const [exportError,setExportError]=useState("");
  const [page,setPage]=useState(1);
- const [actionsOpen,setActionsOpen]=useState(false);
- const [actionFilter,setActionFilter]=useState<SupervisorPriority|"all">("all");
+ const [actionFilter,setActionFilter]=useState<SupervisorActionPriority|"all">("all");
  const [actionPage,setActionPage]=useState(1);
  const selectedSite=siteOptions.includes(site)?site:siteOptions[0]??"";
  const summary=useMemo(()=>buildDriverComplianceSummary({drivers,assignments,directory,orgId,site:selectedSite,policies}),[drivers,assignments,directory,orgId,selectedSite,policies]);
@@ -56,19 +53,10 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
    setExportError("The export could not be started. Check browser download permissions and try again.");
   }
  }
- const actions=useMemo(()=>buildSupervisorRenewalActions(summary,drivers,policies),[summary,drivers,policies]);
- const filteredActions=actionFilter==="all"?actions:actions.filter(action=>action.priority===actionFilter);
+ const filteredActions=actionFilter==="all"?supervisorActions:supervisorActions.filter(action=>action.priority===actionFilter);
  const actionPages=Math.max(1,Math.ceil(filteredActions.length/10));
  const currentActionPage=Math.min(actionPage,actionPages);
  const visibleActions=filteredActions.slice((currentActionPage-1)*10,currentActionPage*10);
- function downloadCsv(contents:string,kind:"compliance"|"renewals"){
-  const siteSlug=(selectedSite.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,45)||"all-sites");
-  const filename="movetrack-"+kind+"-"+siteSlug+"-"+new Date().toISOString().slice(0,10)+".csv";
-  const objectUrl=URL.createObjectURL(new Blob([contents],{type:"text/csv;charset=utf-8"}));
-  const anchor=document.createElement("a");
-  anchor.href=objectUrl;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();
-  window.setTimeout(()=>URL.revokeObjectURL(objectUrl),1500);
- }
  const rows=summary.rows.filter(row=>{
   if(query.trim()&&!([row.id,row.name,row.driverStatus,...row.blockingReasons].join(" ").toLowerCase().includes(query.trim().toLowerCase())))return false;
   if(filter==="blocked")return row.state==="blocked";
@@ -119,68 +107,44 @@ export function DriverComplianceOverview({drivers,assignments,directory,orgId,si
    {exportError?<p role="alert" style={{color:"#b42318",fontSize:12,margin:0}}>{exportError}</p>:null}
   </div>
   <DesktopModal title={"Supervisor renewal actions · "+(selectedSite||"Company")} open={actionsOpen} onClose={()=>setActionsOpen(false)}>
-   <div style={{display:"grid",gap:12}}>
-    <p style={{fontSize:12,color:"#475569",margin:0}}>Actions are generated from recorded site requirements, credential dates and PDF links. Immediate items require supervisor follow-up, not an automatic status change. This preview is read-only.</p>
-    <div style={{display:"flex",flexWrap:"wrap",gap:8,fontSize:12}}>
+   <div aria-label="Supervisor renewal action list" style={{display:"grid",gap:12}}>
+    <p style={{fontSize:12,color:"#475569",margin:0,lineHeight:1.6}}>Supervisor follow-ups based on the selected site's requirements, recorded credentials and PDF links. Immediate actions require resolution before dispatch. Other items are reminders, not approvals. No notifications are sent.</p>
+    <div style={{display:"flex",flexWrap:"wrap",gap:10,fontSize:12}}>
      <strong style={{color:"#b42318"}}>{supervisorActions.filter(a=>a.priority==="Immediate").length} immediate</strong>
      <strong style={{color:"#9a670a"}}>{supervisorActions.filter(a=>a.priority==="Due within 30 days").length} due soon</strong>
      <strong style={{color:"#475569"}}>{supervisorActions.filter(a=>a.priority==="Evidence review").length} evidence links</strong>
+     <strong style={{color:"#475569"}}>{supervisorActions.filter(a=>a.priority==="Record review").length} record review</strong>
     </div>
-    {supervisorActions.length?supervisorActions.map((action,index)=><article key={action.driverId+":"+action.credential+":"+action.issue+":"+index} style={{display:"grid",gap:6,padding:12,border:"1px solid "+border,borderRadius:11}}>
-     <div style={{display:"flex",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
-      <strong style={{fontSize:13}}>{action.driverName}</strong>
-      <strong style={{fontSize:11,color:action.priority==="Immediate"?"#b42318":action.priority==="Due within 30 days"?"#9a670a":"#475569"}}>{action.priority}</strong>
-     </div>
-     <span style={{fontSize:12}}>{action.issue} · {action.issue==="Inactive or missing workforce identity"?"Workforce directory":credentialLabels[action.credential]}</span>
-     {action.expiry?<small style={{color:"#475569"}}>Expiry: {action.expiry}{action.daysRemaining!==null?" · "+action.daysRemaining+" days remaining":""}</small>:null}
-     <small style={{color:"#475569"}}>{action.action}</small>
-     <button type="button" onClick={()=>{setActionsOpen(false);onManageDriver(action.driverId);}} style={{minHeight:44,justifySelf:"start",padding:"8px 12px",border:"1px solid #b4cde9",borderRadius:9,background:"#fff",fontWeight:800,cursor:"pointer"}}>Open driver →</button>
-    </article>):<p style={{fontSize:12,color:"#047857"}}>No credential renewal or evidence-link actions were identified for this site.</p>}
-    <button type="button" onClick={()=>setActionsOpen(false)} style={{minHeight:44,justifySelf:"start",padding:"8px 12px",border:"1px solid #b4cde9",borderRadius:9,background:"#fff",fontWeight:800}}>Close action list</button>
-   </div>
-  </DesktopModal>
-  <div aria-label="Driver competency report actions" style={{display:"flex",gap:9,flexWrap:"wrap",alignItems:"center"}}>
-   <button type="button" onClick={()=>downloadCsv(complianceSummaryCsv(summary,drivers,new Date().toISOString()),"compliance")}
-     style={{minHeight:44,padding:"9px 12px",background:"#173764",color:"#fff",border:0,borderRadius:10,fontSize:12,fontWeight:850,cursor:"pointer"}}>Export driver compliance CSV</button>
-   <button type="button" onClick={()=>downloadCsv(supervisorActionsCsv(actions,new Date().toISOString()),"renewals")}
-     style={{minHeight:44,padding:"9px 12px",background:"#fff",color:"#174272",border:"1px solid #9ab8da",borderRadius:10,fontSize:12,fontWeight:850,cursor:"pointer"}}>Export supervisor actions CSV</button>
-   <button type="button" aria-haspopup="dialog" aria-expanded={actionsOpen} onClick={()=>setActionsOpen(true)}
-     style={{minHeight:44,padding:"9px 12px",background:"#fff",color:"#174272",border:"1px solid #9ab8da",borderRadius:10,fontSize:12,fontWeight:850,cursor:"pointer"}}>Renewal action list ({actions.length})</button>
-  </div>
-  <small style={{fontSize:11,color:"#64748b"}}>Exports include all drivers for the selected site, not just the current search results or page. Personal driver data stays on this device until you download and share it; protect exported files. No certificates, images or signature drawings are included.</small>
-  <DesktopModal title={"Supervisor renewal actions · "+selectedSite} open={actionsOpen} onClose={()=>setActionsOpen(false)}>
-   <div aria-label="Supervisor renewal action list" style={{display:"grid",gap:12,padding:"3px 0"}}>
-    <p style={{fontSize:12,color:"#64748b",margin:0,lineHeight:1.6}}>Suggested follow-ups based on local competency records. The Before dispatch category is a blocking issue for the chosen site; other items are renewal or documentation reminders. This list does not authorize field work or send notifications.</p>
-    <div style={{display:"flex",gap:9,alignItems:"end",justifyContent:"space-between",flexWrap:"wrap"}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"end",flexWrap:"wrap",gap:10}}>
      <label style={{display:"grid",gap:5,fontSize:12,fontWeight:800}}>Action priority
-      <select aria-label="Filter supervisor action priorities" value={actionFilter} onChange={event=>{setActionFilter(event.target.value as SupervisorPriority|"all");setActionPage(1);}} style={{minHeight:44,border:"1px solid #cbd5e1",borderRadius:9,padding:9,background:"#fff"}}>
+      <select aria-label="Filter supervisor action priorities" value={actionFilter} onChange={event=>{setActionFilter(event.target.value as SupervisorActionPriority|"all");setActionPage(1);}} style={{minHeight:44,border:"1px solid #cbd5e1",borderRadius:9,padding:9,background:"#fff"}}>
        <option value="all">All follow-ups</option>
-       <option value="stop">Before dispatch</option>
-       <option value="renew">Renew within 30 days</option>
-       <option value="evidence">Attach evidence</option>
-       <option value="review">Review record</option>
+       <option value="Immediate">Before dispatch</option>
+       <option value="Due within 30 days">Renew within 30 days</option>
+       <option value="Evidence review">Attach evidence</option>
+       <option value="Record review">Review optional record</option>
       </select>
      </label>
-     <span role="status" style={{fontSize:12,color:"#475569"}}>{filteredActions.length} matching of {actions.length} actions</span>
+     <span role="status" style={{fontSize:12,color:"#475569"}}>{filteredActions.length} of {supervisorActions.length} actions</span>
     </div>
     <div style={{display:"grid",gap:9}}>
-     {visibleActions.map(action=><article key={action.id} style={{display:"grid",gap:7,background:"#fff",border:"1px solid #dbe5ef",borderRadius:11,padding:12,fontSize:12}}>
+     {visibleActions.map((action,index)=><article key={action.driverId+":"+action.credential+":"+action.issue+":"+index} style={{display:"grid",gap:7,background:"#fff",border:"1px solid "+border,borderRadius:11,padding:12,fontSize:12}}>
       <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
-       <strong>{action.driverName} · {action.credential==="workforce"?"Workforce identity":action.credential==="licence"?"Driver licence":action.credential==="siteAuthorisation"?"Site driving authorisation":action.credential==="openPitPermit"?"Site/open-pit permit":action.credential==="firstAid"?"First-aid training":"Defensive driving"}</strong>
-       <strong style={{color:action.priority==="stop"?"#b42318":action.priority==="renew"?"#9a670a":"#475569"}}>{supervisorPriorityLabels[action.priority]}</strong>
+       <strong>{action.driverName} · {action.issue==="Inactive or missing workforce identity"?"Workforce identity":credentialLabels[action.credential]}</strong>
+       <strong style={{color:action.priority==="Immediate"?"#b42318":action.priority==="Due within 30 days"?"#9a670a":"#475569"}}>{action.priority}</strong>
       </div>
-      <span>{action.issue}{action.dueDate?" · "+action.dueDate:""}</span>
-      <span style={{color:"#475569"}}>{action.nextStep}</span>
+      <span>{action.issue}{action.expiry?" · "+action.expiry:""}</span>
+      <span style={{color:"#475569"}}>{action.action}</span>
       <button type="button" style={{minHeight:44,justifySelf:"start",border:"1px solid #b4cde9",borderRadius:9,background:"#fff",padding:"8px 11px",color:"#1d4ed8",fontWeight:850}} onClick={()=>{setActionsOpen(false);onManageDriver(action.driverId);}}>Manage driver's record →</button>
      </article>)}
-     {!filteredActions.length?<p style={{color:"#047857",fontSize:12}}>No action items match this priority for the selected site.</p>:null}
+     {!filteredActions.length?<p style={{fontSize:12,color:"#047857"}}>No action items match this priority for the selected site.</p>:null}
     </div>
-    {actionPages>1?<div aria-label="Supervisor action pages" style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:9,flexWrap:"wrap"}}>
-     <button type="button" disabled={currentActionPage<=1} onClick={()=>setActionPage(p=>Math.max(1,p-1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid #cbd5e1",background:"#fff",borderRadius:9}}>← Previous</button>
+    {actionPages>1?<div aria-label="Supervisor action pages" style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:9}}>
+     <button type="button" disabled={currentActionPage<=1} onClick={()=>setActionPage(p=>Math.max(1,p-1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid #cbd5e1",borderRadius:9,background:"#fff"}}>← Previous</button>
      <small>Page {currentActionPage} of {actionPages}</small>
-     <button type="button" disabled={currentActionPage>=actionPages} onClick={()=>setActionPage(p=>Math.min(actionPages,p+1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid #cbd5e1",background:"#fff",borderRadius:9}}>Next →</button>
+     <button type="button" disabled={currentActionPage>=actionPages} onClick={()=>setActionPage(p=>Math.min(actionPages,p+1))} style={{minHeight:44,padding:"8px 12px",border:"1px solid #cbd5e1",borderRadius:9,background:"#fff"}}>Next →</button>
     </div>:null}
-    <button type="button" onClick={()=>setActionsOpen(false)} style={{minHeight:44,justifySelf:"start",padding:"8px 14px",background:"#fff",border:"1px solid #94a3b8",borderRadius:9}}>Close action list</button>
+    <button type="button" onClick={()=>setActionsOpen(false)} style={{minHeight:44,justifySelf:"start",padding:"8px 14px",border:"1px solid #94a3b8",borderRadius:9,background:"#fff"}}>Close action list</button>
    </div>
   </DesktopModal>
   <div style={{display:"flex",gap:10,alignItems:"end",justifyContent:"space-between",flexWrap:"wrap"}}>
