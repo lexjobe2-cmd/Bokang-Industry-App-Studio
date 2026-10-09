@@ -1,6 +1,6 @@
 "use client";
 import type {FleetDriver} from "../../lib/move-track";
-import {credentialKeys,credentialLabels,credentialDateStatus,type DriverCredentialExpiry,type DriverCredentialKey} from "../../lib/driver-competency";
+import {credentialKeys,credentialLabels,credentialDateStatus,credentialEnabled,type DriverCredentialExpiry,type DriverCredentialKey} from "../../lib/driver-competency";
 
 type Props={driver:FleetDriver;draft?:DriverCredentialExpiry;adminMode:boolean;onChange?:(key:DriverCredentialKey,value:string)=>void};
 const tones={missing:"#b42318",expired:"#b42318",due:"#9a670a",current:"#047857"} as const;
@@ -8,7 +8,7 @@ export function DriverCompetencyPanel({driver,draft,adminMode,onChange}:Props){
  return <section aria-label={"Competency and expiry dates for "+driver.name} style={{display:"grid",gap:10,marginTop:12,padding:11,background:"#f8fafc",border:"1px solid #dbe4ef",borderRadius:12}}>
   <div><strong style={{fontSize:12}}>Competency and expiry reminders</strong><p style={{fontSize:11,color:"#64748b",margin:"4px 0 0"}}>Red = expired/missing · Amber = due within 30 days · Green = recorded and current. Missing evidence blocks dispatch where required.</p></div>
   {credentialKeys.map(key=>{
-   const enabled=key==="licence"||Boolean(driver[key]);
+   const enabled=credentialEnabled(driver,key);
    const saved=driver.competencyExpiry?.[key]??"";
    const value=draft?.[key]??saved;
    const result=credentialDateStatus(saved);
