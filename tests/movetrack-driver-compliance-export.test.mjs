@@ -123,3 +123,31 @@ test("Admin controls export full unfiltered current site snapshots and a read-on
  assert.match(ui,/DesktopModal title=\{/);
  assert.match(main,/view==="admin"&&adminArea==="overview"\?<DriverComplianceOverview/);
 });
+
+test("optional expired or missing training is a record-review follow-up, not a dispatch blocker",()=>{
+ const driver={...base,id:"DRV-OPTIONAL",competencyExpiry:{...dates,defensiveDriving:"2026-10-08"}};
+ const office=[{id:"office",name:"Office",requireOpenPitPermit:false,requireFirstAid:false,
+  requireDefensiveDriving:false,additionalCriticalChecks:[]}];
+ const summaryOffice=summary([driver],"Office",office);
+ assert.equal(summaryOffice.counts.ready,1);
+ const actionList=buildSupervisorRenewalActions({summary:summaryOffice,drivers:[driver],policies:office,now});
+ const option=actionList.find(a=>a.credential==="defensiveDriving"&&a.issue==="Expired qualification");
+ assert.equal(option?.priority,"Record review");
+ assert.ok(!actionList.some(a=>a.credential==="defensiveDriving"&&a.priority==="Immediate"));
+ const missing={...driver,competencyExpiry:{...driver.competencyExpiry,defensiveDriving:""}};
+ const missingActions=actions([missing],"Office",office);
+ assert.ok(missingActions.some(a=>a.credential==="defensiveDriving"&&a.priority==="Record review"&&a.issue==="Optional recorded expiry date missing"));
+});
+
+test("Admin reporting consolidates to one modal, one export panel and paginates supervisor actions",()=>{
+ const ui=readFileSync(new URL("../apps/web/components/products/DriverComplianceOverview.tsx",import.meta.url),"utf8");
+ assert.equal((ui.match(/const \[actionsOpen,setActionsOpen\]/g)||[]).length,1);
+ assert.equal((ui.match(/<DesktopModal title=\{"Supervisor renewal actions/g)||[]).length,1);
+ assert.equal((ui.match(/aria-label="Admin competency reporting"/g)||[]).length,1);
+ assert.match(ui,/Filter supervisor action priorities/);
+ assert.match(ui,/const visibleActions=filteredActions.slice/);
+ assert.match(ui,/const current=buildDriverComplianceSummary/);
+ assert.match(ui,/Download competency CSV/);
+ assert.match(ui,/Download renewal actions CSV/);
+ assert.match(ui,/No notifications are sent/);
+});
