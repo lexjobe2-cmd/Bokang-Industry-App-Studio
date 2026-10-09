@@ -58,7 +58,7 @@
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "typescript": "^5.9.3",
-    "@opennextjs/cloudflare": "1.20.9",
+    "@opennextjs/cloudflare": "1.20.8",
     "wrangler": "latest",
     "@types/papaparse": "^5.3.16"
   }
