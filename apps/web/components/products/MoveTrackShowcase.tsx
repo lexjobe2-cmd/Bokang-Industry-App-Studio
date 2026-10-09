@@ -761,11 +761,11 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 }
 
 function Field({label,children}:{label:string;children:React.ReactNode}){return <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>{label}{children}</label>;}
-const panel:React.CSSProperties={background:"#fff",border:"1px solid #dbeafe",borderRadius:20,padding:17};
+const panel:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:20,padding:17,color:"var(--mt-ink,#172b46)"};
 const formGrid:React.CSSProperties={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10};
-const input:React.CSSProperties={border:"1px solid #d0d5dd",borderRadius:10,padding:10,font:"inherit",background:"#fff"};
+const input:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:10,padding:10,font:"inherit",background:"var(--mt-surface-soft,#f8fafc)",color:"var(--mt-ink,#172b46)"};
 const primaryButton:React.CSSProperties={marginTop:14,border:0,background:"#1d4ed8",color:"#fff",borderRadius:11,padding:"10px 14px",fontWeight:900};
-const secondaryButton:React.CSSProperties={border:"1px solid #d0d5dd",background:"#fff",borderRadius:10,padding:"8px 10px",fontWeight:800,fontSize:11};
-const checkRow:React.CSSProperties={display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",background:"#f8fafc",border:"1px solid #e5e7eb",borderRadius:10,padding:"9px 10px",fontSize:11,fontWeight:750};
+const secondaryButton:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",background:"var(--mt-surface,#fff)",borderRadius:10,padding:"8px 10px",fontWeight:800,fontSize:11,color:"var(--mt-ink,#172b46)"};
+const checkRow:React.CSSProperties={display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",background:"var(--mt-surface-soft,#f8fafc)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:10,padding:"9px 10px",fontSize:11,fontWeight:750,color:"var(--mt-ink,#172b46)"};
 const fieldInline:React.CSSProperties={display:"grid",gridTemplateColumns:"minmax(0,1fr)",gap:6,alignItems:"center",fontSize:11,fontWeight:750};
 const primaryLink:React.CSSProperties={display:"inline-flex",alignItems:"center",justifyContent:"center",background:"#1d4ed8",color:"#fff",borderRadius:10,padding:"8px 11px",fontWeight:850,fontSize:11,textDecoration:"none"};
