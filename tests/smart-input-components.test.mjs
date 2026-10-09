@@ -42,14 +42,17 @@ test('asset picker searches fleet and retains selected asset identity',()=>{
 });
 
 const {MoveTrackAppShellNav}=load('../apps/web/components/products/MoveTrackAppShellNav.tsx');
-test('mobile dock exposes five requested destinations with Fleet active and a separate hamburger',()=>{
+test('mobile dock exposes six destinations including Admin with Fleet active and a separate hamburger',()=>{
  const html=renderToStaticMarkup(React.createElement(MoveTrackAppShellNav,{activeView:'fleet',atHome:false,onHome:noop,onSearch:noop,onNavigate:noop,onCompany:noop,onWorkflow:noop,theme:'light',onToggleTheme:noop}));
  const dock=html.match(/<nav[^>]*aria-label="MoveTrack mobile primary navigation"[^>]*>(.*?)<\/nav>/)?.[1];
- assert.ok(dock);assert.equal((dock.match(/<button/g)||[]).length,5);
- for(const label of ['Home','Fleet','Forms','Analytics','Profile'])assert.ok(dock.includes('>'+label+'</span>'));
+ assert.ok(dock);assert.equal((dock.match(/<button/g)||[]).length,6);
+ for(const label of ['Home','Fleet','Forms','Analytics','Profile','Admin'])assert.ok(dock.includes('>'+label+'</span>'));
  assert.match(dock,/aria-current="page"/);assert.match(html,/aria-label="Open navigation menu"/);
  const profile=renderToStaticMarkup(React.createElement(MoveTrackAppShellNav,{activeView:'profile',atHome:false,onHome:noop,onSearch:noop,onNavigate:noop,onCompany:noop,onWorkflow:noop,theme:'light',onToggleTheme:noop}));
  assert.match(profile,/aria-current="page"[^>]*>[\s\S]*?<span>Profile<\/span>/);
+  const admin=renderToStaticMarkup(React.createElement(MoveTrackAppShellNav,{activeView:'admin',atHome:false,onHome:noop,onSearch:noop,onNavigate:noop,onCompany:noop,onWorkflow:noop,theme:'dark',onToggleTheme:noop}));
+  assert.match(admin,/aria-label="Open Admin test workspace"/);
+  assert.match(admin,/aria-current="page"[^>]*>[\\s\\S]*?<span>Admin<\\/span>/);
 });
 
 test('text assistance uses an explicit local-analysis button and cannot auto-apply on render',()=>{
