@@ -14,6 +14,7 @@ import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
+import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
 import {buildJraDocument,buildBlankJraDocument} from "../../lib/form-exports";
 
 const shell:React.CSSProperties={background:"#fff",border:"1px solid #dde5ee",borderRadius:16,padding:17};
@@ -46,13 +47,11 @@ export function JraWorkspace(){
  const [editing,setEditing]=usePersistentState<string|null>("bokang-studio.move-track.jra.editing.v1",null);
  const [current,setCurrent]=usePersistentState<JobRiskAssessment|null>("bokang-studio.move-track.jra.working.v1",null);
  const [page,setPage]=usePersistentState<"job"|"team"|"risks"|"review">("bokang-studio.move-track.jra.tab.v1","job");
- const [peopleSearch,setPeopleSearch]=useState("");
  const [message,setMessage]=useState("");
  const org=orgs.find(o=>o.id===(current?.orgId??selectedOrg))??orgs[0]??demoOrganization;
  const job=current??blankPlaceholder;
  const assessment=current?assessJra(current):null;
  const persons=directory.filter(p=>p.orgId===org.id&&p.active);
- const filtered=persons.filter(p=>[p.displayName,p.jobTitle,p.department,p.employeeNumber,p.email].some(v=>(v??"").toLowerCase().includes(peopleSearch.toLowerCase())));
  function startSample(){const now=new Date().toISOString();setCurrent(sampleBrakeMaintenanceJra(org,persons,now));setEditing(null);setPage("team");setMessage("Example work package loaded. Explore the team roster, task hazards and mitigation measures; replace the fictional details as needed.");}
  function start(){
   const now=new Date().toISOString();setCurrent(blankJra(org,now));setEditing(null);setPage("job");setMessage("JRA draft started. Choose a team, add job steps and evaluate each hazard.");
@@ -155,7 +154,7 @@ export function JraWorkspace(){
       <label style={label}>Type of work<select style={input} value={job.jobType} onChange={e=>patch({jobType:e.target.value})}>{dictionary.jobTypes.map(t=><option key={t}>{t}</option>)}</select></label>
       <label style={label}>Site<select style={input} value={job.siteId} onChange={e=>patch({siteId:e.target.value})}>{org.siteIds.map(x=><option key={x}>{x}</option>)}</select></label>
       <label style={label}>Work area / asset<input style={input} value={job.location} onChange={e=>patch({location:e.target.value})} placeholder="Workshop bay 4"/></label>
-      <label style={label}>Supervisor<select style={input} value={job.supervisorId} onChange={e=>patch({supervisorId:e.target.value})}><option value="">Choose supervisor</option>{persons.map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}</select></label>
+      <OrganizationPeopleComboBox people={persons} orgId={org.id} label="JRA supervisor" value={job.supervisorId?[job.supervisorId]:[]} onChange={ids=>patch({supervisorId:ids[0]??""})}/>
       <label style={label}>Start date<input type="date" style={input} value={job.startDate} onChange={e=>patch({startDate:e.target.value})}/></label>
       <label style={label}>End date<input type="date" style={input} value={job.endDate} onChange={e=>patch({endDate:e.target.value})}/></label>
      </div>
@@ -170,15 +169,14 @@ export function JraWorkspace(){
       <div><h3 style={{margin:"0 0 4px"}}>Personnel involved in this work</h3><p style={{fontSize:12,color:"#667085",margin:0}}>Choose workers, supervisors and contractors from your local organization directory.</p></div>
       <Badge>{job.participants.length} selected</Badge>
      </div>
-     <div style={shell}><div style={{display:"flex",gap:8,alignItems:"center",marginBottom:13}}><Search size={17} color="#64748b"/><input style={input} value={peopleSearch} onChange={e=>setPeopleSearch(e.target.value)} placeholder="Search people, employee ID, department or role"/></div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(215px,1fr))",gap:9,maxHeight:340,overflowY:"auto"}}>
-       {filtered.map(p=><button key={p.id} aria-pressed={job.participants.some(x=>x.personId===p.id)} onClick={()=>toggleParticipant(p)} style={{...shell,textAlign:"left",cursor:"pointer",padding:12,background:job.participants.some(x=>x.personId===p.id)?"#eff6ff":"#fff",borderColor:job.participants.some(x=>x.personId===p.id)?"#60a5fa":"#e2e8f0"}}>
-        <div style={{display:"flex",justifyContent:"space-between",gap:6}}><strong style={{fontSize:13}}>{p.displayName}</strong>{job.participants.some(x=>x.personId===p.id)?<CheckCircle2 size={17} color="#2563eb"/>:<Plus size={17} color="#64748b"/>}</div>
-        <div style={{fontSize:11,color:"#667085",marginTop:5}}>{p.jobTitle} · {p.department}</div><div style={{fontSize:10,color:"#94a3b8",marginTop:3}}>Employee {p.employeeNumber??"Local"} · {p.source==="MICROSOFT_365"?"Microsoft Graph":"Demo"}</div>
-       </button>)}
+     <div style={shell}>
+       <OrganizationPeopleComboBox people={persons} orgId={org.id} label="Workgroup / participants" multiple
+        value={job.participants.map(p=>p.personId)} onChange={ids=>patch({participants:ids.map(id=>job.participants.find(p=>p.personId===id)??{
+         personId:id,nameSnapshot:persons.find(p=>p.id===id)?.displayName??id,role:"Participant",acknowledged:false,
+         manual:persons.find(p=>p.id===id)?.source==="MANUAL"
+        })})} placeholder="Find workers by name, email, UPN, department or city"/>
       </div>
-     </div>
-     {job.participants.length?<div style={shell}><h3 style={{marginTop:0}}>Assigned team · acknowledgement roster</h3>
+      {job.participants.length?<div style={shell}><h3 style={{marginTop:0}}>Assigned team · acknowledgement roster</h3>
       <div style={{display:"grid",gap:8}}>{job.participants.map(p=><div key={p.personId} style={{padding:11,border:"1px solid #e2e8f0",borderRadius:11,display:"flex",gap:11,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
        <div><strong style={{fontSize:12}}>{p.nameSnapshot}</strong><div style={{fontSize:10,color:"#667085"}}>Directory ID {p.personId}</div></div>
        <select aria-label={"Role for "+p.nameSnapshot} style={{...input,width:"auto",minWidth:135}} value={p.role} onChange={e=>patch({participants:job.participants.map(x=>x.personId===p.personId?{...x,role:e.target.value}:x)})}>{dictionary.jobRoles.map(role=><option key={role}>{role}</option>)}</select>
@@ -245,7 +243,9 @@ export function JraWorkspace(){
       </div>
       <div style={shell}><h3 style={{marginTop:0}}>Approver / review register</h3>
        <p style={{fontSize:12,color:"#667085"}}>Choose a different person from the job supervisor for independent review. These approvals are simulated; there are no real electronic signatures.</p>
-       <label style={label}>Independent reviewer<select style={input} value={job.reviewerId} onChange={e=>patch({reviewerId:e.target.value,reviewSignature:undefined})}><option value="">Choose reviewer</option>{persons.filter(p=>p.id!==job.supervisorId).map(p=><option key={p.id} value={p.id}>{p.displayName} · {p.jobTitle}</option>)}</select></label>
+       <OrganizationPeopleComboBox people={persons.filter(p=>p.id!==job.supervisorId)} orgId={org.id}
+         label="Independent reviewer" value={job.reviewerId?[job.reviewerId]:[]}
+         onChange={ids=>patch({reviewerId:ids[0]??"",reviewSignature:undefined})}/>
        <label style={{...label,marginTop:13}}>Review notes<textarea style={{...input,minHeight:90}} value={job.reviewerNote} onChange={e=>patch({reviewerNote:e.target.value})} placeholder="Required amendments, outstanding controls and approval conditions"/></label>
        {job.reviewerId?<SignatureApprovalTray label="Open independent reviewer sign-off" value={job.reviewSignature??null} intent="review" role="Independent reviewer"
         scope={job.reference||job.title||"JRA independent review"} signerPersonId={job.reviewerId}
