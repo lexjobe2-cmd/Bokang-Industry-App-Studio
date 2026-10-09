@@ -18,6 +18,7 @@ import { ASSURANCE_STORAGE,demoPeople,demoOrganization,makeCustomTemplate,type C
 import {additionalAssuranceRecipes,workflowLinks} from "@bokang/domain-data/expanded-assurance";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY,ACTIVE_JOB_REFERENCE_KEY,recipeTemplateId} from "./OperationalGraphPanel";
+import {fieldQuickChoices,personRegisterRow,reusableCrewAnswers} from "@bokang/domain-data/form-assist";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
@@ -55,6 +56,7 @@ export function AssuranceFormsWorkspace(){
  const [siteId,setSiteId]=useState("Jwaneng mine · demo profile");
  const [assetId,setAssetId]=useState("");
  const [notice,setNotice]=useState("");
+ const [fastEntryOpen,setFastEntryOpen]=useState(true);
  const recipeTemplates=useMemo(()=>additionalAssuranceRecipes.map(w=>makeCustomTemplate({
   id:recipeTemplateId(org.id,w.id),organization:org,title:w.title,description:w.trigger,
   category:w.category,sections:w.sections.map(section=>({...section,fields:[...section.fields]})),
@@ -80,6 +82,19 @@ export function AssuranceFormsWorkspace(){
    return (snapshot.organizationId===org.id||(!snapshot.organizationId&&org.id===demoOrganization.id))&&(!activeId||s.templateId===activeId);
  }),[submissions,activeId,org.id]);
  function openTemplate(id:string){setActiveId(id);setSectionIndex(0);setNotice("");setTab("library");}
+ const priorRecords=template?submissions.filter(record=>record.templateId===template.id&&
+  ((record.templateSnapshot as typeof record.templateSnapshot&{organizationId?:string}).organizationId===org.id
+   ||(!("organizationId" in record.templateSnapshot)&&org.id===demoOrganization.id))):[];
+ function reusePreviousCrew(){
+  if(!template||!priorRecords.length)return;
+  const selected=priorRecords.slice().sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt))[0]!;
+  const updates=reusableCrewAnswers(template,selected.answers,new Set(visiblePeople.filter(p=>p.active).map(p=>p.id)));
+  if(!Object.keys(updates).length){setNotice("No reusable directory participants were found in the previous record.");return;}
+  const sigs=Object.values(answers).some(isSignatureEvidence);
+  if(sigs&&!window.confirm("Reusing crew changes this checklist and clears any existing local signatures. Continue?"))return;
+  setDrafts(old=>({...old,[template.id]:{...old[template.id],...updates,...Object.fromEntries(Object.entries(old[template.id]??{}).filter(([,v])=>isSignatureEvidence(v)).map(([k])=>[k,undefined]))}}));
+  setNotice("Previous crew selections inserted. Inspect the current team and re-confirm all safety checks; no hazard ratings or approvals were copied.");
+ }
  function setAnswer(id:string,value:FormAnswer){
   if(!activeId)return;
   const previous=drafts[activeId]??{};
@@ -186,6 +201,12 @@ export function AssuranceFormsWorkspace(){
          <DocumentDownloadActions document={buildFormDocument({template,mode:"draft",answers,company:org,people:visiblePeople,jobId:jobReference,site:siteId})} compact/>
        </div>
       </div>
+      <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",marginTop:12,padding:"10px 12px",background:"#f0f7ff",border:"1px solid #bfdbfe",borderRadius:11}}>
+        <strong style={{fontSize:12,flex:"1 1 190px"}}>Faster form entry</strong>
+        <button type="button" style={{...button,padding:"8px 10px",minHeight:37,fontSize:11}} onClick={()=>setFastEntryOpen(v=>!v)} aria-pressed={fastEntryOpen}>{fastEntryOpen?"Hide":"Show"} quick answers</button>
+        {priorRecords.length?<button type="button" style={{...button,padding:"8px 10px",minHeight:37,fontSize:11}} onClick={reusePreviousCrew}>Reuse previous crew only</button>:null}
+        <span style={{fontSize:11,color:"#475569"}}>Suggestions are optional. Critical controls, risk scores, sign-offs and permits are never pre-checked.</span>
+      </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:8,marginTop:15}}>
         <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Operating site
           <select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}>{org.siteIds.map(site=><option key={site}>{site}</option>)}</select>
@@ -215,7 +236,7 @@ export function AssuranceFormsWorkspace(){
         <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
         {activeSection.description?<p style={{color:"#667085"}}>{activeSection.description}</p>:null}
         <div style={{display:"grid",gap:17,marginTop:22}}>
-          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={signatureScopePrefix} reviewerPersonId={f.signerFieldId&&typeof answers[f.signerFieldId]==="string"?answers[f.signerFieldId] as string:undefined}/>)}
+          {activeSection.fields.filter(f=>isVisible(f,answers)).map(f=><FieldInput key={f.id} field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={signatureScopePrefix} fastEntry={fastEntryOpen} reviewerPersonId={f.signerFieldId&&typeof answers[f.signerFieldId]==="string"?answers[f.signerFieldId] as string:undefined}/>)}
         </div>
       </motion.div>
     </AnimatePresence>
@@ -243,9 +264,11 @@ export function AssuranceFormsWorkspace(){
  </section>;
 }
 
-function FieldInput({field,value,onChange,people,scope,reviewerPersonId}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void;scope:string;reviewerPersonId?:string}){
+function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntry}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void;scope:string;reviewerPersonId?:string;fastEntry:boolean}){
  const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"#b42318"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"#b42318",background:"#fef2f2",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
  const fieldStyle:React.CSSProperties={display:"grid",gap:8};
+ const quickChoices=fastEntry&&!field.critical?fieldQuickChoices(field.label,field.type):[];
+ const quickButtons=quickChoices.length?<div style={{display:"flex",flexWrap:"wrap",gap:6}} aria-label={"Suggested answers for "+field.label}>{quickChoices.map(choice=><button key={choice.value} type="button" aria-pressed={value===choice.value} style={{...button,minHeight:34,padding:"6px 10px",fontSize:11,borderColor:value===choice.value?"#2563eb":"#cbd5e1",background:value===choice.value?"#dbeafe":"#f8fafc"}} onClick={()=>onChange(choice.value)}>{choice.label}</button>)}</div>:null;
  if(field.type==="person"||field.type==="people"){
    const multiple=field.type==="people";
    const ids=multiple?(Array.isArray(value)?value as string[]:[]):typeof value==="string"&&value?[value]:[];
@@ -272,10 +295,17 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId}:{field:
  }
  if(field.type==="repeat"){
    const rows=Array.isArray(value)&&value.every(v=>typeof v==="object"&&!Array.isArray(v))?value as Record<string,string|number|boolean|null>[]:[];
+   const hasIdentityColumns=field.children?.some(child=>/name|employee|attendee|role|participant|department/i.test(child.label))??false;
    return <div style={{...fieldStyle,background:"#f8fafc",padding:13,borderRadius:13,border:"1px solid #e2e8f0"}}>{label}{rows.map((row,index)=><div key={index} style={{...tile,display:"grid",gap:9}}>
      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><strong style={{fontSize:12}}>Entry {index+1}</strong><button type="button" style={{...button,padding:7,minHeight:34}} aria-label={"Remove entry "+(index+1)} onClick={()=>onChange(rows.filter((_,i)=>i!==index))}><Trash2 size={15}/></button></div>
-     {field.children?.map(child=><label key={child.id} style={{...fieldStyle,fontSize:12}}>{child.label}<input type={child.type==="number"?"number":child.type==="date"?"date":"text"} value={String(row[child.id]??"")} onChange={e=>onChange(rows.map((r,i)=>i===index?{...r,[child.id]:child.type==="number"?Number(e.target.value):e.target.value}:r))} style={input}/></label>)}
-   </div>)}<button type="button" style={{...button,justifySelf:"start"}} onClick={()=>onChange([...rows,{}])}><Plus size={15} style={{display:"inline"}}/> Add attendee / step</button></div>;
+     {fastEntry&&hasIdentityColumns&&people.length?<label style={{...fieldStyle,fontSize:11,fontWeight:750,color:"#2563eb"}}>Fill attendee/worker details from directory
+       <select aria-label={"Choose directory member for entry "+(index+1)} defaultValue="" style={input}
+        onChange={e=>{const person=people.find(p=>p.id===e.target.value);if(!person)return;const data=personRegisterRow(field.children??[],person);onChange(rows.map((r,i)=>i===index?{...r,...data}:r));}}>
+        <option value="">Choose a person — optional</option>{people.filter(p=>p.active).map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}
+       </select>
+      </label>:null}
+     {field.children?.map(child=><label key={child.id} style={{...fieldStyle,fontSize:12}}>{child.label}<input list={"repeat-"+field.id+"-"+child.id} type={child.type==="number"?"number":child.type==="date"?"date":"text"} value={String(row[child.id]??"")} onChange={e=>onChange(rows.map((r,i)=>i===index?{...r,[child.id]:child.type==="number"?Number(e.target.value):e.target.value}:r))} style={input}/>{fastEntry&&fieldQuickChoices(child.label,child.type).length?<datalist id={"repeat-"+field.id+"-"+child.id}>{fieldQuickChoices(child.label,child.type).map(c=><option value={c.value} key={c.value}/>)}</datalist>:null}</label>)}
+   </div>)}<button type="button" style={{...button,justifySelf:"start"}} onClick={()=>onChange([...rows,{}])}><Plus size={15} style={{display:"inline"}}/> Add {/attend|people|register/i.test(field.label)?"attendee":"row"}</button></div>;
  }
  if(field.type==="multiselect"){
    const selected=Array.isArray(value)?value as string[]:[];
@@ -303,8 +333,8 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId}:{field:
      </div>
     </div>;
  }
- if(field.type==="select")return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}><option value="">Select option</option>{(field.options??["Day shift","Night shift"]).map(opt=><option key={opt}>{opt}</option>)}</select></label>;
- if(field.type==="multiline")return <label style={fieldStyle}>{label}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)}/></label>;
+ if(field.type==="select")return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}><option value="">Select option</option>{(field.options??["Day shift","Night shift"]).map(opt=><option key={opt}>{opt}</option>)}</select>{quickButtons}</label>;
+ if(field.type==="multiline")return <label style={fieldStyle}>{label}{quickButtons}<textarea style={{...input,minHeight:96}} value={answerText(value)} onChange={e=>onChange(e.target.value)} placeholder="Choose a suggestion above or enter your own details"/></label>;
  if(field.type==="signature")return <div style={fieldStyle}>{label}
     <SignatureApprovalTray label={field.label.toLowerCase().includes("review")?"Supervisor review & sign":"Open signature tray"} value={isSignatureEvidence(value)?value:null} onChange={e=>onChange(e??"")}
      scope={scope+" / "+field.label} role={field.signerFieldId?"Reviewer":field.label.toLowerCase().includes("review")?"Reviewer":"Participant"}
@@ -330,5 +360,5 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId}:{field:
    {typeof value==="string"&&value.startsWith("data:application/pdf")?<span style={{fontSize:11,color:"#087f5b"}}>PDF attached in local demo</span>:null}
    <span style={{fontSize:11,color:"#b45309"}}>Small local-only sample attachment. Not uploaded, verified or shared.</span>
   </div>;
- return <label style={fieldStyle}>{label}<input type={field.type==="number"?"number":field.type==="date"?"date":field.type==="datetime"?"datetime-local":"text"} style={input} value={answerText(value)} onChange={e=>onChange(field.type==="number"?(e.target.value?Number(e.target.value):null):e.target.value)}/></label>;
+ return <label style={fieldStyle}>{label}{quickButtons}<input type={field.type==="number"?"number":field.type==="date"?"date":field.type==="datetime"?"datetime-local":"text"} style={input} value={answerText(value)} onChange={e=>onChange(field.type==="number"?(e.target.value?Number(e.target.value):null):e.target.value)}/></label>;
 }
