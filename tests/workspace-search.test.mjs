@@ -62,3 +62,15 @@ test("MoveTrack adapter indexes new live records and routes results without prov
  assert.equal(searchWorkspace(index,"private incident").some(x=>x.key==="submission:FORM-PRIVATE"),false);
  assert.equal(searchWorkspace(index,"").length,0);
 });
+
+test("search pagination and tolerant spelling work for any new provider without fixed search dependencies",()=>{
+ const data=workspaceIndex([provider("dynamic-evs",Array.from({length:67},(_,i)=>({
+  uuid:"ev-"+i,title:"Scaffolding inspection "+i,description:"Document / bay "+i,site:"Botswana-Zone-"+i})))]);
+ assert.equal(searchDocuments(data,"scaffolding",{limit:15}).length,15);
+ assert.equal(searchDocuments(data,"scaffolding",{limit:15,offset:15})[0].id,"ev-15");
+ assert.equal(searchDocuments(data,"scafolding",{limit:15}).length,15);
+ assert.equal(searchDocuments(data,"botswana zone 33")[0].id,"ev-33");
+ assert.equal(searchDocuments(data,"scaffolding",{source:"unknown"}).length,0);
+ const added=workspaceIndex([provider("new-connector",[{uuid:"x1",title:"Future industrial catalyst risk control",industry:"Green hydrogen"}],"Innovation")]);
+ assert.equal(searchDocuments(added,"hydrogen catalyst",{category:"Innovation"})[0].id,"x1");
+});
