@@ -33,9 +33,9 @@ import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
 import {buildFormDocument} from "../../lib/form-exports";
 
 
-const tile:React.CSSProperties={background:"#fff",border:"1px solid #dce4ee",borderRadius:17,padding:17};
-const input:React.CSSProperties={width:"100%",padding:"12px 12px",font:"inherit",background:"#fff",color:"#101828",border:"1px solid #cbd5e1",borderRadius:11};
-const button:React.CSSProperties={border:"1px solid #cbd5e1",borderRadius:12,padding:"11px 14px",background:"#fff",color:"#101828",fontWeight:750,cursor:"pointer",minHeight:44};
+const tile:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:17,padding:17,color:"var(--mt-ink,#172b46)"};
+const input:React.CSSProperties={width:"100%",padding:"12px 12px",font:"inherit",background:"var(--mt-surface-soft,#f8fafc)",color:"var(--mt-ink,#172b46)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:11};
+const button:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:12,padding:"11px 14px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",fontWeight:750,cursor:"pointer",minHeight:44};
 const categories:{[key:string]:{color:string;label:string}}={
  Fleet:{color:"#1d4ed8",label:"Fleet"},Meetings:{color:"#7c3aed",label:"Meetings"},
  Safety:{color:"#b45309",label:"Safety"},Risk:{color:"#b42318",label:"Risk"},
