@@ -1,4 +1,5 @@
 import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
+import type {LocalEvidenceImage} from "./image-evidence";
 import { miningPrestartChecks } from "@bokang/domain-data";
 
 export type FleetVehicleStatus =
@@ -24,6 +25,7 @@ export type FleetVehicle = {
   roadworthyExpiry: string;
   extinguisherServiceDue: string;
   nextServiceKm: number;
+  images?: LocalEvidenceImage[];
 };
 
 export type FleetDriver = {
@@ -101,6 +103,7 @@ export type FleetIncident = {
   resolutionNote?: string;
   resolvedAt?: string;
   reviewSignature?: SignatureEvidence;
+  images?: LocalEvidenceImage[];
 };
 
 export const MOVE_TRACK_KEYS = {

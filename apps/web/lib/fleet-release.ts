@@ -1,16 +1,19 @@
 import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
+import type {LocalEvidenceImage} from "./image-evidence";
 import type { FleetAssignment, FleetIncident, FleetVehicle, PrestartRecord } from "./move-track";
 
 export type RepairEvidence = {
   id: string; vehicleId: string; incidentIds: readonly string[];
   repairedBy: string; repairNotes: string; evidenceReference: string;
   recordedAt: string; // Demo reference; production requires verified Drive evidence pointer.
+  images?: LocalEvidenceImage[];
 };
 export type ReinspectionEvidence = {
   id: string; vehicleId: string; inspectionBy: string;
   verdict: "PASS" | "FAIL"; checkedControls: readonly string[];
   performedAt: string;
   inspectorSignature?: SignatureEvidence;
+  images?: LocalEvidenceImage[];
 };
 export type FleetReleaseRecord = {
   id: string; vehicleId: string; assignmentId?: string;
