@@ -65,6 +65,6 @@ export function searchDocuments(documents:readonly SearchDocument[],query:string
   if(!terms.length)score+=(doc.priority??0)+1;
   results.push({...doc,score,matched});
  }
- return results.sort((a,b)=>b.score-a.score||a.category.localeCompare(b.category)||a.title.localeCompare(b.title)).slice(offset,offset+limit);
+ return results.sort((a,b)=>b.score-a.score||a.category.localeCompare(b.category)||a.title.localeCompare(b.title,undefined,{numeric:true,sensitivity:"base"})).slice(offset,offset+limit);
 }
 /** Backends or future indexes can expose the same SearchCollection shape, without replacing this renderer. */
