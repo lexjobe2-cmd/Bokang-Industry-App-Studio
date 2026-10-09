@@ -256,7 +256,7 @@ test("supervisor signing tray is mandatory for all reviewed core and 21 speciali
  for(const template of starterAssuranceTemplates.filter(t=>["meeting-register","toolbox-brief","jsa","jra","shift-handover"].includes(t.id))){
   const fields=template.sections.flatMap(s=>s.fields);
   assert.ok(fields.some(f=>f.id==="supervisor_review_signature"&&f.required&&f.signerFieldId==="supervisor_reviewer"),template.id);
-  assert.equal(template.version,2);
+  assert.equal(template.version,template.id==="meeting-register"?3:2);
  }
  for(const recipe of additionalAssuranceRecipes){
   const fields=recipe.sections.flatMap(s=>s.fields);
