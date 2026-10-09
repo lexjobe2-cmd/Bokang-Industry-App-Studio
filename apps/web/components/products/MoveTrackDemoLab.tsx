@@ -45,7 +45,7 @@ export function MoveTrackDemoLab(){
  const hydrated=[fleetReady,driversReady,assignReady,prestartsReady,incidentsReady,policiesReady,submissionReady,draftsReady,repairReady,reinspectReady,releasesReady].every(Boolean);
  function applyScenario(scenario:Scenario){
   if(!hydrated)return;
-  if(scenario==="reset"&&!window.confirm("Reset demo fleet, assignments, checklists, repairs and incidents? Your custom companies, form designer and JRA drafts will be preserved."))return;
+  if(scenario==="reset"&&!window.confirm("Reset demo fleet, assignments, fleet inspections, repairs and incidents? Your signed SHE/meeting records, custom companies, form and JRA drafts will be preserved."))return;
   const now=new Date().toISOString();
   const seededFleet=starterFleet.map(v=>({...v}));
   const seededAssignments:FleetAssignment[]=[];
@@ -82,9 +82,10 @@ export function MoveTrackDemoLab(){
   setPrestarts(seededPrestarts);
   setIncidents(seededIncidents);
   setRepairs([]);setReinspections([]);setReleases([]);
-  setSubmissions([]);setDrafts({});
+  setSubmissions(current=>current.filter(record=>record.templateSnapshot.category!=="Fleet"));
+  // Never erase signed safety, meeting or active form drafts when resetting a fleet test scenario.
   setActive(scenario);
-  setNotice(scenario==="grounded"?"Grounded fleet scenario loaded. Open Fleet control, resolve the defect with a note, then use Repair & release.":scenario==="assignment"?"Driver scenario loaded. Open the driver app, complete a pre-start and return to Fleet control to see the result.":"Fleet test data reset. Your custom companies, branded templates, JRA drafts and saved JRA records are preserved.");
+  setNotice(scenario==="grounded"?"Grounded fleet scenario loaded. Open Fleet control, resolve the defect with a note, then use Repair & release.":scenario==="assignment"?"Driver scenario loaded. Open the driver app, complete a pre-start and return to Fleet control to see the result.":"Fleet test data reset. Signed non-fleet forms, meeting records, custom companies, form drafts and JRAs were preserved.");
  }
  return <main className="movetrack-root" data-theme={theme} style={{background:theme==="dark"?"#081323":"#f3f7fc",minHeight:"100vh",color:theme==="dark"?"#edf4fe":"#15233a",paddingBottom:100}}><MoveTrackThemeStyles/>
   <div style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"34px 20px 46px"}}>
