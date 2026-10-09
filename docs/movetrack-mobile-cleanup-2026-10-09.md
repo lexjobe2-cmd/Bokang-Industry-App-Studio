@@ -7,6 +7,7 @@ The user's screenshot showed the Fleet workspace navigation, onboarding form and
 - Replace mobile horizontal workspace shortcut rows with a labelled native selector. Keep desktop buttons and the hamburger menu.
 - Use one column for fleet onboarding and asset cards below 860px. Wrap asset headings/statuses.
 - Keep vehicle onboarding in an expandable Add fleet vehicle panel. Existing controlled draft values and add/save behavior remain unchanged.
+- Give mobile buttons a 44px minimum height, including compact designer and register row actions.
 - Bound native date/time controls, including their minimum inline width; keep native pickers.
 - Remove the redundant forms demo banner, hide the library introduction in other tabs and shorten the designer heading so editing controls start earlier.
 - Improve dark-mode blue status text and workforce picker job-title contrast; increase directory row text on mobile.

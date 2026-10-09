@@ -184,6 +184,8 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] .movetrack-drawer-group h3,.movetrack-root[data-theme="dark"] .movetrack-drawer-item-text small {color:#b3c6db;}
 .movetrack-root :is(.movetrack-appbar button,.movetrack-nav-drawer button,.movetrack-mobile-dock button):focus-visible {outline:3px solid #60a5fa;outline-offset:2px;}
 @media(max-width:860px) {
+ .movetrack-root button,#movetrack-signing-tray button {min-height:44px !important;}
+
  .movetrack-appbar-content {padding:8px 12px;min-height:60px;gap:9px;}
  .movetrack-appbar-divider,.movetrack-appbar-current,.movetrack-desktop-links,.movetrack-hamburger-label {display:none;}
  .movetrack-appbar-hamburger {padding:9px;min-width:44px;justify-content:center;}
