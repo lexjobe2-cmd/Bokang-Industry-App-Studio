@@ -1,4 +1,5 @@
-import type {FormSubmission} from "@bokang/domain-data/assurance-forms";
+import {starterAssuranceTemplates,type FormSubmission} from "@bokang/domain-data/assurance-forms";
+import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance";
 import type {CustomTemplate,JobRiskAssessment,OrganizationProfile,PersonRecord} from "@bokang/domain-data/custom-assurance";
 import type {FleetVehicle,FleetDriver,FleetIncident,FleetAssignment,PrestartRecord,FleetSitePolicy} from "./move-track";
 import type {FleetReleaseRecord,RepairEvidence,ReinspectionEvidence} from "./fleet-release";
@@ -48,6 +49,16 @@ export function buildWorkspaceIndex(data:WorkspaceSearchSources):SearchHit[]{
    title:form.templateSnapshot.title,subtitle:[form.taskId,form.siteId,form.decision].filter(Boolean).join(" · "),tag:form.decision,view:form.templateSnapshot.category==="Meetings"?"meetings":"forms",updatedAt:form.submittedAt,templateId:form.templateId},
    [form.id,form.submittedByPersonId?person(form.submittedByPersonId):"",...details]);
  }
+ for(const w of additionalAssuranceRecipes)push({
+  key:"recipe:"+w.id,id:"op-"+data.orgId+"-"+w.id,templateId:"op-"+data.orgId+"-"+w.id,
+  kind:"Safety workflow",group:"Forms",title:w.title,subtitle:w.trigger,view:"forms",
+  tag:w.area
+ },[w.category,w.area,...w.criticalControls,...w.sections.flatMap(section=>[section.title,...section.fields.map(field=>field.label)])]);
+ for(const t of starterAssuranceTemplates)push({
+  key:"built-in:"+t.id,id:t.id,templateId:t.id,
+  kind:"Built-in form",group:t.category==="Meetings"?"Meetings":"Forms",title:t.title,
+  subtitle:t.category+" · built-in template",view:"forms"
+ },[...t.sections.flatMap(section=>[section.title,...section.fields.map(field=>field.label)])]);
  for(const template of data.templates.filter(t=>t.organizationId===data.orgId&&t.status==="PUBLISHED"))push({
   key:"template:"+template.id,id:template.id,templateId:template.id,kind:"Company template",group:"Forms",
   title:template.title,subtitle:template.description,view:"forms",updatedAt:template.updatedAt
