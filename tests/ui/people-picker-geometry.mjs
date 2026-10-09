@@ -127,6 +127,57 @@ try{
   }
  }
 
+ // Screenshot regression: measure the exact failing Agenda/Clear buttons with browser-computed
+ // foreground and background, never infer contrast from authored CSS strings.
+ for(const {width,height} of [{width:320,height:700},{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
+  for(const theme of ["light","dark"]){
+   await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:width<900});
+   await send("Page.navigate",{url:base+"/app/meetings"});
+   await waitFor(()=>evaluate("!!document.querySelector('select[aria-label=\"Meeting mobile step\"],.movetrack-task-outline')"),"meeting navigation");
+   const mode=theme==="dark"?"Switch to dark mode":"Switch to light mode";
+   await evaluate("document.querySelector('button[aria-label="+JSON.stringify(mode)+"]')?.click()");
+   await waitFor(()=>evaluate("document.querySelector('.movetrack-root')?.getAttribute('data-theme')==="+JSON.stringify(theme)),"meeting theme");
+   if(width<1024){
+    await evaluate(String.raw`(()=>{
+     const sel=document.querySelector('select[aria-label="Meeting mobile step"]');
+     if(!sel)throw Error("No meeting step picker");
+     Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(sel,'2');
+     sel.dispatchEvent(new Event('change',{bubbles:true}));
+    })()`);
+   }else{
+    await evaluate(String.raw`[...document.querySelectorAll('.movetrack-task-outline button')].find(x=>x.textContent?.includes('Minutes'))?.click()`);
+   }
+   await waitFor(()=>evaluate(String.raw`[...document.querySelectorAll('button')].some(x=>x.textContent?.trim()==='+ Safety moment'&&!x.closest('[hidden]'))`),"visible agenda buttons");
+   const contrastCheck=await evaluate(String.raw`(()=>{
+     function channel(c){c/=255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);}
+     function lum(rgb){
+      const values=rgb.match(/[\d.]+/g)?.slice(0,3).map(Number)??[];
+      if(values.length!==3)throw Error('Invalid rgb '+rgb);
+      return channel(values[0])*.2126+channel(values[1])*.7152+channel(values[2])*.0722;
+     }
+     function ratio(a,b){const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+     const wanted=['Clear draft','+ Safety moment','+ Previous action follow-up','+ Incident and near-miss learnings'];
+     return wanted.map(label=>{
+      const button=[...document.querySelectorAll('button')].find(x=>x.textContent?.trim()===label&&!x.closest('[hidden]'));
+      if(!button)return {label,error:'Missing visible control'};
+      const style=getComputedStyle(button);
+      const bg=style.backgroundColor,fg=style.color;
+      return {label,fg,bg,contrast:ratio(fg,bg),variant:button.dataset.mtVariant,classes:button.className};
+     });
+    })()`);
+   for(const control of contrastCheck){
+    assert.ok(!control.error,JSON.stringify({width,height,theme,control}));
+    assert.ok(control.contrast>=4.5,JSON.stringify({width,height,theme,control}));
+    assert.ok(control.classes.includes("movetrack-ui-button"),JSON.stringify({width,height,theme,control}));
+   }
+   console.log("MEETING BUTTON CONTRAST PASSED",JSON.stringify({width,height,theme,controls:contrastCheck}));
+   if(width===390&&theme==="dark"){
+    const screenshot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+    await writeFile("ui-geometry-meeting-agenda-dark.png",Buffer.from(screenshot.data,"base64"));
+   }
+  }
+ }
+
  // App-wide entry state audit: this is diagnostic, not certification of every open dialog.
  const routePaths=[
   "/","/company","/app/control","/app/fleet","/app/drivers","/app/sites",
