@@ -34,6 +34,7 @@ export function FleetReleaseWorkspace(){
  const [verdict,setVerdict]=useState<"PASS"|"FAIL">("FAIL");
  const [approver,setApprover]=useState("");
  const [releaseSignature,setReleaseSignature]=useState<SignatureEvidence|null>(null);
+ const [inspectorSignature,setInspectorSignature]=useState<SignatureEvidence|null>(null);
  const [notice,setNotice]=useState("");
  const grounded=fleet.filter(v=>v.status==="No-go");
  const vehicle=grounded.find(v=>v.id===chosen)??grounded[0];
@@ -54,16 +55,20 @@ export function FleetReleaseWorkspace(){
    repairedBy:repairer.trim(),repairNotes:notes.trim(),evidenceReference:ref.trim(),recordedAt:new Date().toISOString()
   };
   setRepairs(current=>[record,...current.filter(r=>r.vehicleId!==vehicle.id)]);
-  setReinspections(current=>current.filter(r=>r.vehicleId!==vehicle.id));
+  setReinspections(current=>current.filter(r=>r.vehicleId!==vehicle.id));setInspectorSignature(null);setReleaseSignature(null);
   setNotice("Demonstration repair reference recorded. Complete incident resolution and a separate reinspection.");
  }
  function recordReinspection(){
   if(!vehicle || !repair || !inspector.trim() || inspector.trim()===repair.repairedBy || !verified.length){
     setNotice("Record maintenance first. Independent inspector and checked controls are required.");return;
   }
+  const scope="Reinspection "+vehicle.id+" · "+verdict+" · "+[...verified].sort().join(", ");
+  if(!isSignatureEvidence(inspectorSignature)||inspectorSignature.signerName.trim().toLowerCase()!==inspector.trim().toLowerCase()||inspectorSignature.scope!==scope){
+   setNotice("Independent inspector must sign these exact reinspection controls and verdict in the review tray.");return;
+  }
   setReinspections(current=>[{
    id:crypto.randomUUID(),vehicleId:vehicle.id,inspectionBy:inspector.trim(),
-   verdict,checkedControls:[...verified],performedAt:new Date().toISOString()
+   verdict,checkedControls:[...verified],performedAt:new Date().toISOString(),inspectorSignature
   },...current.filter(r=>r.vehicleId!==vehicle.id)]);
   setNotice(verdict==="PASS"?"Demo reinspection recorded. Supervisor must independently review and approve.":"Failed reinspection recorded: asset remains grounded.");
  }
@@ -108,13 +113,17 @@ export function FleetReleaseWorkspace(){
       </section>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><ClipboardCheck size={19}/> 2 · Independent reinspection</h3>
-       <label style={{display:"grid",gap:6,marginBottom:12,fontSize:12}}>Inspector<input style={input} value={inspector} onChange={e=>setInspector(e.target.value)} placeholder="Reinspection personnel"/></label>
+       <label style={{display:"grid",gap:6,marginBottom:12,fontSize:12}}>Inspector<input style={input} value={inspector} onChange={e=>{setInspector(e.target.value);setInspectorSignature(null);}} placeholder="Reinspection personnel"/></label>
        <strong style={{fontSize:12}}>Verified controls</strong>
-       {controls.map(control=><label key={control} style={{display:"flex",alignItems:"center",gap:10,padding:"6px 0",fontSize:12}}><input type="checkbox" checked={verified.includes(control)} onChange={e=>setVerified(current=>e.target.checked?[...current,control]:current.filter(c=>c!==control))}/>{control}</label>)}
+       {controls.map(control=><label key={control} style={{display:"flex",alignItems:"center",gap:10,padding:"6px 0",fontSize:12}}><input type="checkbox" checked={verified.includes(control)} onChange={e=>{setVerified(current=>e.target.checked?[...current,control]:current.filter(c=>c!==control));setInspectorSignature(null);}}/>{control}</label>)}
        <label style={{display:"grid",gap:6,margin:"12px 0",fontSize:12}}>Result
-        <select style={input} value={verdict} onChange={e=>setVerdict(e.target.value as "PASS"|"FAIL")}><option value="FAIL">FAIL — remains grounded</option><option value="PASS">PASS — reviewed controls pass</option></select>
+        <select style={input} value={verdict} onChange={e=>{setVerdict(e.target.value as "PASS"|"FAIL");setInspectorSignature(null);}}><option value="FAIL">FAIL — remains grounded</option><option value="PASS">PASS — reviewed controls pass</option></select>
        </label>
-       <button style={btn} onClick={recordReinspection}>Record reinspection</button>
+       <SignatureApprovalTray compact label="Review inspection checks & sign" role="Independent inspector" intent="review"
+          disabled={!inspector.trim()||!verified.length||!repair} defaultSignerName={inspector}
+          scope={"Reinspection "+(vehicle?.id??"")+" · "+verdict+" · "+[...verified].sort().join(", ")}
+          value={inspectorSignature} onChange={setInspectorSignature}/>
+       <button style={{...btn,marginTop:10}} disabled={!isSignatureEvidence(inspectorSignature)} onClick={recordReinspection}>Record signed reinspection (demo)</button>
        {reinspection?<p style={{fontSize:11,color:reinspection.verdict==="PASS"?"#087f5b":"#b42318"}}>{reinspection.verdict} · {reinspection.inspectionBy}</p>:null}
       </section>
       <section style={card}>
