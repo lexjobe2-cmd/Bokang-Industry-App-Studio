@@ -1,3 +1,4 @@
+import {isSignatureEvidence,type SignatureEvidence} from "./signature-evidence.ts";
 import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "./risk-matrix.ts";
 
 /**
@@ -6,7 +7,7 @@ import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "./risk-matrix.ts"
  */
 export type AnswerType = "pass_fail_na" | "yes_no" | "text" | "multiline" | "number" | "date" | "datetime" | "select" | "multiselect" | "signature" | "photo" | "document" | "risk" | "repeat" | "person" | "people";
 export type PrimitiveAnswer = string | number | boolean | null;
-export type FormAnswer = PrimitiveAnswer | string[] | Record<string, PrimitiveAnswer>[] | RiskAnswer;
+export type FormAnswer = PrimitiveAnswer | string[] | Record<string, PrimitiveAnswer>[] | RiskAnswer | SignatureEvidence;
 export type FormAnswers = Record<string, FormAnswer>;
 export type FormCategory = "Fleet" | "Safety" | "Meetings" | "Risk" | "Handover" | "Inspections";
 export type ConditionalVisibility = { fieldId: string; equals: string | boolean | number };
@@ -41,6 +42,7 @@ export function isVisible(field: FormField, answers: FormAnswers) {
 }
 export function isAnswered(field: FormField, value: FormAnswer | undefined) {
   if (value === undefined || value === null || value === "") return false;
+  if (field.type === "signature") return isSignatureEvidence(value);
   if (field.type === "risk") {
     if (typeof value!=="object" || Array.isArray(value) || !("likelihood" in value) || !("consequence" in value)) return false;
     try {scoreRisk(defaultRiskMatrix,value as RiskAnswer);return true;}catch{return false;}
