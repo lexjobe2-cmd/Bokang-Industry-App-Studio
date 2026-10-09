@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {imageInputError,MAX_LOCAL_EVIDENCE_IMAGES,MAX_LOCAL_IMAGE_FILE_BYTES} from "../apps/web/lib/image-evidence.ts";
 import {buildFormDocument,documentRows} from "../apps/web/lib/form-exports.ts";
+import {validateBackupShape} from "../packages/persistence/src/backup-shape.ts";
 import {allWorkspaceViews,fromMoveTrackPath} from "../apps/web/components/products/movetrack-routes.ts";
 
 test("local photo input rejects unsupported, empty and unbounded sources",()=>{
@@ -34,4 +35,20 @@ test("management data entry is reached through admin and photo capture remains i
  assert.match(source,/Defect \/ incident photos/);
  const driver=readFileSync(new URL("../apps/web/components/products/MoveTrackDriverApp.tsx",import.meta.url),"utf8");
  assert.match(driver,/Incident and defect photographs/);
+});
+
+test("local photo backup keeps valid legacy records and rejects unsafe image payloads",()=>{
+ const key="bokang-studio.move-track.fleet.v2";
+ const base={id:"VEH-1",fleetNo:"LV-1",registration:"B 1",makeModel:"Utility",type:"SUV",site:"Depot",status:"Inspection due",roadworthyExpiry:"2027-01-01",extinguisherServiceDue:"2027-01-01"};
+ assert.doesNotThrow(()=>validateBackupShape(key,[base]));
+ const valid={id:"pic-1",name:"front.jpg",addedAt:"2026-10-09T00:00:00.000Z",dataUrl:"data:image/jpeg;base64,AAAA"};
+ assert.doesNotThrow(()=>validateBackupShape(key,[{...base,images:[valid]}]));
+ assert.throws(()=>validateBackupShape(key,[{...base,images:[{...valid,dataUrl:"data:image/svg+xml;base64,AAAA"}]}]),/photo evidence/);
+ assert.throws(()=>validateBackupShape(key,[{...base,images:Array(7).fill(valid)}]),/photo evidence/);
+ assert.throws(()=>validateBackupShape(key,[{...base,images:[{...valid,dataUrl:"data:image/jpeg;base64,"+"A".repeat(140000)}]}]),/photo evidence/);
+});
+test("driver return defect can attach photo evidence",()=>{
+ const source=readFileSync(new URL("../apps/web/components/products/MoveTrackDriverApp.tsx",import.meta.url),"utf8");
+ assert.match(source,/Return defect and damage photos/);
+ assert.match(source,/images:returnPhotos/);
 });
