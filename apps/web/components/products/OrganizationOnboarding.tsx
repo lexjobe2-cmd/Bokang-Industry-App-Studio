@@ -87,14 +87,14 @@ export function OrganizationOnboarding(){
   <div style={{...card,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
    <strong style={{fontSize:12}}>Working as</strong>
    <select aria-label="Active organization" value={activeOrg} onChange={e=>{setActiveOrg(e.target.value);setNotice("Organization switched for future work.");}} style={{...input,flex:"1 1 220px",maxWidth:370}}>{orgs.map(o=><option value={o.id} key={o.id}>{o.name}{o.id===demoOrganization.id?" (demo)":""}</option>)}</select>
-   <span style={{fontSize:11,color:"#64748b"}}>{customOrgs.length} locally onboarded · {people.filter(p=>p.orgId===activeOrg).length} people</span>
+   <span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>{customOrgs.length} locally onboarded · {people.filter(p=>p.orgId===activeOrg).length} people</span>
    {isFirst?<button style={{...button,border:"1px solid var(--mt-border,#bfdbfe)",background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-ink,#183454)"}} onClick={resetDraft}>New? Start 4-step onboarding →</button>:null}
   </div>
   <CompanyDirectoryImport org={currentOrg} people={people} setPeople={setPeople}/>
-  {notice?<div role="status" style={{...card,color:"#174fa8",fontSize:12,background:"#eff6ff"}}>{notice}</div>:null}
+  {notice?<div role="status" style={{...card,color:"var(--mt-link,#174fa8)",fontSize:12,background:"var(--mt-surface-soft,#eff6ff)"}}>{notice}</div>:null}
   <DesktopModal title={editingId?"Edit company":"Company onboarding"} open={open} onClose={()=>setOpen(false)}><motion.div initial={reduceMotion?false:{opacity:0,y:10}} animate={{opacity:1,y:0}} style={{...card,display:"grid",gap:15,borderTop:"4px solid "+draft.accent}}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
-     <div><strong style={{fontSize:18}}>{editingId?"Edit company":"Company onboarding"}</strong><p style={{fontSize:11,color:"#64748b",margin:"3px 0"}}>Autosaved draft · no login or external network connection</p></div>
+     <div><strong style={{fontSize:18}}>{editingId?"Edit company":"Company onboarding"}</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"3px 0"}}>Autosaved draft · no login or external network connection</p></div>
 
     </div>
     {notice?<p role="status">{notice}</p>:null}
@@ -108,14 +108,14 @@ export function OrganizationOnboarding(){
      <label style={label}>Business unit<input style={input} value={draft.businessUnit} onChange={e=>patch({businessUnit:e.target.value})} placeholder="Maintenance & operations"/></label>
      <label style={label}>Principal contact email (not verified)<input type="email" style={input} value={draft.principalEmail??""} onChange={e=>patch({principalEmail:e.target.value})} placeholder="she.manager@company.co.bw"/></label>
      <label style={{...label,gridColumn:"1 / -1"}}>Departments (one per line)<textarea style={{...input,minHeight:75}} value={(draft.departments??[]).join("\n")} onChange={e=>patch({departments:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)})} placeholder="Engineering\nOperations\nSHE\nHuman Resources"/>
-       <span style={{fontSize:11,color:"#64748b"}}>Tap to add departments instead of typing:</span>
+       <span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>Tap to add departments instead of typing:</span>
        <span style={{display:"flex",flexWrap:"wrap",gap:6}}>{["Operations","Engineering","SHE","Maintenance","Human Resources","Logistics","Procurement","Administration"].map(dep=><button type="button" key={dep} aria-pressed={(draft.departments??[]).includes(dep)} style={{...button,minHeight:33,fontSize:11,padding:"6px 9px",background:(draft.departments??[]).includes(dep)?"#dbeafe":"#fff"}} onClick={()=>patch({departments:(draft.departments??[]).includes(dep)?(draft.departments??[]).filter(x=>x!==dep):[...(draft.departments??[]),dep]})}>{dep}</button>)}</span>
      </label>
      <label style={{...label,gridColumn:"1 / -1"}}>Cities (one per line)<textarea style={{...input,minHeight:70}} value={(draft.cities??[]).join("\n")} onChange={e=>patch({cities:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)})} placeholder="Gaborone\nJwaneng\nOrapa"/>
        <span style={{display:"flex",flexWrap:"wrap",gap:6}}>{["Gaborone","Jwaneng","Orapa","Francistown","Maun","Palapye","Selebi-Phikwe","Lobatse"].map(city=><button type="button" key={city} aria-pressed={(draft.cities??[]).includes(city)} style={{...button,minHeight:33,padding:"6px 9px",fontSize:11,background:(draft.cities??[]).includes(city)?"#dbeafe":"#fff"}} onClick={()=>patch({cities:(draft.cities??[]).includes(city)?(draft.cities??[]).filter(x=>x!==city):[...(draft.cities??[]),city]})}>{city}</button>)}</span>
       </label>
      <label style={{...label,gridColumn:"1 / -1"}}>Operating sites * (one per line)<textarea style={{...input,minHeight:95}} value={draft.siteIds.join("\n")} onChange={e=>patch({siteIds:e.target.value.split("\n").map(x=>x.trim()).filter(Boolean)})} placeholder="Jwaneng Site\nGaborone Workshop"/>
-       <span style={{fontSize:11,color:"#64748b"}}>Add operating sites from selected cities (review their names before saving):</span>
+       <span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>Add operating sites from selected cities (review their names before saving):</span>
        <span style={{display:"flex",flexWrap:"wrap",gap:6}}>{(draft.cities??[]).map(city=><button type="button" key={city} style={{...button,padding:"6px 9px",minHeight:33,fontSize:11}} onClick={()=>patch({siteIds:[...new Set([...draft.siteIds,city+" Site"])]})}>+ {city} Site</button>)}</span>
      </label>
     </div>:null}
@@ -128,12 +128,12 @@ export function OrganizationOnboarding(){
      </div>
      <div style={{...card,borderTop:"5px solid "+draft.accent,display:"flex",alignItems:"center",gap:12}}>
       {draft.logoDataUrl?<img src={draft.logoDataUrl} alt="Company logo preview" style={{width:78,height:62,objectFit:"contain"}}/>:<Building2 size={35} color={draft.accent}/>}
-      <div><strong>{draft.name||"Your company"}</strong><p style={{fontSize:11,color:"#64748b",margin:"5px 0"}}>{draft.documentPrefix} · Controlled safety form preview</p></div>
+      <div><strong>{draft.name||"Your company"}</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"5px 0"}}>{draft.documentPrefix} · Controlled safety form preview</p></div>
      </div>
     </div>:null}
     {step===2?<div style={{display:"grid",gap:10}}>
-     <div><strong style={{fontSize:15}}>People and organization owners</strong><p style={{fontSize:12,color:"#64748b"}}>Add supervisors, operators, contractors and company owners. These demo records are local; Microsoft 365 access comes later.</p></div>
-     {members.map((person,i)=><div key={i} style={{...card,background:"#f8fafc",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:9}}>
+     <div><strong style={{fontSize:15}}>People and organization owners</strong><p style={{fontSize:12,color:"var(--mt-muted,#64748b)"}}>Add supervisors, operators, contractors and company owners. These demo records are local; Microsoft 365 access comes later.</p></div>
+     {members.map((person,i)=><div key={i} style={{...card,background:"var(--mt-surface-soft,#f8fafc)",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:9}}>
        <label style={label}>Person name<input style={input} value={person.name} placeholder="Full name" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,name:e.target.value}:p))}/></label>
        <label style={label}>Job title<input style={input} value={person.jobTitle} placeholder="Supervisor" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,jobTitle:e.target.value}:p))}/></label>
        <label style={label}>Department<input style={input} value={person.department} placeholder="Engineering" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,department:e.target.value}:p))}/></label>
@@ -142,18 +142,18 @@ export function OrganizationOnboarding(){
        <label style={label}>User principal name (UPN)<input style={input} value={person.upn??""} placeholder="person@tenant.onmicrosoft.com" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,upn:e.target.value}:p))}/></label>
        <label style={label}>Employee number<input style={input} value={person.employeeNumber??""} placeholder="EMP-001" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,employeeNumber:e.target.value}:p))}/></label>
        <label style={{fontSize:12,display:"flex",alignItems:"center",gap:7}}><input type="checkbox" checked={person.owner} onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,owner:e.target.checked}:p))}/> Organization owner (demo)</label>
-       <button style={{...button,justifySelf:"start",color:"#b42318"}} onClick={()=>setMembers(xs=>xs.filter((_,j)=>i!==j))}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
+       <button style={{...button,justifySelf:"start",color:"var(--mt-danger,#b42318)"}} onClick={()=>setMembers(xs=>xs.filter((_,j)=>i!==j))}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
       </div>)}
       <button style={{...button,justifySelf:"start"}} onClick={()=>setMembers(xs=>[...xs,emptyMember()])}><Plus size={16} style={{display:"inline"}}/> Add person</button>
     </div>:null}
     {step===3?<div style={{display:"grid",gap:9}}>
      <strong>Review and create your company</strong>
-     <div style={{...card,background:"#f8fafc"}}>
+     <div style={{...card,background:"var(--mt-surface-soft,#f8fafc)"}}>
       <div style={{display:"flex",gap:10,alignItems:"center"}}><Shield color={draft.accent}/><strong>{draft.name||"Missing company name"}</strong></div>
-      <p style={{fontSize:12,color:"#64748b"}}>{draft.industry} · {draft.businessUnit||"Business unit not specified"} · {draft.domain||"No domain"}</p>
+      <p style={{fontSize:12,color:"var(--mt-muted,#64748b)"}}>{draft.industry} · {draft.businessUnit||"Business unit not specified"} · {draft.domain||"No domain"}</p>
       <p style={{fontSize:12}}>Sites: {draft.siteIds.join(", ")||"No site added"}</p>
       <p style={{fontSize:12}}>{members.filter(x=>x.name.trim()&&x.jobTitle.trim()).length} employees · {members.filter(x=>x.owner&&x.name.trim()).length} owners · {draft.logoDataUrl?"Logo ready":"No logo uploaded"}</p>
-      <p style={{fontSize:11,color:"#b45309"}}>This local onboarding does not authenticate your organization or verify company ownership.</p>
+      <p style={{fontSize:11,color:"var(--mt-warning,#b45309)"}}>This local onboarding does not authenticate your organization or verify company ownership.</p>
      </div>
     </div>:null}
     <div style={{display:"flex",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
@@ -162,6 +162,6 @@ export function OrganizationOnboarding(){
       <button style={primary} onClick={save}><CheckCircle2 size={16} style={{display:"inline",verticalAlign:"middle"}}/> Save company locally</button>}
     </div>
   </motion.div></DesktopModal>
-  {!open&&isFirst?<p style={{fontSize:11,color:"#b45309",margin:"0 2px"}}>You're using a fictional demo company. Create your own local company above to test branded forms and company-specific workers.</p>:null}
+  {!open&&isFirst?<p style={{fontSize:11,color:"var(--mt-warning,#b45309)",margin:"0 2px"}}>You're using a fictional demo company. Create your own local company above to test branded forms and company-specific workers.</p>:null}
  </section>;
 }

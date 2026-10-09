@@ -7,8 +7,8 @@ import {CompanyDirectoryImport} from "./CompanyDirectoryImport";
 import {DesktopModal} from "./DesktopModal";
 import {createLocalWorker,editableWorkerDetails,updateWorkerDetails,type WorkerDetails} from "../../lib/workforce-profiles";
 
-const input:React.CSSProperties={width:"100%",minHeight:44,padding:11,border:"1px solid #cbd5e1",borderRadius:10,font:"inherit",background:"#fff",boxSizing:"border-box"};
-const btn:React.CSSProperties={minHeight:44,padding:"9px 13px",borderRadius:10,border:"1px solid #bed2eb",background:"#fff",fontSize:12,fontWeight:800,cursor:"pointer"};
+const input:React.CSSProperties={width:"100%",minHeight:44,padding:11,border:"1px solid #cbd5e1",borderRadius:10,font:"inherit",background:"var(--mt-surface,#fff)",boxSizing:"border-box"};
+const btn:React.CSSProperties={minHeight:44,padding:"9px 13px",borderRadius:10,border:"1px solid #bed2eb",background:"var(--mt-surface,#fff)",fontSize:12,fontWeight:800,cursor:"pointer"};
 const emptyDraft:WorkerDetails={displayName:"",email:"",department:"",jobTitle:"",location:"",employeeNumber:"",active:true};
 
 export function WorkforceDirectoryWorkspace({adminMode=false}:{adminMode?:boolean}={}){
@@ -42,13 +42,13 @@ export function WorkforceDirectoryWorkspace({adminMode=false}:{adminMode?:boolea
    <div><h2 style={{margin:0}}>Workforce directory</h2><p style={{margin:"6px 0 0",fontSize:13}}>{org.name} · Stable person identities for forms, meetings and job teams.</p></div>
    {adminMode?<button type="button" style={{...btn,background:"#1d4ed8",color:"#fff"}} onClick={startCreate}>Add employee</button>:null}
   </div>
-  {adminMode?<CompanyDirectoryImport org={org} people={people} setPeople={setPeople}/>:<p style={{fontSize:12,color:"#475569",margin:0}}>Directory changes are managed in Admin → Workforce. This is a searchable, local read-only roster.</p>}
-  {adminMode?<p style={{fontSize:12,color:"#92400e",margin:0}}>Manual edits to imported directory profiles are local overlays. No Microsoft 365 connection or synchronization is performed. Do not enter sensitive personnel records in this public demonstration.</p>:null}
+  {adminMode?<CompanyDirectoryImport org={org} people={people} setPeople={setPeople}/>:<p style={{fontSize:12,color:"var(--mt-muted,#475569)",margin:0}}>Directory changes are managed in Admin → Workforce. This is a searchable, local read-only roster.</p>}
+  {adminMode?<p style={{fontSize:12,color:"var(--mt-danger,#92400e)",margin:0}}>Manual edits to imported directory profiles are local overlays. No Microsoft 365 connection or synchronization is performed. Do not enter sensitive personnel records in this public demonstration.</p>:null}
   <label style={{display:"grid",gap:6,fontSize:13,fontWeight:800}}>Find a worker<input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Name, department or employee number" style={input}/></label>
-  {message?<p role="status" style={{fontSize:12,color:"#047857",margin:0}}>{message}</p>:null}
+  {message?<p role="status" style={{fontSize:12,color:"var(--mt-success,#047857)",margin:0}}>{message}</p>:null}
   <p role="status" style={{fontSize:12,margin:0}}>{matches.length} matching people</p>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:10}}>
-   {matches.map(person=><article key={person.id} style={{padding:15,background:"#fff",border:"1px solid #dbe5ef",borderRadius:12,minWidth:0}}>
+   {matches.map(person=><article key={person.id} style={{padding:15,background:"var(--mt-surface,#fff)",border:"1px solid #dbe5ef",borderRadius:12,minWidth:0}}>
     <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"flex-start",flexWrap:"wrap"}}>
      <strong>{person.displayName}</strong><span style={{fontSize:11,fontWeight:800,color:person.active?"#027a48":"#b42318"}}>{person.active?"Active":"Inactive"}</span>
     </div>
@@ -60,8 +60,8 @@ export function WorkforceDirectoryWorkspace({adminMode=false}:{adminMode?:boolea
   </div>
   {adminMode?<DesktopModal title={editingId==="new"?"Add employee":"Edit employee profile"} open={open} onClose={close}>
    <div style={{display:"grid",gap:12}}>
-    <p style={{fontSize:12,color:"#64748b",margin:0}}>Changes stay on this browser. Editing a person's details does not overwrite their identity or prior meeting, JRA or form references.</p>
-    {error?<p role="alert" style={{fontSize:12,color:"#b42318",margin:0}}>{error}</p>:null}
+    <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Changes stay on this browser. Editing a person's details does not overwrite their identity or prior meeting, JRA or form references.</p>
+    {error?<p role="alert" style={{fontSize:12,color:"var(--mt-danger,#b42318)",margin:0}}>{error}</p>:null}
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:11}}>
      {([
       ["displayName","Full name"],["employeeNumber","Employee number"],["jobTitle","Job title"],

@@ -10,9 +10,9 @@ import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {buildFormDocument,buildJraDocument} from "../../lib/form-exports";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 export const ACTIVE_PERSON_KEY="bokang-studio.move-track.active-person.v1";
-const card:React.CSSProperties={background:"#fff",border:"1px solid #d8e3ef",borderRadius:16,padding:16};
-const small:React.CSSProperties={fontSize:11,color:"#64748b"};
-const input:React.CSSProperties={padding:"10px 12px",borderRadius:10,border:"1px solid #cbd5e1",background:"#fff",color:"#153452",minHeight:44,font:"inherit",width:"100%"};
+const card:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid #d8e3ef",borderRadius:16,padding:16};
+const small:React.CSSProperties={fontSize:11,color:"var(--mt-muted,#64748b)"};
+const input:React.CSSProperties={padding:"10px 12px",borderRadius:10,border:"1px solid #cbd5e1",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#153452)",minHeight:44,font:"inherit",width:"100%"};
 const label:React.CSSProperties={fontSize:12,fontWeight:800,display:"grid",gap:5};
 const statusColor=(status:string)=>status==="NO_GO"?"#b42318":status==="REVIEW"||status==="REVIEW_REQUIRED"||status==="IN_REVIEW"?"#b45309":status==="DRAFT"?"#64748b":"#047857";
 function CountTile({name,value,detail}:{name:string;value:string|number;detail?:string}){return <div style={card}><p style={{...small,margin:"0 0 8px",fontWeight:850}}>{name}</p><strong style={{fontSize:27}}>{value}</strong>{detail?<p style={{...small,margin:"5px 0 0"}}>{detail}</p>:null}</div>}
@@ -21,8 +21,8 @@ function Breakdown({title,items}:{title:string;items:{name:string;count:number}[
  return <div style={card}><strong style={{fontSize:15}}>{title}</strong>
   {!items.length?<p style={{...small}}>No recorded activity.</p>:<div style={{display:"grid",gap:10,marginTop:14}}>
    {items.slice(0,12).map(item=><div key={item.name} style={{display:"grid",gridTemplateColumns:"minmax(min(100%,100px),1fr) 2fr 20px",gap:9,alignItems:"center",fontSize:11}}>
-    <span style={{overflowWrap:"anywhere",color:"#475569"}}>{item.name}</span>
-    <div style={{height:9,borderRadius:8,overflow:"hidden",background:"#edf2f8"}}><div style={{width:(item.count/max*100)+"%",height:"100%",borderRadius:8,background:"#2563eb"}}/></div>
+    <span style={{overflowWrap:"anywhere",color:"var(--mt-muted,#475569)"}}>{item.name}</span>
+    <div style={{height:9,borderRadius:8,overflow:"hidden",background:"var(--mt-surface-soft,#edf2f8)"}}><div style={{width:(item.count/max*100)+"%",height:"100%",borderRadius:8,background:"#2563eb"}}/></div>
     <strong>{item.count}</strong>
    </div>)}
   </div>}
@@ -67,7 +67,7 @@ export function UserParticipationAnalytics(){
  return <section aria-label="Forms participation analytics" style={{display:"grid",gap:13}}>
   <div style={{...card,background:"#102541",color:"#fff",border:0,padding:21}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap",alignItems:"start"}}>
-    <div><div style={{fontSize:11,color:"#9ac5ff",fontWeight:900,letterSpacing:1.2}}>WORKFORCE · SAFETY PARTICIPATION INTELLIGENCE</div>
+    <div><div style={{fontSize:11,color:"var(--mt-link,#9ac5ff)",fontWeight:900,letterSpacing:1.2}}>WORKFORCE · SAFETY PARTICIPATION INTELLIGENCE</div>
      <h2 style={{fontSize:25,margin:"6px 0"}}>Forms you joined. Risks your team recorded.</h2>
      <p style={{color:"#cbd5e1",fontSize:12,margin:0,lineHeight:1.6}}>Personal participation histories and company patterns on this browser, using actual locally saved forms and JRA team rosters. No invented activity.</p>
     </div><BarChart3 size={29} color="#bfdbfe"/></div>
@@ -86,8 +86,8 @@ export function UserParticipationAnalytics(){
       </select>
     </label>
    </div>
-   {view==="mine"&&!user?<p style={{fontSize:12,color:"#b45309",margin:0}}>Choose an employee above to see exactly which forms and JRAs include them. Until then, the company overview is shown.</p>:null}
-   {view==="mine"&&user?<p style={{fontSize:12,color:"#047857",margin:0}}><UserRound size={15} style={{display:"inline",verticalAlign:"middle"}}/> Viewing participation for {user.displayName}. Attribution is based on stable person IDs, not fabricated completion claims.</p>:null}
+   {view==="mine"&&!user?<p style={{fontSize:12,color:"var(--mt-warning,#b45309)",margin:0}}>Choose an employee above to see exactly which forms and JRAs include them. Until then, the company overview is shown.</p>:null}
+   {view==="mine"&&user?<p style={{fontSize:12,color:"var(--mt-success,#047857)",margin:0}}><UserRound size={15} style={{display:"inline",verticalAlign:"middle"}}/> Viewing participation for {user.displayName}. Attribution is based on stable person IDs, not fabricated completion claims.</p>:null}
   </div>
   <nav className="movetrack-step-nav" aria-label="Analytics pages">{(["overview","meetings","records"] as const).map(key=><button type="button" key={key} aria-current={pane===key?"step":undefined} onClick={()=>setPane(key)}>{key==="overview"?"Overview":key==="meetings"?"Meeting attendance":"Records & exports"}</button>)}</nav>
   <div hidden={pane!=="meetings"} style={{...card,display:"grid",gap:12}}>
@@ -138,12 +138,12 @@ export function UserParticipationAnalytics(){
     <label style={label}>Category<select style={input} value={category} onChange={e=>setCategory(e.target.value)}><option>All categories</option>{[...new Set(a.items.map(x=>x.category))].map(x=><option key={x}>{x}</option>)}</select></label>
    </div>
    <div style={{display:"grid",gap:9}}>
-    {!filtered.length?<div style={{padding:16,background:"#f8fafc",borderRadius:12,color:"#64748b",fontSize:13}}>No records match these filters. Create a checklist or join a JRA to populate this view.</div>:filtered.map(item=>{
+    {!filtered.length?<div style={{padding:16,background:"var(--mt-surface-soft,#f8fafc)",borderRadius:12,color:"var(--mt-muted,#64748b)",fontSize:13}}>No records match these filters. Create a checklist or join a JRA to populate this view.</div>:filtered.map(item=>{
       const doc=documentFor(item);
       return <article key={item.kind+":"+item.id} style={{border:"1px solid #e2e8f0",borderRadius:12,padding:12,display:"grid",gap:8}}>
        <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:9,flexWrap:"wrap"}}>
         <div><strong>{item.title}</strong><p style={{...small,margin:"5px 0"}}>{item.kind} · {item.jobId||"No job reference"} · {item.site||"No site"} · {item.date?new Date(item.date).toLocaleDateString():"Undated"}</p>
-         <p style={{fontSize:11,color:"#64748b",margin:0}}>{item.personIds.length} linked person(s){scope?" · Your involvement recorded":""}</p>
+         <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>{item.personIds.length} linked person(s){scope?" · Your involvement recorded":""}</p>
         </div>
         <strong style={{color:statusColor(item.status),fontSize:11}}>{item.status.replaceAll("_"," ")}</strong>
        </div>
