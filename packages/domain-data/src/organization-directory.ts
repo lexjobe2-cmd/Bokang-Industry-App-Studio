@@ -87,9 +87,8 @@ export function parseOrganizationDirectoryCsv(csv:string,orgId:string,existing:r
  if(nameIndex<0&&emailIndex<0&&upnIndex<0)throw Error("CSV needs a Name, Email or UserPrincipalName column");
  const get=(row:string[],kind:string)=>{const col=idx(kind);return col>=0?(row[col]??"").trim().slice(0,300):"";};
  const previous=new Map<string,PersonRecord>();
- const identity=(p:PersonRecord)=>norm(p.userPrincipalName||p.email||p.employeeNumber||"");
  for(const person of existing.filter(p=>p.orgId===orgId)){
-  for(const key of [p.userPrincipalName,p.email,p.employeeNumber].map(norm).filter(Boolean))previous.set(key,person);
+  for(const key of [person.userPrincipalName,person.email,person.employeeNumber].map(norm).filter(Boolean))previous.set(key,person);
  }
  const unique=new Map<string,PersonRecord>();
  let duplicates=0;
