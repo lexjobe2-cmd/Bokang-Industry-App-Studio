@@ -16,7 +16,7 @@ const clean=(text:string)=>text.replace(/[☐☑□✓◯○●•]/g," ").repla
 const norm=(s:string)=>clean(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const center=(r:SourceRect)=>r.y+r.height/2;
 const overlap=(a:SourceRect,b:SourceRect)=>Math.max(0,Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
-const types=new Set<FormField["type"]>(["checkbox","radio","yes_no","pass_fail_na","multiselect","select","text","date","number","signature","repeat"]);
+const types=new Set<FormField["type"]>(["checkbox","radio","yes_no","pass_fail_na","multiselect","select","text","multiline","datetime","date","number","signature","repeat"]);
 export function inferQuestionType(text:string,markKinds:readonly VisualMark["kind"][]=[]):{type:FormField["type"];options?:string[]} {
  const s=text.trim();
  if(/\b(pass\s*[/|\-]\s*fail|pass\s+fail|p\s*\/\s*f\s*\/\s*n\/?a)\b/i.test(s))return {type:"pass_fail_na"};
