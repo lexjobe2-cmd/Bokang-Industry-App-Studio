@@ -11,6 +11,7 @@ import {readPaperDocument,acceptedPaperFile,downloadSourcePdf,type PaperProgress
 import {savePaperOriginal,getPaperOriginal,deletePaperOriginal} from "../../lib/paper-source-store";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {buildFormDocument} from "../../lib/form-exports";
+import {WorkspaceSteps} from "./WorkspaceSteps";
 import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY} from "./OperationalGraphPanel";
 
@@ -34,6 +35,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
  const [progress,setProgress]=useState<PaperProgress|null>(null);
  const [busy,setBusy]=useState(false);
  const [message,setMessage]=useState("");
+ const [stage,setStage]=useState(0);
  const [rawOpen,setRawOpen]=useState(false);
  const [preview,setPreview]=useState(false);
  const [previewValues,setPreviewValues]=useState<Record<string,string|boolean|string[]>>({});
@@ -68,7 +70,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
    setDraft(next);
    try{
     await savePaperOriginal(next.id,org.id,file);
-    setMessage("OCR text and original scan archived in this browser. Compare every field with the source, especially safety controls and names.");
+    setStage(1);setMessage("OCR text and original scan archived in this browser. Compare every field with the source, especially safety controls and names.");
    }catch(e){
     setMessage("OCR text is saved, but the original could not be archived on this device: "+(e instanceof Error?e.message:String(e))+". Keep a copy of the original yourself.");
    }
@@ -119,7 +121,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
  }
  function reset(){if(window.confirm("Discard this paper import and its locally archived original? Previously published forms stay saved.")){
    if(visibleDraft?.id)void deletePaperOriginal(visibleDraft.id).catch(()=>{});
-   setDraft(null);setFile(null);setProgress(null);setMessage("");
+   setDraft(null);setStage(0);setFile(null);setProgress(null);setMessage("");
   }}
  return <section aria-label="Paper to digital OCR studio" style={{display:"grid",gap:15}}>
   <div style={{...root,background:"linear-gradient(105deg,#0c213d,#15548b)",color:"#fff",border:0,padding:22}}>
@@ -130,7 +132,8 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
    <p style={{fontSize:12,lineHeight:1.7,color:"#cbd5e1",maxWidth:850,margin:"13px 0 0"}}>
     Import a photograph, PDF or scanned form. Detect printed checkbox squares, radio choices, answer lines, fillable PDF widgets, text labels and table registers; turn them into working UI elements for editing and review. Generate company-branded blank and filled PDFs or Word documents. The original file is archived in your browser for comparison; the extracted fields are saved locally.</p>
   </div>
-  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:13}}>
+  <WorkspaceSteps label="Paper reconstruction steps" steps={["Upload","Review & edit","Save / publish"]} step={stage} onChange={next=>{if(next===0||visibleDraft)setStage(next);else setMessage("Upload and extract a document first.");}}/>
+  <div hidden={stage===2} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,290px),1fr))",gap:13}}>
    <div style={{...root,display:"grid",gap:11,alignContent:"start"}}>
     <strong style={{fontSize:17}}>1 · Upload a paper document</strong>
     <p style={{fontSize:12,color:"#64748b",margin:0}}>JPG, PNG, WebP or PDF (12 MB maximum, five pages). OCR + page geometry + fillable PDF controls; browser-only, no paid API.</p>
@@ -150,11 +153,11 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
       <p style={{fontSize:11,color:"#64748b",padding:"4px 10px"}}>Original for visual comparison · {file.name}</p>
      </div>:null}
    </div>
-   <div style={{...root,display:"grid",gap:13,alignContent:"start"}}>
+   <div hidden={stage===0} style={{...root,display:"grid",gap:13,alignContent:"start"}}>
     <strong style={{fontSize:17}}>2 · Review the detected structure</strong>
     {!visibleDraft?<p style={{fontSize:12,color:"#64748b"}}>No paper processed for {org.name}. Upload a source to review detected headings and questions.</p>:<>
      <p style={{fontSize:11,color:"#475569",margin:0}}>{visibleDraft.pages} page(s) · {fieldCount} editable questions · {visibleDraft.elements?.length??0} detected graphical controls · OCR confidence {visibleDraft.confidence===null?"digital text / unavailable":Math.round(visibleDraft.confidence)+"%"}.</p>
-     {visibleDraft.summary?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(115px,1fr))",gap:7}}>
+     {visibleDraft.summary?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,115px),1fr))",gap:7}}>
       {([{label:"Checkbox choices",value:visibleDraft.summary.checkbox},{label:"Radio & decisions",value:visibleDraft.summary.radio},{label:"Text inputs",value:visibleDraft.summary.text},{label:"Signatures",value:visibleDraft.summary.signature},{label:"Tables/registers",value:visibleDraft.summary.table}] as const).map(item=><div key={item.label} style={{background:"#f1f5fa",padding:10,borderRadius:9}}>
        <strong style={{fontSize:18,color:"#174fa8"}}>{item.value}</strong><div style={{fontSize:10,color:"#64748b"}}>{item.label}</div>
       </div>)}
@@ -170,7 +173,8 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
     </>}
    </div>
   </div>
-  {visibleDraft?<div style={{...root,display:"grid",gap:12}}>
+  {visibleDraft?<div hidden={stage===0} style={{...root,display:"grid",gap:12}}>
+   <div hidden={stage!==1} style={{display:"grid",gap:12}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap",alignItems:"center"}}>
     <div><h3 style={{fontSize:18,margin:"0 0 3px"}}>3 · Reconstruct and review UI components</h3><p style={{fontSize:12,color:"#64748b",margin:0}}>Drag-free editing works on mobile. Match the paper headings and add missing columns/questions manually.</p></div>
     <button style={btn} onClick={()=>patch({sections:[...visibleDraft.sections,{id:"ocr-section-"+crypto.randomUUID().slice(0,7),title:"New section",fields:[{id:"ocr-"+crypto.randomUUID().slice(0,6),label:"New question",type:"text",required:false}]}]})}><Plus size={16} style={{display:"inline"}}/> Add section</button>
@@ -182,7 +186,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
      <button style={btn} aria-label="Remove section" onClick={()=>patch({sections:visibleDraft.sections.filter(s=>s.id!==section.id)})}><Trash2 size={16}/></button>
     </div>
     <div style={{padding:12,display:"grid",gap:8}}>
-     {section.fields.map((f,i)=><div key={f.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:9,alignItems:"center",padding:10,border:"1px solid #e2e8f0",borderRadius:10,background:f.source?.reviewed?"#f0fdf4":"#fff"}}>
+     {section.fields.map((f,i)=><div key={f.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:9,alignItems:"center",padding:10,border:"1px solid #e2e8f0",borderRadius:10,background:f.source?.reviewed?"#f0fdf4":"#fff"}}>
       <input aria-label={"Question "+(i+1)} style={input} value={f.label} onChange={e=>editField(section.id,f.id,v=>({...v,label:e.target.value}))}/>
       <select aria-label={"Input type "+(i+1)} style={input} value={f.type} onChange={e=>editField(section.id,f.id,v=>({...v,type:e.target.value as FormField["type"]}))}>{typeOptions.map(t=><option key={t} value={t}>{t.replaceAll("_"," / ")}</option>)}</select>
       <button style={btn} aria-label="Remove question" onClick={()=>editSection(section.id,s=>({...s,fields:s.fields.filter(x=>x.id!==f.id)}))}><Trash2 size={15}/></button>
@@ -212,7 +216,7 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
       <div><strong>Live form element preview</strong><p style={{fontSize:11,color:"#64748b",margin:"4px 0"}}>Test the reconstructed checkboxes, radio choices and text fields before creating a reusable template.</p></div>
       <button style={btn} onClick={()=>setPreview(v=>!v)}>{preview?"Hide preview":"Preview reconstructed UI"}</button>
     </div>
-    {preview?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10}}>
+    {preview?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,230px),1fr))",gap:10}}>
       {visibleDraft.sections.flatMap(sec=>sec.fields.map(field=><div key={field.id} style={{padding:12,background:"#fff",border:"1px solid #dde7f2",borderRadius:10,display:"grid",gap:8}}>
         <strong style={{fontSize:12}}>{field.label}</strong>
         {field.type==="checkbox"?<label style={{fontSize:12}}><input type="checkbox" checked={previewValues[field.id]===true} onChange={e=>setPreviewValues(v=>({...v,[field.id]:e.target.checked}))}/> Check</label>:
@@ -232,6 +236,13 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
      <button style={btn} onClick={reviewAll}>Mark reviewed after source check</button>
      <button style={btn} onClick={handoff}>Continue in full custom form designer →</button>
    </div>
+   <button type="button" style={primary} onClick={()=>setStage(2)}>Next: Save / publish →</button>
+   </div>
+   <div hidden={stage!==2} style={{display:"grid",gap:12}}>
+   <h3 style={{margin:0}}>Save your reviewed template</h3>
+   <p style={{fontSize:13,margin:0}}>{visibleDraft.title} · {fieldCount} fields · {unreviewedPaperFields(visibleDraft.sections).length} awaiting source review</p>
+   {paperPublicationIssues(visibleDraft.sections).length?<p role="alert" style={{fontSize:12,color:"#b45309"}}>Review & edit must resolve {paperPublicationIssues(visibleDraft.sections).length} issue(s) before publishing. A draft can still be saved.</p>:null}
+   <button type="button" style={btn} onClick={()=>setStage(1)}>← Back to review & edit</button>
    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",padding:"11px 0"}}>
     <strong style={{fontSize:12}}>4 · Save or publish the reconstructed form</strong>
     {template?<DocumentDownloadActions document={buildFormDocument({template,mode:"blank",company:org,people:people.filter(p=>p.orgId===org.id)})}/>:null}
@@ -240,8 +251,9 @@ export function PaperToDigitalWorkspace({onOpenDesigner}:{onOpenDesigner?:()=>vo
     <button style={btn} onClick={reset}>Start over</button>
    </div>
    <p style={{fontSize:11,color:"#64748b",margin:0}}>The generated PDF/Word reproduces the reviewed questions and sections in MoveTrack's controlled layout. An exact pixel-for-pixel copy of the original is only available through “Export unchanged source PDF” while the source file is still selected.</p>
+   </div>
   </div>:null}
   {message?<p role="status" style={{padding:13,background:"#eff6ff",color:"#1e40af",borderRadius:12,fontSize:12}}>{message}</p>:null}
-  <div style={{...root,background:"#f8fafc",fontSize:11,color:"#64748b"}}>Free/open-source OCR: text-bearing PDF pages are extracted directly; scanned pages and photos use Tesseract.js. Checkbox/radio graphics and answer lines use local pixel geometry; interactive PDF controls are read from the original PDF. The first OCR run may download English recognition files. The original scan archive uses local IndexedDB and is not included in the JSON workspace backup. There is no server upload in this prototype. Never treat OCR-derived safety checks as verified until a qualified person reviews them.</div>
+  <details style={{...root,background:"#f8fafc",fontSize:11,color:"#64748b"}}><summary style={{minHeight:44,cursor:"pointer",fontWeight:800}}>How local OCR works and its limits</summary>Free/open-source OCR: text-bearing PDF pages are extracted directly; scanned pages and photos use Tesseract.js. Checkbox/radio graphics and answer lines use local pixel geometry; interactive PDF controls are read from the original PDF. The first OCR run may download English recognition files. The original scan archive uses local IndexedDB and is not included in the JSON workspace backup. There is no server upload in this prototype. Never treat OCR-derived safety checks as verified until a qualified person reviews them.</details>
  </section>;
 }

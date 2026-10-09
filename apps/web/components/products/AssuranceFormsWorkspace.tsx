@@ -161,7 +161,7 @@ export function AssuranceFormsWorkspace(){
   {notice?<div role="status" style={{padding:13,borderRadius:12,background:"#eff6ff",color:"#1e40af",fontSize:13}}>{notice}</div>:null}
   {tab==="designer"?<CustomFormBuilder onPublish={openTemplate}/>:null}
   {tab==="jra"?<JraWorkspace/>:null}
-  {tab==="library"&&!template?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(245px,1fr))",gap:12}}>
+  {tab==="library"&&!template?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,245px),1fr))",gap:12}}>
     <div style={{...tile,background:"#eff6ff",borderColor:"#93c5fd",display:"grid",gap:10}}>
       <strong style={{fontSize:17}}>Create a company-branded custom form</strong>
       <span style={{fontSize:12,color:"#52677d"}}>Build unique checklists for every job, with your own logo, questions and repeatable fields.</span>
@@ -211,7 +211,7 @@ export function AssuranceFormsWorkspace(){
         {priorRecords.length?<button type="button" style={{...button,padding:"8px 10px",minHeight:37,fontSize:11}} onClick={reusePreviousCrew}>Reuse previous crew only</button>:null}
         <span style={{fontSize:11,color:"#475569"}}>Suggestions are optional. Critical controls, risk scores, sign-offs and permits are never pre-checked.</span>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:8,marginTop:15}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,120px),1fr))",gap:8,marginTop:15}}>
         <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>Operating site
           <select style={input} value={siteId} onChange={e=>setSiteId(e.target.value)}>{org.siteIds.map(site=><option key={site}>{site}</option>)}</select>
         </label>
@@ -327,7 +327,7 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
      </label>;
    return <div style={fieldStyle}>
      {label}
-     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:10}}>
+     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,170px),1fr))",gap:10}}>
       {select("likelihood",defaultRiskMatrix.likelihoodLabels)}
       {select("consequence",defaultRiskMatrix.consequenceLabels)}
      </div>

@@ -27,7 +27,7 @@ function Badge({children,color="#1d4ed8"}:{children:React.ReactNode;color?:strin
 function RiskChooser({value,onChange}:{value:RiskAnswer;onChange:(risk:RiskAnswer)=>void}){
  let assessed:ReturnType<typeof scoreRisk>|null=null;
  try{assessed=scoreRisk(defaultRiskMatrix,value);}catch{}
- return <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(135px,1fr))",gap:7,alignItems:"end"}}>
+ return <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,135px),1fr))",gap:7,alignItems:"end"}}>
   {(["likelihood","consequence"] as const).map((dim)=><label key={dim} style={label}>{dim==="likelihood"?"Likelihood":"Consequence"}
    <select style={input} value={value[dim]||""} onChange={e=>onChange({...value,[dim]:Number(e.target.value)})}><option value="">Select</option>
     {(dim==="likelihood"?defaultRiskMatrix.likelihoodLabels:defaultRiskMatrix.consequenceLabels).map((v,i)=><option key={v} value={i+1}>{i+1} · {v}</option>)}</select>
@@ -149,7 +149,7 @@ export function JraWorkspace(){
     </div>
     {page==="job"?<motion.div initial={reduced?false:{opacity:0,y:6}} animate={{opacity:1,y:0}} style={{...shell,display:"grid",gap:13}}>
      <h3 style={{margin:0}}>Work package / JRA scope</h3>
-     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:11}}>
+     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,190px),1fr))",gap:11}}>
       <label style={label}>Job / activity title<input style={input} value={job.title} onChange={e=>patch({title:e.target.value})} placeholder="Replace haul truck brake lines"/></label>
       <label style={label}>Job / work order reference<input style={input} value={job.jobId} onChange={e=>patch({jobId:e.target.value})} placeholder="WO-2026-014"/></label>
       <label style={label}>Type of work<select style={input} value={job.jobType} onChange={e=>patch({jobType:e.target.value})}>{dictionary.jobTypes.map(t=><option key={t}>{t}</option>)}</select></label>
@@ -212,7 +212,7 @@ export function JraWorkspace(){
           let residual:ReturnType<typeof scoreRisk>|null=null;try{residual=scoreRisk(defaultRiskMatrix,hazard.residual);}catch{}
           return <div key={hazard.id} style={{background:"#f8fafc",border:"1px solid #dce4ec",borderRadius:13,padding:13,display:"grid",gap:11}}>
            <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:13}}>Hazard {hi+1}</strong><button style={{...btn,padding:7,minHeight:33,color:"#b42318"}} aria-label="Remove hazard" onClick={()=>updateTask(step.id,t=>({...t,hazards:t.hazards.filter(h=>h.id!==hazard.id)}))}><Trash2 size={15}/></button></div>
-           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:9}}>
+           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:9}}>
             <label style={label}>Hazard category<select style={input} value={hazard.category} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,category:e.target.value}))}>{dictionary.hazardCategories.map(v=><option key={v}>{v}</option>)}</select></label>
             <label style={label}>What can go wrong?<input style={input} value={hazard.hazard} placeholder="Choose a hazard or enter another" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,hazard:e.target.value}))}/>
              <select aria-label="Choose a suggested hazard" style={{...input,fontSize:11}} value="" onChange={e=>{if(e.target.value)changeHazard(step.id,hazard.id,h=>({...h,hazard:e.target.value}));}}>
@@ -229,7 +229,7 @@ export function JraWorkspace(){
            <div><strong style={{fontSize:12}}>Initial risk — without additional controls</strong><div style={{marginTop:7}}><RiskChooser value={hazard.initial} onChange={risk=>changeHazard(step.id,hazard.id,h=>({...h,initial:risk}))}/></div></div>
            <div style={{borderTop:"1px solid #e2e8f0",paddingTop:12}}>
             <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:12}}>Remedies / preventive controls</strong><button style={{...btn,fontSize:11,padding:"7px 9px",minHeight:33}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,controls:[...h.controls,{id:"ctrl-"+crypto.randomUUID(),hierarchy:dictionary.hierarchyOfControls[2],description:"",verified:false}]}))}><Plus size={13} style={{display:"inline"}}/> Add control</button></div>
-            {hazard.controls.map(control=><div key={control.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:7,marginTop:8}}>
+            {hazard.controls.map(control=><div key={control.id} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,150px),1fr))",gap:7,marginTop:8}}>
              <select aria-label="Hierarchy of control" style={input} value={control.hierarchy} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,hierarchy:e.target.value}:c)}))}>{dictionary.hierarchyOfControls.map(v=><option key={v}>{v}</option>)}</select>
              <div style={{display:"grid",gap:5}}>
               <input aria-label="Control or remedy" style={input} value={control.description} placeholder="Select proposed control or enter another" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,controls:h.controls.map(c=>c.id===control.id?{...c,description:e.target.value,verified:false}:c)}))}/>

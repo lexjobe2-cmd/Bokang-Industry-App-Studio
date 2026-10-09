@@ -99,7 +99,7 @@ export function OrganizationOnboarding(){
     <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
      {["Company","Branding","People & owners","Review"].map((name,i)=><button key={name} style={{...button,fontSize:11,minHeight:36,padding:"7px 12px",background:step===i?"#174fa8":"#f8fafc",color:step===i?"#fff":"#475569"}} onClick={()=>setStep(i)}>{i+1}. {name}</button>)}
     </div>
-    {step===0?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:12}}>
+    {step===0?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,190px),1fr))",gap:12}}>
      <label style={label}>Company legal/trading name *<input style={input} value={draft.name} onChange={e=>patch({name:e.target.value})} placeholder="Kalahari Mining Services"/></label>
      <label style={label}>Company email domain (not verified)<input style={input} value={draft.domain} onChange={e=>patch({domain:e.target.value})} placeholder="company.co.bw"/></label>
      <label style={label}>Industry<select style={input} value={draft.industry} onChange={e=>patch({industry:e.target.value})}>{["Mining & resources","Construction","Logistics & fleet","Manufacturing","Energy & utilities","Agriculture","Healthcare","Facilities","Government","Other"].map(x=><option key={x}>{x}</option>)}</select></label>
@@ -118,7 +118,7 @@ export function OrganizationOnboarding(){
      </label>
     </div>:null}
     {step===1?<div style={{display:"grid",gap:13}}>
-     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(195px,1fr))",gap:12}}>
+     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,195px),1fr))",gap:12}}>
       <label style={label}>Document prefix<input style={input} value={draft.documentPrefix} onChange={e=>patch({documentPrefix:e.target.value})} placeholder="ORG-SHE"/></label>
       <label style={label}>Brand accent<input type="color" style={{...input,padding:6}} value={draft.accent} onChange={e=>patch({accent:e.target.value})}/></label>
       <label style={label}>Company logo (200 KB limit)<input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>upload(e.target.files?.[0])}/></label>
@@ -131,7 +131,7 @@ export function OrganizationOnboarding(){
     </div>:null}
     {step===2?<div style={{display:"grid",gap:10}}>
      <div><strong style={{fontSize:15}}>People and organization owners</strong><p style={{fontSize:12,color:"#64748b"}}>Add supervisors, operators, contractors and company owners. These demo records are local; Microsoft 365 access comes later.</p></div>
-     {members.map((person,i)=><div key={i} style={{...card,background:"#f8fafc",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:9}}>
+     {members.map((person,i)=><div key={i} style={{...card,background:"#f8fafc",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:9}}>
        <label style={label}>Person name<input style={input} value={person.name} placeholder="Full name" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,name:e.target.value}:p))}/></label>
        <label style={label}>Job title<input style={input} value={person.jobTitle} placeholder="Supervisor" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,jobTitle:e.target.value}:p))}/></label>
        <label style={label}>Department<input style={input} value={person.department} placeholder="Engineering" onChange={e=>setMembers(xs=>xs.map((p,j)=>i===j?{...p,department:e.target.value}:p))}/></label>

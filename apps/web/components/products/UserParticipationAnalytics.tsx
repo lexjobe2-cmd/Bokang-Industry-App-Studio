@@ -20,7 +20,7 @@ function Breakdown({title,items}:{title:string;items:{name:string;count:number}[
  const max=Math.max(1,...items.map(x=>x.count));
  return <div style={card}><strong style={{fontSize:15}}>{title}</strong>
   {!items.length?<p style={{...small}}>No recorded activity.</p>:<div style={{display:"grid",gap:10,marginTop:14}}>
-   {items.slice(0,12).map(item=><div key={item.name} style={{display:"grid",gridTemplateColumns:"minmax(100px,1fr) 2fr 20px",gap:9,alignItems:"center",fontSize:11}}>
+   {items.slice(0,12).map(item=><div key={item.name} style={{display:"grid",gridTemplateColumns:"minmax(min(100%,100px),1fr) 2fr 20px",gap:9,alignItems:"center",fontSize:11}}>
     <span style={{overflowWrap:"anywhere",color:"#475569"}}>{item.name}</span>
     <div style={{height:9,borderRadius:8,overflow:"hidden",background:"#edf2f8"}}><div style={{width:(item.count/max*100)+"%",height:"100%",borderRadius:8,background:"#2563eb"}}/></div>
     <strong>{item.count}</strong>
@@ -35,6 +35,7 @@ export function UserParticipationAnalytics(){
  const [forms]=usePersistentState<FormSubmission[]>("bokang-studio.move-track.assurance-submissions.v1",[]);
  const [jras]=usePersistentState<JobRiskAssessment[]>(ASSURANCE_STORAGE.jras,[]);
  const [person,setPerson]=usePersistentState(ACTIVE_PERSON_KEY,"");
+ const [pane,setPane]=useState<"overview"|"meetings"|"records">("overview");
  const [view,setView]=useState<"mine"|"company">("mine");
  const [meetingSite,setMeetingSite]=useState("");
  const [meetingMonth,setMeetingMonth]=useState("");
@@ -71,31 +72,11 @@ export function UserParticipationAnalytics(){
      <p style={{color:"#cbd5e1",fontSize:12,margin:0,lineHeight:1.6}}>Personal participation histories and company patterns on this browser, using actual locally saved forms and JRA team rosters. No invented activity.</p>
     </div><BarChart3 size={29} color="#bfdbfe"/></div>
   </div>
-  <div style={{...card,display:"grid",gap:12}}>
-   <strong>Meeting attendance & follow-ups</strong>
-   <p style={small}>This browser's recorded invitations: present ÷ (present + absent). Late arrivals and early departures count as attending. Apologies are separate. Missing invitations cannot be inferred.</p>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:9}}>
-    <label style={label}>Meeting site<select style={input} value={meetingSite} onChange={e=>setMeetingSite(e.target.value)}><option value="">All sites</option>{[...new Set(forms.filter(f=>(f.templateSnapshot as {organizationId?:string}).organizationId===org.id&&f.templateSnapshot.category==="Meetings").map(f=>f.siteId))].map(v=><option key={v}>{v}</option>)}</select></label>
-    <label style={label}>Meeting month<input type="month" style={input} value={meetingMonth} onChange={e=>setMeetingMonth(e.target.value)}/></label>
-   </div>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:9}}>
-    <CountTile name={scope?"Meetings attended":"Meetings held"} value={meetings.attended}/>
-    <CountTile name="Attendance rate" value={meetings.attendanceRate===null?"—":meetings.attendanceRate+"%"}/>
-    <CountTile name="Apologies received" value={meetings.apologies}/>
-    <CountTile name="Outstanding actions" value={meetings.open}/>
-    <CountTile name="Overdue actions" value={meetings.overdue}/>
-   </div>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10}}>
-    <Breakdown title="Attendance by department" items={meetings.departments}/>
-    <Breakdown title="Meeting completion by month" items={meetings.months}/>
-    <Breakdown title="Frequent attendees" items={meetings.topPeople.map(p=>({name:p.name,count:p.count}))}/>
-   </div>
-  </div>
   <div style={{...card,display:"grid",gap:10}}>
    <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
     <strong>{org.name}</strong><span style={{...small}}>· {workers.length} active local directory people</span>
    </div>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:10}}>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10}}>
     <label style={label}>View activity<select style={input} value={view} onChange={e=>setView(e.target.value as "mine"|"company")}>
       <option value="mine">My participation</option><option value="company">Company overview</option>
     </select></label>
@@ -108,7 +89,28 @@ export function UserParticipationAnalytics(){
    {view==="mine"&&!user?<p style={{fontSize:12,color:"#b45309",margin:0}}>Choose an employee above to see exactly which forms and JRAs include them. Until then, the company overview is shown.</p>:null}
    {view==="mine"&&user?<p style={{fontSize:12,color:"#047857",margin:0}}><UserRound size={15} style={{display:"inline",verticalAlign:"middle"}}/> Viewing participation for {user.displayName}. Attribution is based on stable person IDs, not fabricated completion claims.</p>:null}
   </div>
-  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:10}}>
+  <nav className="movetrack-step-nav" aria-label="Analytics pages">{(["overview","meetings","records"] as const).map(key=><button type="button" key={key} aria-current={pane===key?"step":undefined} onClick={()=>setPane(key)}>{key==="overview"?"Overview":key==="meetings"?"Meeting attendance":"Records & exports"}</button>)}</nav>
+  <div hidden={pane!=="meetings"} style={{...card,display:"grid",gap:12}}>
+   <strong>Meeting attendance & follow-ups</strong>
+   <p style={small}>This browser's recorded invitations: present ÷ (present + absent). Late arrivals and early departures count as attending. Apologies are separate. Missing invitations cannot be inferred.</p>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,190px),1fr))",gap:9}}>
+    <label style={label}>Meeting site<select style={input} value={meetingSite} onChange={e=>setMeetingSite(e.target.value)}><option value="">All sites</option>{[...new Set(forms.filter(f=>(f.templateSnapshot as {organizationId?:string}).organizationId===org.id&&f.templateSnapshot.category==="Meetings").map(f=>f.siteId))].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label style={label}>Meeting month<input type="month" style={input} value={meetingMonth} onChange={e=>setMeetingMonth(e.target.value)}/></label>
+   </div>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:9}}>
+    <CountTile name={scope?"Meetings attended":"Meetings held"} value={meetings.attended}/>
+    <CountTile name="Attendance rate" value={meetings.attendanceRate===null?"—":meetings.attendanceRate+"%"}/>
+    <CountTile name="Apologies received" value={meetings.apologies}/>
+    <CountTile name="Outstanding actions" value={meetings.open}/>
+    <CountTile name="Overdue actions" value={meetings.overdue}/>
+   </div>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:10}}>
+    <Breakdown title="Attendance by department" items={meetings.departments}/>
+    <Breakdown title="Meeting completion by month" items={meetings.months}/>
+    <Breakdown title="Frequent attendees" items={meetings.topPeople.map(p=>({name:p.name,count:p.count}))}/>
+   </div>
+  </div>
+  <div hidden={pane!=="overview"} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:10}}>
    <CountTile name={scope?"My recorded involvement":"Company records"} value={a.total} detail="Distinct forms and JRAs"/>
    <CountTile name="Checklist submissions" value={a.forms} detail="Submitted records"/>
    <CountTile name="Risk assessments" value={a.jras} detail="Locally saved JRAs"/>
@@ -118,19 +120,19 @@ export function UserParticipationAnalytics(){
    <CountTile name="Saved JRA drafts" value={a.drafts}/>
    <CountTile name="People involved" value={a.peopleInvolved}/>
   </div>
-  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:11}}>
+  <div hidden={pane!=="overview"} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,260px),1fr))",gap:11}}>
    <Breakdown title="Activity by form category" items={a.categories}/>
    <Breakdown title="Activity by operating site" items={a.sites}/>
    <Breakdown title={scope?"My involvement roles":"Recorded team roles"} items={a.roles.map(r=>({name:r.role,count:r.count}))}/>
    <Breakdown title="Monthly participation trend" items={recentMonths}/>
    {!scope?<Breakdown title="Most frequently involved workers" items={a.topPeople.map(x=>({name:x.name,count:x.count}))}/>:null}
   </div>
-  <div style={card}>
+  <div hidden={pane!=="records"} style={card}>
    <div style={{display:"flex",justifyContent:"space-between",gap:9,flexWrap:"wrap",alignItems:"center"}}>
     <div><h3 style={{margin:0,fontSize:18}}>Participation and forms register</h3><p style={{...small}}>Filter your records, export a register, or download any completed document.</p></div>
     <button style={{border:0,borderRadius:9,padding:"10px 13px",background:"#173764",color:"#fff",fontWeight:800,cursor:"pointer",display:"flex",gap:6,alignItems:"center"}} onClick={exportSummary}><Download size={16}/> Export register CSV</button>
    </div>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:9,margin:"12px 0"}}>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,175px),1fr))",gap:9,margin:"12px 0"}}>
     <label style={label}>Find forms<input style={input} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search job, document or site"/></label>
     <label style={label}>Status<select style={input} value={status} onChange={e=>setStatus(e.target.value)}><option>All statuses</option>{[...new Set(a.items.map(x=>x.status))].map(x=><option key={x}>{x}</option>)}</select></label>
     <label style={label}>Category<select style={input} value={category} onChange={e=>setCategory(e.target.value)}><option>All categories</option>{[...new Set(a.items.map(x=>x.category))].map(x=><option key={x}>{x}</option>)}</select></label>

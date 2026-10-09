@@ -58,7 +58,7 @@ export function MoveTrackHelpCenter({initialPage="preferences",onOpenData}:{init
   </div>
   {page==="preferences"?<div style={{...tile,display:"grid",gap:15}}>
    <div><h3 style={{margin:"0 0 5px",fontSize:19}}>Appearance</h3>{bodyText("Your selection is saved to this device. Reports remain optimized for white paper regardless of theme.")}</div>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:10}}>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:10}}>
     {([{id:"light",label:"Light mode",icon:Sun,desc:"Clean, bright operational workspace"},{id:"dark",label:"Dark mode",icon:Moon,desc:"Reduced glare in low-light settings"}] as const).map(opt=>
       <button type="button" key={opt.id} aria-pressed={theme===opt.id} onClick={()=>setTheme(opt.id)}
        style={{...tile,textAlign:"left",cursor:"pointer",borderColor:theme===opt.id?"#2563eb":"#e2e8f0",boxShadow:theme===opt.id?"inset 0 0 0 1px #2563eb":undefined}}>

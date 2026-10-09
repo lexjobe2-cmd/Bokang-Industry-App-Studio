@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { AlertTriangle, ClipboardCheck, RotateCcw, Truck, ShieldCheck, ArrowUpRight } from "lucide-react";
 import { usePersistentState } from "@bokang/persistence";
@@ -18,6 +18,8 @@ import { OperationalGraphPanel } from "./OperationalGraphPanel";
 import {GlobalWorkspaceSearch} from "./GlobalWorkspaceSearch";
 import type {MoveTrackView} from "./MoveTrackWorkspaceNav";
 import {MoveTrackThemeStyles} from "./MoveTrackThemeStyles";
+import {useMoveTrackScreen} from "./useMoveTrackScreen";
+import {MoveTrackCompanySummary} from "./MoveTrackCompanySummary";
 import {MOVETRACK_THEME_KEY,type MoveTrackTheme} from "./MoveTrackHelpCenter";
 import {LifeBuoy,LayoutDashboard,BarChart3} from "lucide-react";
 
@@ -44,21 +46,13 @@ export function MoveTrackDemoLab(){
  const [,setReleases,releasesReady]=usePersistentState<FleetReleaseRecord[]>("bokang-studio.move-track.releases.v1",[]);
  const [active,setActive]=useState<Scenario|null>(null);
  const [startWorkspace,setStartWorkspace]=usePersistentState<MoveTrackView>("bokang-studio.move-track.navigation.view.v1","control");
- const [workflowsOpen,setWorkflowsOpen]=useState(false);
- const [atHome,setAtHome]=useState(true);
- function goWorkspace(next:MoveTrackView,scroll=true){
-  setStartWorkspace(next);setAtHome(false);
-  if(scroll)window.requestAnimationFrame(()=>document.getElementById("movetrack-workspaces")?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"}));
- }
- function goHome(){setAtHome(true);window.scrollTo({top:0,behavior:reducedMotion?"auto":"smooth"});}
- function findSearch(){
-  setAtHome(true);
-  window.requestAnimationFrame(()=>{
-  document.getElementById("movetrack-global-search")?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"});
-  window.requestAnimationFrame(()=>document.querySelector<HTMLInputElement>('[aria-label="Search MoveTrack records"]')?.focus({preventScroll:true}));
-  });
- }
- function jumpTo(id:string){window.requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"}));}
+ const {screen,navigate}=useMoveTrackScreen();
+ useEffect(()=>{const onKey=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"){event.preventDefault();navigate({kind:"search"});window.requestAnimationFrame(()=>document.querySelector<HTMLInputElement>('[aria-label="Search MoveTrack records"]')?.focus());}};window.addEventListener("keydown",onKey);return ()=>window.removeEventListener("keydown",onKey);},[navigate]);
+ const atHome=screen.kind==="home";
+ useEffect(()=>{if(screen.kind==="workspace")setStartWorkspace(screen.view);},[screen,setStartWorkspace]);
+ function goWorkspace(next:MoveTrackView,_scroll=true){setStartWorkspace(next);navigate({kind:"workspace",view:next});}
+ function goHome(){navigate({kind:"home"});}
+ function findSearch(){navigate({kind:"search"});}
  const [notice,setNotice]=useState("");
  const hydrated=[fleetReady,driversReady,assignReady,prestartsReady,incidentsReady,policiesReady,submissionReady,draftsReady,repairReady,reinspectReady,releasesReady].every(Boolean);
  function applyScenario(scenario:Scenario){
@@ -108,7 +102,7 @@ export function MoveTrackDemoLab(){
  return <main className="movetrack-root" data-theme={theme} style={{background:theme==="dark"?"#081323":"#f3f7fc",minHeight:"100vh",color:theme==="dark"?"#edf4fe":"#15233a",paddingBottom:100}}>
   <MoveTrackThemeStyles/>
   <MoveTrackAppShellNav activeView={startWorkspace} atHome={atHome} onHome={goHome} onSearch={findSearch}
-   onNavigate={goWorkspace} onCompany={()=>{setAtHome(true);jumpTo("movetrack-onboarding");}} onWorkflow={()=>{setAtHome(true);setWorkflowsOpen(true);jumpTo("movetrack-workflow-graph");}}
+   onNavigate={goWorkspace} onCompany={()=>navigate({kind:"company"})} onWorkflow={()=>navigate({kind:"workflows"})} screenLabel={screen.kind==="company"?"Company management":screen.kind==="search"?"Search":screen.kind==="workflows"?"Safety workflow library":undefined}
    theme={theme} onToggleTheme={()=>setTheme(theme==="dark"?"light":"dark")}/>
   <div style={{display:atHome?"contents":"none"}}><div className="movetrack-hero" style={{background:"linear-gradient(125deg,#0a162b 0%,#112746 65%,#1b4b79 100%)",color:"#fff",padding:"26px 20px 42px"}}>
    <div style={{maxWidth:1250,margin:"0 auto"}}>
@@ -118,7 +112,7 @@ export function MoveTrackDemoLab(){
     </div>
     <p style={{color:"#93c5fd",letterSpacing:1.8,fontSize:11,fontWeight:900,textTransform:"uppercase",margin:"28px 0 8px"}}>Bokang Industry App Studio / MoveTrack AI</p>
     <h1 style={{fontSize:"clamp(30px,5vw,49px)",maxWidth:850,lineHeight:1.08,margin:"0 0 12px"}}>Fleet + SHE Operational Assurance</h1>
-    <p style={{maxWidth:780,color:"#cbd5e1",fontSize:14,lineHeight:1.75,margin:0}}>Start by onboarding a company, then run 21 new linked SHE workflows, branded JRA and JSA, fleet inspections, incident controls, and repair/release processes. Everything runs locally in your browser—no Firebase, Google account, Drive or backend setup.</p>
+    <p style={{maxWidth:780,color:"#cbd5e1",fontSize:14,lineHeight:1.75,margin:0}}>Your company, fleet and safety work in one workspace. Start inspections, record meetings and follow up on actions. Choose a workspace below to get started. Your company records and drafts save on this browser.</p>
     <div style={{display:"flex",gap:9,flexWrap:"wrap",marginTop:22}}>
      <a href="/driver/move-track?driver=DRV-001" style={{...style,display:"flex",gap:7,alignItems:"center",padding:"11px 14px",color:"#fff",background:"#2563eb",fontSize:13,fontWeight:850,textDecoration:"none",border:0}}>Open driver mobile app <ArrowUpRight size={17}/></a>
      <span style={{...style,padding:"11px 14px",color:"#cbd5e1",background:"#203550",border:"1px solid #58708f",fontSize:12}}>Demo site: Jwaneng mine profile</span>
@@ -126,47 +120,50 @@ export function MoveTrackDemoLab(){
    </div>
   </div>
   <div className="movetrack-content" style={{maxWidth:1250,margin:"-24px auto 0",padding:"0 20px",position:"relative",display:"grid",gap:19}}>
-   <section id="movetrack-onboarding" style={{scrollMarginTop:85}}><OrganizationOnboarding/></section>
+   <MoveTrackCompanySummary onManage={()=>navigate({kind:"company"})} onWorkforce={()=>goWorkspace("workforce")}/>
    <section aria-label="Workspace quick access" style={{...style,display:"grid",gap:12}}>
     <div><p style={{fontSize:10,color:"#2563eb",fontWeight:900,letterSpacing:1.2,margin:0}}>YOUR MOVE TRACK WORKSPACE</p>
      <h2 style={{fontSize:21,margin:"5px 0"}}>What would you like to do?</h2>
      <p style={{fontSize:12,color:"#64748b",margin:0}}>Pick your work area first. Your saved records remain available across all views.</p>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:9}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:9}}>
      {([{key:"control",title:"Operations dashboard",desc:"Fleet, assets and site jobs",icon:LayoutDashboard},
         {key:"forms",title:"Start inspection / JSA / JRA",desc:"Checklists, hazards and critical controls",icon:ShieldCheck},
         {key:"meetings",title:"New meeting",desc:"Attendance, apologies and actions",icon:ClipboardCheck},
         {key:"release",title:"Report / review defect",desc:"Grounding, repair and reinspection",icon:AlertTriangle},
         {key:"assign",title:"View assigned work",desc:"Drivers, equipment and dispatch",icon:Truck},
         {key:"profile",title:"View my participation",desc:"Meeting attendance and safety trends",icon:BarChart3},
-        {key:"settings",title:"Support & settings",desc:"Privacy, terms, FAQ, theme",icon:LifeBuoy}] as const).map(item=>
+        {key:"paper",title:"Convert a paper form",desc:"Upload, review and publish a template",icon:ClipboardCheck}] as const).map(item=>
        <button type="button" key={item.key} onClick={()=>{goWorkspace(item.key);}}
          style={{...style,textAlign:"left",cursor:"pointer",display:"flex",gap:11,alignItems:"start",borderColor:"#b6cde8"}}>
          <item.icon size={20} color="#2563eb"/><span><strong style={{display:"block",fontSize:14}}>{item.title}</strong><small style={{display:"block",fontSize:11,color:"#64748b",marginTop:4}}>{item.desc}</small></span>
        </button>)}
     </div>
    </section>
-   <section aria-label="Document quick start" style={{...style,display:"grid",gap:12}}>
-    <div><p style={{fontSize:10,letterSpacing:1.4,color:"#2563eb",fontWeight:900,margin:"0 0 5px"}}>STEP 02 · EXISTING PAPER AND MEETINGS</p><h2 style={{fontSize:21,margin:"0 0 7px"}}>Bring your existing documents. Start recording meetings.</h2>
-      <p style={{color:"#64748b",fontSize:12,margin:0}}>Import a company's paper checklist using OCR, or create a digital meeting register straight away. Both generate downloadable blank/filled PDFs and Word files.</p></div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(205px,1fr))",gap:10}}>
-     {[{key:"paper" as const,title:"Scan a paper checklist",description:"Photo or scanned PDF → OCR → review fields → reusable form",color:"#1d4ed8"},
-       {key:"meetings" as const,title:"Meeting registers & minutes",description:"SHE meetings, toolbox talks, attendance, actions and PDF",color:"#047857"},
-       {key:"forms" as const,title:"All SHE forms & JRA",description:"Use our company templates and submitted forms",color:"#7c3aed"}].map(item=>
-       <button key={item.key} style={{...style,textAlign:"left",cursor:"pointer",borderColor:item.color}} onClick={()=>{goWorkspace(item.key);}}>
-        <strong style={{display:"block",color:item.color,fontSize:15}}>{item.title} →</strong>
-        <span style={{fontSize:12,color:"#64748b",lineHeight:1.5,display:"block",marginTop:7}}>{item.description}</span>
-       </button>)}
-    </div>
+   <button type="button" style={{...style,textAlign:"left",font:"inherit",fontWeight:850,minHeight:48,cursor:"pointer"}} onClick={()=>navigate({kind:"workflows"})}>Explore the safety workflow library →</button>
+   <section aria-label="Live test overview" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:10}}>
+    {[
+      {label:"Fleet registered",value:fleet.length,icon:Truck},
+      {label:"Active assignments",value:assignments.filter(a=>!["Returned","Cancelled"].includes(a.status)).length,icon:ClipboardCheck},
+      {label:"Grounded vehicles",value:fleet.filter(v=>v.status==="No-go").length,icon:AlertTriangle},
+      {label:"Open defect reports",value:incidents.filter(i=>i.status!=="Resolved").length,icon:ShieldCheck}
+    ].map(item=><div key={item.label} style={style}><item.icon size={17} color="#2563eb"/><strong style={{display:"block",fontSize:26,margin:"7px 0 1px"}}>{hydrated?item.value:"—"}</strong><span style={{fontSize:11,color:"#667085",fontWeight:800}}>{item.label}</span></div>)}
    </section>
-   <GlobalWorkspaceSearch onNavigate={(view)=>goWorkspace(view)}/>
-   <section id="movetrack-workflow-graph" style={{...style,scrollMarginTop:85}}><details open={workflowsOpen} onToggle={e=>setWorkflowsOpen(e.currentTarget.open)}><summary style={{cursor:"pointer",minHeight:44,fontWeight:850}}>Explore 21 safety workflows</summary><OperationalGraphPanel onOpenWorkflow={()=>goWorkspace("forms")}/></details></section>
+  </div></div>
+  <div className="movetrack-workspace-content">
+   <section hidden={screen.kind!=="company"} aria-label="Company management"><OrganizationOnboarding/></section>
+   <section hidden={screen.kind!=="search"}><GlobalWorkspaceSearch onNavigate={goWorkspace}/></section>
+   <section hidden={screen.kind!=="workflows"} id="movetrack-workflow-graph"><h1 style={{fontSize:25}}>Safety workflow library</h1><OperationalGraphPanel onOpenWorkflow={()=>goWorkspace("forms")}/></section>
+   <section hidden={screen.kind!=="workspace"} id="movetrack-workspaces" className="movetrack-workspace-surface" style={{...style,padding:"10px 17px 19px",scrollMarginTop:83}}>
+     <MoveTrackShowcase initialView={startWorkspace} selectedView={startWorkspace} onViewChange={(view)=>goWorkspace(view,false)}/>
+   </section>
+   <div hidden={screen.kind!=="workspace"||screen.view!=="local-data"}>
    <details style={style}><summary style={{cursor:"pointer",minHeight:44,fontWeight:850}}>Demo scenarios and test data</summary><section aria-label="Demo scenarios">
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
       <div><p style={{fontSize:11,fontWeight:900,letterSpacing:1.3,color:"#2563eb",textTransform:"uppercase",margin:0}}>Quick start</p><h2 style={{fontSize:21,margin:"4px 0"}}>Choose a test scenario</h2><p style={{fontSize:12,color:"#64748b",margin:0}}>Each scenario loads connected demo records into the same fleet and driver app.</p></div>
       <span style={{fontWeight:850,fontSize:12,color:hydrated?"#087f5b":"#64748b"}}>{hydrated?"● Browser workspace ready":"Loading local demo…"}</span>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:10}}>
      {scenarios.map(item=><motion.button key={item.key} type="button" whileHover={reducedMotion?undefined:{y:-2}} disabled={!hydrated} onClick={()=>applyScenario(item.key)}
       style={{...style,cursor:hydrated?"pointer":"wait",textAlign:"left",borderColor:active===item.key?item.color:"#dce4ef",background:active===item.key?"#f1f5f9":"#fff",minHeight:147}}>
        <item.icon size={21} color={item.color}/>
@@ -177,19 +174,7 @@ export function MoveTrackDemoLab(){
     {notice?<div role="status" style={{padding:"12px 14px",border:"1px solid #bfdbfe",borderRadius:12,background:"#eff6ff",marginTop:14,fontSize:12,fontWeight:750,color:"#1d4ed8"}}>{notice}</div>:null}
    </section>
    </details>
-   <section aria-label="Live test overview" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:10}}>
-    {[
-      {label:"Fleet registered",value:fleet.length,icon:Truck},
-      {label:"Active assignments",value:assignments.filter(a=>!["Returned","Cancelled"].includes(a.status)).length,icon:ClipboardCheck},
-      {label:"Grounded vehicles",value:fleet.filter(v=>v.status==="No-go").length,icon:AlertTriangle},
-      {label:"Open defect reports",value:incidents.filter(i=>i.status!=="Resolved").length,icon:ShieldCheck}
-    ].map(item=><div key={item.label} style={style}><item.icon size={17} color="#2563eb"/><strong style={{display:"block",fontSize:26,margin:"7px 0 1px"}}>{hydrated?item.value:"—"}</strong><span style={{fontSize:11,color:"#667085",fontWeight:800}}>{item.label}</span></div>)}
-   </section>
-  </div></div>
-  <div style={{maxWidth:1250,margin:"18px auto 0",padding:"0 20px"}}>
-   <section hidden={atHome} id="movetrack-workspaces" className="movetrack-workspace-surface" style={{...style,padding:"10px 17px 19px",scrollMarginTop:83}}>
-     <MoveTrackShowcase initialView={startWorkspace} selectedView={startWorkspace} onViewChange={(view)=>goWorkspace(view,false)}/>
-   </section>
+   </div>
    <p style={{fontSize:11,color:"#64748b",textAlign:"center",margin:"12px 0"}}>Preview / simulation only. Locally submitted records cannot authorize real work or equipment movement. Designed and developed by Bokang Jobe. <button type="button" style={{marginLeft:10,border:0,background:"transparent",textDecoration:"underline",cursor:"pointer",font:"inherit",color:"#2563eb"}} onClick={()=>{goWorkspace("settings");}}>Support · Privacy · Terms · FAQ</button></p>
   </div>
 

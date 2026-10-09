@@ -20,9 +20,9 @@ const destinations=[
 const labelFor=(view:MoveTrackView)=>navigationGroups.flatMap(group=>group.items.map(item=>({view:item.view,label:item.label,description:item.description}))).find(x=>x.view===view)?.label??"Workspaces";
 
 export function MoveTrackAppShellNav({
- activeView,atHome,onHome,onSearch,onNavigate,onCompany,onWorkflow,theme,onToggleTheme
+ activeView,atHome,onHome,onSearch,onNavigate,onCompany,onWorkflow,theme,onToggleTheme,screenLabel
 }:{
- activeView:MoveTrackView;atHome:boolean;onHome:()=>void;onSearch:()=>void;
+ activeView:MoveTrackView;screenLabel?:string;atHome:boolean;onHome:()=>void;onSearch:()=>void;
  onNavigate:(view:MoveTrackView)=>void;onCompany:()=>void;onWorkflow:()=>void;
  theme:"light"|"dark";onToggleTheme:()=>void
 }){
@@ -37,7 +37,7 @@ export function MoveTrackAppShellNav({
  const [menuOpen,setMenuOpen]=useState(false);
  const closeRef=useRef<HTMLButtonElement>(null);
  const menuButton=useRef<HTMLButtonElement>(null);
- const current=atHome?"Home":labelFor(activeView);
+ const current=screenLabel??(atHome?"Home":labelFor(activeView));
  function close(){setMenuOpen(false);}
  function navigate(view:MoveTrackView){close();onNavigate(view);}
  function home(){close();onHome();}
@@ -89,7 +89,7 @@ export function MoveTrackAppShellNav({
 
   <nav style={keyboardOpen?{display:"none"}:undefined} className="movetrack-mobile-dock" aria-label="MoveTrack mobile primary navigation">
    {destinations.map(item=>{
-    const active=item.key==="home"?atHome:item.key==="profile"?!atHome&&activeView==="profile":!atHome&&(item.key==="forms"?["forms","meetings","paper"].includes(activeView):item.key==="fleet"?["control","fleet","drivers","sites","assign","jobs","release"].includes(activeView):activeView===item.key);
+    const active=!screenLabel&&(item.key==="home"?atHome:item.key==="profile"?!atHome&&activeView==="profile":!atHome&&(item.key==="forms"?["forms","meetings","paper"].includes(activeView):item.key==="fleet"?["control","fleet","drivers","sites","assign","jobs","release"].includes(activeView):activeView===item.key));
     return <button type="button" key={item.key} className={active?"movetrack-dock-action is-active":"movetrack-dock-action"} aria-current={active?"page":undefined} onClick={()=>press(item.key)}>
      <item.icon size={24} strokeWidth={active?2.6:1.95}/>
      <span>{item.label}</span>
@@ -108,13 +108,13 @@ export function MoveTrackAppShellNav({
      <div className="movetrack-drawer-primary">
       <button type="button" onClick={home}><Home size={20}/> Home <ChevronRight size={16}/></button>
       <button type="button" onClick={()=>{close();onSearch();}}><Search size={20}/> Global search <ChevronRight size={16}/></button>
-      <button type="button" onClick={()=>{close();onCompany();}}><Building2 size={20}/> Company onboarding <ChevronRight size={16}/></button>
+      <button type="button" onClick={()=>{close();onCompany();}}><Building2 size={20}/> Company management <ChevronRight size={16}/></button>
       <button type="button" onClick={()=>{close();onWorkflow();}}><ScanLine size={20}/> Safety workflow library <ChevronRight size={16}/></button>
      </div>
      {navigationGroups.map(group=><section key={group.id} aria-label={group.label} className="movetrack-drawer-group">
       <h3>{group.label}</h3>
       <div className="movetrack-drawer-list">
-       {group.items.map(item=><button type="button" key={item.view} aria-current={!atHome&&activeView===item.view?"page":undefined} onClick={()=>navigate(item.view)}>
+       {group.items.map(item=><button type="button" key={item.view} aria-current={!screenLabel&&!atHome&&activeView===item.view?"page":undefined} onClick={()=>navigate(item.view)}>
         <span className="movetrack-drawer-icon"><item.icon size={19}/></span>
         <span className="movetrack-drawer-item-text"><strong>{item.label}</strong><small>{item.description}</small></span>
         <ChevronRight size={16} className="movetrack-chevron"/>

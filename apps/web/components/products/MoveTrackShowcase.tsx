@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { usePersistentState } from "@bokang/persistence";
-import { AssuranceFormsWorkspace } from "./AssuranceFormsWorkspace";
 import { FleetReleaseWorkspace } from "./FleetReleaseWorkspace";
 import {SignatureApprovalTray} from "./SignatureApprovalTray";
 import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
@@ -18,9 +17,8 @@ import {starterAssuranceTemplates,type FormSubmission} from "@bokang/domain-data
 import {additionalAssuranceRecipes} from "@bokang/domain-data/expanded-assurance";
 import {MoveTrackHelpCenter} from "./MoveTrackHelpCenter";
 import { UserParticipationAnalytics } from "./UserParticipationAnalytics";
-import { PaperToDigitalWorkspace } from "./PaperToDigitalWorkspace";
+import {WorkforceDirectoryWorkspace} from "./WorkforceDirectoryWorkspace";
 import {MoveTrackLocalProfile} from "./MoveTrackLocalProfile";
-import { MeetingRegisterWorkspace } from "./MeetingRegisterWorkspace";
 import {
   botswanaPlaces,
   logisticsJobStates,
@@ -40,6 +38,12 @@ import {
   type FleetSitePolicy,
   type PrestartRecord,
 } from "../../lib/move-track";
+
+const AssuranceFormsWorkspace=lazy(()=>import("./AssuranceFormsWorkspace").then(module=>({default:module.AssuranceFormsWorkspace})));
+
+const MeetingRegisterWorkspace=lazy(()=>import("./MeetingRegisterWorkspace").then(module=>({default:module.MeetingRegisterWorkspace})));
+
+const PaperToDigitalWorkspace=lazy(()=>import("./PaperToDigitalWorkspace").then(module=>({default:module.PaperToDigitalWorkspace})));
 
 type Job = { id:string; client:string; type:string; from:string; to:string; driver:string; state:string };
 
@@ -80,6 +84,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
   const [siteSignatures,setSiteSignatures]=useState<Record<string,SignatureEvidence|null>>({});
   const [localView,setLocalView]=useState<MoveTrackView>(initialView);
   const view=selectedView??localView;
+  const [visited,setVisited]=useState<Set<MoveTrackView>>(()=>new Set([initialView]));
+  useEffect(()=>{setVisited(current=>current.has(view)?current:new Set([...current,view]));},[view]);
   function setView(next:MoveTrackView){setLocalView(next);onViewChange?.(next);}
   useEffect(()=>{if(!selectedView)setLocalView(initialView);},[initialView,selectedView]);
   const [notice,setNotice]=useState("");
@@ -297,14 +303,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     setClient("");setView("jobs");
   }
 
-  return <section style={{marginTop:28,display:"grid",gap:18}}>
-    <MoveTrackGlobalSearch documents={searchIndex} onOpen={openSearchResult}/>
+  return <section style={{marginTop:0,display:"grid",gap:14}}>
+
     <MoveTrackWorkspaceNav view={view} onChange={setView}/>
 
     {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
 
     {view==="control"?<div style={{display:"grid",gap:14}}>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,150px),1fr))",gap:10}}>
         {[
           ["Available",control.available],["Assigned",control.assigned],["In use",control.inUse],
           ["Inspection due",control.due],["Grounded",control.grounded],["Open defects",control.openIncidents]
@@ -374,7 +380,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Extinguisher service due"><input type="date" value={vehicleDraft.extinguisherServiceDue} onChange={(e)=>setVehicleDraft((c)=>({...c,extinguisherServiceDue:e.target.value}))} style={input}/></Field>
       </div><button onClick={addVehicle} style={primaryButton}>Add vehicle</button></section>
 
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(285px,1fr))",gap:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
         {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid #fecaca":"1px solid #dbeafe"}}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
           <div style={{fontSize:12,color:"#667085",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
@@ -399,7 +405,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="Phone"><input type="tel" autoComplete="tel" value={driverDraft.phone} onChange={(e)=>setDriverDraft((c)=>({...c,phone:e.target.value}))} style={input}/></Field>
         <Field label="Licence / reference"><input value={driverDraft.licenceNo} onChange={(e)=>setDriverDraft((c)=>({...c,licenceNo:e.target.value}))} style={input}/></Field>
       </div><button onClick={addDriver} style={primaryButton}>Add driver</button></section>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(270px,1fr))",gap:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
         {drivers.map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
           <div style={{fontSize:11,color:"#667085",marginTop:4}}>{driver.licenceNo} · {driver.phone||"No phone"}</div>
@@ -438,14 +444,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           <strong>{policy.name}</strong>
           <span style={{fontSize:11,color:"#667085"}}>{policy.additionalCriticalChecks.length} extra critical controls</span>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:8,marginTop:12}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:8,marginTop:12}}>
           <label style={checkRow}><span>Require site/open-pit permit</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireOpenPitPermit} onChange={e=>editPolicy(policy,d=>({...d,requireOpenPitPermit:e.target.checked}))}/></label>
           <label style={checkRow}><span>Require first-aid training</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireFirstAid} onChange={e=>editPolicy(policy,d=>({...d,requireFirstAid:e.target.checked}))}/></label>
           <label style={checkRow}><span>Require defensive driving</span><input type="checkbox" checked={(siteDrafts[policy.id]??policy).requireDefensiveDriving} onChange={e=>editPolicy(policy,d=>({...d,requireDefensiveDriving:e.target.checked}))}/></label>
         </div>
         <div style={{marginTop:12}}>
           <div style={{fontSize:11,fontWeight:850,color:"#667085",marginBottom:7}}>Additional critical vehicle controls</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:7}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:7}}>
             {[
               "First aid kit present and stocked",
               "Two-way radio / site communication available",
@@ -496,15 +502,16 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
-    <div hidden={view!=="forms"}><AssuranceFormsWorkspace /></div>
-    <div hidden={view!=="meetings"}><MeetingRegisterWorkspace /></div>
-    <div hidden={view!=="paper"}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></div>
+    <div hidden={view!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace /></Suspense>:null}</div>
+    <div hidden={view!=="meetings"}>{visited.has("meetings")?<Suspense fallback={<p role="status">Loading meeting workspace…</p>}><MeetingRegisterWorkspace /></Suspense>:null}</div>
+    <div hidden={view!=="paper"}>{visited.has("paper")?<Suspense fallback={<p role="status">Loading document workspace…</p>}><PaperToDigitalWorkspace onOpenDesigner={()=>setView("forms")}/></Suspense>:null}</div>
     {view==="release"?<FleetReleaseWorkspace />:null}
     {view==="local-data"?<LocalWorkspacePanel />:null}
+    {view==="workforce"?<WorkforceDirectoryWorkspace/>:null}
     {view==="profile"?<MoveTrackLocalProfile/>:null}
     {view==="settings"?<MoveTrackHelpCenter onOpenData={()=>setView("local-data")}/>:null}
 
-    {view==="analytics"?<div style={{display:"grid",gap:15}}><UserParticipationAnalytics/><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
+    {view==="analytics"?<div style={{display:"grid",gap:15}}><UserParticipationAnalytics/><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:12}}>
       {[
         ["Fleet compliance",fleet.length?Math.round(((fleet.length-control.grounded-control.due)/fleet.length)*100)+"%":"—"],
         ["GO pre-starts",prestarts.filter((item)=>item.result==="GO").length],
@@ -519,7 +526,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
 function Field({label,children}:{label:string;children:React.ReactNode}){return <label style={{display:"grid",gap:5,fontSize:11,fontWeight:850}}>{label}{children}</label>;}
 const panel:React.CSSProperties={background:"#fff",border:"1px solid #dbeafe",borderRadius:20,padding:17};
-const formGrid:React.CSSProperties={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:10};
+const formGrid:React.CSSProperties={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10};
 const input:React.CSSProperties={border:"1px solid #d0d5dd",borderRadius:10,padding:10,font:"inherit",background:"#fff"};
 const primaryButton:React.CSSProperties={marginTop:14,border:0,background:"#1d4ed8",color:"#fff",borderRadius:11,padding:"10px 14px",fontWeight:900};
 const secondaryButton:React.CSSProperties={border:"1px solid #d0d5dd",background:"#fff",borderRadius:10,padding:"8px 10px",fontWeight:800,fontSize:11};

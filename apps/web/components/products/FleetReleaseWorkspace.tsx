@@ -101,7 +101,7 @@ export function FleetReleaseWorkspace(){
       </select>
       <small style={{color:"#b42318"}}><ShieldAlert size={14} style={{display:"inline"}}/> {unresolved.length} outstanding report(s). Resolve them in Fleet control before release.</small>
     </label>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:12}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,250px),1fr))",gap:12}}>
       <section style={card}>
        <h3 style={{display:"flex",gap:8,alignItems:"center",fontSize:17}}><Wrench size={19}/> 1 · Maintenance evidence</h3>
        <p style={{fontSize:11,color:"#667085"}}>Records a DEMO evidence reference only, not an uploaded repair photo.</p>

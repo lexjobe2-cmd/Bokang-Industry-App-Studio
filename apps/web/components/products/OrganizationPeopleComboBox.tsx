@@ -76,7 +76,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   else if(e.key==="Enter"&&opened&&options[highlight]){e.preventDefault();pick(options[highlight]);}
  }
  function open(){setOpened(true);setHighlight(0);window.requestAnimationFrame(()=>searchRef.current?.focus());}
- return <div className="movetrack-personpicker" ref={wrap} style={{display:"grid",gap:7,minWidth:0}}>
+ return <div className="movetrack-personpicker" ref={wrap} style={{display:"grid",gap:7,minWidth:0,width:"100%"}}>
   <div style={{display:"flex",alignItems:"center",gap:8,justifyContent:"space-between"}}>
    <label htmlFor={uid+"-trigger"} style={{fontSize:12,fontWeight:850,color:"#344054"}}>{label}{required?<span style={{color:"#b42318"}}> *</span>:null}</label>
    <span style={{fontSize:11,fontWeight:800,color:"#64748b"}}>{multiple?value.length+" selected":value.length?"Selected":""}</span>
@@ -90,9 +90,9 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
    {missing.length?<span style={{fontSize:10,color:"#b45309",padding:5}}>{missing.length} selected IDs not found in current directory</span>:null}
   </div>:null}
   <button id={uid+"-trigger"} type="button" aria-expanded={opened} aria-controls={uid+"-options"} aria-haspopup="listbox"
-    ref={triggerRef} onClick={()=>opened?setOpened(false):open()} style={{...input,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",fontSize:13,fontWeight:750,minHeight:48}}>
-   <span style={{display:"flex",gap:8,alignItems:"center",minWidth:0}}><Search size={16} color="#64748b"/><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{placeholder??(multiple?"Search and select employees":"Find a person by name or email")}</span></span>
-   <ChevronDown size={17} color="#64748b"/>
+    ref={triggerRef} onClick={()=>opened?setOpened(false):open()} style={{...input,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",fontSize:13,fontWeight:750,minHeight:48,minWidth:0,width:"100%"}}>
+   <span style={{display:"flex",gap:8,alignItems:"center",minWidth:0,flex:1,overflow:"hidden"}}><Search size={16} color="#64748b" style={{flexShrink:0}}/><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{placeholder??(multiple?"Search and select employees":"Find a person by name or email")}</span></span>
+   <ChevronDown size={17} color="#64748b" style={{flexShrink:0}}/>
   </button>
   {opened?<div className="movetrack-people-panel" id={uid+"-options"} role="group" aria-label={label+" search options"}>
    <div className="movetrack-people-panel-head">
@@ -141,8 +141,10 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
    </div>
   </div>:null}
   <style>{`
-  .movetrack-personpicker {position:relative;}
-  .movetrack-people-panel {position:absolute;top:100%;left:0;z-index:64;width:min(485px,calc(100vw - 32px));margin-top:5px;border:1px solid #cbd9e8;border-radius:15px;background:#fff;box-shadow:0 20px 45px rgba(15,35,63,.2);color:#1c3553;overflow:hidden;}
+  .movetrack-personpicker {position:relative;min-width:0;width:100%;}
+  .movetrack-personpicker > div:first-child {flex-wrap:wrap;}
+  .movetrack-personpicker input,.movetrack-personpicker select {min-width:0;}
+  .movetrack-people-panel {position:absolute;top:100%;left:0;z-index:64;width:min(485px,100%);margin-top:5px;border:1px solid #cbd9e8;border-radius:15px;background:#fff;box-shadow:0 20px 45px rgba(15,35,63,.2);color:#1c3553;overflow:hidden;}
   .movetrack-people-panel-head,.movetrack-people-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;background:#f5f8fd;border-bottom:1px solid #dfe8f2;}
   .movetrack-people-search{padding:12px 13px 3px;}
   .movetrack-people-options{display:grid;gap:3px;max-height:315px;overflow-y:auto;overscroll-behavior:contain;padding:5px 9px;}
@@ -151,11 +153,12 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   .movetrack-person-option.selected{background:#eaf3ff;border-color:#bad5f8;}
   .movetrack-person-avatar{flex:none;width:38px;height:38px;border-radius:11px;background:#e5edf8;display:grid;place-items:center;color:#2563eb;}
   .movetrack-person-check{color:#0b7a54;display:grid;place-items:center;width:22px;}
-  .movetrack-people-footer{border-top:1px solid #dfe8f2;border-bottom:0;}
+  .movetrack-people-footer{flex-wrap:wrap;border-top:1px solid #dfe8f2;border-bottom:0;}
   @media(max-width:700px){
     .movetrack-people-panel{position:fixed;inset:0;width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;
      display:flex;flex-direction:column;z-index:130;padding-top:env(safe-area-inset-top);}
-    .movetrack-people-options{flex:1;max-height:none;}
+    .movetrack-people-options{flex:1;min-height:0;max-height:none;}
+    .movetrack-people-footer > div{flex-wrap:wrap;}
     .movetrack-people-footer{padding-bottom:calc(13px + env(safe-area-inset-bottom));}
   }
   .movetrack-root[data-theme="dark"] .movetrack-personpicker .movetrack-people-panel{background:#152b46;color:#eff6ff;border-color:#3c5877;}

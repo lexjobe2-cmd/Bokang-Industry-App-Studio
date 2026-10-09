@@ -48,13 +48,13 @@ export function OperationalGraphPanel({onOpenWorkflow}:{onOpenWorkflow?:()=>void
     </div>
     <div style={{textAlign:"right"}}><strong style={{fontSize:26,display:"block"}}>{completed}/21</strong><span style={{fontSize:11,color:"#a3c9f5"}}>Checklists COMPLETE for this job</span></div>
    </div>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:10,marginTop:15}}>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10,marginTop:15}}>
     <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Active job / work order reference<input value={job} onChange={e=>setJob(e.target.value)} placeholder="WO-DEMO-001" style={{padding:"11px",border:"1px solid #8096b3",borderRadius:10,minHeight:43,font:"inherit",color:"#102033"}}/></label>
     <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Search the connected workflows<div style={{display:"flex",gap:7,alignItems:"center",background:"#fff",borderRadius:10,padding:"0 10px"}}><Search size={16} color="#64748b"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="height, rescue, gas test, silica..." style={{minWidth:0,flex:1,border:0,padding:"12px 3px",font:"inherit",color:"#102033"}}/></div></label>
     <label style={{fontSize:12,color:"#dbeafe",fontWeight:700,display:"grid",gap:5}}>Area<select style={{padding:11,borderRadius:10,minHeight:43,color:"#102033"}} value={area} onChange={e=>setArea(e.target.value)}><option>All areas</option>{[...new Set(additionalAssuranceRecipes.map(r=>r.area))].map(name=><option key={name}>{name}</option>)}</select></label>
    </div>
   </div>
-  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:10}}>
+  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,250px),1fr))",gap:10}}>
    {visible.map(workflow=>{
     const status=statusFor(workflow.id),active=expanded===workflow.id,related=workflowLinks(workflow.id);
     return <motion.article key={workflow.id} whileHover={reduced?undefined:{y:-2}} style={{...card,borderColor:active?"#93c5fd":"#dbe5f2",display:"grid",gap:10,alignContent:"start"}}>

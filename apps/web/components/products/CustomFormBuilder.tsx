@@ -104,7 +104,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
   {panel==="branding"?<div style={{...card,display:"grid",gap:14}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><h3 style={{margin:0}}>Organization onboarding / branding</h3><button style={blue} onClick={addOrganization}><Plus size={15} style={{display:"inline"}}/> Add another company</button></div>
    <label style={label}>Current company<select style={input} value={org.id} onChange={e=>setOrgId(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:12}}>
     <label style={label}>Company name<input style={input} value={org.name} onChange={e=>patchOrg({name:e.target.value})}/></label>
     <label style={label}>Organization domain<input style={input} value={org.domain} onChange={e=>patchOrg({domain:e.target.value})} placeholder="company.co.bw"/></label>
     <label style={label}>Business unit<input style={input} value={org.businessUnit} onChange={e=>patchOrg({businessUnit:e.target.value})}/></label>
@@ -122,7 +122,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
   </div>:null}
   {panel==="people"?<div style={{display:"grid",gap:12}}>
     <div style={card}><h3 style={{marginTop:0}}>Company directory — demo data</h3><p style={{fontSize:12,color:"#667085",lineHeight:1.6}}>Directory is ready to map Microsoft Graph users and organization-owner records later. No Microsoft login or directory API is called in this frontend demonstration.</p>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:9}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,145px),1fr))",gap:9}}>
        <label style={label}>Employee name<input style={input} value={name} onChange={e=>setName(e.target.value)} placeholder="Employee full name"/></label>
        <label style={label}>Job title<input style={input} value={jobTitle} onChange={e=>setJobTitle(e.target.value)} placeholder="Rigger"/></label>
        <label style={label}>Department<input style={input} value={dept} onChange={e=>setDept(e.target.value)}/></label>
@@ -131,7 +131,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
     </div>
     <div style={card}><strong>{people.filter(p=>p.orgId===org.id).length} members in {org.name}</strong>
       <p style={{fontSize:12,color:"#667085"}}>Set organization owners separately from job supervisors. Future Microsoft 365 organization administrators can be mapped to these profiles after tenant authorization; none are fetched now.</p>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:9,marginTop:14}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:9,marginTop:14}}>
        {people.filter(p=>p.orgId===org.id).map(p=><div key={p.id} style={{padding:12,borderRadius:11,background:"#f8fafc",display:"flex",gap:9,justifyContent:"space-between"}}>
          <div><strong style={{fontSize:12}}>{p.displayName}</strong><p style={{fontSize:11,color:"#667085",margin:"4px 0"}}>{p.jobTitle} · {p.department}</p><span style={{fontSize:10,color:"#2563eb"}}>{p.source.replaceAll("_"," ")}</span></div>
          <label style={{fontSize:11,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}><input type="checkbox" checked={org.ownerIds.includes(p.id)} onChange={e=>patchOrg({ownerIds:e.target.checked?[...new Set([...org.ownerIds,p.id])]:org.ownerIds.filter(id=>id!==p.id)})}/> Org owner</label>
@@ -158,7 +158,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
     <label style={{display:"grid",gap:6,fontSize:12,fontWeight:800,marginTop:12}}>Search 29 editable workflow recipes
        <input style={input} placeholder="Working at heights, scaffold, emergency..." value={recipeFilter} onChange={e=>setRecipeFilter(e.target.value)}/>
     </label>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:9,marginTop:12}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,170px),1fr))",gap:9,marginTop:12}}>
      {([...templateRecipes,...additionalAssuranceRecipes]).filter(r=>(r.title+" "+r.description).toLowerCase().includes(recipeFilter.toLowerCase())).map(r=><button key={r.id} style={{...btn,textAlign:"left",display:"grid",gap:6,minHeight:90}} onClick={()=>startRecipe(r.id)}>
       <span style={{fontSize:10,color:"#2563eb",fontWeight:900}}>{r.category.toUpperCase()}</span>
       <strong style={{fontSize:12}}>{r.title}</strong><span style={{fontSize:10,color:"#64748b"}}>{r.sections.reduce((n,s)=>n+s.fields.length,0)} initial questions</span>
@@ -167,7 +167,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    </div>
    <div style={card}>
     <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><h3 style={{margin:0}}>Template properties</h3><button onClick={reset} style={btn}>New blank form</button></div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:10,marginTop:13}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,190px),1fr))",gap:10,marginTop:13}}>
      <label style={label}>Form name<input style={input} value={title} onChange={e=>setTitle(e.target.value)} placeholder="Confined space permit"/></label>
      <label style={label}>Category<select style={input} value={category} onChange={e=>setCategory(e.target.value as FormCategory)}>{dictionary.categories.map(c=><option key={c}>{c}</option>)}</select></label>
      <label style={label}>Template kind<select style={input} value={documentType} onChange={e=>setDocumentType(e.target.value as "GENERAL"|"JRA")}><option value="GENERAL">General checklist / form</option><option value="JRA">JRA supporting form</option></select></label>
@@ -195,7 +195,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
           <button style={{...btn,padding:6,minHeight:33,color:"#b42318"}} onClick={()=>removeField(si,fi)} aria-label="Remove question"><Trash2 size={15}/></button>
          </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,165px),1fr))",gap:10}}>
          <label style={label}>Question label<input style={input} value={f.label} onChange={e=>patchField(si,fi,{label:e.target.value})}/></label>
          <label style={label}>Answer type<select style={input} value={f.type} onChange={e=>{
            const type=e.target.value as AnswerType;

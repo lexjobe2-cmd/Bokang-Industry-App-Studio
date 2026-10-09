@@ -44,7 +44,34 @@ export function MoveTrackThemeStyles(){
 .movetrack-root[data-theme="dark"] a:not([style*="color:"]) {color:#a4caff;}
 
 /* Responsive app shell: a real mobile dock, compact workspace header and one menu on every screen. */
-.movetrack-root { overflow-x:clip; }
+.movetrack-root { width:100%;min-width:0; }
+.movetrack-root [hidden] {display:none !important;}
+.movetrack-root :where(div,section,article,form,fieldset,label) { min-width:0; }
+.movetrack-root :where(h1,h2,h3,p,strong,small,label,a) { overflow-wrap:anywhere; }
+.movetrack-root :where(img,canvas,video,svg) { max-width:100%; }
+.movetrack-root :where(button,input,textarea,select) { min-width:0; }
+.movetrack-root :where(button) { white-space:normal; }
+.movetrack-root :where(input,select,textarea) { box-sizing:border-box; }
+.movetrack-step-nav {display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px;}
+.movetrack-step-nav button {min-height:44px;padding:9px 12px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#315479;font:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.movetrack-step-nav button[aria-current="step"] {background:#1d4ed8;color:#fff;border-color:#1d4ed8;}
+.movetrack-step-footer {display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;border-top:1px solid #dbe5ef;padding-top:14px;margin-top:14px;}
+.movetrack-step-footer button {min-height:44px;padding:10px 14px;border-radius:11px;border:1px solid #cbd5e1;background:#fff;color:#17406b;font:inherit;font-weight:800;cursor:pointer;}
+.movetrack-step-footer button:last-child {background:#1d4ed8;color:#fff;}
+.movetrack-workspace-surface {border:0 !important;background:transparent !important;padding:0 !important;}
+.movetrack-workspace-content {max-width:1250px;margin:18px auto 0;padding:0 20px;}
+.movetrack-root[data-theme="dark"] :is(.movetrack-step-nav button,.movetrack-step-footer button) {background:#203652;color:#ebf4ff;border-color:#496582;}
+.movetrack-root[data-theme="dark"] .movetrack-step-nav button[aria-current="step"] {background:#285ab0;color:#fff;}
+@media(max-width:520px){
+ .movetrack-workspace-content {padding:0 12px;}
+ .movetrack-root :where(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {font-size:16px !important;}
+ .movetrack-root [style*="grid-template-columns: 1fr minmax"] {grid-template-columns:minmax(0,1fr) !important;}
+ .movetrack-root [style*="min-width: 250px"],.movetrack-root [style*="min-width: 220px"] {min-width:0 !important;}
+ .movetrack-step-nav {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+ .movetrack-step-nav button {font-size:11px;padding:8px 5px;}
+ .movetrack-personpicker > button {font-size:13px;}
+}
+
 .movetrack-root :where(button,input,textarea,select) { max-width:100%; }
 .movetrack-root :where(section,article) { min-width:0; }
 .movetrack-appbar {
@@ -150,7 +177,7 @@ export function MoveTrackThemeStyles(){
  .movetrack-brand-name b {font-size:14px;}
  .movetrack-root .movetrack-hero {padding:22px 15px 34px !important;}
  .movetrack-root .movetrack-content {padding:0 12px !important;gap:12px !important;margin-top:-19px !important;}
- .movetrack-root .movetrack-workspace-surface {padding:8px 10px 16px !important;}
+ .movetrack-root .movetrack-workspace-surface {padding:0 !important;}
  .movetrack-root .movetrack-workspace-shortcuts {overflow:auto;flex-wrap:nowrap;max-width:100%;scrollbar-width:none;}
  .movetrack-root .movetrack-workspace-shortcuts button {white-space:nowrap;flex:none;}
  .movetrack-root .movetrack-workspace-switcher {padding:12px !important;}

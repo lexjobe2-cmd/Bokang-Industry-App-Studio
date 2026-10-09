@@ -7,7 +7,7 @@ export type MoveTrackScreen=
  | {kind:"search"}
  | {kind:"workspace";view:MoveTrackView};
 export const allWorkspaceViews:readonly MoveTrackView[]=[
- "control","fleet","drivers","sites","assign","jobs","analytics","forms","meetings","paper","release","local-data","settings","profile"
+ "control","fleet","drivers","sites","assign","jobs","analytics","forms","meetings","paper","release","local-data","settings","profile","workforce"
 ];
 const viewSet=new Set<string>(allWorkspaceViews);
 export function fromMoveTrackPath(pathname:string):MoveTrackScreen{
