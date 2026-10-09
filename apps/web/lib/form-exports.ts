@@ -1,10 +1,11 @@
+import {isSignatureEvidence,type SignatureEvidence} from "@bokang/domain-data/signature-evidence";
 import type {FormAnswer,FormAnswers,FormField,FormTemplate,FormSubmission} from "@bokang/domain-data/assurance-forms";
 import {blankJra,blankJraTask,blankHazard,type JobRiskAssessment,type OrganizationProfile,type PersonRecord} from "@bokang/domain-data/custom-assurance";
 import {scoreRisk,defaultRiskMatrix,type RiskAnswer} from "@bokang/domain-data/risk-matrix";
 
 export type DocumentMode="blank"|"draft"|"filled";
 export type DocumentFormat="pdf"|"docx"|"csv"|"json";
-export type DocumentRow={label:string;value:string};
+export type DocumentRow={label:string;value:string;signature?:SignatureEvidence};
 export type DocumentSection={title:string;rows:DocumentRow[]};
 export type ExportDocument={
  title:string;company:string;reference:string;mode:DocumentMode;status:string;timestamp:string;
@@ -17,6 +18,7 @@ function textValue(value:unknown,people:readonly PersonRecord[],field?:FormField
  if(typeof value==="number")return String(value);
  if(typeof value==="string")return field?.type==="person"?(people.find(p=>p.id===value)?.displayName??value):value;
  if(Array.isArray(value))return value.map(x=>people.find(p=>p.id===x)?.displayName??String(x)).join("; ");
+ if(isSignatureEvidence(value))return "Signed locally by "+value.signerName+" · "+value.role+" · "+value.signedAt+" · NOT identity verified";
  if(typeof value==="object"&&"likelihood" in value&&"consequence" in value){
   try{const v=scoreRisk(defaultRiskMatrix,value as RiskAnswer);return v.score+"/25 · "+v.level;}catch{return "Risk not assessed";}
  }
@@ -25,7 +27,8 @@ function textValue(value:unknown,people:readonly PersonRecord[],field?:FormField
 }
 function fieldRows(field:FormField,answer:FormAnswer|undefined,mode:DocumentMode,people:readonly PersonRecord[]):DocumentRow[]{
  if(field.type!=="repeat"){
-  return [{label:field.label+(field.required?" *":""),value:mode==="blank"?placeholder:textValue(answer,people,field)||(mode==="filled"?"—":placeholder)}];
+  const sig=mode==="blank"?undefined:isSignatureEvidence(answer)?answer:undefined;
+  return [{label:field.label+(field.required?" *":""),value:mode==="blank"?placeholder:textValue(answer,people,field)||(mode==="filled"?"—":placeholder),signature:sig}];
  }
  const rows:DocumentRow[]=[];
  if(mode!=="blank"&&Array.isArray(answer)){
