@@ -121,7 +121,7 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
     {options.map((p,i)=><button type="button" role="option" id={uid+"-option-"+i} key={p.id} aria-selected={selected.has(p.id)} aria-disabled={!p.active} disabled={!p.active}
       onMouseEnter={()=>setHighlight(i)} onClick={()=>pick(p)} className={selected.has(p.id)?"movetrack-person-option selected":"movetrack-person-option"}>
      <span className="movetrack-person-avatar"><UserRound size={18}/></span>
-     <span style={{flex:1,minWidth:0,display:"grid",gap:3}}>
+     <span className="movetrack-person-details" style={{flex:1,minWidth:0,display:"grid",gap:4,gridAutoRows:"max-content",alignContent:"start"}}>
       <strong style={{fontSize:12,color:"var(--mt-ink,#16355a)"}}>{p.displayName}</strong>
       <span style={{fontSize:10,color:"var(--mt-muted,#526987)"}}>{[p.jobTitle,p.department].filter(Boolean).join(" · ")||"Role not specified"}</span>
       <span style={{fontSize:10,color:"var(--mt-muted,#64748b)",overflowWrap:"anywhere"}}><Mail size={10} style={{display:"inline",verticalAlign:"middle"}}/> {p.email||p.userPrincipalName||"No email"}{p.userPrincipalName&&p.userPrincipalName!==p.email?" · UPN "+p.userPrincipalName:""}</span>
@@ -147,9 +147,12 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   .movetrack-people-panel {position:absolute;top:100%;left:0;z-index:64;width:min(485px,100%);margin-top:5px;border:1px solid #cbd9e8;border-radius:15px;background:#fff;box-shadow:0 20px 45px rgba(15,35,63,.2);color:#1c3553;overflow:hidden;}
   .movetrack-people-panel-head,.movetrack-people-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;background:#f5f8fd;border-bottom:1px solid #dfe8f2;}
   .movetrack-people-search{padding:12px 13px 3px;}
-  .movetrack-people-options{display:grid;gap:3px;max-height:315px;overflow-y:auto;overscroll-behavior:contain;padding:5px 9px;}
-  .movetrack-person-option{display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-height:68px;padding:9px;border:1px solid transparent;border-radius:11px;background:#fff;cursor:pointer;}
+  .movetrack-people-options{display:grid;grid-auto-rows:max-content;align-content:start;gap:6px;max-height:315px;overflow-y:auto;overscroll-behavior:contain;padding:7px 9px;}
+  .movetrack-person-option{display:flex;align-items:flex-start;gap:10px;text-align:left;width:100%;height:auto;min-height:108px;padding:12px 10px;border:1px solid transparent;border-radius:11px;background:#fff;cursor:pointer;overflow:visible;line-height:1.4;}
   .movetrack-person-option:hover,.movetrack-person-option:focus-visible{background:#f0f6fd;}
+  .movetrack-person-option .movetrack-person-details{min-width:0;overflow-wrap:anywhere;line-height:1.45;}
+  .movetrack-person-option .movetrack-person-details > *{display:block;min-width:0;line-height:1.45;}
+  .movetrack-person-option .movetrack-person-avatar,.movetrack-person-option .movetrack-person-check{flex-shrink:0;margin-top:3px;}
   .movetrack-person-option.selected{background:#eaf3ff;border-color:#bad5f8;}
   .movetrack-person-avatar{flex:none;width:38px;height:38px;border-radius:11px;background:#e5edf8;display:grid;place-items:center;color:#2563eb;}
   .movetrack-person-check{color:#0b7a54;display:grid;place-items:center;width:22px;}
@@ -157,10 +160,10 @@ export function OrganizationPeopleComboBox({people,orgId,value,onChange,label,mu
   @media(max-width:700px){
     .movetrack-people-panel{position:fixed;inset:0;width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;
      display:flex;flex-direction:column;z-index:130;padding-top:env(safe-area-inset-top);}
-    .movetrack-people-options{flex:1;min-height:0;max-height:none;}
+    .movetrack-people-options{flex:1;min-height:0;max-height:none;grid-auto-rows:max-content;align-content:start;overflow-y:auto;-webkit-overflow-scrolling:touch;}
     .movetrack-people-footer > div{flex-wrap:wrap;}
-    .movetrack-person-option strong{font-size:14px !important;}
-    .movetrack-person-option span{font-size:12px !important;}
+    .movetrack-person-option .movetrack-person-details > strong{font-size:14px !important;line-height:1.45;}
+    .movetrack-person-option .movetrack-person-details > span{font-size:12px !important;line-height:1.45;}
     .movetrack-people-search label,.movetrack-people-footer small{font-size:12px !important;}
     .movetrack-people-footer{padding-bottom:calc(13px + env(safe-area-inset-bottom));}
   }
