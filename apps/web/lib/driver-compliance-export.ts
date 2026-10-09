@@ -96,7 +96,7 @@ export function buildSupervisorRenewalActions(input:{
   }
   // This is a separate organization identity condition, not a certificate issue.
   if(row.blockingReasons.some(reason=>reason.includes("workforce identity"))){
-   actions.push({...driverId:row.id,driverName:row.name,site:summary.site,
+   actions.push({driverId:row.id,driverName:row.name,site:summary.site,
     credential:"siteAuthorisation",priority:"Immediate",issue:"Inactive or missing workforce identity",
     expiry:"",daysRemaining:null,documentName:"",
     action:"Restore or update the linked company workforce record before dispatch"});
