@@ -20,7 +20,7 @@ import {DocumentDownloadActions} from "./DocumentDownloadActions";
 import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
 import {buildJraDocument,buildBlankJraDocument} from "../../lib/form-exports";
 
-const shell:React.CSSProperties={background:"#fff",border:"1px solid #dde5ee",borderRadius:16,padding:17};
+const shell:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid #dde5ee",borderRadius:16,padding:17};
 const input:React.CSSProperties={width:"100%",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:10,padding:"11px 12px",background:"var(--mt-surface-soft,#fff)",color:"var(--mt-ink,#172b46)",font:"inherit",minHeight:44};
 const btn:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:10,padding:"10px 12px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",fontWeight:800,minHeight:44,cursor:"pointer"};
 const primary:React.CSSProperties={...btn,background:"#163866",color:"#fff",borderColor:"#163866"};
@@ -36,7 +36,7 @@ function RiskChooser({value,onChange}:{value:RiskAnswer;onChange:(risk:RiskAnswe
   </label>)}
   <div style={{...shell,padding:"8px 10px",minHeight:43,background:assessed?.requiresApproval?"#fff1f2":"#eff6ff",borderColor:assessed?.requiresApproval?"#fecdd3":"#bfdbfe"}}>
    <strong style={{fontSize:15,color:assessed?.requiresApproval?"#b42318":"#1d4ed8"}}>{assessed?assessed.score+" / 25":"/ 25"}</strong>
-   <div style={{fontSize:10,color:"#64748b"}}>{assessed?.level||"Unrated"}</div>
+   <div style={{fontSize:10,color:"var(--mt-muted,#64748b)"}}>{assessed?.level||"Unrated"}</div>
   </div>
  </div>;
 }
@@ -115,36 +115,36 @@ export function JraWorkspace(){
  const count=records.length;
  return <section aria-label="Job Risk Assessment workspace" style={{display:"grid",gap:13}}>
   <div style={{...shell,background:"#0c1d32",color:"#fff",border:0,display:"flex",gap:13,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
-   <div><div style={{color:"#9cc6ff",fontSize:11,letterSpacing:1.4,fontWeight:900}}>JOB RISK ASSESSMENT · FIELD STUDIO</div><h2 style={{fontSize:26,margin:"6px 0"}}>People. Tasks. Hazards. Controls.</h2><p style={{color:"#cbd5e1",fontSize:12,maxWidth:720,lineHeight:1.65}}>Job details, participants, hazards, risk and control edits autosave to this browser. Microsoft 365 is modeled but disconnected in demo mode.</p></div>
+   <div><div style={{color:"var(--mt-link,#9cc6ff)",fontSize:11,letterSpacing:1.4,fontWeight:900}}>JOB RISK ASSESSMENT · FIELD STUDIO</div><h2 style={{fontSize:26,margin:"6px 0"}}>People. Tasks. Hazards. Controls.</h2><p style={{color:"#cbd5e1",fontSize:12,maxWidth:720,lineHeight:1.65}}>Job details, participants, hazards, risk and control edits autosave to this browser. Microsoft 365 is modeled but disconnected in demo mode.</p></div>
    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-    <button style={{...primary,background:"#fff",color:"#14305b"}} onClick={start}><Plus size={16} style={{display:"inline"}}/> New JRA</button>
-    <button style={{...btn,background:"#dbeafe",borderColor:"#dbeafe"}} onClick={startSample}>Load example job</button>
+    <button style={{...primary,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#14305b)"}} onClick={start}><Plus size={16} style={{display:"inline"}}/> New JRA</button>
+    <button style={{...btn,background:"var(--mt-surface-soft,#dbeafe)",borderColor:"#dbeafe"}} onClick={startSample}>Load example job</button>
    </div>
   </div>
   <div style={{...shell,display:"grid",gap:8}}>
     <strong style={{fontSize:13}}>Export job risk assessments</strong>
-    <p style={{fontSize:11,color:"#64748b",margin:0}}>Generate an editable Word, PDF, CSV or JSON file. Blank templates, in-progress drafts and saved JRAs can be downloaded without a server.</p>
+    <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>Generate an editable Word, PDF, CSV or JSON file. Blank templates, in-progress drafts and saved JRAs can be downloaded without a server.</p>
     <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
       <span style={{fontSize:11,fontWeight:800}}>Blank JRA:</span>
       <DocumentDownloadActions document={buildBlankJraDocument(org,persons)} compact/>
       {current?<><span style={{fontSize:11,fontWeight:800}}>Current {current.status==="DRAFT"?"draft":"assessment"}:</span><DocumentDownloadActions document={buildJraDocument(current,persons)} compact/></>:null}
     </div>
   </div>
-  {message?<div role="status" style={{...shell,color:"#1e40af",background:"#eff6ff",fontSize:12}}>{message}</div>:null}
+  {message?<div role="status" style={{...shell,color:"var(--mt-link,#1e40af)",background:"var(--mt-surface-soft,#eff6ff)",fontSize:12}}>{message}</div>:null}
   {!current?<div style={{display:"grid",gap:11}}>
    <div style={{...shell,display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
      <div><h3 style={{margin:"0 0 4px"}}>Saved job risk assessments</h3><label style={{...label,marginTop:8}}>Organization
-       <select style={{...input,minWidth:220}} value={org.id} onChange={e=>setSelectedOrg(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label><span style={{fontSize:12,color:"#667085"}}>{count} locally saved job records; no sign-in required</span></div><button style={primary} onClick={start}>Create new JRA</button></div>
-   {records.filter(r=>r.orgId===org.id).length===0?<div style={{...shell,textAlign:"center",padding:"45px 15px"}}><ClipboardList size={34} color="#94a3b8"/><h3>No JRA saved yet</h3><p style={{color:"#64748b",fontSize:12}}>Start a new assessment, choose workers and build a task-by-task hazard register.</p></div>:records.map(jra=><div key={jra.id} style={{...shell,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center",flexWrap:"wrap"}}>
-    <div><Badge>{jra.status.replaceAll("_"," ")}</Badge><h3 style={{fontSize:16,margin:"8px 0 5px"}}>{jra.title||"Untitled assessment"}</h3><span style={{fontSize:12,color:"#667085"}}>{jra.reference} · {jra.jobId} · {jra.tasks.length} steps · {jra.participants.length} people</span></div>
+       <select style={{...input,minWidth:220}} value={org.id} onChange={e=>setSelectedOrg(e.target.value)}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label><span style={{fontSize:12,color:"var(--mt-muted,#667085)"}}>{count} locally saved job records; no sign-in required</span></div><button style={primary} onClick={start}>Create new JRA</button></div>
+   {records.filter(r=>r.orgId===org.id).length===0?<div style={{...shell,textAlign:"center",padding:"45px 15px"}}><ClipboardList size={34} color="#94a3b8"/><h3>No JRA saved yet</h3><p style={{color:"var(--mt-muted,#64748b)",fontSize:12}}>Start a new assessment, choose workers and build a task-by-task hazard register.</p></div>:records.map(jra=><div key={jra.id} style={{...shell,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center",flexWrap:"wrap"}}>
+    <div><Badge>{jra.status.replaceAll("_"," ")}</Badge><h3 style={{fontSize:16,margin:"8px 0 5px"}}>{jra.title||"Untitled assessment"}</h3><span style={{fontSize:12,color:"var(--mt-muted,#667085)"}}>{jra.reference} · {jra.jobId} · {jra.tasks.length} steps · {jra.participants.length} people</span></div>
     <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}><DocumentDownloadActions document={buildJraDocument(jra,persons)} compact/><button style={btn} onClick={()=>{setCurrent(jra);setSelectedOrg(jra.orgId);setEditing(jra.id);setPage("job");setMessage("");}}>Open</button><button style={btn} onClick={()=>{const newId="JRA-"+crypto.randomUUID();const copy={...structuredClone(jra),id:newId,reference:jra.reference+"-COPY",revision:1,status:"DRAFT" as const,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};setCurrent(copy);setEditing(null);setPage("job");}}>Duplicate</button></div>
    </div>)}
   </div>:<div style={{display:"grid",gap:13}}>
     <div style={{...shell,borderTop:"4px solid "+org.accent}}>
      <div style={{display:"flex",gap:13,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}>
       <div style={{display:"flex",gap:12,alignItems:"center"}}>
-       {job.logoSnapshot?<img src={job.logoSnapshot} alt={job.companyNameSnapshot+" logo"} style={{maxHeight:65,maxWidth:105,objectFit:"contain"}}/>:<div style={{width:55,height:55,borderRadius:10,display:"grid",placeItems:"center",background:"#dbeafe",color:"#1849a9",fontWeight:900}}>LOGO</div>}
-       <div><strong style={{fontSize:15}}>{job.companyNameSnapshot}</strong><div style={{fontSize:11,color:"#667085"}}>{job.reference} · v{job.revision} · {job.status.replaceAll("_"," ")}</div></div>
+       {job.logoSnapshot?<img src={job.logoSnapshot} alt={job.companyNameSnapshot+" logo"} style={{maxHeight:65,maxWidth:105,objectFit:"contain"}}/>:<div style={{width:55,height:55,borderRadius:10,display:"grid",placeItems:"center",background:"var(--mt-surface-soft,#dbeafe)",color:"var(--mt-link,#1849a9)",fontWeight:900}}>LOGO</div>}
+       <div><strong style={{fontSize:15}}>{job.companyNameSnapshot}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{job.reference} · v{job.revision} · {job.status.replaceAll("_"," ")}</div></div>
       </div>
       <button style={btn} onClick={()=>{setCurrent(null);setMessage("");}}>← Back to JRA library</button>
      </div>
@@ -174,7 +174,7 @@ export function JraWorkspace(){
     </motion.div>:null}
     {page==="team"?<div style={{display:"grid",gap:12}}>
      <div style={{...shell,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
-      <div><h3 style={{margin:"0 0 4px"}}>Personnel involved in this work</h3><p style={{fontSize:12,color:"#667085",margin:0}}>Choose workers, supervisors and contractors from your local organization directory.</p></div>
+      <div><h3 style={{margin:"0 0 4px"}}>Personnel involved in this work</h3><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:0}}>Choose workers, supervisors and contractors from your local organization directory.</p></div>
       <Badge>{job.participants.length} selected</Badge>
      </div>
      <div style={shell}>
@@ -186,7 +186,7 @@ export function JraWorkspace(){
       </div>
       {job.participants.length?<div style={shell}><h3 style={{marginTop:0}}>Assigned team · acknowledgement roster</h3>
       <div style={{display:"grid",gap:8}}>{job.participants.map(p=><div key={p.personId} style={{padding:11,border:"1px solid #e2e8f0",borderRadius:11,display:"flex",gap:11,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
-       <div><strong style={{fontSize:12}}>{p.nameSnapshot}</strong><div style={{fontSize:10,color:"#667085"}}>Directory ID {p.personId}</div></div>
+       <div><strong style={{fontSize:12}}>{p.nameSnapshot}</strong><div style={{fontSize:10,color:"var(--mt-muted,#667085)"}}>Directory ID {p.personId}</div></div>
        <select aria-label={"Role for "+p.nameSnapshot} style={{...input,width:"auto",minWidth:135}} value={p.role} onChange={e=>patch({participants:job.participants.map(x=>x.personId===p.personId?{...x,role:e.target.value}:x)})}>{dictionary.jobRoles.map(role=><option key={role}>{role}</option>)}</select>
        <div style={{flex:"1 1 285px",minWidth:250}}>
         <SignatureApprovalTray compact label={"Sign "+p.nameSnapshot+" acknowledgement"} value={p.signature??null} role={p.role} intent="acknowledgement"
@@ -200,12 +200,12 @@ export function JraWorkspace(){
      <button style={{...primary,justifySelf:"end"}} onClick={()=>setPage("risks")}>Next · Tasks & hazards →</button>
     </div>:null}
     {page==="risks"?<div style={{display:"grid",gap:12}}>
-      <div style={{...shell,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><h3 style={{margin:"0 0 4px"}}>Job steps · hazard register</h3><p style={{fontSize:12,color:"#667085",margin:0}}>For every activity, identify exposed people, consequences, controls and initial/residual risk.</p></div><button style={primary} onClick={addTask}><Plus size={16} style={{display:"inline"}}/> Add job step</button></div>
+      <div style={{...shell,display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><h3 style={{margin:"0 0 4px"}}>Job steps · hazard register</h3><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:0}}>For every activity, identify exposed people, consequences, controls and initial/residual risk.</p></div><button style={primary} onClick={addTask}><Plus size={16} style={{display:"inline"}}/> Add job step</button></div>
       {job.tasks.length===0?<div style={{...shell,textAlign:"center",padding:39}}><HardHat color="#94a3b8" size={34}/><p style={{fontSize:13}}>No steps yet. Add each task performed during this work.</p></div>:null}
       <label style={label}>{desktop?"Task workbench · choose a task":"Current job step"}<select style={input} value={Math.min(taskFocus,Math.max(0,job.tasks.length-1))} onChange={e=>{setTaskFocus(Number(e.target.value));setHazardFocus(0);}}>{job.tasks.map((task,i)=><option key={task.id} value={i}>{i+1}. {task.description||"New task"} · {task.hazards.length} hazards</option>)}</select></label>
       {job.tasks.map((step,index)=>index===Math.min(taskFocus,Math.max(0,job.tasks.length-1))?<motion.section initial={reduced?false:{opacity:0,y:6}} animate={{opacity:1,y:0}} key={step.id} style={shell}>
         <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-         <h3 style={{margin:0,fontSize:16}}>Step {index+1}</h3><button style={{...btn,color:"#b42318"}} onClick={()=>patch({tasks:job.tasks.filter(t=>t.id!==step.id).map((s,i)=>({...s,sequence:i+1}))})}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
+         <h3 style={{margin:0,fontSize:16}}>Step {index+1}</h3><button style={{...btn,color:"var(--mt-danger,#b42318)"}} onClick={()=>patch({tasks:job.tasks.filter(t=>t.id!==step.id).map((s,i)=>({...s,sequence:i+1}))})}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
         </div>
         <label style={{...label,marginTop:12}}>Task/activity description<textarea style={{...input,minHeight:66}} value={step.description} onChange={e=>updateTask(step.id,t=>({...t,description:e.target.value}))} placeholder="Choose a task below or describe the activity"/></label>
         <div style={{display:"flex",flexWrap:"wrap",gap:7,marginTop:8}} aria-label="Quick task steps">{taskQuickChoices.map(text=><button key={text} type="button" style={{...btn,minHeight:34,fontSize:11,padding:"6px 9px",background:step.description===text?"#dbeafe":"#fff"}} onClick={()=>updateTask(step.id,t=>({...t,description:text}))}>{text}</button>)}</div>
@@ -219,8 +219,8 @@ export function JraWorkspace(){
          {step.hazards.map((hazard,hi)=>{
            if(hi!==Math.min(hazardFocus,Math.max(0,step.hazards.length-1)))return null;
           let residual:ReturnType<typeof scoreRisk>|null=null;try{residual=scoreRisk(defaultRiskMatrix,hazard.residual);}catch{}
-          return <div key={hazard.id} style={{background:"#f8fafc",border:"1px solid #dce4ec",borderRadius:13,padding:13,display:"grid",gap:11}}>
-           <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:13}}>Hazard {hi+1}</strong><button style={{...btn,padding:7,minHeight:33,color:"#b42318"}} aria-label="Remove hazard" onClick={()=>updateTask(step.id,t=>({...t,hazards:t.hazards.filter(h=>h.id!==hazard.id)}))}><Trash2 size={15}/></button></div>
+          return <div key={hazard.id} style={{background:"var(--mt-surface-soft,#f8fafc)",border:"1px solid #dce4ec",borderRadius:13,padding:13,display:"grid",gap:11}}>
+           <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}}><strong style={{fontSize:13}}>Hazard {hi+1}</strong><button style={{...btn,padding:7,minHeight:33,color:"var(--mt-danger,#b42318)"}} aria-label="Remove hazard" onClick={()=>updateTask(step.id,t=>({...t,hazards:t.hazards.filter(h=>h.id!==hazard.id)}))}><Trash2 size={15}/></button></div>
            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,180px),1fr))",gap:9}}>
             <label style={label}>Hazard category<select style={input} value={hazard.category} onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,category:e.target.value}))}>{dictionary.hazardCategories.map(v=><option key={v}>{v}</option>)}</select></label>
             <label style={label}>What can go wrong?<input style={input} value={hazard.hazard} placeholder="Choose a hazard or enter another" onChange={e=>changeHazard(step.id,hazard.id,h=>({...h,hazard:e.target.value}))}/>
@@ -233,7 +233,7 @@ export function JraWorkspace(){
              </select></label>
            </div>
            <div><strong style={{fontSize:12}}>People exposed to this hazard</strong>
-            {job.participants.length===0?<p style={{color:"#b45309",fontSize:11}}>Add job participants on Team tab first.</p>:<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:7}}>{job.participants.map(p=><button key={p.personId} aria-pressed={hazard.exposedPersonIds.includes(p.personId)} style={{...btn,fontSize:11,padding:"7px 10px",background:hazard.exposedPersonIds.includes(p.personId)?"#dbeafe":"#fff"}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,exposedPersonIds:unique(h.exposedPersonIds,p.personId,!h.exposedPersonIds.includes(p.personId))}))}>{p.nameSnapshot}</button>)}</div>}
+            {job.participants.length===0?<p style={{color:"var(--mt-warning,#b45309)",fontSize:11}}>Add job participants on Team tab first.</p>:<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:7}}>{job.participants.map(p=><button key={p.personId} aria-pressed={hazard.exposedPersonIds.includes(p.personId)} style={{...btn,fontSize:11,padding:"7px 10px",background:hazard.exposedPersonIds.includes(p.personId)?"#dbeafe":"#fff"}} onClick={()=>changeHazard(step.id,hazard.id,h=>({...h,exposedPersonIds:unique(h.exposedPersonIds,p.personId,!h.exposedPersonIds.includes(p.personId))}))}>{p.nameSnapshot}</button>)}</div>}
            </div>
            <div><strong style={{fontSize:12}}>Initial risk — without additional controls</strong><div style={{marginTop:7}}><RiskChooser value={hazard.initial} onChange={risk=>changeHazard(step.id,hazard.id,h=>({...h,initial:risk}))}/></div></div>
            <div style={{borderTop:"1px solid #e2e8f0",paddingTop:12}}>
@@ -252,25 +252,25 @@ export function JraWorkspace(){
             </div>)}
            </div>
            <div><strong style={{fontSize:12}}>Residual risk — after controls</strong><div style={{marginTop:7}}><RiskChooser value={hazard.residual} onChange={risk=>changeHazard(step.id,hazard.id,h=>({...h,residual:risk}))}/></div>
-            {residual?.requiresApproval?<p style={{color:"#b42318",fontSize:12,fontWeight:800}}><AlertTriangle size={14} style={{display:"inline"}}/> High or extreme residual risk — supervisor review and additional controls required before any work.</p>:null}
+            {residual?.requiresApproval?<p style={{color:"var(--mt-danger,#b42318)",fontSize:12,fontWeight:800}}><AlertTriangle size={14} style={{display:"inline"}}/> High or extreme residual risk — supervisor review and additional controls required before any work.</p>:null}
            </div>
           </div>;
          })}
          <button style={{...btn,justifySelf:"start"}} onClick={()=>{setHazardFocus(step.hazards.length);updateTask(step.id,t=>({...t,hazards:[...t.hazards,blankHazard()]}));}}><Plus size={15} style={{display:"inline"}}/> Add hazard to this step</button>
-         <p style={{fontSize:11,color:"#64748b",margin:0}}>Suggested hazards and proposed controls are text-entry aids only. Each exposure, risk score and actual control verification still needs individual assessment and review.</p>
+         <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>Suggested hazards and proposed controls are text-entry aids only. Each exposure, risk score and actual control verification still needs individual assessment and review.</p>
         </div>
       </motion.section>:null)}
       <button style={{...primary,justifySelf:"end"}} onClick={()=>setPage("review")}>Next · Review risk assessment →</button>
     </div>:null}
     {page==="review"?<div style={{display:"grid",gap:13}}>
       <div style={{...shell,background:assessment?.decision==="READY_FOR_DEMO_REVIEW"?"#ecfdf3":"#fff7ed",borderColor:assessment?.decision==="READY_FOR_DEMO_REVIEW"?"#abefc6":"#fed7aa"}}>
-       <div style={{display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><strong style={{fontSize:18}}>{assessment?.decision.replaceAll("_"," ")}</strong><p style={{fontSize:12,color:"#667085",margin:"4px 0"}}>{job.tasks.length} job steps · {job.tasks.reduce((n,s)=>n+s.hazards.length,0)} hazards · {job.participants.length} participating people</p></div>
+       <div style={{display:"flex",gap:12,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><strong style={{fontSize:18}}>{assessment?.decision.replaceAll("_"," ")}</strong><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:"4px 0"}}>{job.tasks.length} job steps · {job.tasks.reduce((n,s)=>n+s.hazards.length,0)} hazards · {job.participants.length} participating people</p></div>
        <div style={{display:"flex",gap:7,flexWrap:"wrap"}}><Badge color={assessment?.highRisks?"#b42318":"#087f5b"}>{assessment?.highRisks??0} high residual risks</Badge><Badge color={assessment?.unverifiedControls?"#b45309":"#087f5b"}>{assessment?.unverifiedControls??0} controls awaiting verification</Badge></div></div>
-       {assessment?.unverifiedControls?<p style={{fontSize:12,color:"#b45309",margin:"10px 0 0"}}>Confirm each implemented control in Tasks & hazards. An unverified remedy cannot support a demo approval.</p>:null}
-       {assessment?.missing.length?<div style={{marginTop:12}}><strong style={{fontSize:12}}>Missing information</strong><ul style={{fontSize:12,color:"#92400e",lineHeight:1.8}}>{assessment.missing.slice(0,24).map((m,i)=><li key={i}>{m}</li>)}</ul></div>:null}
+       {assessment?.unverifiedControls?<p style={{fontSize:12,color:"var(--mt-warning,#b45309)",margin:"10px 0 0"}}>Confirm each implemented control in Tasks & hazards. An unverified remedy cannot support a demo approval.</p>:null}
+       {assessment?.missing.length?<div style={{marginTop:12}}><strong style={{fontSize:12}}>Missing information</strong><ul style={{fontSize:12,color:"var(--mt-danger,#92400e)",lineHeight:1.8}}>{assessment.missing.slice(0,24).map((m,i)=><li key={i}>{m}</li>)}</ul></div>:null}
       </div>
       <div style={shell}><h3 style={{marginTop:0}}>Approver / review register</h3>
-       <p style={{fontSize:12,color:"#667085"}}>Choose a different person from the job supervisor for independent review. These approvals are simulated; there are no real electronic signatures.</p>
+       <p style={{fontSize:12,color:"var(--mt-muted,#667085)"}}>Choose a different person from the job supervisor for independent review. These approvals are simulated; there are no real electronic signatures.</p>
        <OrganizationPeopleComboBox people={persons.filter(p=>p.id!==job.supervisorId)} orgId={org.id}
          label="Independent reviewer" value={job.reviewerId?[job.reviewerId]:[]}
          onChange={ids=>patch({reviewerId:ids[0]??"",reviewSignature:undefined})}/>
@@ -280,9 +280,9 @@ export function JraWorkspace(){
         defaultSignerName={persons.find(p=>p.id===job.reviewerId)?.displayName??""}
         onChange={signature=>patch({reviewSignature:signature??undefined})}/>:null}
        <div style={{display:"grid",gap:9,marginTop:14}}>
-        {job.participants.map(p=><div key={p.personId} style={{padding:9,borderRadius:8,background:"#f8fafc",display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><span style={{fontSize:12}}>{p.nameSnapshot} · {p.role}</span><Badge color={p.acknowledged?"#087f5b":"#b45309"}>{p.acknowledged?"DEMO ACKNOWLEDGED":"AWAITING ACKNOWLEDGEMENT"}</Badge></div>)}
+        {job.participants.map(p=><div key={p.personId} style={{padding:9,borderRadius:8,background:"var(--mt-surface-soft,#f8fafc)",display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}><span style={{fontSize:12}}>{p.nameSnapshot} · {p.role}</span><Badge color={p.acknowledged?"#087f5b":"#b45309"}>{p.acknowledged?"DEMO ACKNOWLEDGED":"AWAITING ACKNOWLEDGEMENT"}</Badge></div>)}
        </div>
-       <p style={{color:"#b42318",fontSize:11,marginTop:12}}>A DEMO APPROVED label does not grant permission to perform work. Formal authorization, site verification and records remain future implementation.</p>
+       <p style={{color:"var(--mt-danger,#b42318)",fontSize:11,marginTop:12}}>A DEMO APPROVED label does not grant permission to perform work. Formal authorization, site verification and records remain future implementation.</p>
       </div>
       <div style={{...shell,display:"flex",gap:10,justifyContent:"space-between",flexWrap:"wrap"}}>
        <button style={btn} onClick={()=>save("DRAFT")}>Save editable draft</button>

@@ -37,9 +37,9 @@ const tile:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px 
 const input:React.CSSProperties={width:"100%",padding:"12px 12px",font:"inherit",background:"var(--mt-surface-soft,#f8fafc)",color:"var(--mt-ink,#172b46)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:11};
 const button:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:12,padding:"11px 14px",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",fontWeight:750,cursor:"pointer",minHeight:44};
 const categories:{[key:string]:{color:string;label:string}}={
- Fleet:{color:"#1d4ed8",label:"Fleet"},Meetings:{color:"#7c3aed",label:"Meetings"},
- Safety:{color:"#b45309",label:"Safety"},Risk:{color:"#b42318",label:"Risk"},
- Handover:{color:"#087e8b",label:"Handover"},Inspections:{color:"#344054",label:"Inspections"}
+ Fleet:{color:"var(--mt-link,#1d4ed8)",label:"Fleet"},Meetings:{color:"var(--mt-link,#7c3aed)",label:"Meetings"},
+ Safety:{color:"var(--mt-warning,#b45309)",label:"Safety"},Risk:{color:"var(--mt-danger,#b42318)",label:"Risk"},
+ Handover:{color:"var(--mt-success,#087e8b)",label:"Handover"},Inspections:{color:"var(--mt-ink,#344054)",label:"Inspections"}
 };
 function answerText(value:FormAnswer|undefined){return typeof value==="string"||typeof value==="number"?String(value):"";}
 
@@ -156,7 +156,7 @@ export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={
   <div hidden={!!template||tab!=="library"} style={{...tile,background:"#0b1930",color:"#fff",border:0}}>
     <div style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"start",flexWrap:"wrap"}}>
       <div>
-        <div style={{display:"flex",alignItems:"center",gap:9,fontSize:11,fontWeight:850,letterSpacing:1.5,textTransform:"uppercase",color:"#9cc6ff"}}><ClipboardCheck size={16}/> Operational Assurance / Forms</div>
+        <div style={{display:"flex",alignItems:"center",gap:9,fontSize:11,fontWeight:850,letterSpacing:1.5,textTransform:"uppercase",color:"var(--mt-link,#9cc6ff)"}}><ClipboardCheck size={16}/> Operational Assurance / Forms</div>
         <h2 style={{margin:"8px 0 5px",fontSize:26}}>One library. Connected safety workflows.</h2>
         <p style={{margin:0,color:"#cbd5e1",fontSize:13,lineHeight:1.7,maxWidth:670}}>{org.name} · {additionalAssuranceRecipes.length} specialized safety workflows plus built-in and custom forms. Work is stored by company and job on this device.</p>
       </div>
@@ -169,7 +169,7 @@ export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={
     <button onClick={()=>{setTab("jra");setActiveId(null);}} style={{...button,background:tab==="jra"?"#172b4d":"#fff",color:tab==="jra"?"#fff":"#344054"}}>JRA job studio</button>
     {adminMode?<button onClick={()=>{setTab("designer");setActiveId(null);}} style={{...button,background:tab==="designer"?"#172b4d":"#fff",color:tab==="designer"?"#fff":"#344054"}}>Create custom form</button>:null}
   </div>
-  {notice?<div role="status" style={{padding:13,borderRadius:12,background:"#eff6ff",color:"#1e40af",fontSize:13}}>{notice}</div>:null}
+  {notice?<div role="status" style={{padding:13,borderRadius:12,background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-link,#1e40af)",fontSize:13}}>{notice}</div>:null}
   {tab==="designer"?(adminMode?<CustomFormBuilder onPublish={openTemplate}/>:<div style={tile}>Company form templates are managed in Admin → Forms. <button type="button" style={button} onClick={()=>setTab("library")}>Return to the template library</button></div>):null}
   {tab==="jra"?<JraWorkspace/>:null}
   {tab==="library"&&!template?<section style={{display:"grid",gap:12}} aria-label="Template collection">
@@ -197,8 +197,8 @@ export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={
       </>}>
     <AnimatePresence mode="wait">
       <motion.div key={activeSection.id} initial={reducedMotion?false:{opacity:0,y:7}} animate={{opacity:1,y:0}} exit={reducedMotion?undefined:{opacity:0,y:-7}} transition={easing} style={tile}>
-        <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"#667085",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
-        {activeSection.description?<p style={{color:"#667085"}}>{activeSection.description}</p>:null}
+        <div style={{display:"flex",gap:10,alignItems:"center"}}><div style={{background:"var(--mt-surface-soft,#eff6ff)",color:"var(--mt-link,#1d4ed8)",borderRadius:12,padding:10}}><FileText size={20}/></div><div><p style={{fontSize:11,color:"var(--mt-muted,#667085)",fontWeight:850,margin:0}}>SECTION {sectionIndex+1}</p><h3 style={{margin:"3px 0"}}>{activeSection.title}</h3></div></div>
+        {activeSection.description?<p style={{color:"var(--mt-muted,#667085)"}}>{activeSection.description}</p>:null}
         <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:12}}><span style={{fontSize:12}}>{desktop?"Question group":"Question"} {fieldPage.page} of {fieldPage.pages}</span>{desktop?<select aria-label="Jump to question" value={visibleFields[fieldPage.index]?.id??""} onChange={e=>focusField(e.target.value)}>{visibleFields.map((f,i)=><option key={f.id} value={f.id}>{i+1}. {f.label}{evaluation.missing.some(id=>id===f.id||id.startsWith(f.id+":"))?" · Required answer missing":""}</option>)}</select>:null}</div>
         <div className={desktop?"movetrack-desktop-fields":"movetrack-mobile-fields"} style={{marginTop:16}}>
           {fieldPage.items.map(f=><div key={f.id} className={["repeat","multiline","signature","risk","people"].includes(f.type)?"movetrack-field-wide":""}><FieldInput field={f} people={visiblePeople} value={answers[f.id]} onChange={value=>setAnswer(f.id,value)} scope={signatureScopePrefix} fastEntry={fastEntryOpen} reviewerPersonId={f.signerFieldId&&typeof answers[f.signerFieldId]==="string"?answers[f.signerFieldId] as string:undefined}/></div>)}
@@ -210,15 +210,15 @@ export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={
       {fieldPage.next?<button style={button} onClick={()=>focusField(fieldPage.next)}>Next {desktop?"questions":"question"}</button>:sectionIndex<template.sections.length-1?<button style={{...button,background:"#172b4d",color:"#fff"}} onClick={()=>setSectionIndex(x=>Math.min(template.sections.length-1,x+1))}>Next section <ChevronRight size={16} style={{display:"inline"}}/></button>:<button style={{...button,background:"#172b4d",color:"#fff",opacity:evaluation.missing.length?0.65:1}} onClick={submit} disabled={!!evaluation.missing.length}>Submit demo form</button>}
     </div>
     </TaskWorkspace>
-    <p style={{fontSize:11,color:"#b42318",margin:0}}>This frontend-only demonstration saves drafts and submissions in this browser, and can simulate equipment grounding. No external service, authenticated approval or actual equipment-control integration is active.</p>
+    <p style={{fontSize:11,color:"var(--mt-danger,#b42318)",margin:0}}>This frontend-only demonstration saves drafts and submissions in this browser, and can simulate equipment grounding. No external service, authenticated approval or actual equipment-control integration is active.</p>
   </div>:null}
   {tab==="records"?<div style={{display:"grid",gap:9}}>
-    <div style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#667085"}}><CloudOff size={16}/> Your completed demo forms remain in this browser. They are not official safety approvals.</div>
+    <div style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"var(--mt-muted,#667085)"}}><CloudOff size={16}/> Your completed demo forms remain in this browser. They are not official safety approvals.</div>
     {records.length===0?<div style={tile}>No submitted demonstration forms. Choose a template to start.</div>:records.map(r=><div key={r.id} style={{...tile,display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
-      <div><strong>{r.templateSnapshot.title}</strong><p style={{fontSize:12,color:"#667085",margin:"5px 0"}}>{new Date(r.submittedAt).toLocaleString()} · {r.templateId} v{r.templateVersion} · {r.siteId}</p></div>
+      <div><strong>{r.templateSnapshot.title}</strong><p style={{fontSize:12,color:"var(--mt-muted,#667085)",margin:"5px 0"}}>{new Date(r.submittedAt).toLocaleString()} · {r.templateId} v{r.templateVersion} · {r.siteId}</p></div>
       <div style={{textAlign:"right",display:"grid",gap:7,justifyItems:"end"}}>
        <strong style={{color:r.decision==="NO_GO"?"#b42318":"#047857"}}>{r.decision}</strong>
-       <div style={{color:"#2563eb",fontSize:11}}>SAVED LOCALLY</div>
+       <div style={{color:"var(--mt-link,#2563eb)",fontSize:11}}>SAVED LOCALLY</div>
        <DocumentDownloadActions document={buildFormDocument({template:r.templateSnapshot,mode:"filled",submission:r,company:org,people:visiblePeople})} compact/>
      </div>
     </div>)}
@@ -227,7 +227,7 @@ export function AssuranceFormsWorkspace({adminMode=false}:{adminMode?:boolean}={
 }
 
 function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntry}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void;scope:string;reviewerPersonId?:string;fastEntry:boolean}){
- const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"#b42318"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"#b42318",background:"#fef2f2",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
+ const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"var(--mt-danger,#b42318)"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"var(--mt-danger,#b42318)",background:"var(--mt-surface-soft,#fef2f2)",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
  const fieldStyle:React.CSSProperties={display:"grid",gap:8};
  const quickChoices=fastEntry&&!field.critical?fieldQuickChoices(field.label,field.type):[];
  const quickButtons=quickChoices.length?<div style={{display:"flex",flexWrap:"wrap",gap:6}} aria-label={"Suggested answers for "+field.label}>{quickChoices.map(choice=><button key={choice.value} type="button" aria-pressed={value===choice.value} style={{...button,minHeight:34,padding:"6px 10px",fontSize:11,borderColor:value===choice.value?"#2563eb":"#cbd5e1",background:value===choice.value?"#dbeafe":"#f8fafc"}} onClick={()=>onChange(choice.value)}>{choice.label}</button>)}</div>:null;
@@ -236,7 +236,7 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
    const ids=multiple?(Array.isArray(value)?value as string[]:[]):typeof value==="string"&&value?[value]:[];
    return <div style={fieldStyle}><OrganizationPeopleComboBox people={people} orgId={people[0]?.orgId??""} value={ids}
     label={field.label} multiple={multiple} required={field.required} onChange={ids=>onChange(multiple?ids:ids[0]??"")}/>
-    {field.critical?<small style={{color:"#b42318"}}>Critical control — site review still required.</small>:null}
+    {field.critical?<small style={{color:"var(--mt-danger,#b42318)"}}>Critical control — site review still required.</small>:null}
    </div>;
  }
  if(field.type==="checkbox")return <label style={{...fieldStyle,display:"flex",alignItems:"center",gap:11,padding:"12px 13px",border:"1px solid #cbd5e1",borderRadius:11,background:value===true?"#eff6ff":"#fff"}}>
@@ -256,9 +256,9 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
  if(field.type==="repeat"){
    const rows=Array.isArray(value)&&value.every(v=>typeof v==="object"&&!Array.isArray(v))?value as Record<string,string|number|boolean|null>[]:[];
    const hasIdentityColumns=field.children?.some(child=>/name|employee|attendee|role|participant|department/i.test(child.label))??false;
-   return <div style={{...fieldStyle,background:"#f8fafc",padding:13,borderRadius:13,border:"1px solid #e2e8f0"}}>{label}{rows.map((row,index)=><div key={index} style={{...tile,display:"grid",gap:9}}>
+   return <div style={{...fieldStyle,background:"var(--mt-surface-soft,#f8fafc)",padding:13,borderRadius:13,border:"1px solid #e2e8f0"}}>{label}{rows.map((row,index)=><div key={index} style={{...tile,display:"grid",gap:9}}>
      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><strong style={{fontSize:12}}>Entry {index+1}</strong><RepeatableRowActions index={index} count={rows.length} onRemove={()=>onChange(rows.filter((_,i)=>i!==index))} onMove={direction=>onChange(moveRegisterRow(rows,index,direction))} onDuplicate={()=>onChange(duplicateRegisterRow(rows,index,(field.children??[]).filter(c=>c.critical||["pass_fail_na","yes_no","risk","signature","checkbox"].includes(c.type)).map(c=>c.id)))}/></div>
-     {fastEntry&&hasIdentityColumns&&people.length?<label style={{...fieldStyle,fontSize:11,fontWeight:750,color:"#2563eb"}}>Fill attendee/worker details from directory
+     {fastEntry&&hasIdentityColumns&&people.length?<label style={{...fieldStyle,fontSize:11,fontWeight:750,color:"var(--mt-link,#2563eb)"}}>Fill attendee/worker details from directory
        <select aria-label={"Choose directory member for entry "+(index+1)} defaultValue="" style={input}
         onChange={e=>{const person=people.find(p=>p.id===e.target.value);if(!person)return;const data=personRegisterRow(field.children??[],person);onChange(rows.map((r,i)=>i===index?{...r,...data}:r));}}>
         <option value="">Choose a person — optional</option>{people.filter(p=>p.active).map(p=><option value={p.id} key={p.id}>{p.displayName} · {p.jobTitle}</option>)}
@@ -306,7 +306,7 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
      signerPersonId={field.signerFieldId?reviewerPersonId:undefined}
      defaultSignerName={field.signerFieldId?people.find(p=>p.id===reviewerPersonId)?.displayName??"":""}
      intent={field.signerFieldId?"review":field.label.toLowerCase().includes("review")?"review":"acknowledgement"}/>
-     {field.signerFieldId&&!reviewerPersonId?<small style={{color:"#b45309"}}>Select the responsible reviewer before signing.</small>:null}
+     {field.signerFieldId&&!reviewerPersonId?<small style={{color:"var(--mt-warning,#b45309)"}}>Select the responsible reviewer before signing.</small>:null}
    </div>;
  if(field.type==="photo"){
    const photos=(Array.isArray(value)?value:typeof value==="string"?[value]:[])
@@ -329,8 +329,8 @@ function FieldInput({field,value,onChange,people,scope,reviewerPersonId,fastEntr
      reader.readAsDataURL(file);
    }}/>
    {typeof value==="string"&&value.startsWith("data:image/")?<img src={value} alt={"Local preview for "+field.label} style={{maxHeight:150,maxWidth:200,objectFit:"contain",borderRadius:9}}/>:null}
-   {typeof value==="string"&&value.startsWith("data:application/pdf")?<span style={{fontSize:11,color:"#087f5b"}}>PDF attached in local demo</span>:null}
-   <span style={{fontSize:11,color:"#b45309"}}>Small local-only sample attachment. Not uploaded, verified or shared.</span>
+   {typeof value==="string"&&value.startsWith("data:application/pdf")?<span style={{fontSize:11,color:"var(--mt-success,#087f5b)"}}>PDF attached in local demo</span>:null}
+   <span style={{fontSize:11,color:"var(--mt-warning,#b45309)"}}>Small local-only sample attachment. Not uploaded, verified or shared.</span>
   </div>;
  return <label style={fieldStyle}>{label}{quickButtons}<input type={field.type==="number"?"number":field.type==="date"?"date":field.type==="datetime"?"datetime-local":"text"} style={input} value={answerText(value)} onChange={e=>onChange(field.type==="number"?(e.target.value?Number(e.target.value):null):e.target.value)}/></label>;
 }

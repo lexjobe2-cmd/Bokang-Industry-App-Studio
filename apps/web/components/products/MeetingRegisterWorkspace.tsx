@@ -19,7 +19,7 @@ import {TaskWorkspace,useDesktopWorkspace} from "./TaskWorkspace";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 
 const box:React.CSSProperties={background:"var(--mt-surface,#fff)",border:"1px solid var(--mt-border,#d8e3f0)",padding:17,borderRadius:15,color:"var(--mt-ink,#172b46)"};
-const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,color:"#364152",fontWeight:800};
+const label:React.CSSProperties={display:"grid",gap:6,fontSize:12,color:"var(--mt-ink,#364152)",fontWeight:800};
 const input:React.CSSProperties={width:"100%",border:"1px solid var(--mt-border,#d8e3f0)",padding:"11px 12px",minHeight:44,borderRadius:10,font:"inherit",background:"var(--mt-surface-soft,#f8fafc)",color:"var(--mt-ink,#172b46)"};
 const btn:React.CSSProperties={border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:11,padding:"10px 13px",fontWeight:850,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",minHeight:44,cursor:"pointer"};
 const primary:React.CSSProperties={...btn,background:"#1d4ed8",borderColor:"#1d4ed8",color:"#fff"};
@@ -150,10 +150,10 @@ export function MeetingRegisterWorkspace(){
    {!seriesHeads.length?<p style={{fontSize:12}}>Enable a recurring series in Meeting details, then save its first meeting.</p>:null}
   </div></DesktopModalDisclosure>
   <div hidden={page!=="records"} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,155px),1fr))",gap:9}}>
-   {[["Meeting registers",records.length],["People on company directory",members.length],["Registered attendees",records.reduce((a,r)=>a+(Array.isArray(r.answers.participants)?r.answers.participants.length:0)+rowValues(r.answers.attendees).length,0)],["Apologies / absent",records.reduce((sum,r)=>sum+meetingAttendanceCounts(r.answers).absent,0)],["Open action items",openActions.length],["Attendance rate",meetingMetrics.attendanceRate===null?"—":meetingMetrics.attendanceRate+"%"],["Apologies received",meetingMetrics.apologies],["Overdue actions",meetingMetrics.overdue]].map(([name,n])=><div key={String(name)} style={box}><strong style={{fontSize:26,color:"#174b87"}}>{n}</strong><p style={{margin:"6px 0 0",fontWeight:800,color:"#64748b",fontSize:11}}>{name}</p></div>)}
+   {[["Meeting registers",records.length],["People on company directory",members.length],["Registered attendees",records.reduce((a,r)=>a+(Array.isArray(r.answers.participants)?r.answers.participants.length:0)+rowValues(r.answers.attendees).length,0)],["Apologies / absent",records.reduce((sum,r)=>sum+meetingAttendanceCounts(r.answers).absent,0)],["Open action items",openActions.length],["Attendance rate",meetingMetrics.attendanceRate===null?"—":meetingMetrics.attendanceRate+"%"],["Apologies received",meetingMetrics.apologies],["Overdue actions",meetingMetrics.overdue]].map(([name,n])=><div key={String(name)} style={box}><strong style={{fontSize:26,color:"var(--mt-link,#174b87)"}}>{n}</strong><p style={{margin:"6px 0 0",fontWeight:800,color:"var(--mt-muted,#64748b)",fontSize:11}}>{name}</p></div>)}
   </div>
   <div hidden={page!=="draft"||step!==0} style={{...box,display:"flex",gap:9,alignItems:"center",flexWrap:"wrap",justifyContent:"space-between"}}>
-   <div><strong>Start from a meeting type</strong><p style={{fontSize:11,color:"#64748b",margin:"4px 0"}}>Prepared company format · not a verified attendance signature</p></div>
+   <div><strong>Start from a meeting type</strong><p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"4px 0"}}>Prepared company format · not a verified attendance signature</p></div>
    <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
     {(["SHE committee meeting","Toolbox safety talk","Pre-shift briefing","Contractor coordination"] as const).map(type=>
      <button key={type} style={{...btn,background:kind===type?"#dbeafe":"#fff",borderColor:kind===type?"#93c5fd":"#cbd5e1"}} onClick={()=>{patch({meeting_type:type,...(!textValue(answers.meeting_title).trim()?{meeting_title:type}:{} )});setEditing(true);}}>{type}</button>)}
@@ -190,13 +190,13 @@ export function MeetingRegisterWorkspace(){
    </div>
    <div hidden={step!==1} style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
     <h3 style={{fontSize:17,margin:0}}><UsersRound size={18} style={{display:"inline",verticalAlign:"middle"}}/> Attendance register</h3>
-    <p style={{fontSize:12,color:"#64748b",margin:0}}>Select staff from your company's directory; add external visitors and contractors separately. Selected employees appear in their personal participation analytics.</p>
+    <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Select staff from your company's directory; add external visitors and contractors separately. Selected employees appear in their personal participation analytics.</p>
     {answers.meeting_series_id?<><OrganizationPeopleComboBox people={members} orgId={org.id} label="Invited series crew (not attendance)" multiple value={Array.isArray(answers.invited_person_ids)?answers.invited_person_ids as string[]:[]} onChange={ids=>patch({invited_person_ids:ids})}/><p style={{fontSize:12}}>Invitations are local planning entries. Select actual attendees below; invited people do not count as present.</p></>:null}
     <OrganizationPeopleComboBox people={members} orgId={org.id} label="Organization meeting participants" multiple
      value={selected} onChange={ids=>choosePresence("present",ids)}
      placeholder="Find meeting participants"/>
     <div style={{display:"flex",gap:8,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
-     <p style={{fontSize:11,color:"#64748b",margin:"0 0 4px"}}>{selected.length} present from {members.length} active people in {org.name}.</p>
+     <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"0 0 4px"}}>{selected.length} present from {members.length} active people in {org.name}.</p>
      {previousMeeting?<button type="button" style={{...btn,padding:"7px 10px",minHeight:36,fontSize:11}} onClick={reuseMeetingPeople}>Reuse previous meeting crew</button>:null}
     </div>
     {desktop&&attendanceDetails.length?<label style={label}>Edit attendee details<select style={input} value={attendanceDetails.some(r=>r.person_id===personFocus)?personFocus:String(attendanceDetails[0]?.person_id??"")} onChange={e=>setPersonFocus(e.target.value)}>{attendanceDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.attendance_status)}</option>)}</select></label>:null}
@@ -207,25 +207,25 @@ export function MeetingRegisterWorkspace(){
       <label style={label}>Departure time<input type="time" style={input} value={textValue(r.departure_time)} onChange={e=>listPatch("attendance_details",i,{departure_time:e.target.value})}/></label></div>
     </div>:null)}
     <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><strong style={{fontSize:13}}>External/manual attendees ({attendees.length})</strong><button style={btn} onClick={()=>addRow("attendees")}><Plus size={14} style={{display:"inline"}}/> Add person</button></div>
-    {attendees.map((r,i)=><div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
+    {attendees.map((r,i)=><div key={i} style={{...grid,background:"var(--mt-surface-soft,#f8fafc)",padding:10,borderRadius:12}}>
      {([["attendee_name","Full name"],["attendee_company","Company / department"],["attendee_role","Role"]] as const).map(([key,title])=><label key={key} style={label}>{title}<input style={input} value={textValue(r[key])} onChange={e=>listPatch("attendees",i,{[key]:e.target.value})}/></label>)}
      <label style={label}>Attendance status<select style={input} value={textValue(r.attendee_status)||"Present"} onChange={e=>listPatch("attendees",i,{attendee_status:e.target.value})}>{presenceStatusOptions.map(v=><option key={v}>{v}</option>)}</select></label>
      <label style={label}>Attendance acknowledged (demo)<select style={input} value={textValue(r.attendee_ack)||"No"} onChange={e=>listPatch("attendees",i,{attendee_ack:e.target.value})}><option>No</option><option>Yes (unverified)</option></select></label>
      <button aria-label={"Remove attendee "+(i+1)} style={btn} onClick={()=>removeRow("attendees",i)}><Trash2 size={15} style={{display:"inline"}}/> Remove</button>
     </div>)}
-    <div style={{border:"1px solid #bfdbfe",borderRadius:14,background:"#f0f6ff",padding:15,display:"grid",gap:12}}>
+    <div style={{border:"1px solid #bfdbfe",borderRadius:14,background:"var(--mt-surface-soft,#f0f6ff)",padding:15,display:"grid",gap:12}}>
      <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"start",flexWrap:"wrap"}}>
-      <div><strong style={{fontSize:15,color:"#143b66"}}>Apologies & absent persons</strong>
-       <p style={{fontSize:12,color:"#53647e",margin:"5px 0 0"}}>Use the searchable company people picker. Select several people at once; no need to retype names, job titles or departments.</p>
+      <div><strong style={{fontSize:15,color:"var(--mt-ink,#143b66)"}}>Apologies & absent persons</strong>
+       <p style={{fontSize:12,color:"var(--mt-muted,#53647e)",margin:"5px 0 0"}}>Use the searchable company people picker. Select several people at once; no need to retype names, job titles or departments.</p>
       </div>
-      <span style={{background:"#dbeafe",color:"#1e40af",borderRadius:999,padding:"6px 10px",fontSize:11,fontWeight:850}}>{attendance.absent} absent / {attendance.present} present</span>
+      <span style={{background:"var(--mt-surface-soft,#dbeafe)",color:"var(--mt-link,#1e40af)",borderRadius:999,padding:"6px 10px",fontSize:11,fontWeight:850}}>{attendance.absent} absent / {attendance.present} present</span>
      </div>
      <OrganizationPeopleComboBox people={members} orgId={org.id} multiple
        label="Select staff who apologized or are absent"
        placeholder="Find absent colleagues"
        value={apologyIds} onChange={ids=>choosePresence("absent",ids)}/>
      {desktop&&apologyDetails.length?<label style={label}>Edit apology details<select style={input} value={apologyDetails.some(r=>r.person_id===apologyFocus)?apologyFocus:String(apologyDetails[0]?.person_id??"")} onChange={e=>setApologyFocus(e.target.value)}>{apologyDetails.map(r=><option key={String(r.person_id)} value={String(r.person_id)}>{textValue(r.person_name)} · {textValue(r.absence_status)}</option>)}</select></label>:null}
-     {apologyDetails.map((r,i)=>(!desktop||r.person_id===(apologyDetails.some(row=>row.person_id===apologyFocus)?apologyFocus:apologyDetails[0]?.person_id))?<div key={String(r.person_id??i)} style={{...box,display:"grid",gap:9,background:"#fff",padding:12}}>
+     {apologyDetails.map((r,i)=>(!desktop||r.person_id===(apologyDetails.some(row=>row.person_id===apologyFocus)?apologyFocus:apologyDetails[0]?.person_id))?<div key={String(r.person_id??i)} style={{...box,display:"grid",gap:9,background:"var(--mt-surface,#fff)",padding:12}}>
        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:9}}>
         <strong style={{fontSize:12}}>{members.find(p=>p.id===r.person_id)?.displayName??textValue(r.person_name)}</strong>
         <button type="button" aria-label={"Remove absent person "+(i+1)} style={{...btn,minHeight:33,padding:"5px 9px"}} onClick={()=>choosePresence("absent",apologyIds.filter(id=>id!==r.person_id))}><Trash2 size={15}/></button>
@@ -242,7 +242,7 @@ export function MeetingRegisterWorkspace(){
       <strong style={{fontSize:12}}>External / contractor apologies ({externalApologies.length})</strong>
       <button type="button" style={btn} onClick={()=>addRow("apology_entries")}><Plus size={15} style={{display:"inline",verticalAlign:"middle"}}/> Add person</button>
      </div>
-     {externalApologies.map((r,i)=><div key={i} style={{...box,display:"grid",gap:9,background:"#fff",padding:12}}>
+     {externalApologies.map((r,i)=><div key={i} style={{...box,display:"grid",gap:9,background:"var(--mt-surface,#fff)",padding:12}}>
        <div style={{...grid}}>
         <label style={label}>Person name *<input style={input} value={textValue(r.apology_name)} onChange={e=>listPatch("apology_entries",i,{apology_name:e.target.value})} placeholder="External visitor / contractor"/></label>
         <label style={label}>Company / department<input style={input} value={textValue(r.apology_company)} onChange={e=>listPatch("apology_entries",i,{apology_company:e.target.value})}/></label>
@@ -252,7 +252,7 @@ export function MeetingRegisterWorkspace(){
        <button type="button" style={{...btn,justifySelf:"start",minHeight:35}} onClick={()=>removeRow("apology_entries",i)}><Trash2 size={14} style={{display:"inline"}}/> Remove</button>
       </div>)}
      <label style={label}>Additional apology notes (optional)<textarea style={{...input,minHeight:60}} value={textValue(answers.apologies)} onChange={e=>text("apologies",e.target.value)} placeholder="Only if information is not covered above"/></label>
-     <p style={{fontSize:11,color:"#53647e",margin:0}}>An absent person is not counted as present or marked as having participated in the meeting. You can switch someone between Present and Absent using the two pickers.</p>
+     <p style={{fontSize:11,color:"var(--mt-muted,#53647e)",margin:0}}>An absent person is not counted as present or marked as having participated in the meeting. You can switch someone between Present and Absent using the two pickers.</p>
     </div>
    </div>
    <div hidden={step!==2} style={{borderTop:"1px solid #e2e8f0",paddingTop:14,display:"grid",gap:10}}>
@@ -268,7 +268,7 @@ export function MeetingRegisterWorkspace(){
      <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{quickAgenda.map(topic=><button key={topic} type="button" style={{...btn,minHeight:35,fontSize:11,padding:"7px 10px"}} onClick={()=>addAgendaTopic(topic)}>+ {topic}</button>)}</div>
      <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
       {previousMeeting?<button style={{...btn,minHeight:35,fontSize:11}} type="button" onClick={reuseAgenda}>Reuse previous agenda topics</button>:null}
-      <span style={{fontSize:11,color:"#64748b"}}>Suggested headings only. Today's minutes and acknowledgements are never copied.</span>
+      <span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>Suggested headings only. Today's minutes and acknowledgements are never copied.</span>
      </div>
     </div>
     {([["agenda","Agenda / planned topics *"],["safety_highlights","Safety moment / hazards"],["minutes","Meeting discussions and minutes *"],["decisions","Decisions / resolutions"],["outstanding","Outstanding matters / closeout"]] as const).map(([key,title])=>
@@ -286,10 +286,10 @@ export function MeetingRegisterWorkspace(){
       <button style={btn} onClick={()=>addRow("actions")}><Plus size={15} style={{display:"inline"}}/> Add action</button>
      </div>
     </div>
-    <p style={{fontSize:11,color:"#64748b",margin:0}}>Assign staff by searching the company directory, or enter an external owner. Carried-forward items stay open and require a fresh due date.</p>
-    {actions.length===0?<p style={{fontSize:12,color:"#64748b",margin:0}}>No actions recorded yet. Add an action with its responsible owner, due date and status when necessary.</p>:null}
+    <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>Assign staff by searching the company directory, or enter an external owner. Carried-forward items stay open and require a fresh due date.</p>
+    {actions.length===0?<p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>No actions recorded yet. Add an action with its responsible owner, due date and status when necessary.</p>:null}
     {desktop&&actions.length?<table className="movetrack-compact-table" aria-label="Desktop meeting action register"><thead><tr><th>Action</th><th>Status</th><th>Edit</th></tr></thead><tbody>{actions.map((r,i)=><tr key={String(r.action_id??i)}><td>{textValue(r.action)||"New action"}</td><td>{textValue(r.state)||"Open"}</td><td><button type="button" style={btn} onClick={()=>setActionFocus(i)} aria-label={"Edit action "+(i+1)}>Edit</button></td></tr>)}</tbody></table>:null}
-    {actions.map((r,i)=>(!desktop||i===Math.min(actionFocus,actions.length-1))?<div key={i} style={{...grid,background:"#f8fafc",padding:10,borderRadius:12}}>
+    {actions.map((r,i)=>(!desktop||i===Math.min(actionFocus,actions.length-1))?<div key={i} style={{...grid,background:"var(--mt-surface-soft,#f8fafc)",padding:10,borderRadius:12}}>
      <label style={label}>Action description *<input style={input} value={textValue(r.action)} onChange={e=>listPatch("actions",i,{action:e.target.value})}/></label>
      <div style={{display:"grid",gap:7}}>
       <OrganizationPeopleComboBox people={members} orgId={org.id} label="Accountable employee"
@@ -302,7 +302,7 @@ export function MeetingRegisterWorkspace(){
        <label style={label}>Or external / manual action owner *
         <input style={input} value={textValue(r.owner)} onChange={e=>listPatch("actions",i,{owner:e.target.value,owner_person_id:""})} placeholder="External person or contractor name"/>
        </label>:null}
-      {r.carried_from?<small style={{fontSize:11,color:"#9a670d"}}>{textValue(r.carried_from)}</small>:null}
+      {r.carried_from?<small style={{fontSize:11,color:"var(--mt-warning,#9a670d)"}}>{textValue(r.carried_from)}</small>:null}
      </div>
      {r.nlp_source?<label style={label}><span><input type="checkbox" checked={r.nlp_reviewed===true} onChange={e=>listPatch("actions",i,{nlp_reviewed:e.target.checked})}/> I reviewed this text suggestion, owner and due date</span><small>Source: {textValue(r.nlp_source)}</small></label>:null}
      <label style={label}>Due date<input type="date" style={input} value={textValue(r.due)} onChange={e=>listPatch("actions",i,{due:e.target.value})}/></label>
@@ -313,7 +313,7 @@ export function MeetingRegisterWorkspace(){
    </div>
    <section hidden={step!==4} aria-label="Review meeting" style={{display:"grid",gap:12}}>
     <h3 style={{margin:0}}>Review before saving</h3><p style={{margin:0,fontSize:13}}>{textValue(answers.meeting_title)||"Untitled meeting"} · {textValue(answers.meeting_date)} · {attendance.present} present · {attendance.absent} absent/apologies · {actions.length} actions</p>
-    <p style={{margin:0,fontSize:12,color:"#64748b"}}>Check each step. Draft entries are saved automatically; chairperson acknowledgement is required to finalize and remains unverified.</p>
+    <p style={{margin:0,fontSize:12,color:"var(--mt-muted,#64748b)"}}>Check each step. Draft entries are saved automatically; chairperson acknowledgement is required to finalize and remains unverified.</p>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,260px),1fr))",gap:12}}>
     <SignatureApprovalTray compact label="Chairperson signature" value={isSignatureEvidence(answers.chair_signature)?answers.chair_signature:null}
      scope={textValue(answers.meeting_title)||"Meeting register"} role="Meeting chairperson" intent="attendance"
@@ -326,27 +326,27 @@ export function MeetingRegisterWorkspace(){
      onChange={signature=>patch({minute_taker_signature:signature??null})}/>
    </div>
    <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap",justifyContent:"space-between"}}>
-    <span style={{fontSize:11,color:"#64748b"}}>Signature marks and drafts save locally; identity and authorization are not verified.</span>
+    <span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>Signature marks and drafts save locally; identity and authorization are not verified.</span>
     <button style={primary} onClick={submit}><CheckCircle2 size={16} style={{display:"inline",verticalAlign:"middle"}}/> Save meeting register & minutes</button>
    </div>
    </section>
    <div className="movetrack-step-footer"><button type="button" disabled={step===0} onClick={()=>goStep(step-1)}>Previous</button><span style={{fontSize:12,alignSelf:"center"}}>Step {step+1} of 5 · Autosaved locally</span>{step<4?<button type="button" onClick={()=>goStep(step+1)}>Next: {["Details","Attendance","Minutes","Actions","Review"][step+1]}</button>:null}</div>
   </div></TaskWorkspace></div>:<div hidden={page!=="draft"} style={{...box,display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
-    <p style={{fontSize:12,color:"#475569",margin:0}}>Meeting saved. Start a new register or reopen the unsent draft.</p>
+    <p style={{fontSize:12,color:"var(--mt-muted,#475569)",margin:0}}>Meeting saved. Start a new register or reopen the unsent draft.</p>
     <button style={primary} onClick={()=>{patch(newDraft(org.siteIds[0]??""));setEditing(true);setPage("draft");goStep(0);setMessage("");}}><Plus size={15} style={{display:"inline"}}/> New meeting</button>
    </div>}
-  {message?<p role="status" style={{...box,background:"#eff6ff",borderColor:"#bfdbfe",color:"#1e40af",fontSize:12}}>{message}</p>:null}
+  {message?<p role="status" style={{...box,background:"var(--mt-surface-soft,#eff6ff)",borderColor:"#bfdbfe",color:"var(--mt-link,#1e40af)",fontSize:12}}>{message}</p>:null}
   <div hidden={page!=="records"} style={{...box,display:"grid",gap:11}}>
    <div style={{display:"flex",justifyContent:"space-between",gap:9,alignItems:"center",flexWrap:"wrap"}}><h3 style={{fontSize:18,margin:0}}>Saved meeting registers & briefings</h3><button style={btn} onClick={()=>{setEditing(true);setPage("draft");}}>Open draft</button></div>
-   {!records.length?<p style={{fontSize:12,color:"#64748b"}}>No completed meeting records yet. Your first register will appear here and in participation analytics.</p>:null}
+   {!records.length?<p style={{fontSize:12,color:"var(--mt-muted,#64748b)"}}>No completed meeting records yet. Your first register will appear here and in participation analytics.</p>:null}
    {records.map(r=><div key={r.id} style={{display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",border:"1px solid #e2e8f0",padding:13,borderRadius:12}}>
     <div><strong>{textValue(r.answers.meeting_title)||r.templateSnapshot.title}</strong>
-     <p style={{fontSize:11,color:"#64748b",margin:"5px 0"}}>{textValue(r.answers.meeting_type)||"SHE meeting"} · {textValue(r.answers.meeting_date)||new Date(r.submittedAt).toLocaleDateString()} · {r.siteId}</p>
-     <span style={{fontSize:11,color:"#2563eb"}}>{meetingAttendanceCounts(r.answers).present} attendee(s) · {meetingAttendanceCounts(r.answers).absent} apologies/absent · {rowValues(r.answers.actions).length} action(s)</span>
+     <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:"5px 0"}}>{textValue(r.answers.meeting_type)||"SHE meeting"} · {textValue(r.answers.meeting_date)||new Date(r.submittedAt).toLocaleDateString()} · {r.siteId}</p>
+     <span style={{fontSize:11,color:"var(--mt-link,#2563eb)"}}>{meetingAttendanceCounts(r.answers).present} attendee(s) · {meetingAttendanceCounts(r.answers).absent} apologies/absent · {rowValues(r.answers.actions).length} action(s)</span>
     </div>
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{r.answers.meeting_series_id?<button type="button" style={btn} onClick={()=>startOccurrence(r)}>Start next series meeting</button>:null}<DocumentDownloadActions document={buildFormDocument({template:r.templateSnapshot,mode:"filled",submission:r,company:org,people:members})} compact/></div>
    </div>)}
   </div>
-  <p style={{fontSize:11,color:"#64748b",margin:0}}>Registers are simulations with unverified acknowledgements. For legally controlled attendance registers, identity, signatures, retention, privacy and supervisor approval must be implemented server-side.</p>
+  <p style={{fontSize:11,color:"var(--mt-muted,#64748b)",margin:0}}>Registers are simulations with unverified acknowledgements. For legally controlled attendance registers, identity, signatures, retention, privacy and supervisor approval must be implemented server-side.</p>
  </section>;
 }

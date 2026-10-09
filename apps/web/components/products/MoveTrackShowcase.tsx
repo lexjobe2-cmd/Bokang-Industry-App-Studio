@@ -411,7 +411,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
     <MoveTrackWorkspaceNav view={adminMode&&adminArea!=="overview"&&adminArea!=="company"?adminArea:view} onChange={setView}/>
 
-    {notice?<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"#1e40af",fontSize:12,fontWeight:800}}>{notice}</div>:null}
+    {notice?<div style={{background:"var(--mt-surface-soft,#eff6ff)",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"var(--mt-link,#1e40af)",fontSize:12,fontWeight:800}}>{notice}</div>:null}
     {!adminMode&&(["fleet","drivers","workforce","sites","assign","jobs","forms","paper","meetings","release"].includes(view))?
      <aside aria-label="Open management tools" style={{display:"flex",alignItems:"center",gap:10,justifyContent:"space-between",flexWrap:"wrap",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:12,padding:12}}>
       <div><strong style={{fontSize:12}}>Management tools are available</strong>
@@ -423,9 +423,9 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
     {view==="admin"?<section aria-label="Admin workspace" style={{...panel,display:"grid",gap:13,borderColor:"#93c5fd"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:10,flexWrap:"wrap"}}>
-       <div><p style={{fontSize:11,color:"#1d4ed8",fontWeight:900,letterSpacing:1.2,margin:0}}>ADMIN · LOCAL DEMONSTRATION</p>
+       <div><p style={{fontSize:11,color:"var(--mt-link,#1d4ed8)",fontWeight:900,letterSpacing:1.2,margin:0}}>ADMIN · LOCAL DEMONSTRATION</p>
         <h2 style={{fontSize:22,margin:"6px 0"}}>{adminArea==="overview"?"Organization administration":adminArea==="company"?"Company management":adminArea==="fleet"?"Vehicle onboarding & asset media":adminArea==="drivers"?"Driver onboarding":adminArea==="workforce"?"Employee directory":adminArea==="sites"?"Site policies":adminArea==="forms"?"Form & template management":"Manage "+adminArea}</h2>
-        <p style={{fontSize:12,color:"#64748b",margin:0}}>Set up and manage every organizational workspace here. This frontend uses local demo access, not verified admin authentication.</p></div>
+        <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Set up and manage every organizational workspace here. This frontend uses local demo access, not verified admin authentication.</p></div>
        {adminArea!=="overview"?<button type="button" onClick={()=>setAdminArea("overview")} style={secondaryButton}>← All admin tools</button>:null}
       </div>
       {adminArea==="overview"?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:9}}>
@@ -445,10 +445,10 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         ["local-data","Data & backups","Export, restore and review local data"],
         ["settings","Settings & support","Local preferences and guidance"]
        ] as const).map(([area,title,description])=><button type="button" key={area} onClick={()=>{if(area==="drivers")setFocusedDriverId(null);setAdminArea(area);}} style={{...panel,cursor:"pointer",textAlign:"left",minHeight:87,borderColor:"#c6d9f3"}}>
-        <strong style={{display:"block",fontSize:13}}>{title} →</strong><span style={{display:"block",fontSize:11,color:"#64748b",marginTop:7}}>{description}</span>
+        <strong style={{display:"block",fontSize:13}}>{title} →</strong><span style={{display:"block",fontSize:11,color:"var(--mt-muted,#64748b)",marginTop:7}}>{description}</span>
        </button>)}
       </div>:null}
-      {adminArea==="fleet"?<p style={{fontSize:12,color:"#1d4ed8",margin:0}}>Only the Admin workspace exposes vehicle creation, certificate editing and asset photo changes. Photos are device-local and do not establish authorization.</p>:null}
+      {adminArea==="fleet"?<p style={{fontSize:12,color:"var(--mt-link,#1d4ed8)",margin:0}}>Only the Admin workspace exposes vehicle creation, certificate editing and asset photo changes. Photos are device-local and do not establish authorization.</p>:null}
      </section>:null}
     {view==="admin"&&adminArea==="overview"?<section aria-label="All app features from Admin" style={panel}>
       <MoveTrackWorkspaceDirectory onNavigate={next=>next==="admin"?setAdminArea("overview"):setAdminArea(next)}/>
@@ -464,36 +464,36 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         {[
           ["Available",control.available],["Assigned",control.assigned],["In use",control.inUse],
           ["Inspection due",control.due],["Grounded",control.grounded],["Open defects",control.openIncidents]
-        ].map(([label,value])=><article key={String(label)} style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:17,padding:14}}><div style={{fontSize:11,color:"#667085",fontWeight:850}}>{label}</div><strong style={{fontSize:26,color:label==="Grounded"&&Number(value)>0?"var(--mt-danger,#b42318)":"var(--mt-ink,#101827)"}}>{value}</strong></article>)}
+        ].map(([label,value])=><article key={String(label)} style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:17,padding:14}}><div style={{fontSize:11,color:"var(--mt-muted,#667085)",fontWeight:850}}>{label}</div><strong style={{fontSize:26,color:label==="Grounded"&&Number(value)>0?"var(--mt-danger,#b42318)":"var(--mt-ink,#101827)"}}>{value}</strong></article>)}
       </div>
 
-      <section style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>
-        <div style={{padding:16,borderBottom:"1px solid #dbeafe"}}><h2 style={{margin:0}}>Active vehicle assignments</h2><p style={{margin:"5px 0 0",fontSize:12,color:"#667085"}}>Manager view mirrors what the driver sees on the mobile app.</p></div>
-        {activeAssignments.length===0?<div style={{padding:22,color:"#667085"}}>No active assignments.</div>:activeAssignments.map((assignment)=>{
+      <section style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>
+        <div style={{padding:16,borderBottom:"1px solid #dbeafe"}}><h2 style={{margin:0}}>Active vehicle assignments</h2><p style={{margin:"5px 0 0",fontSize:12,color:"var(--mt-muted,#667085)"}}>Manager view mirrors what the driver sees on the mobile app.</p></div>
+        {activeAssignments.length===0?<div style={{padding:22,color:"var(--mt-muted,#667085)"}}>No active assignments.</div>:activeAssignments.map((assignment)=>{
           const vehicle=fleet.find((item)=>item.id===assignment.vehicleId);
           const driver=drivers.find((item)=>item.id===assignment.driverId);
           const last=assignment.prestartId?prestarts.find((item)=>item.id===assignment.prestartId):undefined;
           return <div key={assignment.id} style={{padding:16,borderBottom:"1px solid #eff6ff",display:"grid",gap:9}}>
             <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
-              <div><strong>{vehicle?.fleetNo||assignment.vehicleId} → {driver?.name||assignment.driverId}</strong><div style={{fontSize:11,color:"#667085"}}>{assignment.site} · {assignment.jobId||"No job linked"}</div></div>
+              <div><strong>{vehicle?.fleetNo||assignment.vehicleId} → {driver?.name||assignment.driverId}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{assignment.site} · {assignment.jobId||"No job linked"}</div></div>
               <span style={{fontWeight:900,color:assignment.status==="Grounded"?"#b42318":assignment.status==="Cleared"?"#027a48":"#1d4ed8"}}>{assignment.status.toUpperCase()}</span>
             </div>
-            {last?.result==="NO-GO"?<div style={{fontSize:11,color:"#b42318"}}>{last.reasons.join(" · ")}</div>:null}
+            {last?.result==="NO-GO"?<div style={{fontSize:11,color:"var(--mt-danger,#b42318)"}}>{last.reasons.join(" · ")}</div>:null}
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {driver?<a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={primaryLink}>Open driver app</a>:null}
               {assignment.status==="Grounded"?<button onClick={()=>setView("release")} style={secondaryButton}>Open repair and reinspection workflow</button>:null}
-              {adminMode&&assignment.status!=="In use"?<button onClick={()=>cancelAssignment(assignment)} style={{...secondaryButton,color:"#b42318"}}>Cancel assignment</button>:null}
+              {adminMode&&assignment.status!=="In use"?<button onClick={()=>cancelAssignment(assignment)} style={{...secondaryButton,color:"var(--mt-danger,#b42318)"}}>Cancel assignment</button>:null}
             </div>
           </div>;
         })}
       </section>
 
-      <section style={{background:"#fff",border:"1px solid #fecaca",borderRadius:22,padding:16}}>
+      <section style={{background:"var(--mt-surface,#fff)",border:"1px solid #fecaca",borderRadius:22,padding:16}}>
         <h2 style={{marginTop:0}}>Open safety / defect reports</h2>
-        {incidents.filter((item)=>item.status!=="Resolved").length===0?<p style={{color:"#667085"}}>No open reports.</p>:incidents.filter((item)=>item.status!=="Resolved").map((item)=>{
+        {incidents.filter((item)=>item.status!=="Resolved").length===0?<p style={{color:"var(--mt-muted,#667085)"}}>No open reports.</p>:incidents.filter((item)=>item.status!=="Resolved").map((item)=>{
           const vehicle=fleet.find((x)=>x.id===item.vehicleId);
           return <div key={item.id} style={{padding:"10px 0",borderBottom:"1px solid #fee2e2",display:"grid",gap:8}}>
-            <div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"#667085"}}>{item.description}</div></div>
+            <div><strong>{vehicle?.fleetNo||item.vehicleId} · {item.category}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{item.description}</div></div>
             <MultiImageEvidence label="Defect / incident photos" images={item.images??[]} onChange={images=>setIncidents(current=>current.map(row=>row.id===item.id?{...row,images}:row))}/>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               <input value={resolutionNotes[item.id]||""} onChange={(e)=>{setResolutionNotes((current)=>({...current,[item.id]:e.target.value}));setIncidentSignatures(current=>({...current,[item.id]:undefined}));}} placeholder="Corrective action / repair completed…" style={{...input,flex:"1 1 280px"}}/>
@@ -516,7 +516,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
 
     {contentView==="fleet"?<div style={{display:"grid",gap:14}}>
       {adminMode?<DesktopModalDisclosure title="Add fleet vehicle"><section style={panel}>{notice?<p role="status">{notice}</p>:null}<h2 style={{marginTop:10}}>Onboard fleet vehicle</h2>
-       <p style={{fontSize:12,color:"#64748b"}}>Choose from company work sites and common vehicle details; only asset identity and verified expiry dates require direct entry.</p>
+       <p style={{fontSize:12,color:"var(--mt-muted,#64748b)"}}>Choose from company work sites and common vehicle details; only asset identity and verified expiry dates require direct entry.</p>
        <div className="movetrack-fleet-entry" style={formGrid}>
         <Field label="Fleet number"><input value={vehicleDraft.fleetNo} onChange={(e)=>setVehicleDraft((c)=>({...c,fleetNo:e.target.value}))} style={input} placeholder="LV-031"/></Field>
         <Field label="Registration"><input value={vehicleDraft.registration} onChange={(e)=>setVehicleDraft((c)=>({...c,registration:e.target.value}))} style={input} placeholder="B 000 ABC"/></Field>
@@ -536,8 +536,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div className="movetrack-fleet-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,285px),1fr))",gap:12}}>
         {fleet.map((vehicle)=><article key={vehicle.id} style={{...panel,border:vehicle.status==="No-go"?"1px solid #fecaca":"1px solid #dbeafe"}}>
           <div className="movetrack-fleet-card-heading" style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{vehicle.fleetNo} · {vehicle.registration}</strong><span style={{fontSize:11,fontWeight:900,color:vehicle.status==="No-go"?"#b42318":"#1d4ed8"}}>{vehicle.status}</span></div>
-          <div style={{fontSize:12,color:"#667085",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
-          <div style={{fontSize:11,color:"#667085",marginTop:3}}>{vehicle.site}</div>
+          <div style={{fontSize:12,color:"var(--mt-muted,#667085)",marginTop:5}}>{vehicle.makeModel} · {vehicle.type}</div>
+          <div style={{fontSize:11,color:"var(--mt-muted,#667085)",marginTop:3}}>{vehicle.site}</div>
           <div style={{marginTop:10}}><MultiImageEvidence label="Vehicle photo gallery" images={vehicle.images??[]} readOnly={!adminMode} onChange={images=>setFleet(current=>current.map(item=>item.id===vehicle.id?{...item,images}:item))}/></div>
           <VehicleDocuments readOnly={!adminMode} documents={vehicle.documents??[]} onChange={documents=>setFleet(current=>current.map(item=>item.id===vehicle.id?{...item,documents}:item))}/>
           <div style={{display:"grid",gap:6,marginTop:12,fontSize:11}}>
@@ -551,8 +551,8 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       </div>
       {adminMode?<DesktopModal title="Edit vehicle details" open={Boolean(editingVehicleId&&editDetails)} onClose={()=>{setEditingVehicleId(null);setEditDetails(null);}}>
        {editDetails?<div style={{...panel,display:"grid",gap:13}}>
-        <p style={{fontSize:12,color:"#64748b",margin:0}}>Edit the existing asset record. Status, odometer, photos, and incident history are retained. Active assignments prevent safety-critical identity changes.</p>
-        {vehicleEditError?<p role="alert" style={{fontSize:12,color:"#b42318",margin:0}}>{vehicleEditError}</p>:null}
+        <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Edit the existing asset record. Status, odometer, photos, and incident history are retained. Active assignments prevent safety-critical identity changes.</p>
+        {vehicleEditError?<p role="alert" style={{fontSize:12,color:"var(--mt-danger,#b42318)",margin:0}}>{vehicleEditError}</p>:null}
         <div style={formGrid}>
          <Field label="Fleet number"><input aria-label="Edit fleet number" style={input} value={editDetails.fleetNo} onChange={event=>setEditDetails(current=>current?{...current,fleetNo:event.target.value}:current)}/></Field>
          <Field label="Registration"><input aria-label="Edit registration" style={input} value={editDetails.registration} onChange={event=>setEditDetails(current=>current?{...current,registration:event.target.value}:current)}/></Field>
@@ -583,7 +583,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       :<div style={{...panel,fontSize:12}}>Onboard company drivers under <button type="button" style={secondaryButton} onClick={()=>openAdminArea("drivers")}>Admin → Drivers</button>.</div>}
       {adminMode?<section aria-label="Driver credential reminders" style={{...panel,display:"grid",gap:7,borderColor:"#fde68a"}}>
         <strong style={{fontSize:14}}>Licence, permit and training reminders</strong>
-        <p style={{fontSize:12,color:"#64748b",margin:0}}>Visible on this device when Admin → Drivers is opened. No email, push notifications or background monitoring is configured.</p>
+        <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Visible on this device when Admin → Drivers is opened. No email, push notifications or background monitoring is configured.</p>
         {(()=>{
           const alerts=drivers.flatMap(driver=>credentialAlerts(driver).filter(alert=>alert.state!=="current").map(alert=>({driver,alert})));
           const blocked=alerts.filter(({alert})=>alert.state==="expired"||alert.state==="missing");
@@ -592,7 +592,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             {alerts.length?alerts.slice(0,12).map(({driver,alert})=><div key={driver.id+"-"+alert.key} style={{fontSize:12,display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap"}}>
               <span>{driver.name} · {alert.label}</span>
               <strong style={{color:alert.state==="due"?"#9a670a":"#b42318"}}>{alert.state==="due"?"Due in "+alert.daysRemaining+" days":alert.state==="expired"?"Expired":"Expiry missing"}</strong>
-            </div>):<small style={{color:"#047857"}}>No saved credentials are currently due, expired or missing.</small>}
+            </div>):<small style={{color:"var(--mt-success,#047857)"}}>No saved credentials are currently due, expired or missing.</small>}
             {alerts.length>12?<small>Showing 12 of {alerts.length} reminders; open individual driver cards for all dates.</small>:null}
           </div>;
         })()}
@@ -604,17 +604,17 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,270px),1fr))",gap:12}}>
         {(adminMode&&focusedDriverId?drivers.filter(driver=>driver.id===focusedDriverId):drivers).map((driver)=><article key={driver.id} style={panel}>
           <div style={{display:"flex",justifyContent:"space-between",gap:10}}><strong>{driver.name}</strong><span style={{fontSize:11,fontWeight:900,color:driver.status==="Available"?"#027a48":"#1d4ed8"}}>{driver.status}</span></div>
-          <div style={{fontSize:11,color:"#667085",marginTop:4}}>{driver.licenceNo} · {driver.phone||"No phone"}</div>
+          <div style={{fontSize:11,color:"var(--mt-muted,#667085)",marginTop:4}}>{driver.licenceNo} · {driver.phone||"No phone"}</div>
           {driver.personId?<small style={{display:"block",marginTop:5,color:directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"#64748b":"#b42318"}}>Linked worker: {directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.displayName??"Directory identity unavailable"}{directory.find(p=>p.orgId===orgId&&p.id===driver.personId)?.active?"":" · Not active — no new assignments"}</small>:null}
           {(()=>{
             const current=activeAssignments.filter(a=>a.driverId===driver.id);
             const history=assignments.filter(a=>a.driverId===driver.id).slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
-            return <div aria-label={"Assignments for "+driver.name} style={{display:"grid",gap:6,marginTop:11,padding:10,background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:10}}>
+            return <div aria-label={"Assignments for "+driver.name} style={{display:"grid",gap:6,marginTop:11,padding:10,background:"var(--mt-surface-soft,#f8fafc)",border:"1px solid #e2e8f0",borderRadius:10}}>
               <strong style={{fontSize:12}}>Assignments · {current.length} active / {history.length} total</strong>
               {current.length?current.map(a=><div key={a.id} style={{fontSize:11,overflowWrap:"anywhere"}}>
                 {fleet.find(v=>v.id===a.vehicleId)?.fleetNo??a.vehicleId} · {a.site} · <strong>{a.status}</strong>
-              </div>):<span style={{fontSize:11,color:"#64748b"}}>No active assignment</span>}
-              {history.length>current.length?<small style={{color:"#64748b"}}>Previous: {history.filter(a=>a.status==="Returned"||a.status==="Cancelled").slice(0,2).map(a=>a.status+" · "+(fleet.find(v=>v.id===a.vehicleId)?.fleetNo??a.vehicleId)).join("; ")||"Previous records available"}</small>:null}
+              </div>):<span style={{fontSize:11,color:"var(--mt-muted,#64748b)"}}>No active assignment</span>}
+              {history.length>current.length?<small style={{color:"var(--mt-muted,#64748b)"}}>Previous: {history.filter(a=>a.status==="Returned"||a.status==="Cancelled").slice(0,2).map(a=>a.status+" · "+(fleet.find(v=>v.id===a.vehicleId)?.fleetNo??a.vehicleId)).join("; ")||"Previous records available"}</small>:null}
               {adminMode?<button type="button" style={{...secondaryButton,minHeight:44,marginTop:4}} onClick={()=>setView("assign")}>Open assignments</button>:null}
             </div>;
           })()}
@@ -637,7 +637,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             ] as const).map(([key,label])=><label key={key} style={{display:"flex",justifyContent:"space-between",gap:10,fontSize:12}}><span>{label}</span><input type="checkbox" disabled={!adminMode} checked={(authorizationDrafts[driver.id]??driver)[key]} onChange={e=>editDriverAuthorization(driver,key,e.target.checked)}/></label>)}
           </div>
           {adminMode&&authorizationDrafts[driver.id]?<div style={{display:"grid",gap:9,padding:"12px 0",borderTop:"1px solid #dbe4ef",marginTop:10}}>
-            <p style={{fontSize:11,color:"#b45309",margin:0}}>Pending authorizations or expiry dates are not active until a supervisor reviews these exact values. A local signature is a demo acknowledgement only.</p>
+            <p style={{fontSize:11,color:"var(--mt-warning,#b45309)",margin:0}}>Pending authorizations or expiry dates are not active until a supervisor reviews these exact values. A local signature is a demo acknowledgement only.</p>
             <SignatureApprovalTray label="Supervisor review driver access" description="Examine the licence, medical and training evidence outside the app before capturing this unverified demo review."
               value={authorizationSignatures[driver.id]??null} onChange={sig=>setAuthorizationSignatures(xs=>({...xs,[driver.id]:sig}))}
               scope={driverScope(driver,authorizationDrafts[driver.id]!)} role="Site supervisor"/>
@@ -647,14 +647,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
                 onClick={()=>saveDriverAuthorization(driver)}>Save reviewed competency</button>
               <button type="button" style={secondaryButton} onClick={()=>discardDriverReview(driver.id)}>Discard</button>
             </div>
-           </div>:driver.authorizationReview?<small style={{display:"block",marginTop:9,color:"#047857"}}>Demo supervisor acknowledgement recorded · {new Date(driver.authorizationReview.signedAt).toLocaleDateString()}</small>:null}
+           </div>:driver.authorizationReview?<small style={{display:"block",marginTop:9,color:"var(--mt-success,#047857)"}}>Demo supervisor acknowledgement recorded · {new Date(driver.authorizationReview.signedAt).toLocaleDateString()}</small>:null}
           <a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={{...primaryLink,marginTop:12}}>Open driver app</a>
         </article>)}
       </div>
       {adminMode?<DesktopModal title="Edit driver profile" open={Boolean(editingDriverId&&editDriverDetails)} onClose={()=>{setEditingDriverId(null);setEditDriverDetails(null);setDriverEditError("");}}>
        {editDriverDetails?<div style={{...panel,display:"grid",gap:12}}>
-        <p style={{fontSize:12,color:"#64748b",margin:0}}>Change driver identity and contact details only. Dispatch status, documents, driver permits and signed supervisor reviews are retained.</p>
-        {driverEditError?<p role="alert" style={{fontSize:12,color:"#b42318",margin:0}}>{driverEditError}</p>:null}
+        <p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Change driver identity and contact details only. Dispatch status, documents, driver permits and signed supervisor reviews are retained.</p>
+        {driverEditError?<p role="alert" style={{fontSize:12,color:"var(--mt-danger,#b42318)",margin:0}}>{driverEditError}</p>:null}
         <div style={formGrid}>
          <Field label="Driver name"><input aria-label="Edit driver name" style={input} value={editDriverDetails.name} onChange={event=>setEditDriverDetails(current=>current?{...current,name:event.target.value}:current)}/></Field>
          <Field label="Phone"><input aria-label="Edit driver phone" type="tel" style={input} value={editDriverDetails.phone} onChange={event=>setEditDriverDetails(current=>current?{...current,phone:event.target.value}:current)}/></Field>
@@ -671,14 +671,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     
     {contentView==="sites"?<div style={{display:"grid",gap:12}}>
       <section style={panel}>
-        <p style={{margin:0,color:"#1d4ed8",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Site policy profiles</p>
+        <p style={{margin:0,color:"var(--mt-link,#1d4ed8)",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Site policy profiles</p>
         <h2 style={{marginBottom:6}}>Configure what a driver must satisfy before GO.</h2>
-        <p style={{fontSize:12,color:"#667085",lineHeight:1.6}}>These are operator/site rules for the app's compliance engine, not a substitute for statutory inspection or the mine's formal procedures.</p>
+        <p style={{fontSize:12,color:"var(--mt-muted,#667085)",lineHeight:1.6}}>These are operator/site rules for the app's compliance engine, not a substitute for statutory inspection or the mine's formal procedures.</p>
       </section>
       {policies.map((policy)=><article key={policy.id} style={panel}>
         <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center",flexWrap:"wrap"}}>
           <strong>{policy.name}</strong>
-          <span style={{fontSize:11,color:"#667085"}}>{policy.additionalCriticalChecks.length} extra critical controls</span>
+          <span style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{policy.additionalCriticalChecks.length} extra critical controls</span>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:8,marginTop:12}}>
           <label style={checkRow}><span>Require site/open-pit permit</span><input type="checkbox" disabled={!adminMode} checked={(siteDrafts[policy.id]??policy).requireOpenPitPermit} onChange={e=>editPolicy(policy,d=>({...d,requireOpenPitPermit:e.target.checked}))}/></label>
@@ -686,7 +686,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           <label style={checkRow}><span>Require defensive driving</span><input type="checkbox" disabled={!adminMode} checked={(siteDrafts[policy.id]??policy).requireDefensiveDriving} onChange={e=>editPolicy(policy,d=>({...d,requireDefensiveDriving:e.target.checked}))}/></label>
         </div>
         <div style={{marginTop:12}}>
-          <div style={{fontSize:11,fontWeight:850,color:"#667085",marginBottom:7}}>Additional critical vehicle controls</div>
+          <div style={{fontSize:11,fontWeight:850,color:"var(--mt-muted,#667085)",marginBottom:7}}>Additional critical vehicle controls</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:7}}>
             {[
               "First aid kit present and stocked",
@@ -701,7 +701,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
           </div>
         </div>
         {adminMode&&siteDrafts[policy.id]?<div style={{display:"grid",gap:9,marginTop:14,paddingTop:12,borderTop:"1px solid #dbe4ef"}}>
-          <p style={{fontSize:11,color:"#b45309",margin:0}}>Policy changes are staged. A supervisor must review before they affect simulated dispatch.</p>
+          <p style={{fontSize:11,color:"var(--mt-warning,#b45309)",margin:0}}>Policy changes are staged. A supervisor must review before they affect simulated dispatch.</p>
           <SignatureApprovalTray label="Supervisor review site policy" value={siteSignatures[policy.id]??null}
             onChange={sig=>setSiteSignatures(xs=>({...xs,[policy.id]:sig}))} role="Site safety supervisor"
             scope={policyScope(siteDrafts[policy.id]!)} description="Assess the site requirements and preserve safety-critical controls; the local signature is not a verified authorization."/>
@@ -710,14 +710,14 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
              disabled={!isSignatureEvidence(siteSignatures[policy.id])||siteSignatures[policy.id]?.scope!==policyScope(siteDrafts[policy.id]!)}>Save reviewed policy</button>
            <button type="button" style={secondaryButton} onClick={()=>{setSiteDrafts(xs=>{const next={...xs};delete next[policy.id];return next;});setSiteSignatures(xs=>({...xs,[policy.id]:null}));}}>Discard</button>
           </div>
-        </div>:policy.policyReview?<small style={{display:"block",marginTop:10,color:"#047857"}}>Last demo supervisor review · {new Date(policy.policyReview.signedAt).toLocaleDateString()}</small>:null}
+        </div>:policy.policyReview?<small style={{display:"block",marginTop:10,color:"var(--mt-success,#047857)"}}>Last demo supervisor review · {new Date(policy.policyReview.signedAt).toLocaleDateString()}</small>:null}
       </article>)}
     </div>:null}
 
     {contentView==="assign"?<section style={panel}>
-      <p style={{margin:0,color:"#1d4ed8",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Dispatch</p>
+      <p style={{margin:0,color:"var(--mt-link,#1d4ed8)",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Dispatch</p>
       <h2 style={{marginBottom:6}}>Assign driver + vehicle</h2>
-      <p style={{fontSize:12,color:"#667085",lineHeight:1.6}}>Assignment does not clear the vehicle. The driver's pre-start must return GO before they can take it.</p>
+      <p style={{fontSize:12,color:"var(--mt-muted,#667085)",lineHeight:1.6}}>Assignment does not clear the vehicle. The driver's pre-start must return GO before they can take it.</p>
       {adminMode?<div style={formGrid}>
         <Field label="Vehicle"><select value={assignVehicle} onChange={(e)=>{setAssignVehicle(e.target.value);const v=fleet.find((x)=>x.id===e.target.value);if(v)setAssignSite(v.site);}} style={input}><option value="">Select vehicle</option>{fleet.filter((item)=>!["No-go","Maintenance","Out of service","On job","Assigned"].includes(item.status)).map((item)=><option key={item.id} value={item.id}>{item.fleetNo} · {item.registration} · {item.status}</option>)}</select></Field>
         <Field label="Driver"><select value={assignDriver} onChange={(e)=>setAssignDriver(e.target.value)} style={input}><option value="">Select driver</option>{drivers.filter((item)=>item.status==="Available").map((item)=><option key={item.id} value={item.id}>{item.name}{!item.siteAuthorised?" · authorisation pending":""}</option>)}</select></Field>
@@ -735,7 +735,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         <Field label="From"><select value={from} onChange={(e)=>setFrom(e.target.value as typeof from)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
         <Field label="To"><select value={to} onChange={(e)=>setTo(e.target.value as typeof to)} style={input}>{botswanaPlaces.map((item)=><option key={item}>{item}</option>)}</select></Field>
       </div><button onClick={addJob} style={primaryButton}>Create job</button></section></DesktopModalDisclosure>:<p style={{...panel,fontSize:12}}>New work orders are created in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("jobs")}>Admin → Jobs</button>.</p>}
-      <div style={{background:"#fff",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"#667085"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
+      <div style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid #eff6ff",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
     <div hidden={contentView!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace adminMode={adminMode}/></Suspense>:null}</div>
@@ -755,7 +755,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         ["Open defects",control.openIncidents],
         ["Vehicles in use",control.inUse],
         ["Active assignments",activeAssignments.length]
-      ].map(([label,value])=><article key={String(label)} style={panel}><div style={{fontSize:11,color:"#667085",fontWeight:850}}>{label}</div><strong style={{fontSize:28}}>{value}</strong></article>)}
+      ].map(([label,value])=><article key={String(label)} style={panel}><div style={{fontSize:11,color:"var(--mt-muted,#667085)",fontWeight:850}}>{label}</div><strong style={{fontSize:28}}>{value}</strong></article>)}
     </div></div>:null}
   </section>;
 }
