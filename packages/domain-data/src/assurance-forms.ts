@@ -5,7 +5,7 @@ import { defaultRiskMatrix, scoreRisk, type RiskAnswer } from "./risk-matrix.ts"
  * Versioned, configuration-driven operational forms.
  * All browser submissions are demonstrations; trusted authorization is server-side.
  */
-export type AnswerType = "pass_fail_na" | "yes_no" | "text" | "multiline" | "number" | "date" | "datetime" | "select" | "multiselect" | "signature" | "photo" | "document" | "risk" | "repeat" | "person" | "people";
+export type AnswerType = "checkbox" | "radio" | "pass_fail_na" | "yes_no" | "text" | "multiline" | "number" | "date" | "datetime" | "select" | "multiselect" | "signature" | "photo" | "document" | "risk" | "repeat" | "person" | "people";
 export type PrimitiveAnswer = string | number | boolean | null;
 export type FormAnswer = PrimitiveAnswer | string[] | Record<string, PrimitiveAnswer>[] | RiskAnswer | SignatureEvidence;
 export type FormAnswers = Record<string, FormAnswer>;
@@ -15,6 +15,7 @@ export type FormField = {
   id: string; label: string; type: AnswerType; required?: boolean; critical?: boolean;
   options?: readonly string[]; visibleWhen?: ConditionalVisibility;
   evidenceOnFail?: boolean; helperText?: string; children?: readonly FormField[];
+  source?:{page:number;bounds:{x:number;y:number;width:number;height:number};confidence:number;kind:"visual"|"acroform"|"ocr-layout";reviewed?:boolean};
   signerFieldId?:string; // Supervisor/reviewer person field matched to drawn local evidence.
 };
 export type FormSection = { id: string; title: string; description?: string; fields: readonly FormField[] };
@@ -44,6 +45,7 @@ export function isVisible(field: FormField, answers: FormAnswers) {
 export function isAnswered(field: FormField, value: FormAnswer | undefined) {
   if (value === undefined || value === null || value === "") return false;
   if (field.type === "signature") return isSignatureEvidence(value);
+  if (field.type === "checkbox") return value===true;
   if (field.type === "risk") {
     if (typeof value!=="object" || Array.isArray(value) || !("likelihood" in value) || !("consequence" in value)) return false;
     try {scoreRisk(defaultRiskMatrix,value as RiskAnswer);return true;}catch{return false;}
