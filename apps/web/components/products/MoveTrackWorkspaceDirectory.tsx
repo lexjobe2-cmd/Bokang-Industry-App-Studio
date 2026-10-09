@@ -1,6 +1,7 @@
 "use client";
 import {Search,Network,ArrowRight,ShieldCheck} from "lucide-react";
 import {navigationGroups,type MoveTrackView} from "./MoveTrackWorkspaceNav";
+import {MoveTrackReadableText} from "./MoveTrackReadableContent";
 
 type Props={
  onNavigate:(view:MoveTrackView)=>void;
@@ -35,8 +36,8 @@ export function MoveTrackWorkspaceDirectory({onNavigate,onSearch,onWorkflows}:Pr
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:9}}>
     {group.items.map(item=><button type="button" key={item.view} onClick={()=>onNavigate(item.view)} style={card}>
      <span style={{display:"grid",placeItems:"center",background:"var(--mt-surface-soft,#f3f7fc)",color:"var(--mt-link,#174fa8)",borderRadius:10,width:38,height:38,flex:"none"}}><item.icon size={19}/></span>
-     <span style={{display:"grid",gap:4,minWidth:0}}><strong style={{fontSize:13}}>{item.label}</strong>
-      <small style={{fontSize:11,color:"var(--mt-muted,#516078)",lineHeight:1.5}}>{item.description}</small></span>
+     <span style={{display:"grid",gap:4,minWidth:0}}><MoveTrackReadableText as="strong" variant="heading">{item.label}</MoveTrackReadableText>
+      <MoveTrackReadableText as="small" variant="meta" tone="muted">{item.description}</MoveTrackReadableText></span>
     </button>)}
    </div>
   </section>)}
