@@ -50,7 +50,7 @@ export function WorkforceDirectoryWorkspace({adminMode=false}:{adminMode?:boolea
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:10}}>
    {matches.map(person=><article key={person.id} style={{padding:15,background:"var(--mt-surface,#fff)",border:"1px solid #dbe5ef",borderRadius:12,minWidth:0}}>
     <div style={{display:"flex",justifyContent:"space-between",gap:8,alignItems:"flex-start",flexWrap:"wrap"}}>
-     <strong>{person.displayName}</strong><span style={{fontSize:11,fontWeight:800,color:person.active?"#027a48":"#b42318"}}>{person.active?"Active":"Inactive"}</span>
+     <strong>{person.displayName}</strong><span style={{fontSize:11,fontWeight:800,color:person.active?"var(--mt-success,#027a48)":"var(--mt-danger,#b42318)"}}>{person.active?"Active":"Inactive"}</span>
     </div>
     <p style={{fontSize:12,margin:"6px 0"}}>{person.jobTitle} · {person.department}</p>
     <small>{person.employeeNumber||"No employee number"} · {person.location||"No work location"}</small>

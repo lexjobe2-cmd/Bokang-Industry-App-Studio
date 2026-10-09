@@ -237,7 +237,7 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
       <div style={{flex:1,overflowY:"auto",padding:"15px 13px"}}>
        {driverTabs.map(item=><button type="button" key={item.key} onClick={()=>selectTab(item.key)}
         aria-current={tab===item.key?"page":undefined}
-        style={{display:"flex",width:"100%",gap:13,alignItems:"center",minHeight:60,background:tab===item.key?"#e8f1ff":"#fff",color:"var(--mt-ink,#183b63)",textAlign:"left",border:"1px solid #dae6f5",borderRadius:11,marginBottom:7,padding:"10px 12px",cursor:"pointer"}}>
+        style={{display:"flex",width:"100%",gap:13,alignItems:"center",minHeight:60,background:tab===item.key?"var(--mt-surface-soft,#e8f1ff)":"var(--mt-surface,#fff)",color:"var(--mt-ink,#183b63)",textAlign:"left",border:"1px solid #dae6f5",borderRadius:11,marginBottom:7,padding:"10px 12px",cursor:"pointer"}}>
         <item.icon size={22}/><span style={{flex:1}}><strong style={{display:"block",fontSize:13}}>{item.label}</strong><small style={{color:"var(--mt-muted,#64748b)"}}>{item.description}</small></span><ChevronRight size={17}/>
        </button>)}
        <a href="/" style={{display:"flex",gap:10,alignItems:"center",marginTop:15,padding:"14px 12px",borderRadius:11,background:"#173764",color:"#fff",fontSize:13,fontWeight:850,textDecoration:"none"}}><ArrowLeft size={18}/> Back to SHE manager</a>
@@ -314,14 +314,14 @@ export function MoveTrackDriverApp({ driverId }: { driverId: string }) {
       <strong style={{fontSize:13}}>Credentials & renewal reminders</strong>
       {credentialAlerts(driver).map(alert=><div key={alert.key} style={{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap",fontSize:12}}>
        <span>{alert.label} · {alert.date||"Expiry missing"}</span>
-       <strong style={{color:alert.state==="current"?"#047857":alert.state==="due"?"#9a670a":"#b42318"}}>{alert.state==="current"?"Current":alert.state==="due"?"Due in "+alert.daysRemaining+" days":alert.state==="expired"?"Expired":"Missing"}</strong>
+       <strong style={{color:alert.state==="current"?"var(--mt-success,#047857)":alert.state==="due"?"var(--mt-warning,#9a670a)":"var(--mt-danger,#b42318)"}}>{alert.state==="current"?"Current":alert.state==="due"?"Due in "+alert.daysRemaining+" days":alert.state==="expired"?"Expired":"Missing"}</strong>
       </div>)}
       <small style={{color:"var(--mt-muted,#64748b)"}}>Updates are managed in the Admin workspace. This is local demo evidence, not official certification.</small>
      </div></section>:null}
 
     <nav aria-label="Driver mobile primary navigation" style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"min(720px,100%)",background:"rgba(255,255,255,.97)",borderTop:"1px solid #dbe4ef",boxShadow:"0 -6px 18px rgba(15,36,68,.09)",display:"grid",gridTemplateColumns:"repeat(5,minmax(0,1fr))",padding:"8px 6px calc(9px + env(safe-area-inset-bottom))",zIndex:50,backdropFilter:"blur(14px)"}}>
       {driverTabs.map(item=><button type="button" key={item.key} aria-current={tab===item.key?"page":undefined} onClick={()=>selectTab(item.key)}
-       style={{border:0,borderRadius:11,background:tab===item.key?"#e8f1ff":"transparent",padding:"7px 2px",minHeight:55,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:4,fontSize:10,fontWeight:850,color:tab===item.key?"#1d4ed8":"#667085",cursor:"pointer"}}>
+       style={{border:0,borderRadius:11,background:tab===item.key?"var(--mt-surface-soft,#e8f1ff)":"transparent",padding:"7px 2px",minHeight:55,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:4,fontSize:10,fontWeight:850,color:tab===item.key?"var(--mt-link,#1d4ed8)":"var(--mt-muted,#667085)",cursor:"pointer"}}>
        <item.icon size={24} strokeWidth={tab===item.key?2.5:1.9}/><span>{item.label}</span>
       </button>)}
     </nav>

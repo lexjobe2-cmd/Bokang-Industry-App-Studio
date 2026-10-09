@@ -165,11 +165,11 @@ export function MoveTrackDemoLab(){
    <details style={style}><summary style={{cursor:"pointer",minHeight:44,fontWeight:850}}>Demo scenarios and test data</summary><section aria-label="Demo scenarios">
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}}>
       <div><p style={{fontSize:11,fontWeight:900,letterSpacing:1.3,color:"var(--mt-link,#2563eb)",textTransform:"uppercase",margin:0}}>Quick start</p><h2 style={{fontSize:21,margin:"4px 0"}}>Choose a test scenario</h2><p style={{fontSize:12,color:"var(--mt-muted,#64748b)",margin:0}}>Each scenario loads connected demo records into the same fleet and driver app.</p></div>
-      <span style={{fontWeight:850,fontSize:12,color:hydrated?"#087f5b":"#64748b"}}>{hydrated?"● Browser workspace ready":"Loading local demo…"}</span>
+      <span style={{fontWeight:850,fontSize:12,color:hydrated?"var(--mt-success,#087f5b)":"var(--mt-muted,#64748b)"}}>{hydrated?"● Browser workspace ready":"Loading local demo…"}</span>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:10}}>
      {scenarios.map(item=><motion.button key={item.key} type="button" whileHover={reducedMotion?undefined:{y:-2}} disabled={!hydrated} onClick={()=>applyScenario(item.key)}
-      style={{...style,cursor:hydrated?"pointer":"wait",textAlign:"left",borderColor:active===item.key?item.color:"#dce4ef",background:active===item.key?"#f1f5f9":"#fff",minHeight:147}}>
+      style={{...style,cursor:hydrated?"pointer":"wait",textAlign:"left",borderColor:active===item.key?item.color:"#dce4ef",background:active===item.key?"var(--mt-surface-soft,#f1f5f9)":"var(--mt-surface,#fff)",minHeight:147}}>
        <item.icon size={21} color={item.color}/>
        <strong style={{display:"block",fontSize:15,margin:"10px 0 6px"}}>{item.title}</strong>
        <span style={{fontSize:12,color:"var(--mt-muted,#667085)",lineHeight:1.55}}>{item.desc}</span>

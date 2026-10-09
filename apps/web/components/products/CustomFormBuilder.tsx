@@ -108,7 +108,7 @@ export function CustomFormBuilder({onPublish}:{onPublish?:(id:string)=>void}){
    </div>
   </div>
   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-   {([{key:"create",text:"Form builder",icon:FilePlus2},{key:"branding",text:"Company branding",icon:Palette},{key:"people",text:"Organization people",icon:UsersRound},{key:"dictionary",text:"Data dictionary",icon:BookOpen}] as const).map(item=><button key={item.key} style={{...btn,background:panel===item.key?"#173764":"#fff",color:panel===item.key?"white":"#344054",display:"inline-flex",alignItems:"center",gap:7}} onClick={()=>setPanel(item.key)}><item.icon size={15}/>{item.text}</button>)}
+   {([{key:"create",text:"Form builder",icon:FilePlus2},{key:"branding",text:"Company branding",icon:Palette},{key:"people",text:"Organization people",icon:UsersRound},{key:"dictionary",text:"Data dictionary",icon:BookOpen}] as const).map(item=><button key={item.key} style={{...btn,background:panel===item.key?"#173764":"var(--mt-surface,#fff)",color:panel===item.key?"white":"var(--mt-ink,#344054)",display:"inline-flex",alignItems:"center",gap:7}} onClick={()=>setPanel(item.key)}><item.icon size={15}/>{item.text}</button>)}
   </div>
   {notice?<div role="status" style={{...card,background:"var(--mt-surface-soft,#eff6ff)",fontSize:12,color:"var(--mt-link,#1e40af)"}}>{notice}</div>:null}
   {panel==="branding"?<div style={{...card,display:"grid",gap:14}}>
