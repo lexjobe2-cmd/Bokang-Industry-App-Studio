@@ -389,7 +389,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {driver?<a href={"/driver/move-track?driver="+encodeURIComponent(driver.id)} target="_blank" rel="noreferrer" style={primaryLink}>Open driver app</a>:null}
               {assignment.status==="Grounded"?<button onClick={()=>setView("release")} style={secondaryButton}>Open repair and reinspection workflow</button>:null}
-              {assignment.status!=="In use"?<button onClick={()=>cancelAssignment(assignment)} style={{...secondaryButton,color:"#b42318"}}>Cancel assignment</button>:null}
+              {adminMode&&assignment.status!=="In use"?<button onClick={()=>cancelAssignment(assignment)} style={{...secondaryButton,color:"#b42318"}}>Cancel assignment</button>:null}
             </div>
           </div>;
         })}
@@ -544,13 +544,13 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <p style={{margin:0,color:"#1d4ed8",fontSize:11,fontWeight:900,textTransform:"uppercase",letterSpacing:1.2}}>Dispatch</p>
       <h2 style={{marginBottom:6}}>Assign driver + vehicle</h2>
       <p style={{fontSize:12,color:"#667085",lineHeight:1.6}}>Assignment does not clear the vehicle. The driver's pre-start must return GO before they can take it.</p>
-      <div style={formGrid}>
+      {adminMode?<div style={formGrid}>
         <Field label="Vehicle"><select value={assignVehicle} onChange={(e)=>{setAssignVehicle(e.target.value);const v=fleet.find((x)=>x.id===e.target.value);if(v)setAssignSite(v.site);}} style={input}><option value="">Select vehicle</option>{fleet.filter((item)=>!["No-go","Maintenance","Out of service","On job","Assigned"].includes(item.status)).map((item)=><option key={item.id} value={item.id}>{item.fleetNo} · {item.registration} · {item.status}</option>)}</select></Field>
         <Field label="Driver"><select value={assignDriver} onChange={(e)=>setAssignDriver(e.target.value)} style={input}><option value="">Select driver</option>{drivers.filter((item)=>item.status==="Available").map((item)=><option key={item.id} value={item.id}>{item.name}{!item.siteAuthorised?" · authorisation pending":""}</option>)}</select></Field>
         <Field label="Job (optional)"><select value={assignJob} onChange={(e)=>setAssignJob(e.target.value)} style={input}><option value="">No job linked</option>{jobs.filter((job)=>!["Delivered","Closed"].includes(job.state)).map((job)=><option key={job.id} value={job.id}>{job.id} · {job.client}</option>)}</select></Field>
         <Field label="Site / destination"><input value={assignSite} onChange={(e)=>setAssignSite(e.target.value)} style={input}/></Field>
-      </div>
-      <button onClick={createAssignment} style={primaryButton}>Assign and require driver pre-start</button>
+      </div>:<p style={{...panel,fontSize:12,marginTop:12}}>Vehicle and driver assignment is managed in <button type="button" style={secondaryButton} onClick={()=>openAdminArea("assign")}>Admin → Assignments</button>. Assigned work remains visible in the operations dashboard.</p>}
+      {adminMode?<button onClick={createAssignment} style={primaryButton}>Assign and require driver pre-start</button>:null}
     </section>:null}
 
     {contentView==="jobs"?<div style={{display:"grid",gap:12}}>
