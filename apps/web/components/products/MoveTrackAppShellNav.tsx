@@ -16,7 +16,7 @@ const destinations=[
  {key:"analytics" as const,label:"Insights",icon:BarChart3},
  {key:"menu" as const,label:"Menu",icon:Menu}
 ] as const;
-const labelFor=(view:MoveTrackView)=>navigationGroups.flatMap(g=>g.items).find(x=>x.view===view)?.label??"Workspaces";
+const labelFor=(view:MoveTrackView)=>navigationGroups.flatMap(group=>group.items.map(item=>({view:item.view,label:item.label,description:item.description}))).find(x=>x.view===view)?.label??"Workspaces";
 
 export function MoveTrackAppShellNav({
  activeView,atHome,onHome,onSearch,onNavigate,onCompany,onWorkflow,theme,onToggleTheme
