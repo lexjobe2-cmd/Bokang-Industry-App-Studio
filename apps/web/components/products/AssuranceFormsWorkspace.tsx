@@ -20,6 +20,7 @@ import {ACTIVE_ORGANIZATION_KEY} from "./OrganizationOnboarding";
 import {ACTIVE_WORKFLOW_KEY,ACTIVE_FORMS_TAB_KEY,ACTIVE_JOB_REFERENCE_KEY,recipeTemplateId} from "./OperationalGraphPanel";
 import {ACTIVE_PERSON_KEY} from "./UserParticipationAnalytics";
 import {DocumentDownloadActions} from "./DocumentDownloadActions";
+import {OrganizationPeopleComboBox} from "./OrganizationPeopleComboBox";
 import {buildFormDocument} from "../../lib/form-exports";
 
 
@@ -245,21 +246,12 @@ export function AssuranceFormsWorkspace(){
 function FieldInput({field,value,onChange,people,scope,reviewerPersonId}:{field:FormField;value:FormAnswer|undefined;people:readonly PersonRecord[];onChange:(value:FormAnswer)=>void;scope:string;reviewerPersonId?:string}){
  const label=<span style={{display:"flex",alignItems:"center",gap:7,fontSize:13,fontWeight:800}}>{field.label}{field.required?<span style={{color:"#b42318"}}>*</span>:null}{field.critical?<span style={{fontSize:10,color:"#b42318",background:"#fef2f2",padding:"3px 7px",borderRadius:7}}>CRITICAL</span>:null}</span>;
  const fieldStyle:React.CSSProperties={display:"grid",gap:8};
- if(field.type==="person"){
-   return <label style={fieldStyle}>{label}<select style={input} value={answerText(value)} onChange={e=>onChange(e.target.value)}>
-    <option value="">Select organization person</option>
-    {people.filter(p=>p.active).map(p=><option key={p.id} value={p.id}>{p.displayName} · {p.jobTitle} · {p.department}</option>)}
-   </select><span style={{fontSize:11,color:"#64748b"}}>From the local organization directory. Microsoft 365 sync is not active.</span></label>;
- }
- if(field.type==="people"){
-   const selected=Array.isArray(value)?value as string[]:[];
-   return <div style={fieldStyle}>{label}
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:7}}>
-      {people.filter(p=>p.active).map(p=><button type="button" key={p.id} aria-pressed={selected.includes(p.id)} onClick={()=>onChange(selected.includes(p.id)?selected.filter(v=>v!==p.id):[...selected,p.id])}
-        style={{...button,background:selected.includes(p.id)?"#dbeafe":"white",textAlign:"left",padding:10,fontSize:12}}>
-        <strong>{selected.includes(p.id)?"✓ ":""}{p.displayName}</strong><span style={{display:"block",color:"#64748b",fontSize:10,marginTop:4}}>{p.jobTitle} · {p.department}</span>
-      </button>)}
-    </div><span style={{fontSize:11,color:"#64748b"}}>{selected.length} participant(s) selected. Demo directory only.</span>
+ if(field.type==="person"||field.type==="people"){
+   const multiple=field.type==="people";
+   const ids=multiple?(Array.isArray(value)?value as string[]:[]):typeof value==="string"&&value?[value]:[];
+   return <div style={fieldStyle}><OrganizationPeopleComboBox people={people} orgId={people[0]?.orgId??""} value={ids}
+    label={field.label} multiple={multiple} required={field.required} onChange={ids=>onChange(multiple?ids:ids[0]??"")}/>
+    {field.critical?<small style={{color:"#b42318"}}>Critical control — site review still required.</small>:null}
    </div>;
  }
  if(field.type==="checkbox")return <label style={{...fieldStyle,display:"flex",alignItems:"center",gap:11,padding:"12px 13px",border:"1px solid #cbd5e1",borderRadius:11,background:value===true?"#eff6ff":"#fff"}}>
