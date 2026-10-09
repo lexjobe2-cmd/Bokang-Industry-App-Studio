@@ -119,3 +119,20 @@ test("safety workflow library includes drawn acknowledgement and review fields",
   assert.ok(signatures.length>=2,w.id+" missing signatures");
  }
 });
+
+test("drawn signature is embedded as an image in real PDF and editable Word exports",async()=>{
+ const {renderProfessionalPdf}=await import("../apps/web/lib/document-pdf.ts");
+ const {renderProfessionalWord}=await import("../apps/web/lib/document-word.ts");
+ const {createSignatureEvidence}=await import("../packages/domain-data/src/signature-evidence.ts");
+ const imageDataUrl="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jgdkAAAAASUVORK5CYII=";
+ const signature=createSignatureEvidence({imageDataUrl,signerName:"Neo Worker",role:"Participant",intent:"acknowledgement",
+  signedAt:"2026-10-09T08:00:00.000Z",scope:"JRA-09",consent:true});
+ const doc={title:"Electronic acknowledgement example",company:"MoveTrack demo",reference:"DEMO-1",mode:"draft",status:"UNSUBMITTED",
+  timestamp:"2026-10-09T08:00:00.000Z",disclaimer:"NO WORK AUTHORIZATION",sections:[{title:"Sign-off",rows:[{label:"Participant signature",value:"Signed locally by Neo Worker",signature}]}]};
+ const pdf=Buffer.from(await renderProfessionalPdf(doc).arrayBuffer());
+ const word=Buffer.from(await (await renderProfessionalWord(doc)).arrayBuffer());
+ assert.equal(pdf.subarray(0,5).toString(),"%PDF-");
+ assert.equal(word.subarray(0,2).toString(),"PK");
+ assert.ok(pdf.length>2500);
+ assert.ok(word.length>3000);
+});
