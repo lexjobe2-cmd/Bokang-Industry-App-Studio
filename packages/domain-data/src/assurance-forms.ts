@@ -121,7 +121,7 @@ export function makeSubmission(args: {
 }
 const check=(id:string,label:string,critical=false):FormField=>({id,label,type:"pass_fail_na",required:true,critical,evidenceOnFail:false});
 const field=(id:string,label:string,type:AnswerType,required=true):FormField=>({id,label,type,required});
-export const starterAssuranceTemplates:readonly FormTemplate[]=[
+const starterAssuranceBase:readonly FormTemplate[]=[
   {id:"vehicle-prestart",version:1,title:"Vehicle pre-start",category:"Fleet",status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds:[],assetClasses:["light-vehicle","heavy-truck"],sections:[
     {id:"operator",title:"Operator",fields:[check("driver-authorization","Operator licence and site permit verified",true),check("fatigue","Fit for duty / fatigue declaration",true)]},
     {id:"vehicle",title:"Vehicle systems",fields:[check("brakes","Service and park brake function",true),check("steering","Steering condition",true),check("tyres","Tyres, pressure and wheel nuts",true),check("lights","Lights, beacon and visibility"),check("reverse-alarm","Reverse alarm where required",true)]},
@@ -149,6 +149,20 @@ export const starterAssuranceTemplates:readonly FormTemplate[]=[
     {id:"incoming",title:"Incoming acceptance",fields:[field("incoming","Incoming supervisor","text"),check("accepted","Handover reviewed and acknowledged",true)]}
   ]}
 ];
+/** Supervisor/reviewer-dependent core forms require a separate signed local acknowledgement.
+ * Version 2 is intentional: historical submitted version-1 snapshots remain unchanged. */
+const supervisedCore=new Set(["meeting-register","toolbox-brief","jsa","jra","shift-handover"]);
+export const starterAssuranceTemplates:readonly FormTemplate[]=starterAssuranceBase.map(template=>
+  !supervisedCore.has(template.id)?template:{
+    ...template,version:2,
+    sections:[...template.sections,{
+      id:"supervisor-signoff",title:"Supervisor verification & handback",description:"Drawn acknowledgement from the selected reviewing supervisor (local demo only).",
+      fields:[
+        {id:"supervisor_reviewer",label:"Reviewing supervisor",type:"person",required:true},
+        {id:"supervisor_review_signature",label:"Supervisor review and acknowledgement",type:"signature",required:true,signerFieldId:"supervisor_reviewer"}
+      ]
+    }]
+  });
 export function templateForLegacyPrestart(checks:readonly string[],criticalChecks:readonly string[],siteIds:readonly string[]=[]):FormTemplate {
   const critical=new Set(criticalChecks);
   return {id:"legacy-movetrack-prestart",version:1,title:"MoveTrack pre-start",category:"Fleet",status:"PUBLISHED",effectiveDate:"2026-10-08",siteIds,assetClasses:[],sections:[{id:"vehicle",title:"Mandatory vehicle controls",fields:checks.map(label=>({id:label,label,type:"pass_fail_na" as const,critical:critical.has(label),required:true}))}]};
