@@ -288,7 +288,7 @@ export function MoveTrackShowcase({initialView="control"}:{initialView?:MoveTrac
     setClient("");setView("jobs");
   }
 
-  return <section id="movetrack-workspaces" style={{marginTop:28,display:"grid",gap:18}}>
+  return <section style={{marginTop:28,display:"grid",gap:18}}>
     <MoveTrackGlobalSearch documents={searchIndex} onOpen={openSearchResult}/>
     <MoveTrackWorkspaceNav view={view} onChange={setView}/>
 
