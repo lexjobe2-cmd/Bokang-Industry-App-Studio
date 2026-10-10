@@ -31,6 +31,10 @@ Store the final output **only** as the GitHub Actions repository secret `LEXJOBE
 
 Do **not** print or share the token output outside your secure setup session. Rotate it promptly if it leaks.
 
+## GitHub Actions registration caveat
+
+GitHub requires a `workflow_dispatch` workflow to be registered on the repository's **default branch**. This new manual workflow is currently staged **only** on the MoveTrack feature branch. Before attempting to run it through the Actions UI, review and merge/cherry-pick **the workflow file alone** into `main` (without merging the application PR), or arrange for an equivalent, previously registered workflow. Do not activate a production deployment before the new account and credentials have been verified.
+
 ## 3. Deploy and verify
 
 Open GitHub Actions → **MoveTrack Lexjobe Staged Migration** on branch `feature/operational-assurance-on-fleet-foundation`, then choose **preview** first.
