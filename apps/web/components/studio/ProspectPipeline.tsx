@@ -33,19 +33,28 @@ function outreachSubject(prospect: Prospect) {
 
 function outreachBody(prospect: Prospect, demoUrl: string) {
   const product = products[prospect.recommendedProduct];
+  const websiteGapChecked = prospect.websiteStatus === "no-first-party-site-found" ||
+    prospect.websiteStatus === "directory-only" ||
+    prospect.websiteStatus === "social-only";
+  const digitalObservation = websiteGapChecked
+    ? "When I checked your current public search/directory presence, I did not see a clear first-party website surfaced. I build practical business software and websites, so I prepared a working " + product.name + " concept specifically to show what an owned digital presence could look like for your business."
+    : "I build practical business software and websites, so I prepared a working " + product.name + " concept to show what a stronger public digital experience and connected internal workflow could look like for your business.";
+
   return [
     "Hello " + prospect.name + " team,",
     "",
     "I came across " + prospect.name + " while researching Botswana businesses in the " + prospect.sector.toLowerCase() + " space.",
     "",
-    "When I checked your Google business/search result, I did not see a website link listed. I build practical business software and websites, so I prepared a working " + product.name + " concept specifically to show what an owned digital presence could look like for your business.",
+    digitalObservation,
     "",
     "You can explore the interactive concept here:",
     demoUrl,
     "",
     "This is only a proposal/demo — it is not connected to your systems and does not use your real business data.",
     "",
-    "If you already have a website that Google did not surface, please disregard that observation. If the concept is useful, I would be happy to tailor it around how " + prospect.name + " actually works.",
+    websiteGapChecked
+      ? "If you already have a website that the checked source did not surface, please disregard that observation. If the concept is useful, I would be happy to tailor it around how " + prospect.name + " actually works."
+      : "I will re-check your current website and public presence before sending final outreach. If the concept is useful, I would be happy to tailor it around how " + prospect.name + " actually works.",
     "",
     "Regards,",
     "Bokang Jobe",
@@ -169,7 +178,7 @@ export function ProspectPipeline() {
           <p style={{ margin: 0, color: "#2563eb", fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Prospect intelligence</p>
           <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(34px,5vw,58px)" }}>Real businesses → relevant demo → manual outreach.</h1>
           <p style={{ margin: 0, maxWidth: 820, color: "#667085", lineHeight: 1.7, fontSize: 17 }}>
-            A fresh Botswana outreach batch sourced from current business/search and directory results where no clear first-party website was surfaced. Directory-only and social-only businesses are included because they still lack an owned first-party site in the checked result. Re-check immediately before outreach because search results can change.
+            A Botswana outreach pipeline combining verified public email/contact sources with website-gap research. The original 50 active prospects are preserved and 150 additional email-ready prospects have been added, prioritising industries where the Studio already has a working template. Rows marked “unclear” must be re-checked for a current first-party website immediately before outreach.
           </p>
         </div>
         <div className="prospect-seed-card" style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
@@ -218,8 +227,8 @@ export function ProspectPipeline() {
 
       <section className="prospect-summary" style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <span style={{ fontSize: 12, color: "#667085", fontWeight: 800 }}>{filtered.length} matching · {prospects.length} total · page {page} of {totalPages}</span>
-        <button onClick={() => { setQuery(""); setIndustryFilter("all"); setCityFilter("all"); setWebsiteFilter("no-first-party-site-found"); setProductFilter("all"); setOutreachFilter("all"); setVerificationFilter("all"); setModerationFilter("active"); setPage(1); }} style={secondaryAction}>
-          Reset to website-gap priority
+        <button onClick={() => { setQuery(""); setIndustryFilter("all"); setCityFilter("all"); setWebsiteFilter("all"); setProductFilter("all"); setOutreachFilter("all"); setVerificationFilter("all"); setModerationFilter("active"); setPage(1); }} style={secondaryAction}>
+          Reset filters
         </button>
       </section>
 
