@@ -1,0 +1,80 @@
+name: MoveTrack Lexjobe Staged Migration
+
+# Registered on the default branch so workflow_dispatch appears in GitHub Actions.
+# Intentionally manual. Existing production Pages project remains untouched.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Preview first; switch to production only after preview acceptance."
+        required: true
+        type: choice
+        default: preview
+        options:
+          - preview
+          - production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: movetrack-lexjobe-migration
+  cancel-in-progress: false
+
+jobs:
+  verify-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      CLOUDFLARE_ACCOUNT_ID: "749533ff8867120fb2336ba2f50c8480"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.LEXJOBE_CLOUDFLARE_API_TOKEN }}
+      PAGES_PROJECT: movetrack-ai-lexjobe
+    steps:
+      - name: Verify migration prerequisites
+        env:
+          SOURCE_BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Create LEXJOBE_CLOUDFLARE_API_TOKEN in GitHub Actions secrets first."
+            exit 1
+          fi
+          if [ "$SOURCE_BRANCH" != "feature/operational-assurance-on-fleet-foundation" ]; then
+            echo "::error::Run this workflow from the verified MoveTrack feature branch."
+            exit 1
+          fi
+          echo "Deploying to Lexjobe account (new Pages project); old production remains unchanged."
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm typecheck
+      - run: node --experimental-strip-types --test tests/*.test.mjs
+      - run: pnpm --filter @bokang/assurance-demo build
+      - name: Validate access to destination Pages account/project
+        working-directory: apps/web
+        run: |
+          pnpm exec wrangler pages project list --json > /tmp/lexjobe-projects.json
+          node -e 'const fs=require("fs");const projects=JSON.parse(fs.readFileSync("/tmp/lexjobe-projects.json","utf8"));if(!Array.isArray(projects)||!projects.some(p=>p.name===process.env.PAGES_PROJECT)){console.error("Destination project not found. Apply infra/cloudflare-lexjobe Terraform first.");process.exit(1)}'
+      - name: Deploy identical build to the NEW Pages project
+        working-directory: apps/web
+        env:
+          TARGET: ${{ inputs.target }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            BRANCH=main
+          else
+            BRANCH=lexjobe-migration
+          fi
+          pnpm exec wrangler pages deploy ../assurance-demo/dist \
+            --project-name "$PAGES_PROJECT" \
+            --branch "$BRANCH" \
+            --commit-hash "$SOURCE_SHA"
+      - name: Migration status
+        run: |
+          echo "Deployment request submitted to destination account; verify the URL and commit in Cloudflare."
+          echo "Original production site has not been modified by this workflow."
