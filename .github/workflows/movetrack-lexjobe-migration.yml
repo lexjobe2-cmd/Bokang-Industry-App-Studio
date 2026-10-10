@@ -1,0 +1,165 @@
+name: MoveTrack Lexjobe Staged Migration
+
+# Feature-branch push performs a preview-only publish; production requires explicit manual dispatch.
+# Existing original Pages production remains untouched.
+on:
+  push:
+    branches:
+      - feature/operational-assurance-on-fleet-foundation
+    paths:
+      - ".github/workflows/movetrack-lexjobe-migration.yml"
+      - "apps/web/components/products/SignatureCapture.tsx"
+      - "apps/web/components/products/SignatureApprovalTray.tsx"
+      - "tests/ui/people-picker-geometry.mjs"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Preview first; switch to production only after preview acceptance."
+        required: true
+        type: choice
+        default: preview
+        options:
+          - preview
+          - production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: movetrack-lexjobe-migration
+  cancel-in-progress: false
+
+jobs:
+  verify-lexjobe-token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: movetrack
+    env:
+      CLOUDFLARE_ACCOUNT_ID: "749533ff8867120fb2336ba2f50c8480"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.LEXJOBE_CLOUDFLARE_API_TOKEN || secrets.MOVETRACK || secrets.CLOUDFLARE_API_TOKEN }}
+      PAGES_PROJECT: movetrack-ai-lexjobe
+    steps:
+      - name: Check Lexjobe Pages credential without deploying
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::No Cloudflare token found in GitHub Environment movetrack or repository secrets."
+            echo "Expected: LEXJOBE_CLOUDFLARE_API_TOKEN (or MOVETRACK / CLOUDFLARE_API_TOKEN)."
+            exit 1
+          fi
+          node --input-type=module <<'NODE'
+          const url = "https://api.cloudflare.com/client/v4/accounts/"
+            + process.env.CLOUDFLARE_ACCOUNT_ID
+            + "/pages/projects/" + process.env.PAGES_PROJECT;
+          const response = await fetch(url, {
+            headers: { Authorization: "Bearer " + process.env.CLOUDFLARE_API_TOKEN }
+          });
+          if (!response.ok) {
+            console.error("Cloudflare credential check failed: HTTP " + response.status);
+            process.exit(1);
+          }
+          const body = await response.json();
+          if (body.success !== true || body.result?.name !== process.env.PAGES_PROJECT) {
+            console.error("Cloudflare credential does not resolve the expected Lexjobe Pages project.");
+            process.exit(1);
+          }
+          console.log("PASS: GitHub Actions authenticated to Lexjobe Pages project "
+            + body.result.name + " (account " + process.env.CLOUDFLARE_ACCOUNT_ID + ").");
+          console.log("This verifies project read access only; deployment write access requires a preview deploy.");
+          NODE
+
+  verify-and-deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    needs: verify-lexjobe-token
+    environment: movetrack
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      CLOUDFLARE_ACCOUNT_ID: "749533ff8867120fb2336ba2f50c8480"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.LEXJOBE_CLOUDFLARE_API_TOKEN || secrets.MOVETRACK || secrets.CLOUDFLARE_API_TOKEN }}
+      PAGES_PROJECT: movetrack-ai-lexjobe
+    steps:
+      - name: Verify migration prerequisites
+        env:
+          SOURCE_BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Create LEXJOBE_CLOUDFLARE_API_TOKEN in GitHub Actions secrets first."
+            exit 1
+          fi
+          if [ "$SOURCE_BRANCH" != "feature/operational-assurance-on-fleet-foundation" ]; then
+            echo "::error::Run this workflow from the verified MoveTrack feature branch."
+            exit 1
+          fi
+          echo "Deploying to Lexjobe account (new Pages project); old production remains unchanged."
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm typecheck
+      - run: node --experimental-strip-types --test tests/*.test.mjs
+      - run: pnpm --filter @bokang/assurance-demo build
+      - name: Deploy identical build to the NEW Pages project
+        working-directory: apps/web
+        env:
+          TARGET: ${{ inputs.target }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            BRANCH=main
+          else
+            BRANCH=lexjobe-migration
+          fi
+          pnpm exec wrangler pages deploy ../assurance-demo/dist \
+            --project-name "$PAGES_PROJECT" \
+            --branch "$BRANCH" \
+            --commit-hash "$SOURCE_SHA"
+      - name: Migration status
+        run: |
+          echo "Deployment request submitted to destination account; verify the URL and commit in Cloudflare."
+          echo "Original production site has not been modified by this workflow."
+
+  verify-deployed-preview:
+    if: github.event_name == 'push' || inputs.target == 'preview'
+    needs: verify-and-deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wait for live Lexjobe preview
+        env:
+          SITE_URL: https://lexjobe-migration.movetrack-ai-lexjobe.pages.dev
+        run: |
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent --show-error --location --max-time 15 "$SITE_URL/app/meetings" -o /tmp/lexjobe-index.html; then
+              if grep -q 'MoveTrack AI' /tmp/lexjobe-index.html; then
+                echo "Live Pages preview responds and serves MoveTrack HTML."
+                exit 0
+              fi
+            fi
+            echo "Waiting for Cloudflare preview... attempt $attempt"
+            sleep 5
+          done
+          echo "::error::Live Pages preview did not return the expected MoveTrack HTML."
+          exit 1
+      - name: Audit deployed UI in actual Chromium
+        env:
+          MOVETRACK_BASE_URL: https://lexjobe-migration.movetrack-ai-lexjobe.pages.dev
+        run: node tests/ui/people-picker-geometry.mjs
+      - name: Archive deployed responsive and dark-mode screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: movetrack-lexjobe-live-browser-audit
+          path: |
+            ui-geometry-results.json
+            ui-geometry-*.png
+          if-no-files-found: ignore

@@ -1,3 +1,9 @@
+import type {SignatureEvidence} from "@bokang/domain-data/signature-evidence";
+import type {LocalEvidenceImage} from "./image-evidence";
+import type {LocalAssetDocument} from "./vehicle-documents";
+import {driverEligibilityReasons,type DriverCredentialExpiry,type DriverCredentialEvidenceLinks,type DriverCompetencyHistoryEntry} from "./driver-competency.ts";
+import { miningPrestartChecks } from "@bokang/domain-data";
+
 export type FleetVehicleStatus =
   | "Available"
   | "Assigned"
@@ -21,6 +27,8 @@ export type FleetVehicle = {
   roadworthyExpiry: string;
   extinguisherServiceDue: string;
   nextServiceKm: number;
+  images?: LocalEvidenceImage[];
+  documents?: LocalAssetDocument[];
 };
 
 export type FleetDriver = {
@@ -33,6 +41,12 @@ export type FleetDriver = {
   firstAid: boolean;
   defensiveDriving: boolean;
   status: DriverStatus;
+  documents?: LocalAssetDocument[];
+  competencyExpiry?: DriverCredentialExpiry;
+  competencyEvidence?: DriverCredentialEvidenceLinks;
+  competencyHistory?: DriverCompetencyHistoryEntry[];
+  personId?: string; // Optional stable organization directory reference; never a safety authorization.
+  authorizationReview?:{signedAt:string;signature:SignatureEvidence};
 };
 
 export type AssignmentStatus =
@@ -72,6 +86,7 @@ export type PrestartRecord = {
   result: "GO" | "NO-GO";
   reasons: string[];
   notes: string;
+  images?: LocalEvidenceImage[];
 };
 
 export type FleetSitePolicy = {
@@ -81,6 +96,7 @@ export type FleetSitePolicy = {
   requireFirstAid: boolean;
   requireDefensiveDriving: boolean;
   additionalCriticalChecks: string[];
+  policyReview?:{signedAt:string;signature:SignatureEvidence};
 };
 
 export type FleetIncident = {
@@ -95,6 +111,8 @@ export type FleetIncident = {
   status: "Open" | "Investigating" | "Resolved";
   resolutionNote?: string;
   resolvedAt?: string;
+  reviewSignature?: SignatureEvidence;
+  images?: LocalEvidenceImage[];
 };
 
 export const MOVE_TRACK_KEYS = {
@@ -170,11 +188,13 @@ export const starterDrivers: FleetDriver[] = [
   {
     id:"DRV-001", name:"K. Dube", phone:"+267 71 100 001",
     licenceNo:"DL-DEMO-101", siteAuthorised:true, openPitPermit:true,
+    competencyExpiry:{licence:"2027-10-30",siteAuthorisation:"2027-10-30",openPitPermit:"2027-10-30",firstAid:"2027-10-30",defensiveDriving:"2027-10-30"},
     firstAid:true, defensiveDriving:true, status:"Available"
   },
   {
     id:"DRV-002", name:"L. Moagi", phone:"+267 72 100 002",
     licenceNo:"DL-DEMO-102", siteAuthorised:true, openPitPermit:false,
+    competencyExpiry:{licence:"2027-09-30",siteAuthorisation:"2027-09-30",firstAid:"2026-10-26",defensiveDriving:"2027-09-30"},
     firstAid:true, defensiveDriving:true, status:"Available"
   },
 ];
@@ -197,28 +217,22 @@ export function evaluatePrestart(args: {
   const reasons: string[] = [];
   const { checks, criticalChecks, vehicle, driver } = args;
 
-  for (const [item, result] of Object.entries(checks)) {
-    const critical = criticalChecks.some((criticalItem) => criticalItem === item);
-    if (critical && result !== "pass") {
-      reasons.push(item + " must explicitly PASS");
-      continue;
-    }
-    if (!critical && result === "unset") {
-      reasons.push(item + " is incomplete");
-      continue;
-    }
-    if (result === "fail") {
-      reasons.push(item + " failed");
-    }
+  const requiredChecks = new Set<string>([...miningPrestartChecks, ...criticalChecks]);
+  for (const item of requiredChecks) {
+    const result = checks[item];
+    const critical = criticalChecks.includes(item);
+    if (critical && result !== "pass") reasons.push(item + " must explicitly PASS");
+    else if (!critical && (!result || result === "unset")) reasons.push(item + " is incomplete");
+    else if (result === "fail") reasons.push(item + " failed");
   }
 
-  if (!driver.siteAuthorised) reasons.push("Driver is not site-authorised");
-  if (args.requireOpenPitPermit && !driver.openPitPermit) reasons.push("Required site driving permit is missing");
-  if (args.requireFirstAid && !driver.firstAid) reasons.push("Required first-aid training is missing");
-  if (args.requireDefensiveDriving && !driver.defensiveDriving) reasons.push("Required defensive-driving training is missing");
+  reasons.push(...driverEligibilityReasons(driver,{
+    requireOpenPitPermit:args.requireOpenPitPermit,requireFirstAid:args.requireFirstAid,
+    requireDefensiveDriving:args.requireDefensiveDriving
+  }));
   if (!dateIsCurrent(vehicle.roadworthyExpiry)) reasons.push("Roadworthiness record is expired or missing");
   if (!dateIsCurrent(vehicle.extinguisherServiceDue)) reasons.push("Fire extinguisher service date is expired or missing");
-  if (vehicle.status === "Maintenance" || vehicle.status === "Out of service") {
+  if (vehicle.status === "No-go" || vehicle.status === "Maintenance" || vehicle.status === "Out of service") {
     reasons.push("Vehicle is unavailable due to current fleet status");
   }
 

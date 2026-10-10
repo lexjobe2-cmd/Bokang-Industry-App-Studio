@@ -3,11 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
+  "exports": {
+    ".": "./src/index.ts",
+    "./operational-assurance": "./src/operational-assurance.ts",
+    "./assurance-forms": "./src/assurance-forms.ts",
+    "./risk-matrix": "./src/risk-matrix.ts",
+    "./custom-assurance": "./src/custom-assurance.ts",
+    "./expanded-assurance": "./src/expanded-assurance.ts",
+    "./participation-analytics": "./src/participation-analytics.ts",
+    "./paper-forms": "./src/paper-forms.ts",
+    "./meeting-register": "./src/meeting-register.ts",
+    "./signature-evidence": "./src/signature-evidence.ts",
+    "./workspace-search": "./src/workspace-search.ts",
+    "./paper-layout": "./src/paper-layout.ts",
+    "./organization-directory": "./src/organization-directory.ts",
+    "./form-assist": "./src/form-assist.ts",
+    "./repeatable-register": "./src/repeatable-register.ts",
+    "./operational-nlp": "./src/operational-nlp.ts",
+    "./workspace-layout": "./src/workspace-layout.ts"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "tsc --noEmit -p tsconfig.json",
     "lint": "tsc --noEmit -p tsconfig.json"
   },
-  "devDependencies": { "typescript": "^5.9.3" }
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }
