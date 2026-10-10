@@ -229,6 +229,52 @@ try{
    }
   }
  }
+
+ // Regression for iPhone signing: real touch strokes + explicit consent must yield a saved record.
+ await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:2,mobile:true});
+ await send("Page.navigate",{url:base+"/app/meetings"});
+ await waitFor(()=>evaluate("!!document.querySelector('select[aria-label=\"Meeting mobile step\"]')"),"meeting signature step navigator");
+ await ensureTheme("light");
+ await evaluate(String.raw`(()=>{
+  const picker=document.querySelector('select[aria-label="Meeting mobile step"]');
+  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(picker,'4');
+  picker.dispatchEvent(new Event('change',{bubbles:true}));
+ })()`);
+ await waitFor(()=>evaluate(String.raw`[...document.querySelectorAll('button')].some(x=>x.textContent?.trim()==='Chairperson signature')`),"chairperson sign action");
+ await evaluate(String.raw`[...document.querySelectorAll('button')].find(x=>x.textContent?.trim()==='Chairperson signature').click()`);
+ await waitFor(()=>evaluate("!!document.querySelector('#movetrack-signing-tray canvas')"),"signing canvas");
+ const signForm=await evaluate(String.raw`(()=>{
+  const c=document.querySelector('#movetrack-signing-tray canvas');
+  c.scrollIntoView({block:'center'});
+  const field=document.querySelector('#movetrack-signing-tray input[type="checkbox"]');
+  const b=c.getBoundingClientRect();
+  return {x:b.left+b.width*.15,y:b.top+b.height*.3,w:b.width,h:b.height, checkboxWidth:field.getBoundingClientRect().width,checkboxHeight:field.getBoundingClientRect().height,checked:field.checked,touchAction:getComputedStyle(c).touchAction};
+ })()`);
+ assert.ok(signForm.checkboxWidth>=24&&signForm.checkboxHeight>=24,JSON.stringify(signForm));
+ assert.equal(signForm.touchAction,"none",JSON.stringify(signForm));
+ assert.ok(signForm.x>0&&signForm.y>0&&signForm.y<844,JSON.stringify(signForm));
+ await evaluate(String.raw`(()=>{
+  const field=document.querySelector('#movetrack-signing-tray input[autocomplete="name"]');
+  const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;
+  setter.call(field,'Boitumelo Kgale');field.dispatchEvent(new Event('input',{bubbles:true}));
+ })()`);
+ const x=signForm.x,y=signForm.y;
+ await send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:2,radiusY:2,force:1}]});
+ for(let i=1;i<=9;i++)await send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:x+i*16,y:y+Math.sin(i/2)*18,radiusX:2,radiusY:2,force:1}]});
+ await send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+ await sleep(220);
+ await evaluate(String.raw`[...document.querySelectorAll('#movetrack-signing-tray button')].find(x=>x.textContent?.includes('Capture acknowledgement'))?.click()`);
+ await waitFor(()=>evaluate(String.raw`!!document.querySelector('#movetrack-signing-tray [role="alert"]')`),"explicit consent error");
+ const alert=await evaluate(String.raw`document.querySelector('#movetrack-signing-tray [role="alert"]')?.textContent`);
+ assert.match(alert,/Tick the acknowledgement checkbox/,alert);
+ await evaluate(String.raw`document.querySelector('#movetrack-signing-tray input[type="checkbox"]')?.click()`);
+ assert.equal(await evaluate(String.raw`document.querySelector('#movetrack-signing-tray input[type="checkbox"]')?.checked`),true);
+ await evaluate(String.raw`[...document.querySelectorAll('#movetrack-signing-tray button')].find(x=>x.textContent?.includes('Capture acknowledgement'))?.click()`);
+ await waitFor(()=>evaluate(String.raw`!document.querySelector('#movetrack-signing-tray')&&[...document.querySelectorAll('button')].some(x=>x.textContent?.includes('View / replace signature'))`),"captured signature acknowledgement");
+ console.log("TOUCH SIGNATURE CAPTURE PASSED",JSON.stringify({checkbox:{width:signForm.checkboxWidth,height:signForm.checkboxHeight},consentGuard:true,captured:true}));
+ const signedShot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+ await writeFile("ui-geometry-signature-captured-mobile.png",Buffer.from(signedShot.data,"base64"));
+
  await writeFile("ui-geometry-results.json",JSON.stringify(entryResults,null,2));
  const overflowing=entryResults.filter(x=>x.page>x.viewport+2||x.outside.length);
  const clipped=entryResults.filter(x=>x.clipped.length);
