@@ -163,8 +163,8 @@ export function ProspectPipeline() {
   }
 
   return (
-    <main style={{ maxWidth: 1380, margin: "0 auto", padding: "34px 22px 90px" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: 18, flexWrap: "wrap" }}>
+    <main className="prospect-main" style={{ maxWidth: 1380, margin: "0 auto", padding: "34px 22px 90px" }}>
+      <header className="prospect-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: 18, flexWrap: "wrap" }}>
         <div>
           <p style={{ margin: 0, color: "#2563eb", fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Prospect intelligence</p>
           <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(34px,5vw,58px)" }}>Real businesses → relevant demo → manual outreach.</h1>
@@ -172,21 +172,21 @@ export function ProspectPipeline() {
             A fresh Botswana outreach batch sourced from current business/search and directory results where no clear first-party website was surfaced. Directory-only and social-only businesses are included because they still lack an owned first-party site in the checked result. Re-check immediately before outreach because search results can change.
           </p>
         </div>
-        <div style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
+        <div className="prospect-seed-card" style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
           <div style={{ fontSize: 11, opacity: .65, textTransform: "uppercase", letterSpacing: 1.2 }}>Current seed list</div>
           <strong style={{ display: "block", fontSize: 26, marginTop: 3 }}>{prospects.length}</strong>
-          <div style={{ fontSize: 11, opacity: .72 }}>fresh website-gap opportunities · checked 05 Oct 2026</div>
+          <div style={{ fontSize: 11, opacity: .72 }}>fresh website-gap opportunities · checked 10 Oct 2026</div>
         </div>
       </header>
 
-      <section style={{ marginTop: 26, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 10 }}>
+      <section className="prospect-filters" style={{ marginTop: 26, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 10 }}>
         <select value={moderationFilter} onChange={(event) => setModerationFilter(event.target.value as ModerationFilter)} style={filterStyle}>
           <option value="active">Active prospects</option>
           <option value="discarded">Discarded</option>
           <option value="removed">Removed</option>
           <option value="all">All moderation states</option>
         </select>
-        <label style={{ position: "relative", gridColumn: "span 2" }}>
+        <label className="prospect-search" style={{ position: "relative", gridColumn: "span 2" }}>
           <Search size={17} style={{ position: "absolute", left: 12, top: 13, color: "#98a2b3" }} />
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search business, sector, location, phone or email" style={{ width: "100%", border: "1px solid #d0d5dd", borderRadius: 13, padding: "11px 12px 11px 38px", font: "inherit" }} />
         </label>
@@ -216,14 +216,14 @@ export function ProspectPipeline() {
         </select>
       </section>
 
-      <section style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <section className="prospect-summary" style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <span style={{ fontSize: 12, color: "#667085", fontWeight: 800 }}>{filtered.length} matching · {prospects.length} total · page {page} of {totalPages}</span>
         <button onClick={() => { setQuery(""); setIndustryFilter("all"); setCityFilter("all"); setWebsiteFilter("no-first-party-site-found"); setProductFilter("all"); setOutreachFilter("all"); setVerificationFilter("all"); setModerationFilter("active"); setPage(1); }} style={secondaryAction}>
           Reset to website-gap priority
         </button>
       </section>
 
-      <section style={{ marginTop: 14, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 14, padding: 10 }}>
+      <section className="prospect-bulkbar" style={{ marginTop: 14, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 14, padding: 10 }}>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 12, fontWeight: 800 }}>
           <input
             type="checkbox"
@@ -255,7 +255,7 @@ export function ProspectPipeline() {
         </select>
       </section>
 
-      <section style={{ display: "grid", gap: 14, marginTop: 20 }}>
+      <section className="prospect-list" style={{ display: "grid", gap: 14, marginTop: 20 }}>
         {visible.map((prospect) => {
           const product = products[prospect.recommendedProduct];
           const isActive = activeId === prospect.id;
@@ -264,11 +264,11 @@ export function ProspectPipeline() {
           const body = link ? outreachBody(prospect, link) : "";
 
           return (
-            <article key={prospect.id} style={{ background: "#fff", border: isActive ? "1px solid #93c5fd" : "1px solid #e5e7eb", borderRadius: 22, overflow: "hidden" }}>
-              <div style={{ padding: 18, display: "grid", gridTemplateColumns: "auto minmax(0,1fr) auto", gap: 14, alignItems: "start" }}>
-                <input type="checkbox" aria-label={"Select " + prospect.name} checked={selectedIds.includes(prospect.id)} onChange={() => toggleSelected(prospect.id)} style={{ marginTop: 6 }} />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <article key={prospect.id} className="prospect-card" style={{ background: "#fff", border: isActive ? "1px solid #93c5fd" : "1px solid #e5e7eb", borderRadius: 22, overflow: "hidden" }}>
+              <div className="prospect-card-main" style={{ padding: 18, display: "grid", gridTemplateColumns: "auto minmax(0,1fr) auto", gap: 14, alignItems: "start" }}>
+                <input type="checkbox" aria-label={"Select " + prospect.name} checked={selectedIds.includes(prospect.id)} onChange={() => toggleSelected(prospect.id)} className="prospect-checkbox" style={{ marginTop: 6 }} />
+                <div className="prospect-copy" style={{ minWidth: 0 }}>
+                  <div className="prospect-title-row" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <h2 style={{ margin: 0, fontSize: 22 }}>{prospect.name}</h2>
                     <span style={{ background: "#fff7ed", color: "#b54708", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>
                       <CheckCircle2 size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />{websiteStatusLabels[prospect.websiteStatus]}
@@ -282,7 +282,7 @@ export function ProspectPipeline() {
                   {prospect.newTemplateOpportunity ? <p style={{ color: "#6941c6", lineHeight: 1.6, margin: "8px 0 0" }}><strong>New template opportunity:</strong> {prospect.newTemplateOpportunity}</p> : null}
                 </div>
 
-                <div style={{ display: "grid", justifyItems: "end", gap: 8 }}>
+                <div className="prospect-status-panel" style={{ display: "grid", justifyItems: "end", gap: 8 }}>
                   <span style={{ color: "#2563eb", fontWeight: 900, fontSize: 12 }}>{product.name}</span>
                   <select value={statusFor(prospect.id)} onChange={(event) => setStatuses((current) => ({ ...current, [prospect.id]: event.target.value as ProspectStatus }))} style={{ border: "1px solid #d0d5dd", borderRadius: 10, padding: "7px 9px", background: "#fff", fontWeight: 750 }}>
                     {(["New","Prepared","Contacted","Replied","Converted","Not now"] as ProspectStatus[]).map((status) => <option key={status}>{status}</option>)}
@@ -290,7 +290,7 @@ export function ProspectPipeline() {
                 </div>
               </div>
 
-              <div style={{ padding: "0 18px 18px", display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div className="prospect-actions" style={{ padding: "0 18px 18px", display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <a href={prospect.sourceUrl} target="_blank" rel="noreferrer" style={secondaryAction}>Re-check Google <ExternalLink size={14} /></a>
                 {prospect.website ? <a href={prospect.website} target="_blank" rel="noreferrer" style={secondaryAction}>Website <ExternalLink size={14} /></a> : null}
                 {moderationFor(prospect.id) !== "active" ? <button onClick={() => setModerationState([prospect.id], "active")} style={secondaryAction}><RotateCcw size={14} /> Restore</button> : null}
@@ -300,14 +300,14 @@ export function ProspectPipeline() {
                     setModerationState([prospect.id], "removed");
                   }
                 }} style={{ ...secondaryAction, color: "#b42318", borderColor: "#fecdca" }}><Trash2 size={14} /> Remove</button> : null}
-                <button onClick={() => { setActiveId(isActive ? null : prospect.id); setStatuses((current) => ({ ...current, [prospect.id]: current[prospect.id] ?? "Prepared" })); }} style={{ ...primaryAction, marginLeft: "auto" }}>
+                <button onClick={() => { setActiveId(isActive ? null : prospect.id); setStatuses((current) => ({ ...current, [prospect.id]: current[prospect.id] ?? "Prepared" })); }} className="prospect-prepare" style={{ ...primaryAction, marginLeft: "auto" }}>
                   <Mail size={15} /> {isActive ? "Close outreach" : "Prepare outreach"}
                 </button>
               </div>
 
               {isActive ? (
-                <div style={{ borderTop: "1px solid #e5e7eb", background: "#f8fafc", padding: 18, display: "grid", gap: 14 }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12 }}>
+                <div className="prospect-outreach-panel" style={{ borderTop: "1px solid #e5e7eb", background: "#f8fafc", padding: 18, display: "grid", gap: 14 }}>
+                  <div className="prospect-info-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12 }}>
                     <Info label="Primary contact" value={prospect.email || prospect.phone || "Manual lookup required"} />
                     <Info label="Recommended demo" value={product.name} />
                     <Info label="Source checked" value={prospect.checkedAt} />
