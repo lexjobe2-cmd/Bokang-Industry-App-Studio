@@ -8,6 +8,9 @@ on:
       - feature/operational-assurance-on-fleet-foundation
     paths:
       - ".github/workflows/movetrack-lexjobe-migration.yml"
+      - "apps/web/components/products/SignatureCapture.tsx"
+      - "apps/web/components/products/SignatureApprovalTray.tsx"
+      - "tests/ui/people-picker-geometry.mjs"
   workflow_dispatch:
     inputs:
       target:
