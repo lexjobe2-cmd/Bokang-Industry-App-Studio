@@ -57,6 +57,14 @@ resource "cloudflare_pages_project" "movetrack_lexjobe" {
   production_branch = "main"
 }
 
+# The new Pages project was successfully created via Cloudflare's connected API
+# on 2026-10-10. Import it into Terraform state on first apply; do NOT recreate it.
+# This prevents drift and leaves the old production project untouched.
+import {
+  to = cloudflare_pages_project.movetrack_lexjobe
+  id = "749533ff8867120fb2336ba2f50c8480/movetrack-ai-lexjobe"
+}
+
 output "pages_project_name" {
   value = cloudflare_pages_project.movetrack_lexjobe.name
 }
