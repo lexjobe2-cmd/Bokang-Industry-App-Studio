@@ -2,6 +2,11 @@ name: MoveTrack Lexjobe Staged Migration
 
 # Intentionally manual. Existing production Pages project remains untouched.
 on:
+  push:
+    branches:
+      - feature/operational-assurance-on-fleet-foundation
+    paths:
+      - ".github/workflows/movetrack-lexjobe-migration.yml"
   workflow_dispatch:
     inputs:
       target:
@@ -21,12 +26,52 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify-lexjobe-token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: movetrack
+    env:
+      CLOUDFLARE_ACCOUNT_ID: "749533ff8867120fb2336ba2f50c8480"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.LEXJOBE_CLOUDFLARE_API_TOKEN || secrets.MOVETRACK || secrets.CLOUDFLARE_API_TOKEN }}
+      PAGES_PROJECT: movetrack-ai-lexjobe
+    steps:
+      - name: Check Lexjobe Pages credential without deploying
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::No Cloudflare token found in GitHub Environment movetrack or repository secrets."
+            echo "Expected: LEXJOBE_CLOUDFLARE_API_TOKEN (or MOVETRACK / CLOUDFLARE_API_TOKEN)."
+            exit 1
+          fi
+          node --input-type=module <<'NODE'
+          const url = "https://api.cloudflare.com/client/v4/accounts/"
+            + process.env.CLOUDFLARE_ACCOUNT_ID
+            + "/pages/projects/" + process.env.PAGES_PROJECT;
+          const response = await fetch(url, {
+            headers: { Authorization: "Bearer " + process.env.CLOUDFLARE_API_TOKEN }
+          });
+          if (!response.ok) {
+            console.error("Cloudflare credential check failed: HTTP " + response.status);
+            process.exit(1);
+          }
+          const body = await response.json();
+          if (body.success !== true || body.result?.name !== process.env.PAGES_PROJECT) {
+            console.error("Cloudflare credential does not resolve the expected Lexjobe Pages project.");
+            process.exit(1);
+          }
+          console.log("PASS: GitHub Actions authenticated to Lexjobe Pages project "
+            + body.result.name + " (account " + process.env.CLOUDFLARE_ACCOUNT_ID + ").");
+          console.log("This verifies project read access only; deployment write access requires a preview deploy.");
+          NODE
+
   verify-and-deploy:
+    if: github.event_name == 'workflow_dispatch'
+    needs: verify-lexjobe-token
+    environment: movetrack
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
       CLOUDFLARE_ACCOUNT_ID: "749533ff8867120fb2336ba2f50c8480"
-      CLOUDFLARE_API_TOKEN: ${{ secrets.LEXJOBE_CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.LEXJOBE_CLOUDFLARE_API_TOKEN || secrets.MOVETRACK || secrets.CLOUDFLARE_API_TOKEN }}
       PAGES_PROJECT: movetrack-ai-lexjobe
     steps:
       - name: Verify migration prerequisites
