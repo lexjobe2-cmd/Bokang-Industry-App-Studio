@@ -124,3 +124,213 @@ html[data-theme="dark"] textarea {
 .skip-link:focus {
   top: 12px;
 }
+
+
+/* Prospect pipeline responsive layout */
+.prospect-main,
+.prospect-card,
+.prospect-card-main,
+.prospect-copy,
+.prospect-outreach-panel,
+.prospect-info-grid {
+  min-width: 0;
+}
+
+.prospect-copy p,
+.prospect-copy div,
+.prospect-copy h2,
+.prospect-outreach-panel,
+.prospect-outreach-panel textarea {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+@media (max-width: 760px) {
+  .prospect-main {
+    padding: 20px 12px 82px !important;
+    width: 100%;
+    overflow-x: clip;
+  }
+
+  .prospect-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+
+  .prospect-header h1 {
+    font-size: clamp(30px, 10vw, 44px) !important;
+    line-height: 1.02 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .prospect-header p {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .prospect-seed-card {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .prospect-filters {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .prospect-search {
+    grid-column: auto !important;
+  }
+
+  .prospect-filters input,
+  .prospect-filters select {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .prospect-summary {
+    align-items: stretch !important;
+  }
+
+  .prospect-summary > * {
+    max-width: 100%;
+  }
+
+  .prospect-bulkbar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .prospect-bulkbar > button {
+    width: 100%;
+  }
+
+  .prospect-bulkbar > button,
+  .prospect-bulkbar > label {
+    grid-column: 1 / -1;
+  }
+
+  .prospect-bulkbar > span[style*="margin-left"] {
+    margin-left: 0 !important;
+  }
+
+  .prospect-card {
+    border-radius: 18px !important;
+  }
+
+  .prospect-card-main {
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    gap: 10px 12px !important;
+    padding: 16px !important;
+  }
+
+  .prospect-checkbox {
+    grid-column: 1;
+    grid-row: 1;
+    margin-top: 4px !important;
+    width: 20px;
+    height: 20px;
+  }
+
+  .prospect-copy {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+  }
+
+  .prospect-title-row {
+    align-items: flex-start !important;
+  }
+
+  .prospect-title-row h2 {
+    width: 100%;
+    font-size: 21px !important;
+    line-height: 1.18 !important;
+  }
+
+  .prospect-copy p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .prospect-status-panel {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    justify-items: stretch !important;
+    grid-template-columns: minmax(0, 1fr) minmax(116px, auto);
+    align-items: center;
+    gap: 10px !important;
+  }
+
+  .prospect-status-panel > span {
+    justify-self: start;
+    font-size: 12px !important;
+  }
+
+  .prospect-status-panel select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .prospect-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    padding: 0 16px 16px !important;
+    gap: 8px !important;
+  }
+
+  .prospect-actions > a,
+  .prospect-actions > button {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .prospect-prepare {
+    grid-column: 1 / -1;
+    margin-left: 0 !important;
+  }
+
+  .prospect-outreach-panel {
+    padding: 16px !important;
+  }
+
+  .prospect-info-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .prospect-outreach-panel textarea {
+    min-height: 320px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .prospect-main {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .prospect-card-main {
+    padding: 14px !important;
+    grid-template-columns: 24px minmax(0, 1fr) !important;
+  }
+
+  .prospect-actions {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 0 14px 14px !important;
+  }
+
+  .prospect-prepare {
+    grid-column: auto;
+  }
+
+  .prospect-status-panel {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
