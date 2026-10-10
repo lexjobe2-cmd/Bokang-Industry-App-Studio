@@ -245,3 +245,57 @@ export const logisticsJobStates = [
   "Proof of delivery received",
   "Closed"
 ] as const;
+
+
+export const miningVehicleTypes = [
+  "Light vehicle / SUV",
+  "Pickup / LDV",
+  "Minibus",
+  "Service truck",
+  "Water bowser",
+  "Fuel bowser",
+  "Maintenance vehicle",
+  "Other"
+] as const;
+
+export const fleetVehicleStates = [
+  "Available",
+  "On job",
+  "Inspection due",
+  "Maintenance",
+  "No-go",
+  "Out of service"
+] as const;
+
+export const miningPrestartChecks = [
+  "Driver authorised for site",
+  "Roadworthiness valid",
+  "Seat belts functional for all occupants",
+  "Brakes and handbrake functional",
+  "Headlights, brake lights and indicators functional",
+  "Reverse alarm functional",
+  "Horn functional",
+  "Mirrors and windscreen serviceable",
+  "Tyres and wheel nuts serviceable",
+  "Fire extinguisher present, accessible and in service",
+  "First aid kit present and stocked",
+  "Emergency triangles / beacons present",
+  "Reflective strips / vehicle identification visible",
+  "Daily vehicle logbook completed",
+  "No critical fluid leaks",
+  "Two-way radio / site communication available",
+  "Beacon / strobe functional where site requires",
+  "Whip flag fitted where site requires",
+  "Cargo secured",
+  "Cabin clear and safe"
+] as const;
+
+export const miningCriticalChecks = [
+  "Driver authorised for site",
+  "Roadworthiness valid",
+  "Seat belts functional for all occupants",
+  "Brakes and handbrake functional",
+  "Headlights, brake lights and indicators functional",
+  "Reverse alarm functional",
+  "Fire extinguisher present, accessible and in service"
+] as const;

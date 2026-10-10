@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint"
+    "lint": "next lint",
+    "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@bokang/app-config": "workspace:*",
@@ -21,12 +24,36 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.3.1",
-    "@bokang/domain-data": "workspace:*"
+    "@bokang/domain-data": "workspace:*",
+    "@bokang/persistence": "workspace:*",
+    "@bokang/coordination": "workspace:*",
+    "@bokang/integrations": "workspace:*",
+    "@bokang/prospects": "workspace:*",
+    "@tanstack/react-virtual": "^3.14.9",
+    "@zxing/browser": "^0.2.1",
+    "@zxing/library": "^0.22.0",
+    "react-hook-form": "^7.62.0",
+    "zod": "^4.1.11",
+    "@hookform/resolvers": "^5.2.2",
+    "@uppy/core": "latest",
+    "@uppy/dashboard": "latest",
+    "@uppy/tus": "latest",
+    "@fullcalendar/react": "^6.1.21",
+    "@fullcalendar/core": "^6.1.21",
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/timegrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21",
+    "maplibre-gl": "^6.11.2",
+    "papaparse": "^5.5.3",
+    "exceljs": "^4.4.0"
   },
   "devDependencies": {
     "@types/node": "^22.18.6",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@opennextjs/cloudflare": "latest",
+    "wrangler": "latest",
+    "@types/papaparse": "^5.3.16"
   }
 }
