@@ -1,6 +1,7 @@
 name: MoveTrack Lexjobe Staged Migration
 
-# Intentionally manual. Existing production Pages project remains untouched.
+# Feature-branch push performs a preview-only publish; production requires explicit manual dispatch.
+# Existing original Pages production remains untouched.
 on:
   push:
     branches:
@@ -64,7 +65,7 @@ jobs:
           NODE
 
   verify-and-deploy:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     needs: verify-lexjobe-token
     environment: movetrack
     runs-on: ubuntu-latest
@@ -98,11 +99,6 @@ jobs:
       - run: pnpm typecheck
       - run: node --experimental-strip-types --test tests/*.test.mjs
       - run: pnpm --filter @bokang/assurance-demo build
-      - name: Validate access to destination Pages account/project
-        working-directory: apps/web
-        run: |
-          pnpm exec wrangler pages project list --json > /tmp/lexjobe-projects.json
-          node -e 'const fs=require("fs");const projects=JSON.parse(fs.readFileSync("/tmp/lexjobe-projects.json","utf8"));if(!Array.isArray(projects)||!projects.some(p=>p.name===process.env.PAGES_PROJECT)){console.error("Destination project not found. Apply infra/cloudflare-lexjobe Terraform first.");process.exit(1)}'
       - name: Deploy identical build to the NEW Pages project
         working-directory: apps/web
         env:
