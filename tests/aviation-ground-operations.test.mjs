@@ -37,6 +37,7 @@ test("issues need accountable follow up, even if remaining checks have no issue"
  const data=input(airport);
  data.answers[0]={checkId:airport.checks[0].id,status:"ISSUE",detail:"Pavement issue observed"};
  assert.equal(evaluateAviationObservation(airport,data.answers).status,"FOLLOW_UP_REQUIRED");
+ assert.throws(()=>makeAviationObservation({...data,answers:data.answers.map((a,i)=>i===0?{...a,detail:""}:a)}),/Describe each observed/);
  assert.throws(()=>makeAviationObservation(data),/responsible follow-up owner/);
  const saved=makeAviationObservation({...data,actions:[{id:"ACTION-1",description:"Notify accountable airport operations authority",owner:"Airport supervisor",dueDate:"2026-10-12",state:"OPEN"}]});
  assert.equal(saved.state,"FOLLOW_UP_REQUIRED");
