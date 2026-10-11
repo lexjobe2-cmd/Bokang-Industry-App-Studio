@@ -9,8 +9,8 @@ const showcase=open("MoveTrackShowcase.tsx");
 const main=open("MoveTrackDemoLab.tsx");
 const header=open("MoveTrackAppShellNav.tsx");
 
-test("all 16 production demo workspaces have valid direct URL destinations",()=>{
- assert.equal(allWorkspaceViews.length,16);
+test("all 17 production demo workspaces have valid direct URL destinations",()=>{
+ assert.equal(allWorkspaceViews.length,17);
  assert.equal(new Set(allWorkspaceViews).size,allWorkspaceViews.length);
  for(const view of allWorkspaceViews){
   const url=moveTrackPath({kind:"workspace",view});
@@ -19,6 +19,7 @@ test("all 16 production demo workspaces have valid direct URL destinations",()=>
  assert.ok(allWorkspaceViews.includes("admin"));
  assert.ok(allWorkspaceViews.includes("workforce"));
  assert.ok(allWorkspaceViews.includes("paper"));
+ assert.ok(allWorkspaceViews.includes("aviation"));
  assert.ok(allWorkspaceViews.includes("local-data"));
 });
 
