@@ -135,7 +135,8 @@ export function MoveTrackDemoLab(){
         {key:"assign",title:"View assigned work",desc:"Drivers, equipment and dispatch",icon:Truck},
         {key:"profile",title:"View my participation",desc:"Meeting attendance and safety trends",icon:BarChart3},
         {key:"admin",title:"Admin workspace",desc:"Company, employees, fleet onboarding and media",icon:ShieldCheck},
-        {key:"paper",title:"Convert a paper form",desc:"Upload, review and publish a template",icon:ClipboardCheck}] as const).map(item=>
+        {key:"aviation",title:"Aviation ground operations",desc:"Airport inspections, GSE and safety follow-up",icon:ShieldCheck},
+         {key:"paper",title:"Convert a paper form",desc:"Upload, review and publish a template",icon:ClipboardCheck}] as const).map(item=>
        <button type="button" key={item.key} onClick={()=>{goWorkspace(item.key);}}
          style={{...style,textAlign:"left",cursor:"pointer",display:"flex",gap:11,alignItems:"start",borderColor:"#b6cde8"}}>
          <item.icon size={20} color="#2563eb"/><span><strong style={{display:"block",fontSize:14}}>{item.title}</strong><small style={{display:"block",fontSize:11,color:"var(--mt-muted,#64748b)",marginTop:4}}>{item.desc}</small></span>
