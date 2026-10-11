@@ -19,6 +19,12 @@ on:
       - "apps/web/components/products/MoveTrackShowcase.tsx"
       - "tests/movetrack-native-control-contrast.test.mjs"
       - "tests/ui/people-picker-geometry.mjs"
+      - "apps/web/components/products/AviationGroundOperationsWorkspace.tsx"
+      - "apps/web/lib/aviation-operations.ts"
+      - "apps/web/components/products/MoveTrackWorkspaceNav.tsx"
+      - "apps/web/components/products/movetrack-routes.ts"
+      - "tests/aviation-ground-operations.test.mjs"
+      - "tests/movetrack-workspace-discoverability.test.mjs"
       - ".github/workflows/movetrack-ui-geometry.yml"
   workflow_dispatch:
 
