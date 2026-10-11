@@ -124,6 +124,7 @@ export function makeAviationObservation(input:Omit<AviationObservationRecord,"st
  if(workflow.area==="GSE"&&!input.equipmentId?.trim())throw Error("GSE asset identifier is required");
  const evaluation=evaluateAviationObservation(workflow,input.answers);
  if(evaluation.status==="DRAFT")throw Error("All checklist items must have an observation status before recording");
+ if(evaluation.findings.length&&input.answers.some(a=>a.status==="ISSUE"&&!a.detail.trim()))throw Error("Describe each observed safety issue before recording");
  if(evaluation.findings.length&&!input.actions.some(a=>a.description.trim()&&a.owner.trim())){
   throw Error("Record a responsible follow-up owner and action for safety findings");
  }
