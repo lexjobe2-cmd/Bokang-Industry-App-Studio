@@ -193,7 +193,7 @@ try{
   "/","/company","/app/control","/app/fleet","/app/drivers","/app/sites",
   "/app/assign","/app/jobs","/search","/workflows","/app/forms",
   "/app/meetings","/app/paper","/app/release","/app/analytics",
-  "/app/workforce","/app/profile","/app/local-data","/app/settings","/app/admin"
+  "/app/workforce","/app/profile","/app/local-data","/app/settings","/app/admin","/app/aviation"
  ];
  const entryResults=[];
  const scanExpression=[
