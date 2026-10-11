@@ -11,6 +11,12 @@ on:
       - "apps/web/components/products/SignatureCapture.tsx"
       - "apps/web/components/products/SignatureApprovalTray.tsx"
       - "tests/ui/people-picker-geometry.mjs"
+      - "apps/web/components/products/AviationGroundOperationsWorkspace.tsx"
+      - "apps/web/lib/aviation-operations.ts"
+      - "apps/web/components/products/MoveTrackWorkspaceNav.tsx"
+      - "apps/web/components/products/movetrack-routes.ts"
+      - "tests/aviation-ground-operations.test.mjs"
+      - "tests/movetrack-workspace-discoverability.test.mjs"
   workflow_dispatch:
     inputs:
       target:
