@@ -53,6 +53,7 @@ import {
 
 const AssuranceFormsWorkspace=lazy(()=>import("./AssuranceFormsWorkspace").then(module=>({default:module.AssuranceFormsWorkspace})));
 
+const AviationGroundOperationsWorkspace=lazy(()=>import("./AviationGroundOperationsWorkspace").then(module=>({default:module.AviationGroundOperationsWorkspace})));
 const MeetingRegisterWorkspace=lazy(()=>import("./MeetingRegisterWorkspace").then(module=>({default:module.MeetingRegisterWorkspace})));
 
 const PaperToDigitalWorkspace=lazy(()=>import("./PaperToDigitalWorkspace").then(module=>({default:module.PaperToDigitalWorkspace})));
@@ -412,7 +413,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
     <MoveTrackWorkspaceNav view={adminMode&&adminArea!=="overview"&&adminArea!=="company"?adminArea:view} onChange={setView}/>
 
     {notice?<div style={{background:"var(--mt-surface-soft,#eff6ff)",border:"1px solid #bfdbfe",borderRadius:13,padding:11,color:"var(--mt-link,#1e40af)",fontSize:12,fontWeight:800}}>{notice}</div>:null}
-    {!adminMode&&(["fleet","drivers","workforce","sites","assign","jobs","forms","paper","meetings","release"].includes(view))?
+    {!adminMode&&(["fleet","drivers","workforce","sites","assign","jobs","forms","paper","meetings","release","aviation"].includes(view))?
      <aside aria-label="Open management tools" style={{display:"flex",alignItems:"center",gap:10,justifyContent:"space-between",flexWrap:"wrap",background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",border:"1px solid var(--mt-border,#d8e3f0)",borderRadius:12,padding:12}}>
       <div><strong style={{fontSize:12}}>Management tools are available</strong>
        <p style={{fontSize:11,color:"var(--mt-muted,#516078)",margin:"4px 0 0",lineHeight:1.5}}>This view shows operational records. Create, edit, upload or approve organizational records in Admin. The demo Admin workspace is accessible without sign-in.</p>
@@ -438,6 +439,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
         ["assign","Assignments","Manage dispatch and equipment allocations"],
         ["jobs","Jobs & work orders","Create and manage operational jobs"],
         ["forms","Forms & templates","Design branded forms, JSA and JRA"],
+        ["aviation","Aviation ground operations","Airfield inspections, GSE, turnaround and safety actions"],
         ["meetings","Meeting registers","Meeting records, attendance and apologies"],
         ["paper","Paper to digital","Convert scanned documents into templates"],
         ["release","Defects & release","Repair evidence and reinspection"],
@@ -738,6 +740,7 @@ export function MoveTrackShowcase({initialView="control",selectedView,onViewChan
       <div style={{background:"var(--mt-surface,#fff)",border:"1px solid #dbeafe",borderRadius:22,overflow:"hidden"}}>{jobs.map((job)=><div key={job.id} style={{padding:15,borderBottom:"1px solid var(--mt-border,#eff6ff)",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong>{job.id} · {job.client}</strong><div style={{fontSize:11,color:"var(--mt-muted,#667085)"}}>{job.type} · {job.from} → {job.to} · {job.driver}</div></div><select disabled={!adminMode} value={job.state} onChange={(e)=>setJobs((current)=>current.map((item)=>item.id===job.id?{...item,state:e.target.value}:item))} style={input}>{logisticsJobStates.map((state)=><option key={state}>{state}</option>)}</select></div>)}</div>
     </div>:null}
 
+    <div hidden={contentView!=="aviation"}>{visited.has("aviation")?<Suspense fallback={<p role="status">Loading aviation ground operations…</p>}><AviationGroundOperationsWorkspace adminMode={adminMode} onOpenMeeting={()=>setView("meetings")}/></Suspense>:null}</div>
     <div hidden={contentView!=="forms"}>{visited.has("forms")?<Suspense fallback={<p role="status">Loading forms workspace…</p>}><AssuranceFormsWorkspace adminMode={adminMode}/></Suspense>:null}</div>
     <div hidden={contentView!=="meetings"}>{visited.has("meetings")?<Suspense fallback={<p role="status">Loading meeting workspace…</p>}><MeetingRegisterWorkspace /></Suspense>:null}</div>
     <div hidden={contentView!=="paper"}>{visited.has("paper")?<Suspense fallback={<p role="status">Loading document workspace…</p>}><PaperToDigitalWorkspace adminMode={adminMode} onOpenDesigner={()=>setView("forms")}/></Suspense>:null}</div>
