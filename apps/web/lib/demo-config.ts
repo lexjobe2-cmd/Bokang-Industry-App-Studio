@@ -9,6 +9,7 @@ export type DemoConfig = {
   logo: string;
   cta: string;
   email: string;
+  phone: string;
   showAnalytics: boolean;
 };
 
@@ -21,6 +22,7 @@ export const defaultDemoConfig: DemoConfig = {
   logo: "",
   cta: "Discuss this demo",
   email: "jobebokang@gmail.com",
+  phone: "",
   showAnalytics: true,
 };
 
@@ -34,6 +36,7 @@ export function demoParams(config: DemoConfig) {
   if (config.logo.trim()) params.set("logo", config.logo.trim());
   if (config.cta.trim()) params.set("cta", config.cta.trim());
   if (config.email.trim()) params.set("email", config.email.trim());
+  if (config.phone.trim()) params.set("phone", config.phone.trim());
   if (!config.showAnalytics) params.set("analytics", "0");
   return params;
 }
@@ -57,6 +60,7 @@ export function parseDemoConfig(
     logo: read("logo", 500),
     cta: read("cta", 80) || "Discuss this demo",
     email: read("email", 180) || "jobebokang@gmail.com",
+    phone: read("phone", 40),
     showAnalytics: read("analytics", 8) !== "0",
   };
 }
