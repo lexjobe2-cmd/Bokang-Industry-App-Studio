@@ -101,7 +101,10 @@ export function ProspectPipeline() {
         prospect.sector.toLowerCase().includes(needle) ||
         prospect.location.toLowerCase().includes(needle) ||
         (prospect.email ?? "").toLowerCase().includes(needle) ||
-        (prospect.phone ?? "").toLowerCase().includes(needle);
+        (prospect.phone ?? "").toLowerCase().includes(needle) ||
+        prospect.sourceLabel.toLowerCase().includes(needle) ||
+        prospect.cipaVerificationState.toLowerCase().includes(needle) ||
+        prospect.operatingEvidenceState.toLowerCase().includes(needle);
       return matchesModeration && matchesProduct && matchesIndustry && matchesCity && matchesWebsite && matchesOutreach && matchesVerification && matchesQuery;
     });
   }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, moderationFilter, statuses, moderation]);
@@ -153,6 +156,8 @@ export function ProspectPipeline() {
       location: prospect.location,
       headline: "A " + product.sector.toLowerCase() + " workspace concept for " + prospect.name,
       intro: "We prepared this interactive " + product.name + " concept to demonstrate how " + prospect.name + " could explore a more structured digital workflow around " + product.description.toLowerCase(),
+      phone: prospect.phone ?? "",
+      email: prospect.email ?? defaultDemoConfig.email,
     });
     return window.location.origin + "/demo/" + product.slug + "?" + params.toString();
   }
@@ -282,6 +287,19 @@ export function ProspectPipeline() {
                     <span style={{ background: "#fff7ed", color: "#b54708", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>
                       <CheckCircle2 size={12} style={{ verticalAlign: "-2px", marginRight: 4 }} />{websiteStatusLabels[prospect.websiteStatus]}
                     </span>
+                    {prospect.operatingEvidenceState !== "unclear" ? (
+                      <span style={{ background: "#ecfdf3", color: "#027a48", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>
+                        Operating evidence
+                      </span>
+                    ) : null}
+                    {prospect.cipaVerificationState === "registry-confirmed" ? (
+                      <span style={{ background: "#eff8ff", color: "#175cd3", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>CIPA confirmed</span>
+                    ) : (
+                      <span style={{ background: "#f2f4f7", color: "#475467", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>CIPA check pending</span>
+                    )}
+                    {prospect.whatsappReady ? (
+                      <span style={{ background: "#ecfdf3", color: "#027a48", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>WhatsApp-ready mobile</span>
+                    ) : null}
                   </div>
                   <div style={{ color: "#667085", fontSize: 13, marginTop: 5 }}>{prospect.sector} · {prospect.location}{prospect.phone ? " · " + prospect.phone : ""}{prospect.email ? " · " + prospect.email : ""}</div>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "12px 0 0" }}><strong>Public evidence:</strong> {prospect.publicEvidence}</p>
@@ -300,7 +318,8 @@ export function ProspectPipeline() {
               </div>
 
               <div className="prospect-actions" style={{ padding: "0 18px 18px", display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <a href={prospect.sourceUrl} target="_blank" rel="noreferrer" style={secondaryAction}>Re-check Google <ExternalLink size={14} /></a>
+                <a href={prospect.sourceUrl} target="_blank" rel="noreferrer" style={secondaryAction}>Source evidence <ExternalLink size={14} /></a>
+                <a href={prospect.cipaLookupUrl} target="_blank" rel="noreferrer" style={secondaryAction}>Check CIPA <ExternalLink size={14} /></a>
                 {prospect.website ? <a href={prospect.website} target="_blank" rel="noreferrer" style={secondaryAction}>Website <ExternalLink size={14} /></a> : null}
                 {moderationFor(prospect.id) !== "active" ? <button onClick={() => setModerationState([prospect.id], "active")} style={secondaryAction}><RotateCcw size={14} /> Restore</button> : null}
                 {moderationFor(prospect.id) === "active" ? <button onClick={() => setModerationState([prospect.id], "discarded")} style={secondaryAction}><ArchiveX size={14} /> Discard</button> : null}
@@ -324,6 +343,9 @@ export function ProspectPipeline() {
                     <Info label="Website status" value={websiteStatusLabels[prospect.websiteStatus]} />
                     <Info label="Verification" value={verificationLabels[prospect.verificationState]} />
                     <Info label="Confidence" value={prospect.confidence} />
+                    <Info label="Operating evidence" value={prospect.operatingEvidenceState} />
+                    <Info label="CIPA status" value={prospect.cipaVerificationState} />
+                    <Info label="WhatsApp-ready" value={prospect.whatsappReady ? "Yes — public Botswana mobile" : "Not confirmed"} />
                     <Info label="Proposed demo path" value={prospect.proposedDemoPath} />
                   </div>
 
@@ -350,7 +372,13 @@ export function ProspectPipeline() {
                   </div>
 
                   <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
-                    Outreach remains manual. Re-check the Google result first, review the wording, then use the public email, phone or WhatsApp channel the business provides. "No website listed" describes the search result at the checked date; it is not proof that no website exists anywhere.
+                    <strong>Operating evidence:</strong> {prospect.operatingEvidence}
+                  </div>
+                  <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
+                    <strong>CIPA evidence:</strong> {prospect.cipaEvidence}
+                  </div>
+                  <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
+                    Outreach remains manual. Re-check the business website/search result and CIPA record first, review the wording, then use only the public email, phone or WhatsApp channel the business provides. "No website listed" describes the checked source; it is not proof that no website exists anywhere.
                   </div>
                 </div>
               ) : null}
