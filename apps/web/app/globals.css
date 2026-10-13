@@ -1239,3 +1239,15 @@ html[data-theme="dark"] textarea {
     transition: none !important;
   }
 }
+
+
+@media (max-width: 720px) {
+  .freshfold-job-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+  }
+
+  .freshfold-job-row select {
+    width: 100%;
+  }
+}
