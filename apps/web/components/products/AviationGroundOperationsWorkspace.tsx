@@ -1,9 +1,11 @@
 "use client";
 import {useMemo,useState} from "react";
 import {usePersistentState} from "@bokang/persistence";
-import {Plane,ClipboardCheck,TriangleAlert,CheckCircle2,ShieldAlert,ArrowRight,History} from "lucide-react";
-import {AVIATION_WORKFLOWS,AVIATION_AREA_LABELS,evaluateAviationObservation,makeAviationObservation,
+import {Plane,ClipboardCheck,TriangleAlert,CheckCircle2,ShieldAlert,ArrowRight,History,Building2} from "lucide-react";
+import {AVIATION_WORKFLOWS,AVIATION_AREA_LABELS,evaluateAviationObservation,makeAviationObservation,updateAviationFollowUp,
  type AviationCheckAnswer,type AviationCheckStatus,type AviationAction,type AviationObservationRecord} from "../../lib/aviation-operations";
+import {AVIATION_SECTORS,AVIATION_SAFETY_REFERENCES,HELICOPTER_CHECKLIST_BOUNDARIES,
+ type AviationSectorId,type AviationAirframeKind} from "../../lib/aviation-sector-profiles";
 
 const storageKey="bokang-studio.move-track.aviation.observations.v1";
 const panel:React.CSSProperties={border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:15,padding:15,background:"var(--mt-surface,#fff)",color:"var(--mt-ink,#172b46)",minWidth:0};
@@ -22,6 +24,11 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
 }){
  const [records,setRecords]=usePersistentState<AviationObservationRecord[]>(storageKey,[]);
  const [workflowId,setWorkflowId]=useState(AVIATION_WORKFLOWS[0]!.id);
+ const [sectorId,setSectorId]=useState<AviationSectorId>("COMMERCIAL");
+ const [airframeKind,setAirframeKind]=useState<AviationAirframeKind>("NOT_APPLICABLE");
+ const [followUpReferences,setFollowUpReferences]=useState<Record<string,string>>({});
+ const sector=AVIATION_SECTORS.find(x=>x.id===sectorId)!;
+ const helicopterWorkflowIds=HELICOPTER_CHECKLIST_BOUNDARIES.map(x=>x.id);
  const [airport,setAirport]=useState("");
  const [site,setSite]=useState("");
  const [aircraftRegistration,setAircraftRegistration]=useState("");
@@ -40,8 +47,27 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
  const [page,setPage]=useState<"inspect"|"records">("inspect");
  const workflow=AVIATION_WORKFLOWS.find(x=>x.id===workflowId)!;
  const evaluation=useMemo(()=>evaluateAviationObservation(workflow,answers),[workflow,answers]);
- const findings=records.filter(r=>r.state==="FOLLOW_UP_REQUIRED");
- function changeWorkflow(id:string){setWorkflowId(id);setAnswers([]);setError("");setNotice("");}
+ const findings=records.filter(r=>r.actions.some(a=>a.state!=="CLOSED"));
+ function changeWorkflow(id:string){
+  setWorkflowId(id);setAnswers([]);setError("");setNotice("");
+  const area=AVIATION_WORKFLOWS.find(x=>x.id===id)?.area;
+  if(area==="HELICOPTER_GROUND"||id==="rotorcraft-defect-handover")setAirframeKind("HELICOPTER");
+ }
+ function changeSector(id:AviationSectorId){
+  setSectorId(id);
+  const suggested=AVIATION_SECTORS.find(s=>s.id===id)?.priorityWorkflowIds[0];
+  if(suggested)changeWorkflow(suggested);
+ }
+ function changeAction(recordId:string,actionId:string,state:AviationAction["state"]){
+  setError("");setNotice("");
+  try{
+   const record=records.find(r=>r.id===recordId);
+   if(!record)throw Error("Aviation record not found");
+   const updated=updateAviationFollowUp(record,actionId,state,followUpReferences[actionId]??"");
+   setRecords(prev=>prev.map(r=>r.id===recordId?updated:r));
+   setNotice("Follow-up status recorded locally. No operating clearance is granted.");
+  }catch(e){setError(e instanceof Error?e.message:"Could not update follow-up");}
+ }
  function changeAnswer(checkId:string,status:AviationCheckStatus){
   setAnswers(current=>[...current.filter(x=>x.checkId!==checkId),{checkId,status,detail:current.find(x=>x.checkId===checkId)?.detail??"",severity:status==="ISSUE"?"HIGH":undefined}]);
   setError("");
@@ -58,6 +84,7 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
     id:"AV-"+crypto.randomUUID(),workflowId,airport:airport.trim(),site:site.trim(),
     aircraftRegistration:aircraftRegistration.trim()||undefined,equipmentId:equipmentId.trim()||undefined,
     flightReference:flightReference.trim()||undefined,observer:observer.trim(),
+    sectorId,airframeKind,
     procedureReference:procedureReference.trim(),procedureRevision:procedureRevision.trim(),
     performedAt:new Date().toISOString(),notes:notes.trim(),answers,actions
    });
@@ -69,8 +96,8 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
  return <section aria-label="Aviation ground operations" style={{display:"grid",gap:15,minWidth:0}}>
   <div style={{...panel,background:"linear-gradient(120deg,#0b2544,#165a91)",color:"#fff",border:0,padding:19}}>
    <div style={{display:"flex",alignItems:"center",gap:10}}><Plane size={26}/><strong style={{fontSize:12,letterSpacing:1.2}}>MOVE TRACK AI · AVIATION GROUND OPERATIONS</strong></div>
-   <h2 style={{fontSize:"clamp(22px,4vw,30px)",margin:"12px 0 6px"}}>Airside safety and operational observations</h2>
-   <p style={{fontSize:13,lineHeight:1.65,color:"#dcecff",margin:0}}>Aviation procedures, equipment checks, turnaround oversight, occurrence follow-up and connected SHE meetings in one experimental workspace.</p>
+   <h2 style={{fontSize:"clamp(22px,4vw,30px)",margin:"12px 0 6px"}}>Airport, helicopter and ground safety assurance</h2>
+   <p style={{fontSize:13,lineHeight:1.65,color:"#dcecff",margin:0}}>Airfield and heliport observations, helicopter support, ground equipment, contractor oversight, occurrence follow-up and SHE meetings for government, defence support, mining and civil aviation.</p>
    <p style={{fontSize:12,margin:"12px 0 0",fontWeight:800,color:"#fce0a5"}}><ShieldAlert size={15} style={{verticalAlign:"middle"}}/> DEVICE-LOCAL DEMO · Not a certified aviation system, preflight check, airworthiness release, airport clearance or AVSEC approval.</p>
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,150px),1fr))",gap:9}}>
