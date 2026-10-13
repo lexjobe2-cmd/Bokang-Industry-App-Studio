@@ -4,7 +4,7 @@
  * authority to dispatch, airworthiness release, NOTAM or security clearance.
  * Exact procedures must be supplied and approved by a licensed operator.
  */
-import {AVIATION_SECTORS,type AviationSectorId,type AviationAirframeKind} from "./aviation-sector-profiles";
+import {AVIATION_SECTORS,type AviationSectorId,type AviationAirframeKind} from "./aviation-sector-profiles.ts";
 
 export type AviationWorkArea="AERODROME"|"RAMP"|"GSE"|"TURNAROUND"|"AIRCRAFT_RECORDS"|"SECURITY_OVERSIGHT"|"HELIPORT"|"HELICOPTER_GROUND";
 export type AviationCheckStatus="NOT_CHECKED"|"OBSERVED_OK"|"ISSUE"|"NOT_APPLICABLE";
