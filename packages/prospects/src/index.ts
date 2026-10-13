@@ -3683,6 +3683,42 @@ const additionalSeeds: Seed[] = [
 
 // Sector corrections are source-evidenced overrides, preserving the immutable historic seeds.
 const researchedSectorOverrides: Record<string, { industry: string; sector: string; subIndustry: string; evidenceUrl: string; rationale: string }> = {
+  // Explicitly hold back businesses that sell broader beauty/hair services from nail-only demos.
+  "sorbet-salon-fields-mall": {
+    industry: "Beauty & Personal Care",
+    sector: "Beauty Salon & Spa",
+    subIndustry: "Nails, skin, facials and body treatments",
+    evidenceUrl: "https://global.showmelocal.com/39573289-sorbet-salon-beauty-salon-gaborone",
+    rationale: "The Fields Mall location advertises nails as well as facial, body and beauty treatments; a nail-only public homepage would be incomplete.",
+  },
+  "camelot-spa-grand-palm": {
+    industry: "Beauty & Personal Care",
+    sector: "Beauty Salon & Spa",
+    subIndustry: "Spa, massages, facials and wellness treatments",
+    evidenceUrl: "https://www.camelotspa.co.za/",
+    rationale: "Camelot Spa is a full-service massage, skincare and wellness spa; NailMuse's nail-only public template is not a credible match.",
+  },
+  "lh-hair-studio": {
+    industry: "Beauty & Personal Care",
+    sector: "Salon & Barber",
+    subIndustry: "Hair studio — needs current services verification",
+    evidenceUrl: "https://www.google.com/search?q=LH+Hair+Studio+Gaborone+Botswana",
+    rationale: "Hair-specialist name, not validated as a nail technician. Manual service verification and a hair-specific public site are required before outreach.",
+  },
+  "buhle-s-hair-lab": {
+    industry: "Beauty & Personal Care",
+    sector: "Salon & Barber",
+    subIndustry: "Hair salon — needs current services verification",
+    evidenceUrl: "https://www.google.com/search?q=Buhle%27s+Hair+Lab+Botswana",
+    rationale: "Hair-specific business name does not substantiate a nail-only service offering; hold back NailMuse until services are verified.",
+  },
+  "arts-of-laser-beauty-spa": {
+    industry: "Beauty & Personal Care",
+    sector: "Beauty Salon & Spa",
+    subIndustry: "Beauty spa and laser treatments",
+    evidenceUrl: "https://artsoflaser.com/",
+    rationale: "Business markets laser and wider beauty-spa treatments; do not send a nail-only website as though it represents the full business.",
+  },
   "clugston-group": {
     industry: "Construction & Built Environment",
     sector: "Construction & Built Environment",
