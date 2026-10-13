@@ -137,10 +137,10 @@ export function FreshFoldClientSite({
           </div>
         </div>
         <figure className="freshfold-hero-media">
-          <img src={imageSet[0].src} alt={imageSet[0].alt} />
+          <img src={imageSet[0]!.src} alt={imageSet[0]!.alt} />
           <figcaption>
             <span>Fresh care, ready to wear.</span>
-            <a href={imageSet[0].href} target="_blank" rel="noreferrer">{imageSet[0].credit}</a>
+            <a href={imageSet[0]!.href} target="_blank" rel="noreferrer">{imageSet[0]!.credit}</a>
           </figcaption>
         </figure>
       </section>
@@ -190,7 +190,7 @@ export function FreshFoldClientSite({
       <section id="pickup" className="freshfold-split freshfold-pickup">
         <div className="freshfold-photo-stack">
           <figure className="freshfold-photo-main">
-            <img src={imageSet[1].src} alt={imageSet[1].alt} />
+            <img src={imageSet[1]!.src} alt={imageSet[1]!.alt} />
           </figure>
           <div className="freshfold-photo-note">
             <Truck size={20} />
@@ -237,9 +237,9 @@ export function FreshFoldClientSite({
           <a href="#book" className="freshfold-light-button">Request commercial service</a>
         </div>
         <figure className="freshfold-commercial-media">
-          <img src={imageSet[2].src} alt={imageSet[2].alt} />
+          <img src={imageSet[2]!.src} alt={imageSet[2]!.alt} />
           <figcaption>
-            <a href={imageSet[2].href} target="_blank" rel="noreferrer">{imageSet[2].credit}</a>
+            <a href={imageSet[2]!.href} target="_blank" rel="noreferrer">{imageSet[2]!.credit}</a>
           </figcaption>
         </figure>
       </section>
