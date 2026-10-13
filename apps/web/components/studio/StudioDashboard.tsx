@@ -18,6 +18,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "move-track": "Logistics company website",
   "fresh-fold": "Dry cleaning & laundry website",
   "nail-muse": "Nail technician booking & portfolio website",
+  "aqua-flow": "Purified water, refill & delivery website",
 };
 
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {
