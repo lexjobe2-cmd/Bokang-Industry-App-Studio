@@ -69,6 +69,16 @@ test("helicopter ground observations require an airframe and non-sensitive aircr
  assert.equal(actual.jurisdiction,"DEMO_UNSPECIFIED");
  assert.equal(actual.state,"OBSERVATIONS_RECORDED");
 });
+test("critical not-applicable requires written rationale and remains non-authoritative",()=>{
+ const w=workflow("helicopter-ground-safety");
+ const answers=answersFor(w.id);
+ answers[0]={checkId:answers[0].checkId,status:"NOT_APPLICABLE",detail:""};
+ assert.equal(evaluateAviationObservation(w,answers).status,"DRAFT");
+ assert.throws(()=>makeAviationObservation(sample(w.id,{answers})),/All checklist items/);
+ answers[0]={...answers[0],detail:"Not part of this authorized observational scope"};
+ assert.equal(evaluateAviationObservation(w,answers).status,"OBSERVATIONS_RECORDED");
+});
+
 test("record cannot be submitted with unchecked items or unowned findings",()=>{
  const id="heliport-ground-observation";
  assert.throws(()=>makeAviationObservation(sample(id,{answers:[]})),/All checklist items/);
