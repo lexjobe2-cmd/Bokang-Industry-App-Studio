@@ -113,12 +113,23 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
    <button type="button" className="movetrack-ui-button" data-mt-variant={page==="records"?"selected":"secondary"} onClick={()=>setPage("records")} style={btn}><History size={16} style={{verticalAlign:"middle"}}/> Records ({records.length})</button>
    {onOpenMeeting?<button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={btn} onClick={onOpenMeeting}>SHE meeting, minutes and actions <ArrowRight size={15} style={{verticalAlign:"middle"}}/></button>:null}
   </div>
-  {page==="inspect"?<>
+  <section style={{...panel,display:"grid",gap:11}} aria-label="Aviation operating sectors">
+     <div style={{display:"flex",alignItems:"center",gap:8}}><Building2 size={19}/><h3 style={{fontSize:17,margin:0}}>Organization sector</h3></div>
+     <label style={stack}>Sector profile
+      <select aria-label="Aviation sector profile" value={sectorId} onChange={e=>changeSector(e.target.value as AviationSectorId)} style={field}>
+       {AVIATION_SECTORS.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}
+      </select>
+     </label>
+     <p style={{...muted,margin:0}}>{sector.description}</p>
+     <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{sector.contexts.map(x=><span key={x} style={{border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:20,padding:"5px 9px",fontSize:11}}>{x}</span>)}</div>
+     <p style={{margin:0,color:"var(--mt-warning,#ad6619)",fontWeight:800,fontSize:12}}>{sector.handlingNotice}</p>
+   </section>
+   {page==="inspect"?<>
    <div style={{...panel,display:"grid",gap:10}}>
     <h3 style={{margin:0,fontSize:18}}>Choose an aviation workflow</h3>
     <label style={stack}>Inspection / oversight category
      <select value={workflowId} onChange={e=>changeWorkflow(e.target.value)} style={field}>
-      {AVIATION_WORKFLOWS.map(x=><option key={x.id} value={x.id}>{x.title}</option>)}
+      {AVIATION_WORKFLOWS.map(x=><option key={x.id} value={x.id}>{x.title}{sector.priorityWorkflowIds.includes(x.id)?" · recommended":""}</option>)}
      </select>
     </label>
     <div style={{display:"grid",gap:5}}><strong>{AVIATION_AREA_LABELS[workflow.area]}</strong><p style={{...muted,margin:0}}>{workflow.description}</p>
@@ -127,11 +138,20 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
    </div>
    <div style={{...panel,display:"grid",gap:11}}>
     <h3 style={{margin:0}}>Observation context</h3>
+     <label style={stack}>Airframe / operating asset
+      <select aria-label="Aviation airframe category" value={airframeKind} onChange={e=>setAirframeKind(e.target.value as AviationAirframeKind)} style={field}
+       disabled={workflow.area==="HELICOPTER_GROUND"}>
+       <option value="NOT_APPLICABLE">Ground equipment / infrastructure only</option>
+       <option value="FIXED_WING">Fixed-wing aircraft (observation only)</option>
+       <option value="HELICOPTER">Helicopter / rotorcraft (observation only)</option>
+      </select>
+     </label>
+     {helicopterWorkflowIds.includes(workflow.id)?<p style={{...muted,margin:0}}>For approved helicopter preflight and maintenance procedures, consult the operator's specific RFM/POH and maintenance instructions. These prompts do not replace them.</p>:null}
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:11}}>
-     <label style={stack}>Airport / aerodrome *<input style={field} value={airport} onChange={e=>setAirport(e.target.value)} placeholder="Airport name or station"/></label>
+     <label style={stack}>Airport / heliport / facility *<input style={field} value={airport} onChange={e=>setAirport(e.target.value)} placeholder="Airport name or station"/></label>
      <label style={stack}>Stand / zone / work area<input style={field} value={site} onChange={e=>setSite(e.target.value)} placeholder="Non-sensitive location reference"/></label>
      <label style={stack}>Observer *<input style={field} value={observer} onChange={e=>setObserver(e.target.value)} placeholder="Inspector or supervisor"/></label>
-     {workflow.area==="AIRCRAFT_RECORDS"?<label style={stack}>Aircraft registration *<input style={field} value={aircraftRegistration} onChange={e=>setAircraftRegistration(e.target.value)} placeholder="Aircraft registration"/></label>:null}
+     {(["AIRCRAFT_RECORDS","HELICOPTER_GROUND"].includes(workflow.area))?<label style={stack}>Aircraft / non-sensitive asset reference *<input style={field} value={aircraftRegistration} onChange={e=>setAircraftRegistration(e.target.value)} placeholder="Aircraft ID or unclassified asset reference"/></label>:null}
      {workflow.area==="GSE"?<label style={stack}>Ground equipment asset ID *<input style={field} value={equipmentId} onChange={e=>setEquipmentId(e.target.value)} placeholder="GSE asset number"/></label>:null}
      {workflow.area==="TURNAROUND"?<label style={stack}>Flight reference<input style={field} value={flightReference} onChange={e=>setFlightReference(e.target.value)} placeholder="Non-sensitive flight reference"/></label>:null}
      <label style={stack}>Approved procedure reference *<input style={field} value={procedureReference} onChange={e=>setProcedureReference(e.target.value)} placeholder="DEMO or locally approved SOP ID"/></label>
@@ -172,13 +192,15 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
   </>:<section aria-label="Recorded aviation observations" style={{...panel,display:"grid",gap:11}}>
     <h3 style={{margin:0}}>Aviation observation records</h3>
     {notice?<p role="status" style={{margin:0,color:"var(--mt-success,#087f5b)",fontWeight:800,fontSize:12}}>{notice}</p>:null}
-    {!records.length?<p style={muted}>No records yet. Select New observation to create your first device-local record.</p>:null}
+    {error?<p role="alert" style={{margin:0,color:"var(--mt-danger,#b42318)",fontSize:12}}>{error}</p>:null}
+     {!records.length?<p style={muted}>No records yet. Select New observation to create your first device-local record.</p>:null}
     {records.map(record=><article key={record.id} style={{...panel,display:"grid",gap:7}}>
       <div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
        <strong>{AVIATION_WORKFLOWS.find(x=>x.id===record.workflowId)?.title??record.workflowId}</strong>
        <span style={{fontSize:11,color:record.state==="FOLLOW_UP_REQUIRED"?"var(--mt-warning,#a65b12)":"var(--mt-muted,#63758d)",fontWeight:800}}>{record.state.replaceAll("_"," ")}</span>
       </div>
       <small style={muted}>{record.airport} · {record.site||"Unspecified zone"} · {new Date(record.performedAt).toLocaleString()} · {record.observer}</small>
+      <small style={muted}>Sector: {AVIATION_SECTORS.find(s=>s.id===record.sectorId)?.name??"Legacy aviation demo"} · Airframe: {record.airframeKind??"unspecified"}</small>
       <small style={muted}>Reference: {record.procedureReference} / {record.procedureRevision} · {record.answers.filter(a=>a.status==="ISSUE").length} finding(s)</small>
       {record.actions.map(action=><div key={action.id} style={{padding:9,border:"1px solid var(--mt-border,#dce5f1)",borderRadius:8,display:"grid",gap:3}}>
        <strong style={{fontSize:12}}>Action: {action.description}</strong><small style={muted}>Owner: {action.owner} · Due: {action.dueDate||"Not set"} · {action.state}</small>
