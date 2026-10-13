@@ -53,6 +53,18 @@ The observation and finding are retained even if a follow-up is marked closed. C
 6. **Security controls**: no classified, restricted AVSEC or medical material in generic backend; strict compartmentalization and organizational approvals before any agency deployment.
 7. **Validation**: subject matter review by licensed airport/airline/rotorcraft operators, civil aviation authority requirements, physical iOS testing, independent security review, deployment and recovery checks.
 
+## Botswana deployment checklist
+
+The Civil Aviation Authority of Botswana (CAAB) and applicable domestic aviation and government/defence authorities must be consulted before any real rollout. Botswana's Civil Aviation (Safety Management) Regulations (S.I. 105 of 2020) distinguish aviation SMS from general workplace safety; MoveTrack's SHE records alone do **not** establish compliance with an approved aviation SMS. Relevant legislation also covers air-operator approval and aerodrome licensing. See the Botswana National Aviation Safety Plan for the distinction between State safety oversight and individual operator obligations.
+
+For mining helicopter operations, validate the mine operator's site arrangements **and** the helicopter service provider's applicable aviation approvals. For government and defence use, require a separate approved data-classification assessment, public/non-sensitive deployment boundary and agency-specific procedure ownership. Do not load mission planning, classified material, detailed security screening or sensitive flight/personnel movement information into this demo.
+
+References:
+- Botswana Civil Aviation (Safety Management) Regulations: https://botswanalaws.com/consolidated-statutes/subsidiary-legislation/civil-aviation-subsidiary-legislation-civil-aviation-safety-management-regulations
+- Civil Aviation (Aircraft Operations) Regulations: https://botswanalaws.com/consolidated-statutes/subsidiary-legislation/civil-aviation-subsidiary-legislation-civil-aviation-aircraft-operations-regulations
+- Civil Aviation (Certification and Licensing of Aerodromes) Regulations: https://botswanalaws.com/consolidated-statutes/subsidiary-legislation/civil-aviation-subsidiary-legislation-civil-aviation-certification-and-licensing-of-aerodromes-regulations
+- Botswana National Aviation Safety Plan (2023–2025): https://www.icao.int/sites/default/files/safety/GASP/GASP%20Library/National%20aviation%20safety%20plans/Botswana-NASP-2023-2025.pdf
+
 ## Public standards references
 
 - FAA Helicopter Flying Handbook: https://www.faa.gov/regulations_policies/handbooks_manuals/aviation/helicopter_flying_handbook
