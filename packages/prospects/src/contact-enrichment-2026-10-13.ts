@@ -2,6 +2,7 @@ export type ContactEnrichment = {
   email?: string;
   phone?: string;
   secondaryPhones?: string[];
+  secondaryEmails?: string[];
   emailSourceUrl?: string;
   phoneSourceUrl?: string;
   emailEvidence?: string;
@@ -553,6 +554,93 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.africabizinfo.com/BW/maxi-save-hardware-store_1K-392-4539",
     emailEvidence: "Current public MAXI SAVE shop listing publishes maxi@maxisave.bw.",
     phoneEvidence: "Current public business listing publishes the Gaborone store telephone numbers."
+  }
+,
+  "ae-group": {
+    email: "aegroupbotswana@gmail.com",
+    secondaryPhones: ["+267 72415736"],
+    emailSourceUrl: "https://www.foodyas.com/BW/Unknown/168621073240136/AE-Group",
+    phoneSourceUrl: "https://www.localbotswana.com/company/14097/AE_GROUP_PTY_LTD",
+    emailEvidence: "A current 2026 AE Group public recruitment post publishes aegroupbotswana@gmail.com.",
+    phoneEvidence: "Current public business listing publishes the main and secondary mobile numbers."
+  },
+  "rehoboth-guest-house": {
+    email: "rehoboth@it.bw",
+    secondaryPhones: ["+267 71667171"],
+    emailSourceUrl: "https://governmentdirectree.com/business-directory/6396/rehoboth-guest-house/",
+    phoneSourceUrl: "https://governmentdirectree.com/business-directory/6396/rehoboth-guest-house/",
+    emailEvidence: "Botswana business directory information publishes rehoboth@it.bw for the Gaborone guest house.",
+    phoneEvidence: "The same Botswana listing publishes the landline and mobile contact."
+  },
+  "luxury-inn": {
+    email: "info@luxuryinn.co.bw",
+    emailSourceUrl: "https://www.botswanatourism.co.bw/sites/default/files/2025-08/Accomodation%20Directory%202024%20-%202025.pdf",
+    phoneSourceUrl: "https://www.botswanatourism.co.bw/sites/default/files/2025-08/Accomodation%20Directory%202024%20-%202025.pdf",
+    emailEvidence: "Botswana Tourism Organisation's 2024-2025 accommodation directory publishes info@luxuryinn.co.bw.",
+    phoneEvidence: "The same Botswana Tourism listing publishes +267 3928500."
+  },
+  "floodlight-security-pty-ltd": {
+    email: "Floodlightsec.bw@gmail.com",
+    emailSourceUrl: "https://www.callupcontact.com/b/businessprofile/Floodlight_Security/6888014",
+    phoneSourceUrl: "https://www.localbotswana.com/company/14168/FLOODLIGHT_SECURITY_PTY_LTD",
+    emailEvidence: "Public Floodlight Security business information publishes Floodlightsec.bw@gmail.com.",
+    phoneEvidence: "Current verified Botswana directory listing publishes +267 74 051 437."
+  },
+  "pelican-moving-company": {
+    email: "enquiries@pelican.co.bw",
+    secondaryEmails: ["humanresources@pelican.co.bw"],
+    phone: "+267 3161342",
+    secondaryPhones: ["+267 76497618"],
+    emailSourceUrl: "https://pelican.co.bw/contact/",
+    phoneSourceUrl: "https://pelican.co.bw/contact/",
+    emailEvidence: "Pelican Moving Company's current public website publishes enquiries@pelican.co.bw; its current LinkedIn recruitment posts also publish humanresources@pelican.co.bw.",
+    phoneEvidence: "Pelican's current website publishes its head-office telephone and WhatsApp contact."
+  },
+  "pula-dental-clinic": {
+    email: "rkgwaneng@yahoo.com",
+    secondaryEmails: ["rmokubung@brobemail.co.bw"],
+    secondaryPhones: ["+267 71704624", "+267 72338223"],
+    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2014.pdf",
+    phoneSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2014.pdf",
+    emailEvidence: "Health Directory Botswana's public Pula Dental entries publish rkgwaneng@yahoo.com and rmokubung@brobemail.co.bw; re-check before outreach because the directory contact is older.",
+    phoneEvidence: "The public Health Directory lists the clinic landline and practitioner mobile contacts."
+  },
+  "kagiso-dental-clinic": {
+    email: "brightonbk@hotmail.com",
+    secondaryPhones: ["+267 71200994"],
+    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2018W.pdf",
+    phoneSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2018W.pdf",
+    emailEvidence: "Health Directory Botswana publishes brightonbk@hotmail.com for Kagiso Dental Clinic.",
+    phoneEvidence: "The same public directory publishes the Palapye landline and mobile contact."
+  },
+  "elite-dental-clinic": {
+    email: "edcsurgeon@gmail.com",
+    secondaryPhones: ["+267 76815797"],
+    emailSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/528",
+    phoneSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/528",
+    emailEvidence: "Current Sesoa Botswana business profile publishes edcsurgeon@gmail.com.",
+    phoneEvidence: "Current Sesoa Botswana profile publishes the clinic landline and mobile."
+  },
+  "bdo-botswana": {
+    email: "plombard@bdo.bw",
+    emailSourceUrl: "https://www.bdo.bw/en-gb/our-people/philip-lombard",
+    phoneSourceUrl: "https://www.bdo.bw/en-gb/our-people/philip-lombard",
+    emailEvidence: "BDO Botswana's current public leadership page publishes CEO Philip Lombard's business email.",
+    phoneEvidence: "BDO Botswana's current public leadership page publishes +267 390 2779."
+  },
+  "ernst-and-young-botswana": {
+    email: "Laura.Alfred@za.ey.com",
+    secondaryEmails: ["ebotswana@za.ey.com"],
+    emailSourceUrl: "https://jobsbotswana.info/jobs/senior-tax-consultants-transfer-pricing-tax-advisory-ernst-young-ey-botswana/",
+    emailEvidence: "A current 2026 EY Botswana public recruitment notice publishes Laura.Alfred@za.ey.com; an older Botswana Gazette EY notice publishes ebotswana@za.ey.com. These are recruitment/public contacts, not necessarily general sales mailboxes."
+  },
+  "postnet-head-office": {
+    email: "carbocentre@postnet.co.bw",
+    phone: "+267 77561327",
+    emailSourceUrl: "https://www.postnet.co.za/stores/carbocentre",
+    phoneSourceUrl: "https://www.postnet.co.za/stores/carbocentre",
+    emailEvidence: "PostNet's current public Botswana store page publishes carbocentre@postnet.co.bw. This is a Gaborone branch mailbox rather than a confirmed national head-office email.",
+    phoneEvidence: "The same current store page publishes +267 77 561 327."
   }
 
 };
