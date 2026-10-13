@@ -81,8 +81,11 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   },
   "kalahari-shine": {
     email: "chris@kalaharishine.co.bw",
-    emailSourceUrl: "https://www.kalaharishine.co.bw/",
-    emailEvidence: "Public Kalahari Shine business information surfaces chris@kalaharishine.co.bw."
+    secondaryPhones: ["+267 74016447"],
+    emailSourceUrl: "https://www.africabizinfo.com/BW/kalahari-shine-71-493-585",
+    phoneSourceUrl: "https://www.localbotswana.com/company/14002/Kalahari_Shine",
+    emailEvidence: "Public company contact listing explicitly surfaces chris@kalaharishine.co.bw.",
+    phoneEvidence: "Kalahari Shine business profile lists +267 71493585 and +267 74016447; earlier website entries should be rechecked before outreach."
   },
   "primeone-pty-ltd": {
     email: "admin@primeonebw.com",
@@ -279,8 +282,11 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   },
   "haskins-j-and-sons": {
     email: "gaborone@haskins.co.bw",
-    emailSourceUrl: "https://bidp.bw/ssl/html/bidp/shop/work_customers.php",
-    emailEvidence: "BIDP public customer listing surfaces gaborone@haskins.co.bw."
+    website: "https://haskinshardware.co.bw/",
+    websiteSourceUrl: "https://haskinshardware.co.bw/",
+    websiteEvidence: "First-party Haskins Hardware website currently publishes its Gaborone store at Plot 1216 and +267 395 1001, matching the Haskins J & Sons prospect.",
+    emailSourceUrl: "https://haskinshardware.co.bw/",
+    emailEvidence: "Current first-party Haskins Hardware website publishes gaborone@haskins.co.bw."
   },
   "jamal-trading-company": {
     email: "jamalsales1@gmail.com",
@@ -646,7 +652,7 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   "print-elite": {
     phone: "+267 71733727",
     secondaryPhones: ["+267 74617779"],
-    phoneSourceUrl: "https://www.localbotswana.com/company/13970/Print_Elite_Pty_Ltd",
+    phoneSourceUrl: "https://www.localbotswana.com/company/13873/PRINT_ELITE_PTY_LTD",
     phoneEvidence: "Current verified Local Botswana listing publishes the office/mobile contacts."
   },
   "piashi-security-services": {
