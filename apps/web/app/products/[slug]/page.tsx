@@ -15,8 +15,9 @@ export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ client?: string }> }) {
   const { slug } = await params;
+  const { client } = await searchParams;
   if (!(slug in products)) notFound();
 
   const config = getProductConfig(slug as ProductSlug);
@@ -50,7 +51,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         <WorkspaceUtilities config={config} />
 
-        <ProductExperience config={config} />
+        <ProductExperience config={config} clientName={typeof client === "string" ? client.slice(0,120) : undefined} />
 
         <DataImportWorkbench config={config} />
 

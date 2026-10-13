@@ -17,7 +17,7 @@ import { IndustryEnhancements } from "../shared/IndustryEnhancements";
 import { DeepIndustryWorkflows } from "../shared/DeepIndustryWorkflows";
 import { ProductMediaHero } from "../shared/ProductMediaHero";
 
-export function ProductExperience({ config }: { config: ProductConfig }) {
+export function ProductExperience({ config, clientName }: { config: ProductConfig; clientName?: string }) {
   let body: React.ReactNode;
 
   if (config.slug === "lex-intake") body = <LexIntakeShowcase />;
@@ -31,7 +31,7 @@ export function ProductExperience({ config }: { config: ProductConfig }) {
   else if (config.slug === "fresh-fold") body = <FreshFoldShowcase config={config} />;
   else if (config.slug === "nail-muse") body = <NailMuseShowcase config={config} />;
   else if (config.slug === "aqua-flow") body = <AquaFlowShowcase config={config} />;
-  else if (config.slug === "clean-care") body = <CleanCareShowcase config={config} />;
+  else if (config.slug === "clean-care") body = <CleanCareShowcase config={config} clientName={clientName} />;
   else body = (
     <section style={{ marginTop: 28 }}>
       <DashboardGrid>
