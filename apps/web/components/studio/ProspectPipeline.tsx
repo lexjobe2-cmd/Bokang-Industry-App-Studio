@@ -203,7 +203,7 @@ export function ProspectPipeline() {
       params.set("services", prospect.publicServices.join(","));
     }
     if (product.slug === "salon-book") {
-      params.set("mode", salonModeFromName(prospect.name));
+      params.set("variant", salonModeFromName(prospect.name + " " + prospect.subIndustry));
     }
     return window.location.origin + "/demo/" + product.slug + "?" + params.toString();
   }
