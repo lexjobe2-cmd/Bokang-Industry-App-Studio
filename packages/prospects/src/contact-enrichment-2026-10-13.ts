@@ -743,6 +743,9 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneEvidence: "Current 2026 Lady Vanessa business posts and Airport Junction directory information publish +267 74 155 000 and +267 391 1721."
   },
   "mmagabo-cleaning-services": {
+    website: "https://mmagabocleaning.weebly.com/",
+    websiteSourceUrl: "https://mmagabocleaning.weebly.com/",
+    websiteEvidence: "Company-branded MmaGABO Cleaning Services site located on Weebly, describing domestic, industrial and commercial cleaning; website presence confirmed but publication date and current trading activity unverified.",
     phone: "+267 3187789",
     secondaryPhones: ["+267 71334955", "+267 72654293", "+267 72540202"],
     phoneSourceUrl: "https://www.localbotswana.com/company/8912/MmaGABO_Cleaning_Services",
