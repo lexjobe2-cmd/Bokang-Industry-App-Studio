@@ -315,8 +315,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "build-quote",
-    "newTemplateOpportunity": "Cleaning-services booking + quote template",
+    "recommendedProduct": "clean-care",
     "fitHypothesis": "A service website could package cleaning options, coverage areas and quote requests while keeping job operations private.",
     "evidence": "Current Local Botswana cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -332,8 +331,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "build-quote",
-    "newTemplateOpportunity": "Cleaning-services booking + quote template",
+    "recommendedProduct": "clean-care",
     "fitHypothesis": "A service website could package cleaning options, coverage areas and quote requests while keeping job operations private.",
     "evidence": "Current Local Botswana cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -349,8 +347,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "build-quote",
-    "newTemplateOpportunity": "Cleaning-services booking + quote template",
+    "recommendedProduct": "clean-care",
     "fitHypothesis": "A service website could package cleaning options, coverage areas and quote requests while keeping job operations private.",
     "evidence": "Current Local Botswana cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -366,8 +363,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "build-quote",
-    "newTemplateOpportunity": "Cleaning-services booking + quote template",
+    "recommendedProduct": "clean-care",
     "fitHypothesis": "A service website could package cleaning options, coverage areas and quote requests while keeping job operations private.",
     "evidence": "Current Local Botswana cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
