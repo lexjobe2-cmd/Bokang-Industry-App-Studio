@@ -13,7 +13,7 @@ export function SalonBookClientSite({ clientName, location = "Gaborone, Botswana
   const [service, setService] = useState("");
   const isBarber = mode === "barber";
   const catalog = isBarber ? barberServices : hairServices;
-  const selectedService = catalog.some((item) => item.name === service) ? service : catalog[0].name;
+  const selectedService = catalog.some((item) => item.name === service) ? service : (catalog[0]?.name ?? "");
   const initials = clientName.split(/\s+/).filter(Boolean).slice(0,2).map((p)=>p[0]?.toUpperCase()).join("");
   const whatsApp = useMemo(() => {
     const digits = phone.replace(/\D/g, "");
