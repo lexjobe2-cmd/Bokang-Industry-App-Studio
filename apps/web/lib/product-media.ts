@@ -72,6 +72,13 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     alt: "Professional manicure treatment in a modern nail salon",
     locality: "Nail care & beauty"
   },
+  "aqua-flow": {
+    imageUrl: "https://images.pexels.com/photos/11860559/pexels-photo-11860559.jpeg?auto=compress&dpr=1&h=900&w=1600",
+    sourceUrl: "https://www.pexels.com/photo/a-clear-plastic-bottle-in-blue-background-11860559/",
+    sourceLabel: "Pexels · nerea arance",
+    alt: "Clear bottled water against a clean blue background",
+    locality: "Purified water & delivery"
+  },
   "move-track": {
     imageUrl: "https://images.pexels.com/photos/36298868/pexels-photo-36298868.jpeg?auto=compress&dpr=1&h=900&w=1800",
     sourceUrl: "https://www.pexels.com/photo/wide-load-truck-on-open-highway-in-africa-36298868/",
