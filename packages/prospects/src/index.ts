@@ -1,8 +1,11 @@
 import type { ProductSlug } from "@bokang/app-config";
+import { cipaOperatingProspectSeeds } from "./cipa-operating-2026-10-13";
 
 export type WebsiteStatus = "no-first-party-site-found" | "social-only" | "directory-only" | "website-found" | "unclear";
 export type ProspectVerificationState = "source-checked" | "needs-recheck" | "verified-website";
 export type ProspectConfidence = "high" | "medium" | "low";
+export type CipaVerificationState = "search-pending" | "official-publication-evidence" | "registry-confirmed";
+export type OperatingEvidenceState = "current-operating-evidence" | "directory-active" | "unclear";
 export type ProspectOutreachStatus = "new" | "prepared" | "contacted" | "replied" | "converted" | "not-now" | "handled" | "archived" | "previous-outreach";
 
 export type Prospect = {
@@ -37,10 +40,27 @@ export type Prospect = {
   lastChecked: string;
   fitHypothesis: string;
   publicEvidence: string;
+  cipaVerificationState: CipaVerificationState;
+  cipaEvidence: string;
+  cipaLookupUrl: string;
+  operatingEvidenceState: OperatingEvidenceState;
+  operatingEvidence: string;
+  whatsappReady: boolean;
 };
 
 function googleSearchUrl(name: string) {
   return `https://www.google.com/search?q=${encodeURIComponent(name + " Botswana")}`;
+}
+
+function cipaLookupUrl() {
+  return "https://www.cipa.co.bw/";
+}
+
+function isBotswanaMobile(phone: string | undefined) {
+  if (!phone) return false;
+  const digits = phone.replace(/\D/g, "");
+  const local = digits.startsWith("267") ? digits.slice(3) : digits;
+  return /^7\d{7}$/.test(local);
 }
 
 type Seed = {
@@ -61,6 +81,11 @@ type Seed = {
   newTemplateOpportunity?: string;
   fitHypothesis: string;
   evidence: string;
+  checkedAt?: string;
+  cipaVerificationState?: CipaVerificationState;
+  cipaEvidence?: string;
+  operatingEvidenceState?: OperatingEvidenceState;
+  operatingEvidence?: string;
 };
 
 const checkedAt = "2026-10-10";
@@ -3603,7 +3628,7 @@ const additionalSeeds: Seed[] = [
   }
 ];
 
-const seeds: Seed[] = [...baseSeeds, ...additionalSeeds];
+const seeds: Seed[] = [...baseSeeds, ...additionalSeeds, ...cipaOperatingProspectSeeds];
 
 export const prospects: Prospect[] = seeds.map((seed) => {
   const websiteStatus = seed.websiteStatus ?? "no-first-party-site-found";
@@ -3637,9 +3662,9 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     socialPresence,
     verificationState: seed.verificationState ?? "source-checked",
     sourceUrl: seed.sourceUrl,
-    sourceLinks: Array.from(new Set([seed.sourceUrl, googleSearchUrl(seed.name)])),
+    sourceLinks: Array.from(new Set([seed.sourceUrl, googleSearchUrl(seed.name), cipaLookupUrl()])),
     sourceLabel: seed.sourceLabel,
-    checkedAt,
+    checkedAt: seed.checkedAt ?? checkedAt,
     recommendedProduct: seed.recommendedProduct,
     newTemplateOpportunity,
     proposedDemoPath: `/demo/${seed.recommendedProduct}`,
@@ -3649,9 +3674,15 @@ export const prospects: Prospect[] = seeds.map((seed) => {
       : `Lead with a working ${seed.recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`,
     confidence,
     outreachStatus: "new",
-    lastChecked: checkedAt,
+    lastChecked: seed.checkedAt ?? checkedAt,
     fitHypothesis: seed.fitHypothesis,
     publicEvidence: seed.evidence,
+    cipaVerificationState: seed.cipaVerificationState ?? "search-pending",
+    cipaEvidence: seed.cipaEvidence ?? "CIPA status has not yet been independently verified for this record.",
+    cipaLookupUrl: cipaLookupUrl(),
+    operatingEvidenceState: seed.operatingEvidenceState ?? "unclear",
+    operatingEvidence: seed.operatingEvidence ?? seed.evidence,
+    whatsappReady: isBotswanaMobile(seed.phone),
   };
 });
 
