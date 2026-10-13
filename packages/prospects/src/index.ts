@@ -98,6 +98,7 @@ const exactPublicTemplateBySector: Partial<Record<string, ProductSlug>> = {
   "Nail Tech & Beauty": "nail-muse",
   "Purified Water & Delivery": "aqua-flow",
   "Cleaning Services": "clean-care",
+  "Salon & Barber": "salon-book",
 };
 
 const compatiblePublicTemplates: Record<string, ProductSlug[]> = {
@@ -114,6 +115,7 @@ const compatiblePublicTemplates: Record<string, ProductSlug[]> = {
   "Nail Tech & Beauty": ["nail-muse"],
   "Purified Water & Delivery": ["aqua-flow"],
   "Cleaning Services": ["clean-care"],
+  "Salon & Barber": ["salon-book"],
 };
 
 function resolvePublicProduct(sector: string, product: ProductSlug): ProductSlug {
