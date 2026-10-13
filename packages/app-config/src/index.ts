@@ -6,7 +6,8 @@ export type ProductSlug =
   | "pharma-desk"
   | "build-quote"
   | "explore-bw"
-  | "move-track";
+  | "move-track"
+  | "fresh-fold";
 
 export type ProductExperienceProfile = {
   mood: string;
@@ -167,6 +168,24 @@ export const products: Record<ProductSlug, ProductConfig> = {
       onboarding: ["Operator profile", "Destinations", "Experiences", "Capacity rules", "Booking policies"],
       signatureFeatures: ["Visual itinerary builder", "Map-first discovery", "Traveller profiles", "Saved experiences", "Booking enquiry board"],
       compliance: ["Traveller consent", "Terms acknowledgement", "Emergency-contact capture", "Supplier confirmation"]
+    }
+  },
+  "fresh-fold": {
+    slug: "fresh-fold",
+    name: "FreshFold AI",
+    sector: "Dry Cleaning & Laundry",
+    description: "Laundry bookings, garment intake, pickup and delivery, commercial accounts, order tracking and repeat-customer operations.",
+    tabs: ["Home", "Orders", "Pickups", "Customers", "More"],
+    modules: ["Bookings", "Garment intake", "Order care board", "Pickup scheduling", "Delivery scheduling", "Commercial accounts", "Recurring laundry", "Quality check", "Customer history", "Analytics"],
+    dashboardMetrics: ["Active orders", "Pickups today", "Ready for collection", "Commercial accounts"],
+    experience: {
+      mood: "Fresh and service-led",
+      accent: "#0f766e",
+      surface: "#f0fdfa",
+      hero: "From dirty laundry to ready-to-wear with a clear customer and operations flow.",
+      onboarding: ["Business profile", "Laundry services", "Turnaround times", "Pickup areas", "Commercial service rules"],
+      signatureFeatures: ["Public booking site", "Pickup and delivery workflow", "Garment care board", "Commercial laundry accounts", "Repeat-customer history"],
+      compliance: ["Order handover record", "Garment condition notes", "Pickup/delivery evidence", "Quality-check record"]
     }
   },
   "move-track": {
