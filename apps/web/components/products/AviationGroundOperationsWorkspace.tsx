@@ -204,10 +204,33 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
       <small style={muted}>Reference: {record.procedureReference} / {record.procedureRevision} · {record.answers.filter(a=>a.status==="ISSUE").length} finding(s)</small>
       {record.actions.map(action=><div key={action.id} style={{padding:9,border:"1px solid var(--mt-border,#dce5f1)",borderRadius:8,display:"grid",gap:3}}>
        <strong style={{fontSize:12}}>Action: {action.description}</strong><small style={muted}>Owner: {action.owner} · Due: {action.dueDate||"Not set"} · {action.state}</small>
+        <label style={stack}>Local corrective-action status
+         <select aria-label={"Aviation corrective action "+action.id} style={field} value={action.state} onChange={e=>changeAction(record.id,action.id,e.target.value as AviationAction["state"])}>
+          <option value="OPEN">Open</option><option value="IN_PROGRESS">In progress</option><option value="CLOSED">Closed with evidence reference</option>
+         </select>
+        </label>
+        {action.state!=="CLOSED"?<label style={stack}>External action / closure evidence reference
+         <input aria-label={"Aviation action reference "+action.id} style={field} value={followUpReferences[action.id]??""}
+          onChange={e=>setFollowUpReferences(x=>({...x,[action.id]:e.target.value}))}
+          placeholder="Non-sensitive evidence or SHE meeting reference"/>
+        </label>:<small style={muted}>Closure reference: {action.completionReference??"Legacy record · no evidence attached"}</small>}
+        {onOpenMeeting?<button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}}
+         onClick={()=>{void navigator.clipboard?.writeText(action.id+" · "+action.description).catch(()=>{});onOpenMeeting();}}>Open SHE meeting for action follow-up <ArrowRight size={15} style={{verticalAlign:"middle"}}/></button>:null}
       </div>)}
       <small style={{...muted,fontWeight:700}}>Device-local · unverified · no regulatory release authority</small>
     </article>)}
    </section>}
+  <details style={panel}>
+   <summary style={{fontWeight:800,cursor:"pointer",fontSize:13,minHeight:44}}>Helicopter checklists and approved-manual references</summary>
+   <p style={muted}>Use these headings only to document general ground-side observations. Actual rotorcraft preflight, postflight, maintenance or airworthiness decisions require approved type-specific manuals.</p>
+   {HELICOPTER_CHECKLIST_BOUNDARIES.map(t=><div key={t.id} style={{padding:"9px 0",borderTop:"1px solid var(--mt-border,#cbd5e1)"}}>
+    <strong style={{fontSize:13}}>{t.title}</strong><p style={{...muted,margin:"3px 0"}}>{t.purpose}</p>
+    <small style={muted}>Approved source needed: {t.manualRequired}</small>
+   </div>)}
+   <h4 style={{fontSize:13}}>Global reference framework</h4>
+   {AVIATION_SAFETY_REFERENCES.map(ref=><p key={ref.url} style={{...muted,margin:"6px 0"}}>
+    <a href={ref.url} target="_blank" rel="noopener noreferrer">{ref.title}</a> — {ref.purpose}</p>)}
+  </details>
   <small style={{...muted,display:"block"}}><CheckCircle2 size={14} style={{verticalAlign:"middle"}}/> Research-aligned starter workflows are illustrative. Operators must review, replace and approve each procedure, frequency, competency requirement and escalation route before production use.</small>
  </section>;
 }
