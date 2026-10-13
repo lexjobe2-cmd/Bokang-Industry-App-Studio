@@ -443,6 +443,7 @@ export function ProspectPipeline() {
                     <button onClick={() => void copy((prospect.email ? "Subject: " + subject + "\n\n" : "") + body, prospect.id + "-body")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-body" ? "Copied" : "Copy outreach"}</button>
                     <button onClick={() => void copy(link, prospect.id + "-link")} style={secondaryAction}><Link2 size={14} /> {copied === prospect.id + "-link" ? "Copied" : "Copy demo link"}</button>
                     <a href={link} target="_blank" rel="noreferrer" style={primaryAction}>Preview client demo <ExternalLink size={14} /></a>
+                    {prospect.recommendedProduct === "clean-care" ? <a href={"/products/clean-care?client=" + encodeURIComponent(prospect.name)} target="_blank" rel="noreferrer" style={secondaryAction}>Open local cleaning operations demo <ExternalLink size={14} /></a> : null}
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

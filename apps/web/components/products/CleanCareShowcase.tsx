@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { ProductConfig } from "@bokang/app-config";
 import { usePersistentState } from "@bokang/persistence";
-import { cleanCareQuoteKey, type CleanCareQuote } from "../../lib/clean-care";
+import { cleanCareQuoteKey, cleanCareWorkspaceKey, type CleanCareQuote } from "../../lib/clean-care";
 import { Building2, CheckCircle2, ClipboardCheck, Clock3, Plus, Sparkles, Users } from "lucide-react";
 
 type Stage = CleanCareQuote["status"];
@@ -45,10 +45,10 @@ type Section = (typeof sections)[number];
 
 export function CleanCareShowcase({ config, clientName = "Your Business" }: { config: ProductConfig; clientName?: string }) {
   const [tab, setTab] = useState<Section>("Dashboard");
-  const [jobs, setJobs] = usePersistentState<CleaningJob[]>("bokang-studio.clean-care.jobs.v1", starterJobs);
+  const [jobs, setJobs] = usePersistentState<CleaningJob[]>(cleanCareWorkspaceKey(clientName, "jobs"), starterJobs);
   const [quotes, setQuotes] = usePersistentState<CleanCareQuote[]>(cleanCareQuoteKey(clientName), []);
-  const [teams, setTeams] = usePersistentState<string[]>("bokang-studio.clean-care.teams.v1", ["Team A", "Team B"]);
-  const [supplies, setSupplies] = usePersistentState<Supply[]>("bokang-studio.clean-care.supplies.v1", [
+  const [teams, setTeams] = usePersistentState<string[]>(cleanCareWorkspaceKey(clientName, "teams"), ["Team A", "Team B"]);
+  const [supplies, setSupplies] = usePersistentState<Supply[]>(cleanCareWorkspaceKey(clientName, "supplies"), [
     { id: "SUP-01", name: "Gloves", quantity: 40 },
     { id: "SUP-02", name: "Mop heads", quantity: 8 },
     { id: "SUP-03", name: "Cleaning solution (L)", quantity: 18 },
