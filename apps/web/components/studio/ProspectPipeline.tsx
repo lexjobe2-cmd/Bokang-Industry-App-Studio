@@ -221,7 +221,7 @@ export function ProspectPipeline() {
           <p style={{ margin: 0, color: "#2563eb", fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Prospect intelligence</p>
           <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(34px,5vw,58px)" }}>Real businesses → relevant demo → manual outreach.</h1>
           <p style={{ margin: 0, maxWidth: 820, color: "#667085", lineHeight: 1.7, fontSize: 17 }}>
-            A Botswana outreach pipeline combining public operating/contact evidence with website-gap research. Contact enrichment now tracks phone and email separately across all prospects: verified public addresses are stored as evidence-backed contacts, while missing public emails are explicitly marked instead of guessed.
+            A Botswana outreach pipeline combining public operating/contact evidence with website-gap research. Exact sector routing is enforced: cleaning businesses use CleanCare, dry cleaners use FreshFold, water businesses use AquaFlow, nail techs use NailMuse, and any sector without an approved public template is blocked from sharing a mismatched demo.
           </p>
         </div>
         <div className="prospect-seed-card" style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
@@ -368,7 +368,9 @@ export function ProspectPipeline() {
                 </div>
 
                 <div className="prospect-status-panel" style={{ display: "grid", justifyItems: "end", gap: 8 }}>
-                  <span style={{ color: "#2563eb", fontWeight: 900, fontSize: 12 }}>{product.name}</span>
+                  <span style={{ color: prospect.publicDemoReady ? "#2563eb" : "#6941c6", fontWeight: 900, fontSize: 12 }}>
+                    {prospect.publicDemoReady ? product.name : "Exact template pending"}
+                  </span>
                   <select value={statusFor(prospect.id)} onChange={(event) => setStatuses((current) => ({ ...current, [prospect.id]: event.target.value as ProspectStatus }))} style={{ border: "1px solid #d0d5dd", borderRadius: 10, padding: "7px 9px", background: "#fff", fontWeight: 750 }}>
                     {(["New","Prepared","Contacted","Replied","Converted","Not now"] as ProspectStatus[]).map((status) => <option key={status}>{status}</option>)}
                   </select>
