@@ -81,21 +81,31 @@ function firstBotswanaMobile(phones: Array<string | undefined>) {
   return phones.find((phone) => isBotswanaMobile(phone));
 }
 
-const compatiblePublicTemplates: Record<string, ProductSlug[]> = {
-  "Legal": ["lex-intake"],
-  "Accounting & Tax": ["ledger-desk", "tax-flow"],
-  "Healthcare": ["clinic-flow"],
-  "Dental Care": ["clinic-flow"],
-  "Pharmacy": ["pharma-desk"],
-  "Construction & Built Environment": ["build-quote"],
-  "Tourism & Hospitality": ["explore-bw"],
-  "Guest House & Accommodation": ["explore-bw"],
-  "Transport & Logistics": ["move-track"],
-  "Laundry & Dry Cleaning": ["fresh-fold"],
-  "Nail Tech & Beauty": ["nail-muse"],
-  "Purified Water & Delivery": ["aqua-flow"],
-  "Cleaning Services": ["clean-care"],
+const exactPublicTemplateBySector: Partial<Record<string, ProductSlug>> = {
+  "Legal": "lex-intake",
+  "Healthcare": "clinic-flow",
+  "Dental Care": "clinic-flow",
+  "Pharmacy": "pharma-desk",
+  "Construction & Built Environment": "build-quote",
+  "Tourism & Hospitality": "explore-bw",
+  "Guest House & Accommodation": "explore-bw",
+  "Transport & Logistics": "move-track",
+  "Laundry & Dry Cleaning": "fresh-fold",
+  "Nail Tech & Beauty": "nail-muse",
+  "Purified Water & Delivery": "aqua-flow",
+  "Cleaning Services": "clean-care",
 };
+
+const compatiblePublicTemplates: Record<string, ProductSlug[]> = {
+  ...Object.fromEntries(
+    Object.entries(exactPublicTemplateBySector).map(([sector, product]) => [sector, [product]])
+  ) as Record<string, ProductSlug[]>,
+  "Accounting & Tax": ["ledger-desk", "tax-flow"],
+};
+
+function resolvePublicProduct(sector: string, product: ProductSlug): ProductSlug {
+  return exactPublicTemplateBySector[sector] ?? product;
+}
 
 function publicTemplateCompatibility(sector: string, product: ProductSlug): DemoCompatibility {
   return compatiblePublicTemplates[sector]?.includes(product) ? "exact" : "pending-template";
@@ -3695,7 +3705,8 @@ export const prospects: Prospect[] = seeds.map((seed) => {
   const socialPresence = websiteStatus === "social-only"
     ? ["Social page surfaced in current search"]
     : [];
-  const demoCompatibility = publicTemplateCompatibility(seed.sector, seed.recommendedProduct);
+  const recommendedProduct = resolvePublicProduct(seed.sector, seed.recommendedProduct);
+  const demoCompatibility = publicTemplateCompatibility(seed.sector, recommendedProduct);
   const publicDemoReady = demoCompatibility === "exact";
   const mappingWarning = publicDemoReady
     ? null
@@ -3722,12 +3733,12 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     sourceLinks: Array.from(new Set([seed.sourceUrl, googleSearchUrl(seed.name), cipaLookupUrl()])),
     sourceLabel: seed.sourceLabel,
     checkedAt: seed.checkedAt ?? checkedAt,
-    recommendedProduct: seed.recommendedProduct,
+    recommendedProduct,
     newTemplateOpportunity,
-    proposedDemoPath: publicDemoReady ? `/demo/${seed.recommendedProduct}` : "",
+    proposedDemoPath: publicDemoReady ? `/demo/${recommendedProduct}` : "",
     prospectReason: seed.fitHypothesis,
     outreachAngle: publicDemoReady
-      ? `Lead with the exact ${seed.recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`
+      ? `Lead with the exact ${recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`
       : "Do not send a mismatched demo. Research/build the sector-specific public website template first, then prepare outreach.",
     confidence,
     outreachStatus: "new",
