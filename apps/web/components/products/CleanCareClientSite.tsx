@@ -24,6 +24,25 @@ type CleanCareClientSiteProps = {
   availableServices?: string[];
 };
 
+const serviceCatalog = [
+  { icon: Home, title: "Residential cleaning", copy: "Regular or one-off cleaning for homes and apartments." },
+  { icon: Building2, title: "Office cleaning", copy: "Workspaces, reception areas, meeting rooms and everyday office care." },
+  { icon: Building2, title: "Commercial cleaning", copy: "Cleaning services for shops, guest accommodation and public-facing premises." },
+  { icon: Sparkles, title: "Deep cleaning", copy: "Detailed attention for heavily used spaces and high-touch surfaces." },
+  { icon: Home, title: "Move-in cleaning", copy: "Prepare a property before new occupants arrive." },
+  { icon: Home, title: "Move-out cleaning", copy: "End-of-tenancy and property handover cleaning." },
+  { icon: Warehouse, title: "Post-construction cleaning", copy: "After-build dust, finishes and handover cleanup." },
+  { icon: Sparkles, title: "Carpet cleaning", copy: "Deep care for carpet and textile flooring." },
+  { icon: Sparkles, title: "Upholstery cleaning", copy: "Cleaning for sofas, chairs and fabric furnishings." },
+  { icon: Sparkles, title: "Window cleaning", copy: "Windows, storefronts and glazing where suitable and safely accessible." },
+  { icon: Sparkles, title: "Kitchen / bathroom deep clean", copy: "Detail cleaning for wet areas and hard-working rooms." },
+  { icon: Clock3, title: "Recurring cleaning", copy: "Repeat visits on an agreed service schedule." },
+  { icon: Building2, title: "Contract cleaning", copy: "Structured recurring cleaning agreements for sites and organisations." },
+  { icon: Sparkles, title: "Event cleanup", copy: "Cleaning before or after functions and events." },
+  { icon: SprayCan, title: "Hygiene services", copy: "Hygiene, washrooms and cleaning consumables where provided." },
+  { icon: ShieldCheck, title: "Industrial / specialised cleaning", copy: "Site-specific cleaning with appropriate personnel and safety controls." },
+];
+
 const services = [
   { icon: Home, title: "Residential cleaning", copy: "Routine home cleaning, one-off visits and move-in / move-out care." },
   { icon: Building2, title: "Office & commercial", copy: "Scheduled cleaning for offices, shops, schools and professional spaces." },
@@ -44,9 +63,11 @@ export function CleanCareClientSite({
   const [service, setService] = useState("Residential cleaning");
   const [, setQuoteRequests] = usePersistentState<CleanCareQuote[]>(cleanCareQuoteKey(clientName), []);
   const displayServices = availableServices?.length
-    ? services.filter((item) => availableServices.some((name) => name.toLowerCase() === item.title.toLowerCase()))
+    ? serviceCatalog.filter((item) => availableServices.some((name) => name.toLowerCase() === item.title.toLowerCase()))
     : services;
   const selectedService = displayServices.some((item) => item.title === service) ? service : (displayServices[0]?.title ?? "");
+  const specialisedWindowCompany = availableServices?.length && availableServices.every((name) => /window|post-construction/i.test(name));
+  const commercialMenu = !availableServices?.length || availableServices.some((name) => /office|commercial|contract|hygiene|industrial/i.test(name));
 
   const whatsAppHref = useMemo(() => {
     const digits = phone.replace(/\D/g, "");
@@ -83,11 +104,11 @@ export function CleanCareClientSite({
 
       <section id="top" className="cleancare-hero">
         <div className="cleancare-copy">
-          <span className="cleancare-kicker">Homes · offices · commercial spaces</span>
-          <h1>A cleaner space, without the cleaning becoming your whole day.</h1>
+          <span className="cleancare-kicker">{specialisedWindowCompany ? "Window and glazing cleaning" : "Homes · offices · commercial spaces"}</span>
+          <h1>{specialisedWindowCompany ? "A clearer view. A brighter first impression." : "Professional cleaning. A space that feels ready again."}</h1>
           <p>
-            Professional cleaning for homes and businesses with clear services,
-            flexible scheduling and a simple quote request experience for {clientName}.
+            {clientName} cleaning service proposal for {location}. Discover the listed service options,
+            describe your space, and prepare a request for a tailored quotation.
           </p>
           <div className="cleancare-actions">
             <a className="cleancare-primary" href="#quote">Request a quote <ArrowRight size={17} /></a>
@@ -159,7 +180,7 @@ export function CleanCareClientSite({
         </div>
       </section>
 
-      <section id="commercial" className="cleancare-commercial">
+      {commercialMenu ? <section id="commercial" className="cleancare-commercial">
         <div>
           <span className="cleancare-kicker">Commercial cleaning</span>
           <h2>Recurring cleaning for spaces that have to stay ready.</h2>
@@ -177,7 +198,7 @@ export function CleanCareClientSite({
           <p>Daily, weekly or custom schedules can be configured per client and site.</p>
           <a href="#quote">Request site assessment <ArrowRight size={15} /></a>
         </div>
-      </section>
+      </section> : null}
 
       <section id="quote" className="cleancare-quote">
         <div>
@@ -248,7 +269,7 @@ export function CleanCareClientSite({
       </section>
 
       <footer className="cleancare-footer">
-        <div><span className="cleancare-mark">{initials}</span><div><strong>{clientName}</strong><p>Residential · commercial · deep cleaning · site services</p></div></div>
+        <div><span className="cleancare-mark">{initials}</span><div><strong>{clientName}</strong><p>{availableServices?.length ? displayServices.map((s)=>s.title).slice(0,3).join(" · ") : "Proposed residential · commercial · deep cleaning services"}</p></div></div>
         <small>Designed &amp; developed by Bokang Jobe · Interactive proposal website</small>
       </footer>
     </main>

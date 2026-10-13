@@ -1,6 +1,7 @@
 import type { ProductSlug } from "@bokang/app-config";
 import { cipaOperatingProspectSeeds } from "./cipa-operating-2026-10-13";
 import { contactEnrichment } from "./contact-enrichment-2026-10-13";
+import { cleaningServiceMenus } from "./cleaning-services-2026-10-13";
 
 export type WebsiteStatus = "no-first-party-site-found" | "social-only" | "directory-only" | "website-found" | "unclear";
 export type ProspectVerificationState = "source-checked" | "needs-recheck" | "verified-website";
@@ -60,6 +61,9 @@ export type Prospect = {
   demoCompatibility: DemoCompatibility;
   publicDemoReady: boolean;
   mappingWarning: string | null;
+  publicServices: string[];
+  publicServiceEvidence: string;
+  publicServiceSource: string;
 };
 
 function googleSearchUrl(name: string) {
@@ -3830,6 +3834,9 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     demoCompatibility,
     publicDemoReady,
     mappingWarning,
+    publicServices: cleaningServiceMenus[seed.id]?.services ?? [],
+    publicServiceEvidence: cleaningServiceMenus[seed.id]?.evidence ?? "No per-business cleaning service list independently verified. Public site should label proposed services as illustrative.",
+    publicServiceSource: cleaningServiceMenus[seed.id]?.sourceUrl ?? "",
   };
 });
 

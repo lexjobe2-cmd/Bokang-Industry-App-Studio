@@ -198,6 +198,9 @@ export function ProspectPipeline() {
       phone: prospect.phone ?? "",
       email: prospect.email ?? "",
     });
+    if (product.slug === "clean-care" && prospect.publicServices.length) {
+      params.set("services", prospect.publicServices.join(","));
+    }
     return window.location.origin + "/demo/" + product.slug + "?" + params.toString();
   }
 
@@ -413,6 +416,7 @@ export function ProspectPipeline() {
                     <Info label="Template compatibility" value={prospect.demoCompatibility} />
                     <Info label="Source checked" value={prospect.checkedAt} />
                     <Info label="Source type" value={prospect.sourceLabel} />
+                    {prospect.sector === "Cleaning Services" ? <Info label="Cleaning service menu evidence" value={prospect.publicServiceEvidence} /> : null}
                     <Info label="Website status" value={websiteStatusLabels[prospect.websiteStatus]} />
                     <Info label="Verification" value={verificationLabels[prospect.verificationState]} />
                     <Info label="Confidence" value={prospect.confidence} />
@@ -442,7 +446,7 @@ export function ProspectPipeline() {
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {Array.from(new Set([...prospect.contactEvidenceLinks, ...prospect.sourceLinks])).map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer" style={secondaryAction}>Evidence {index + 1} <ExternalLink size={14} /></a>)}
+                    {Array.from(new Set([...prospect.contactEvidenceLinks, ...prospect.sourceLinks, ...(prospect.publicServiceSource ? [prospect.publicServiceSource] : [])])).map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer" style={secondaryAction}>Evidence {index + 1} <ExternalLink size={14} /></a>)}
                   </div>
 
                   <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
