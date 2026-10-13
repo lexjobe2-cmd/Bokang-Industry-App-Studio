@@ -15,6 +15,7 @@ import { ClinicFlowClientSite } from "../../../components/products/ClinicFlowCli
 import { PharmaDeskClientSite } from "../../../components/products/PharmaDeskClientSite";
 import { FreshFoldClientSite } from "../../../components/products/FreshFoldClientSite";
 import { NailMuseClientSite } from "../../../components/products/NailMuseClientSite";
+import { AquaFlowClientSite } from "../../../components/products/AquaFlowClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -89,6 +90,17 @@ export default async function ClientDemoPage({
   if (config.slug === "nail-muse") {
     return (
       <NailMuseClientSite
+        clientName={demo.client}
+        location={demo.location || "Gaborone, Botswana"}
+        email={demo.email}
+        phone={demo.phone}
+      />
+    );
+  }
+
+  if (config.slug === "aqua-flow") {
+    return (
+      <AquaFlowClientSite
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
         email={demo.email}
