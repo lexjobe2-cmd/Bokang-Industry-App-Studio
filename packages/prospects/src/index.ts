@@ -53,6 +53,7 @@ export type Prospect = {
   emailEvidence: string;
   phoneEvidence: string;
   secondaryPhones: string[];
+  secondaryEmails: string[];
   contactEvidenceLinks: string[];
 };
 
@@ -3643,6 +3644,7 @@ export const prospects: Prospect[] = seeds.map((seed) => {
   const email = enrichment?.email ?? seed.email;
   const phone = enrichment?.phone ?? seed.phone;
   const secondaryPhones = enrichment?.secondaryPhones ?? [];
+  const secondaryEmails = enrichment?.secondaryEmails ?? [];
   const emailStatus: ContactStatus = email ? "verified-public" : "not-publicly-surfaced";
   const phoneStatus: ContactStatus = phone ? "verified-public" : "not-publicly-surfaced";
   const emailEvidence = enrichment?.emailEvidence ?? (email
@@ -3712,6 +3714,7 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     emailEvidence,
     phoneEvidence,
     secondaryPhones,
+    secondaryEmails,
     contactEvidenceLinks,
   };
 });
