@@ -8,6 +8,7 @@ export type ProspectConfidence = "high" | "medium" | "low";
 export type CipaVerificationState = "search-pending" | "official-publication-evidence" | "registry-confirmed";
 export type OperatingEvidenceState = "current-operating-evidence" | "directory-active" | "unclear";
 export type ContactStatus = "verified-public" | "not-publicly-surfaced";
+export type DemoCompatibility = "exact" | "pending-template";
 export type ProspectOutreachStatus = "new" | "prepared" | "contacted" | "replied" | "converted" | "not-now" | "handled" | "archived" | "previous-outreach";
 
 export type Prospect = {
@@ -56,6 +57,9 @@ export type Prospect = {
   secondaryPhones: string[];
   secondaryEmails: string[];
   contactEvidenceLinks: string[];
+  demoCompatibility: DemoCompatibility;
+  publicDemoReady: boolean;
+  mappingWarning: string | null;
 };
 
 function googleSearchUrl(name: string) {
@@ -75,6 +79,26 @@ function isBotswanaMobile(phone: string | undefined) {
 
 function firstBotswanaMobile(phones: Array<string | undefined>) {
   return phones.find((phone) => isBotswanaMobile(phone));
+}
+
+const compatiblePublicTemplates: Record<string, ProductSlug[]> = {
+  "Legal": ["lex-intake"],
+  "Accounting & Tax": ["ledger-desk", "tax-flow"],
+  "Healthcare": ["clinic-flow"],
+  "Dental Care": ["clinic-flow"],
+  "Pharmacy": ["pharma-desk"],
+  "Construction & Built Environment": ["build-quote"],
+  "Tourism & Hospitality": ["explore-bw"],
+  "Guest House & Accommodation": ["explore-bw"],
+  "Transport & Logistics": ["move-track"],
+  "Laundry & Dry Cleaning": ["fresh-fold"],
+  "Nail Tech & Beauty": ["nail-muse"],
+  "Purified Water & Delivery": ["aqua-flow"],
+  "Cleaning Services": ["clean-care"],
+};
+
+function publicTemplateCompatibility(sector: string, product: ProductSlug): DemoCompatibility {
+  return compatiblePublicTemplates[sector]?.includes(product) ? "exact" : "pending-template";
 }
 
 type Seed = {
@@ -3671,6 +3695,11 @@ export const prospects: Prospect[] = seeds.map((seed) => {
   const socialPresence = websiteStatus === "social-only"
     ? ["Social page surfaced in current search"]
     : [];
+  const demoCompatibility = publicTemplateCompatibility(seed.sector, seed.recommendedProduct);
+  const publicDemoReady = demoCompatibility === "exact";
+  const mappingWarning = publicDemoReady
+    ? null
+    : "No exact public website template is approved for this sector yet. Do not share the current recommended-product demo with this prospect.";
 
   return {
     id: seed.id,
@@ -3695,11 +3724,11 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     checkedAt: seed.checkedAt ?? checkedAt,
     recommendedProduct: seed.recommendedProduct,
     newTemplateOpportunity,
-    proposedDemoPath: `/demo/${seed.recommendedProduct}`,
+    proposedDemoPath: publicDemoReady ? `/demo/${seed.recommendedProduct}` : "",
     prospectReason: seed.fitHypothesis,
-    outreachAngle: newTemplateOpportunity
-      ? "Lead with an owned mobile ordering experience, repeat-order convenience and delivery visibility instead of a generic brochure website."
-      : `Lead with a working ${seed.recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`,
+    outreachAngle: publicDemoReady
+      ? `Lead with the exact ${seed.recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`
+      : "Do not send a mismatched demo. Research/build the sector-specific public website template first, then prepare outreach.",
     confidence,
     outreachStatus: "new",
     lastChecked: seed.checkedAt ?? checkedAt,
@@ -3719,6 +3748,9 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     secondaryPhones,
     secondaryEmails,
     contactEvidenceLinks,
+    demoCompatibility,
+    publicDemoReady,
+    mappingWarning,
   };
 });
 
