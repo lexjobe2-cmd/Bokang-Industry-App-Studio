@@ -12,6 +12,7 @@ type StatusMap = Record<string, ProspectStatus>;
 type ModerationState = "active" | "discarded" | "removed";
 type ModerationMap = Record<string, ModerationState>;
 type ModerationFilter = "active" | "discarded" | "removed" | "all";
+type ContactFilter = "all" | "email-and-phone" | "phone-only" | "email-only" | "missing-email" | "missing-phone";
 
 const websiteStatusLabels: Record<WebsiteStatus, string> = {
   "no-first-party-site-found": "No first-party website found",
@@ -78,6 +79,7 @@ export function ProspectPipeline() {
   const [websiteFilter, setWebsiteFilter] = useState<"all" | WebsiteStatus>("all");
   const [outreachFilter, setOutreachFilter] = useState<"all" | ProspectStatus>("all");
   const [verificationFilter, setVerificationFilter] = useState<"all" | ProspectVerificationState>("all");
+  const [contactFilter, setContactFilter] = useState<ContactFilter>("all");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [statuses, setStatuses] = usePersistentState<StatusMap>("bokang-studio.prospect-status.v1", {});
@@ -89,6 +91,13 @@ export function ProspectPipeline() {
 
   const industries = useMemo(() => Array.from(new Set(prospects.map((prospect) => prospect.sector))).sort(), []);
   const cities = useMemo(() => Array.from(new Set(prospects.map((prospect) => prospect.city))).sort(), []);
+  const contactCounts = useMemo(() => ({
+    total: prospects.length,
+    withEmail: prospects.filter((prospect) => Boolean(prospect.email)).length,
+    withPhone: prospects.filter((prospect) => Boolean(prospect.phone)).length,
+    withBoth: prospects.filter((prospect) => Boolean(prospect.email && prospect.phone)).length,
+    whatsappReady: prospects.filter((prospect) => prospect.whatsappReady).length,
+  }), []);
 
   function moderationFor(id: string): ModerationState {
     return moderation[id] ?? "active";
@@ -104,6 +113,13 @@ export function ProspectPipeline() {
       const matchesWebsite = websiteFilter === "all" || prospect.websiteStatus === websiteFilter;
       const matchesOutreach = outreachFilter === "all" || statusFor(prospect.id) === outreachFilter;
       const matchesVerification = verificationFilter === "all" || prospect.verificationState === verificationFilter;
+      const matchesContact =
+        contactFilter === "all" ||
+        (contactFilter === "email-and-phone" && Boolean(prospect.email && prospect.phone)) ||
+        (contactFilter === "phone-only" && Boolean(prospect.phone && !prospect.email)) ||
+        (contactFilter === "email-only" && Boolean(prospect.email && !prospect.phone)) ||
+        (contactFilter === "missing-email" && !prospect.email) ||
+        (contactFilter === "missing-phone" && !prospect.phone);
       const matchesQuery = !needle ||
         prospect.name.toLowerCase().includes(needle) ||
         prospect.sector.toLowerCase().includes(needle) ||
@@ -113,9 +129,9 @@ export function ProspectPipeline() {
         prospect.sourceLabel.toLowerCase().includes(needle) ||
         prospect.cipaVerificationState.toLowerCase().includes(needle) ||
         prospect.operatingEvidenceState.toLowerCase().includes(needle);
-      return matchesModeration && matchesProduct && matchesIndustry && matchesCity && matchesWebsite && matchesOutreach && matchesVerification && matchesQuery;
+      return matchesModeration && matchesProduct && matchesIndustry && matchesCity && matchesWebsite && matchesOutreach && matchesVerification && matchesContact && matchesQuery;
     });
-  }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, moderationFilter, statuses, moderation]);
+  }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, contactFilter, moderationFilter, statuses, moderation]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const visible = useMemo(() => {
@@ -126,7 +142,7 @@ export function ProspectPipeline() {
   useEffect(() => {
     setPage(1);
     setSelectedIds([]);
-  }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, moderationFilter, pageSize]);
+  }, [query, productFilter, industryFilter, cityFilter, websiteFilter, outreachFilter, verificationFilter, contactFilter, moderationFilter, pageSize]);
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
@@ -191,13 +207,16 @@ export function ProspectPipeline() {
           <p style={{ margin: 0, color: "#2563eb", fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Prospect intelligence</p>
           <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(34px,5vw,58px)" }}>Real businesses → relevant demo → manual outreach.</h1>
           <p style={{ margin: 0, maxWidth: 820, color: "#667085", lineHeight: 1.7, fontSize: 17 }}>
-            A Botswana outreach pipeline combining public operating/contact evidence with website-gap research. The existing 200 prospects are preserved and a new 250-business CIPA-priority batch has been added, starting with NailMuse, FreshFold, cleaning, AquaFlow and other sectors mapped to working Studio templates. “CIPA check pending” means the official register still needs a manual re-check before outreach.
+            A Botswana outreach pipeline combining public operating/contact evidence with website-gap research. Contact enrichment now tracks phone and email separately across all prospects: verified public addresses are stored as evidence-backed contacts, while missing public emails are explicitly marked instead of guessed.
           </p>
         </div>
         <div className="prospect-seed-card" style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
           <div style={{ fontSize: 11, opacity: .65, textTransform: "uppercase", letterSpacing: 1.2 }}>Current seed list</div>
           <strong style={{ display: "block", fontSize: 26, marginTop: 3 }}>{prospects.length}</strong>
-          <div style={{ fontSize: 11, opacity: .72 }}>operating-business prospects · latest batch 13 Oct 2026</div>
+          <div style={{ fontSize: 11, opacity: .72 }}>operating-business prospects · latest contact pass 13 Oct 2026</div>
+          <div style={{ fontSize: 10, opacity: .62, marginTop: 7, lineHeight: 1.5 }}>
+            {contactCounts.withEmail} email · {contactCounts.withPhone} phone · {contactCounts.withBoth} both · {contactCounts.whatsappReady} WhatsApp-ready
+          </div>
         </div>
       </header>
 
@@ -236,11 +255,19 @@ export function ProspectPipeline() {
           <option value="all">All verification states</option>
           {(Object.keys(verificationLabels) as ProspectVerificationState[]).map((state) => <option key={state} value={state}>{verificationLabels[state]}</option>)}
         </select>
+        <select value={contactFilter} onChange={(event) => setContactFilter(event.target.value as ContactFilter)} style={filterStyle}>
+          <option value="all">All contact completeness</option>
+          <option value="email-and-phone">Email + phone</option>
+          <option value="phone-only">Phone only</option>
+          <option value="email-only">Email only</option>
+          <option value="missing-email">Missing public email</option>
+          <option value="missing-phone">Missing public phone</option>
+        </select>
       </section>
 
       <section className="prospect-summary" style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <span style={{ fontSize: 12, color: "#667085", fontWeight: 800 }}>{filtered.length} matching · {prospects.length} total · page {page} of {totalPages}</span>
-        <button onClick={() => { setQuery(""); setIndustryFilter("all"); setCityFilter("all"); setWebsiteFilter("all"); setProductFilter("all"); setOutreachFilter("all"); setVerificationFilter("all"); setModerationFilter("active"); setPage(1); }} style={secondaryAction}>
+        <button onClick={() => { setQuery(""); setIndustryFilter("all"); setCityFilter("all"); setWebsiteFilter("all"); setProductFilter("all"); setOutreachFilter("all"); setVerificationFilter("all"); setContactFilter("all"); setModerationFilter("active"); setPage(1); }} style={secondaryAction}>
           Reset filters
         </button>
       </section>
@@ -309,7 +336,11 @@ export function ProspectPipeline() {
                       <span style={{ background: "#ecfdf3", color: "#027a48", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>WhatsApp-ready mobile</span>
                     ) : null}
                   </div>
-                  <div style={{ color: "#667085", fontSize: 13, marginTop: 5 }}>{prospect.sector} · {prospect.location}{prospect.phone ? " · " + prospect.phone : ""}{prospect.email ? " · " + prospect.email : ""}</div>
+                  <div style={{ color: "#667085", fontSize: 13, marginTop: 5 }}>{prospect.sector} · {prospect.location}</div>
+                  <div style={{ marginTop: 9, display: "grid", gap: 4, fontSize: 12 }}>
+                    <div><strong>Phone:</strong> {prospect.phone || "No public phone surfaced"}{prospect.secondaryPhones.length ? " · Alt: " + prospect.secondaryPhones.join(" / ") : ""}</div>
+                    <div><strong>Email:</strong> {prospect.email || "No public email surfaced — do not guess"}</div>
+                  </div>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "12px 0 0" }}><strong>Public evidence:</strong> {prospect.publicEvidence}</p>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Website check:</strong> {prospect.websiteEvidence}</p>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Fit hypothesis:</strong> {prospect.fitHypothesis}</p>
@@ -344,7 +375,10 @@ export function ProspectPipeline() {
               {isActive ? (
                 <div className="prospect-outreach-panel" style={{ borderTop: "1px solid #e5e7eb", background: "#f8fafc", padding: 18, display: "grid", gap: 14 }}>
                   <div className="prospect-info-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12 }}>
-                    <Info label="Primary contact" value={prospect.email || prospect.phone || "Manual lookup required"} />
+                    <Info label="Public email" value={prospect.email || "Not publicly surfaced"} />
+                    <Info label="Public phone" value={prospect.phone || "Not publicly surfaced"} />
+                    <Info label="Email status" value={prospect.emailStatus} />
+                    <Info label="Phone status" value={prospect.phoneStatus} />
                     <Info label="Recommended demo" value={product.name} />
                     <Info label="Source checked" value={prospect.checkedAt} />
                     <Info label="Source type" value={prospect.sourceLabel} />
@@ -377,9 +411,15 @@ export function ProspectPipeline() {
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {prospect.sourceLinks.map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer" style={secondaryAction}>Evidence {index + 1} <ExternalLink size={14} /></a>)}
+                    {Array.from(new Set([...prospect.contactEvidenceLinks, ...prospect.sourceLinks])).map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer" style={secondaryAction}>Evidence {index + 1} <ExternalLink size={14} /></a>)}
                   </div>
 
+                  <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
+                    <strong>Email evidence:</strong> {prospect.emailEvidence}
+                  </div>
+                  <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
+                    <strong>Phone evidence:</strong> {prospect.phoneEvidence}
+                  </div>
                   <div style={{ color: "#667085", fontSize: 12, lineHeight: 1.6 }}>
                     <strong>Operating evidence:</strong> {prospect.operatingEvidence}
                   </div>
