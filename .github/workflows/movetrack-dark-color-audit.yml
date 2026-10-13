@@ -1,0 +1,23 @@
+name: MoveTrack Dark-Mode Contrast Audit
+
+on:
+  push:
+    branches:
+      - feature/operational-assurance-on-fleet-foundation
+    paths:
+      - "apps/web/components/products/**"
+      - "tests/movetrack-full-dark-contrast.test.mjs"
+      - ".github/workflows/movetrack-dark-color-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  color-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify complete MoveTrack semantic contrast and critical components
+        run: node --test tests/movetrack-full-dark-contrast.test.mjs

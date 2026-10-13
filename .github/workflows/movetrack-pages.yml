@@ -1,0 +1,52 @@
+name: MoveTrack Pages Preview
+
+on:
+  push:
+    branches:
+      - feature/operational-assurance-on-fleet-foundation
+    paths:
+      - "apps/assurance-demo/**"
+      - "apps/web/components/products/**"
+      - "apps/web/lib/**"
+      - "packages/**"
+      - "tests/**"
+      - ".github/workflows/movetrack-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: movetrack-pages-preview
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --no-frozen-lockfile
+      - name: Verify application types
+        run: pnpm typecheck
+      - name: Verify regression tests
+        run: node --experimental-strip-types --test tests/*.test.mjs
+      - name: Build standalone MoveTrack frontend
+        run: pnpm --filter @bokang/assurance-demo build
+      - name: Publish the existing permanent Cloudflare Pages project
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Cloudflare deployment secrets are not configured; leaving production unchanged."
+            exit 1
+          fi
+          pnpm exec wrangler pages deploy ../assurance-demo/dist --project-name movetrack-assurance-demo --branch main

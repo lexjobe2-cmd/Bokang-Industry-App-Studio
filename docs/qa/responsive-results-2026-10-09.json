@@ -1,0 +1,1050 @@
+{
+  "preview": "0665290d-4bb2-404c-88cb-ea87c11aeeed",
+  "entry": [
+    {
+      "width": "320",
+      "workspace": "Home",
+      "route": "/",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Company",
+      "route": "/company",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Control",
+      "route": "/app/control",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Fleet",
+      "route": "/app/fleet",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Drivers",
+      "route": "/app/drivers",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Sites",
+      "route": "/app/sites",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Assignments",
+      "route": "/app/assign",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Jobs",
+      "route": "/app/jobs",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Search",
+      "route": "/search",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Workflows",
+      "route": "/workflows",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Forms",
+      "route": "/app/forms",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Meetings",
+      "route": "/app/meetings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Paper",
+      "route": "/app/paper",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Release",
+      "route": "/app/release",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Analytics",
+      "route": "/app/analytics",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Workforce",
+      "route": "/app/workforce",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Profile",
+      "route": "/app/profile",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Backups",
+      "route": "/app/local-data",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Settings",
+      "route": "/app/settings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "320",
+      "workspace": "Driver app",
+      "route": "/driver/move-track",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Home",
+      "route": "/",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Company",
+      "route": "/company",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Control",
+      "route": "/app/control",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Fleet",
+      "route": "/app/fleet",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Drivers",
+      "route": "/app/drivers",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Sites",
+      "route": "/app/sites",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Assignments",
+      "route": "/app/assign",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Jobs",
+      "route": "/app/jobs",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Search",
+      "route": "/search",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Workflows",
+      "route": "/workflows",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Forms",
+      "route": "/app/forms",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Meetings",
+      "route": "/app/meetings",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Paper",
+      "route": "/app/paper",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Release",
+      "route": "/app/release",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Analytics",
+      "route": "/app/analytics",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Workforce",
+      "route": "/app/workforce",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Profile",
+      "route": "/app/profile",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Backups",
+      "route": "/app/local-data",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Settings",
+      "route": "/app/settings",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "390",
+      "workspace": "Driver app",
+      "route": "/driver/move-track",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Home",
+      "route": "/",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Company",
+      "route": "/company",
+      "viewport": 768,
+      "page": 768,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Control",
+      "route": "/app/control",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Fleet",
+      "route": "/app/fleet",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Drivers",
+      "route": "/app/drivers",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Sites",
+      "route": "/app/sites",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Assignments",
+      "route": "/app/assign",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Jobs",
+      "route": "/app/jobs",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Search",
+      "route": "/search",
+      "viewport": 768,
+      "page": 768,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Workflows",
+      "route": "/workflows",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Forms",
+      "route": "/app/forms",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Meetings",
+      "route": "/app/meetings",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Paper",
+      "route": "/app/paper",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Release",
+      "route": "/app/release",
+      "viewport": 768,
+      "page": 768,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Analytics",
+      "route": "/app/analytics",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Workforce",
+      "route": "/app/workforce",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Profile",
+      "route": "/app/profile",
+      "viewport": 768,
+      "page": 768,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Backups",
+      "route": "/app/local-data",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Settings",
+      "route": "/app/settings",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "768",
+      "workspace": "Driver app",
+      "route": "/driver/move-track",
+      "viewport": 753,
+      "page": 753,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Home",
+      "route": "/",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Company",
+      "route": "/company",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Control",
+      "route": "/app/control",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Fleet",
+      "route": "/app/fleet",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Drivers",
+      "route": "/app/drivers",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Sites",
+      "route": "/app/sites",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Assignments",
+      "route": "/app/assign",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Jobs",
+      "route": "/app/jobs",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Search",
+      "route": "/search",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Workflows",
+      "route": "/workflows",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Forms",
+      "route": "/app/forms",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Meetings",
+      "route": "/app/meetings",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Paper",
+      "route": "/app/paper",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Release",
+      "route": "/app/release",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Analytics",
+      "route": "/app/analytics",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Workforce",
+      "route": "/app/workforce",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Profile",
+      "route": "/app/profile",
+      "viewport": 1280,
+      "page": 1280,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Backups",
+      "route": "/app/local-data",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Settings",
+      "route": "/app/settings",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "width": "1280",
+      "workspace": "Driver app",
+      "route": "/driver/move-track",
+      "viewport": 1265,
+      "page": 1265,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    }
+  ],
+  "expanded": [
+    {
+      "state": "Designer: repeating column with choice options, 320",
+      "route": "/app/forms",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Designer Properties, 320",
+      "route": "/app/forms",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Designer Preview & publish, 320",
+      "route": "/app/forms",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Designer Templates, 320",
+      "route": "/app/forms",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Heights job question 1 at 320",
+      "route": "/app/forms",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Heights critical PASS FAIL NA at 320",
+      "route": "/app/forms",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Meeting apology picker open at 320",
+      "route": "/app/meetings",
+      "viewport": 320,
+      "page": 320,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Meeting fourteen apologies at 320",
+      "route": "/app/meetings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Meeting minutes at 320",
+      "route": "/app/meetings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Meeting action row at 320",
+      "route": "/app/meetings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Meeting review at 320",
+      "route": "/app/meetings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Meeting signature dialog at 320",
+      "route": "/app/meetings",
+      "viewport": 320,
+      "page": 320,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Settings Privacy notice at 320",
+      "route": "/app/settings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Settings Terms of use at 320",
+      "route": "/app/settings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Settings FAQ at 320",
+      "route": "/app/settings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Settings Customer support at 320",
+      "route": "/app/settings",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Navigation drawer at 320",
+      "route": "/app/settings",
+      "viewport": 320,
+      "page": 320,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Company details at 320",
+      "route": "/company",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Company 2. Branding at 320",
+      "route": "/company",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Company 3. People & owners at 320",
+      "route": "/company",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Company 4. Review at 320",
+      "route": "/company",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Analytics Meeting attendance at 320",
+      "route": "/app/analytics",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Analytics Records & exports at 320",
+      "route": "/app/analytics",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Search wrapped categories at 390",
+      "route": "/search",
+      "viewport": 375,
+      "page": 375,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Paper extracted review with repeat column at 320",
+      "route": "/app/paper",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Paper generated UI preview at 320",
+      "route": "/app/paper",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    },
+    {
+      "state": "Paper save publish view at 320",
+      "route": "/app/paper",
+      "viewport": 305,
+      "page": 305,
+      "overflow": [],
+      "clippedButtons": [],
+      "narrowFields": []
+    }
+  ]
+}
