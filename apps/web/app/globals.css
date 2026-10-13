@@ -1251,3 +1251,846 @@ html[data-theme="dark"] textarea {
     width: 100%;
   }
 }
+
+
+/* NailMuse public website */
+.nailmuse-site {
+  --nm-ink: #25131f;
+  --nm-muted: #77606f;
+  --nm-pink: #be185d;
+  --nm-pink-dark: #831843;
+  --nm-blush: #fff1f7;
+  --nm-cream: #fffaf6;
+  --nm-line: #f0dce7;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fffafc 0%, #fff 32%, #fffafc 100%);
+  color: var(--nm-ink);
+  overflow-x: clip;
+}
+
+.nailmuse-site * {
+  box-sizing: border-box;
+}
+
+.nailmuse-site a {
+  color: inherit;
+}
+
+.nailmuse-nav {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 14px 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  background: color-mix(in srgb, #fffafc 91%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.nailmuse-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nailmuse-brand > span:last-child {
+  min-width: 0;
+}
+
+.nailmuse-brand strong {
+  display: block;
+  max-width: 230px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.nailmuse-brand small {
+  display: block;
+  margin-top: 2px;
+  color: var(--nm-muted);
+  font-size: 10px;
+}
+
+.nailmuse-mark {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #be185d, #7c3aed);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  box-shadow: 0 10px 24px rgba(190,24,93,.2);
+}
+
+.nailmuse-navlinks {
+  display: flex;
+  justify-content: center;
+  gap: 23px;
+}
+
+.nailmuse-navlinks a {
+  text-decoration: none;
+  color: #5e4556;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.nailmuse-nav-cta,
+.nailmuse-primary,
+.nailmuse-form-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.nailmuse-nav-cta {
+  padding: 10px 15px;
+  background: var(--nm-ink);
+  color: #fff !important;
+  font-size: 12px;
+}
+
+.nailmuse-primary {
+  padding: 12px 17px;
+  background: var(--nm-pink);
+  color: #fff !important;
+}
+
+.nailmuse-nav-cta:hover,
+.nailmuse-primary:hover,
+.nailmuse-form-submit:hover {
+  transform: translateY(-1px);
+}
+
+.nailmuse-primary:hover {
+  box-shadow: 0 14px 30px rgba(190,24,93,.2);
+}
+
+.nailmuse-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--nm-line);
+  border-radius: 999px;
+  padding: 12px 17px;
+  background: #fff;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.nailmuse-hero {
+  width: min(1180px, calc(100% - 32px));
+  margin: 22px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(400px, 1.08fr);
+  gap: 34px;
+  align-items: center;
+  padding: 28px 0 72px;
+}
+
+.nailmuse-kicker {
+  display: inline-block;
+  color: var(--nm-pink);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+}
+
+.nailmuse-kicker-light {
+  color: #fbcfe8;
+}
+
+.nailmuse-hero h1,
+.nailmuse-section-heading h2,
+.nailmuse-menu h2,
+.nailmuse-story h2,
+.nailmuse-booking h2 {
+  letter-spacing: -.045em;
+}
+
+.nailmuse-hero h1 {
+  margin: 16px 0 15px;
+  max-width: 680px;
+  font-size: clamp(44px, 6.3vw, 78px);
+  line-height: .95;
+}
+
+.nailmuse-hero-copy > p {
+  max-width: 640px;
+  color: var(--nm-muted);
+  font-size: 17px;
+  line-height: 1.72;
+}
+
+.nailmuse-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.nailmuse-social-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 25px;
+  color: #664c5d;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.nailmuse-social-proof span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nailmuse-hero-media {
+  position: relative;
+  min-height: 590px;
+}
+
+.nailmuse-hero-main {
+  position: absolute;
+  inset: 0 56px 40px 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 36px 36px 90px 36px;
+  background: var(--nm-blush);
+  box-shadow: 0 30px 70px rgba(67,24,48,.14);
+}
+
+.nailmuse-hero-main img,
+.nailmuse-gallery img,
+.nailmuse-story-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.nailmuse-hero-main figcaption {
+  position: absolute;
+  inset: auto 14px 14px 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: end;
+  padding: 14px 15px;
+  border-radius: 18px;
+  background: rgba(37,19,31,.78);
+  backdrop-filter: blur(12px);
+  color: #fff;
+}
+
+.nailmuse-hero-main figcaption span {
+  font-weight: 900;
+}
+
+.nailmuse-hero-main figcaption a,
+.nailmuse-gallery figcaption a {
+  font-size: 10px;
+  opacity: .78;
+}
+
+.nailmuse-hero-card {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 220px;
+  display: grid;
+  gap: 5px;
+  padding: 18px;
+  border: 1px solid #f4c7dc;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 20px 42px rgba(67,24,48,.13);
+}
+
+.nailmuse-hero-card span {
+  color: var(--nm-pink);
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.nailmuse-hero-card strong {
+  font-size: 20px;
+}
+
+.nailmuse-hero-card small {
+  color: var(--nm-muted);
+}
+
+.nailmuse-section,
+.nailmuse-menu,
+.nailmuse-benefits,
+.nailmuse-story,
+.nailmuse-booking {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.nailmuse-section {
+  padding: 26px 0 84px;
+}
+
+.nailmuse-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+  gap: 42px;
+  align-items: end;
+}
+
+.nailmuse-section-heading h2,
+.nailmuse-menu h2,
+.nailmuse-story h2,
+.nailmuse-booking h2 {
+  margin: 8px 0 0;
+  font-size: clamp(33px, 4.5vw, 54px);
+  line-height: 1.02;
+}
+
+.nailmuse-section-heading > p,
+.nailmuse-menu p,
+.nailmuse-story p,
+.nailmuse-booking-copy > p {
+  color: var(--nm-muted);
+  line-height: 1.7;
+}
+
+.nailmuse-gallery {
+  display: grid;
+  grid-template-columns: 1.3fr .85fr .85fr;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.nailmuse-gallery figure {
+  position: relative;
+  height: 390px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--nm-blush);
+}
+
+.nailmuse-gallery-wide {
+  height: 520px !important;
+}
+
+.nailmuse-gallery figure:nth-child(2),
+.nailmuse-gallery figure:nth-child(3) {
+  align-self: end;
+}
+
+.nailmuse-gallery figcaption {
+  position: absolute;
+  inset: auto 10px 10px 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: end;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(37,19,31,.72);
+  color: #fff;
+}
+
+.nailmuse-gallery figcaption span {
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.nailmuse-menu {
+  margin-bottom: 82px;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: minmax(280px, .85fr) minmax(0, 1.15fr);
+  gap: 38px;
+  align-items: start;
+  border-radius: 34px;
+  background: linear-gradient(135deg, #3f102b 0%, #6b1745 48%, #261422 100%);
+  color: #fff;
+}
+
+.nailmuse-menu p {
+  color: rgba(255,255,255,.73);
+}
+
+.nailmuse-menu small {
+  display: block;
+  margin-top: 16px;
+  color: rgba(255,255,255,.56);
+  line-height: 1.5;
+}
+
+.nailmuse-service-list {
+  display: grid;
+}
+
+.nailmuse-service-list article {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.nailmuse-service-list article:last-child {
+  border-bottom: 0;
+}
+
+.nailmuse-service-list article > div {
+  display: grid;
+  gap: 4px;
+}
+
+.nailmuse-service-list article span {
+  color: rgba(255,255,255,.63);
+  font-size: 10px;
+}
+
+.nailmuse-benefits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding-bottom: 90px;
+}
+
+.nailmuse-benefits article {
+  padding: 22px;
+  border: 1px solid var(--nm-line);
+  border-radius: 22px;
+  background: #fff;
+}
+
+.nailmuse-benefits svg {
+  color: var(--nm-pink);
+}
+
+.nailmuse-benefits h3 {
+  margin: 20px 0 7px;
+  font-size: 17px;
+}
+
+.nailmuse-benefits p {
+  margin: 0;
+  color: var(--nm-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.nailmuse-story {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(360px, 1.05fr);
+  gap: 50px;
+  align-items: center;
+  padding-bottom: 92px;
+}
+
+.nailmuse-story-points {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.nailmuse-story-points span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #674d5e;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.nailmuse-story-points svg {
+  color: var(--nm-pink);
+}
+
+.nailmuse-story-media {
+  height: 560px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 90px 30px 30px 30px;
+  background: var(--nm-blush);
+}
+
+.nailmuse-booking {
+  margin-bottom: 72px;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: minmax(280px, .74fr) minmax(0, 1.26fr);
+  gap: 38px;
+  border: 1px solid var(--nm-line);
+  border-radius: 34px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(67,24,48,.07);
+}
+
+.nailmuse-contact-box {
+  margin-top: 26px;
+  padding: 15px;
+  display: flex;
+  gap: 11px;
+  border-radius: 18px;
+  background: var(--nm-blush);
+}
+
+.nailmuse-contact-box svg {
+  color: var(--nm-pink);
+}
+
+.nailmuse-contact-box div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.nailmuse-contact-box span {
+  color: var(--nm-muted);
+  font-size: 11px;
+}
+
+.nailmuse-contact-box a {
+  color: var(--nm-pink);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.nailmuse-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.nailmuse-form label {
+  display: grid;
+  gap: 6px;
+  color: #65495b;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.nailmuse-form input,
+.nailmuse-form select,
+.nailmuse-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--nm-line);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: #fff !important;
+  color: var(--nm-ink) !important;
+  font: inherit;
+  color-scheme: light;
+}
+
+.nailmuse-form textarea {
+  resize: vertical;
+}
+
+.nailmuse-form-wide,
+.nailmuse-form-submit {
+  grid-column: 1 / -1;
+}
+
+.nailmuse-form-submit {
+  border: 0;
+  padding: 12px 16px;
+  background: var(--nm-pink);
+  color: #fff;
+  cursor: pointer;
+}
+
+.nailmuse-success {
+  min-height: 320px;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  padding: 28px;
+  border-radius: 24px;
+  background: var(--nm-blush);
+}
+
+.nailmuse-success svg {
+  color: var(--nm-pink);
+}
+
+.nailmuse-success h3 {
+  margin: 18px 0 7px;
+  font-size: 25px;
+}
+
+.nailmuse-success p {
+  color: var(--nm-muted);
+  line-height: 1.65;
+}
+
+.nailmuse-success button {
+  margin-top: 12px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 13px;
+  background: var(--nm-ink);
+  color: #fff;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.nailmuse-footer {
+  padding: 30px max(16px, calc((100vw - 1180px) / 2));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  border-top: 1px solid var(--nm-line);
+  background: #fff4f8;
+}
+
+.nailmuse-footer-brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.nailmuse-footer p {
+  margin: 3px 0 0;
+  color: var(--nm-muted);
+  font-size: 11px;
+}
+
+.nailmuse-footer > div:nth-child(2) {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.nailmuse-footer > div:nth-child(2) a {
+  color: var(--nm-pink);
+}
+
+.nailmuse-footer small {
+  grid-column: 1 / -1;
+  color: #9b7d90;
+  font-size: 10px;
+}
+
+.nailmuse-job-row {
+  min-width: 0;
+}
+
+@media (max-width: 920px) {
+  .nailmuse-nav {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .nailmuse-navlinks {
+    display: none;
+  }
+
+  .nailmuse-hero,
+  .nailmuse-menu,
+  .nailmuse-story,
+  .nailmuse-booking {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nailmuse-hero-media {
+    min-height: 530px;
+  }
+
+  .nailmuse-section-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .nailmuse-gallery {
+    grid-template-columns: 1.2fr .8fr;
+  }
+
+  .nailmuse-gallery figure:nth-child(3) {
+    grid-column: 1 / -1;
+    height: 330px;
+  }
+
+  .nailmuse-benefits {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .nailmuse-story-media {
+    height: 460px;
+  }
+
+  .nailmuse-footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nailmuse-footer > div:nth-child(2) {
+    justify-items: start;
+  }
+
+  .nailmuse-job-row {
+    grid-template-columns: 70px minmax(0, 1fr) minmax(140px, .8fr) !important;
+  }
+
+  .nailmuse-job-row select {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .nailmuse-nav {
+    width: min(100% - 20px, 1180px);
+    padding: 10px 0;
+    gap: 10px;
+  }
+
+  .nailmuse-brand small {
+    display: none;
+  }
+
+  .nailmuse-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+  }
+
+  .nailmuse-nav-cta {
+    padding: 9px 11px;
+    font-size: 11px;
+  }
+
+  .nailmuse-hero,
+  .nailmuse-section,
+  .nailmuse-menu,
+  .nailmuse-benefits,
+  .nailmuse-story,
+  .nailmuse-booking {
+    width: min(100% - 20px, 1180px);
+  }
+
+  .nailmuse-hero {
+    margin-top: 8px;
+    padding-top: 20px;
+    padding-bottom: 54px;
+  }
+
+  .nailmuse-hero h1 {
+    font-size: clamp(40px, 13.5vw, 58px);
+  }
+
+  .nailmuse-hero-copy > p {
+    font-size: 15px;
+  }
+
+  .nailmuse-social-proof {
+    display: grid;
+    gap: 8px;
+  }
+
+  .nailmuse-hero-media {
+    min-height: 440px;
+  }
+
+  .nailmuse-hero-main {
+    inset: 0 18px 52px 0;
+    border-radius: 28px 28px 58px 28px;
+  }
+
+  .nailmuse-hero-main figcaption {
+    inset: auto 8px 8px 8px;
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .nailmuse-hero-card {
+    width: 190px;
+    padding: 15px;
+  }
+
+  .nailmuse-gallery {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nailmuse-gallery figure,
+  .nailmuse-gallery-wide,
+  .nailmuse-gallery figure:nth-child(3) {
+    grid-column: auto !important;
+    height: 360px !important;
+  }
+
+  .nailmuse-menu,
+  .nailmuse-booking {
+    padding: 20px;
+    border-radius: 25px;
+  }
+
+  .nailmuse-service-list article {
+    align-items: start;
+  }
+
+  .nailmuse-benefits,
+  .nailmuse-story-points,
+  .nailmuse-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nailmuse-story {
+    gap: 28px;
+  }
+
+  .nailmuse-story-media {
+    height: 390px;
+    border-radius: 58px 24px 24px 24px;
+  }
+
+  .nailmuse-form-wide,
+  .nailmuse-form-submit {
+    grid-column: auto;
+  }
+
+  .nailmuse-job-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+  }
+
+  .nailmuse-job-row select {
+    grid-column: auto;
+  }
+
+  .nailmuse-footer {
+    padding: 24px 12px 84px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nailmuse-site *,
+  .nailmuse-site *::before,
+  .nailmuse-site *::after {
+    transition: none !important;
+  }
+}
