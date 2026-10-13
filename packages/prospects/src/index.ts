@@ -97,10 +97,19 @@ const exactPublicTemplateBySector: Partial<Record<string, ProductSlug>> = {
 };
 
 const compatiblePublicTemplates: Record<string, ProductSlug[]> = {
-  ...Object.fromEntries(
-    Object.entries(exactPublicTemplateBySector).map(([sector, product]) => [sector, [product]])
-  ) as Record<string, ProductSlug[]>,
+  "Legal": ["lex-intake"],
   "Accounting & Tax": ["ledger-desk", "tax-flow"],
+  "Healthcare": ["clinic-flow"],
+  "Dental Care": ["clinic-flow"],
+  "Pharmacy": ["pharma-desk"],
+  "Construction & Built Environment": ["build-quote"],
+  "Tourism & Hospitality": ["explore-bw"],
+  "Guest House & Accommodation": ["explore-bw"],
+  "Transport & Logistics": ["move-track"],
+  "Laundry & Dry Cleaning": ["fresh-fold"],
+  "Nail Tech & Beauty": ["nail-muse"],
+  "Purified Water & Delivery": ["aqua-flow"],
+  "Cleaning Services": ["clean-care"],
 };
 
 function resolvePublicProduct(sector: string, product: ProductSlug): ProductSlug {
