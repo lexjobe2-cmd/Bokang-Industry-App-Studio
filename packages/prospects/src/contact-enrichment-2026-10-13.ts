@@ -667,5 +667,43 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailEvidence: "A current 2026 ServiceMe Botswana listing publishes sales@mivani.co.bw.",
     phoneEvidence: "The same current listing publishes +267 76 370 995."
   }
+,
+  "pinnacle-express-couriers": {
+    email: "delia@trans-kalahari.com",
+    emailSourceUrl: "https://businesspages.co.za/company/76720236",
+    phoneSourceUrl: "https://trans-kalahari.com/",
+    emailEvidence: "A public business directory for the same Trans-Kalahari/Pinnacle Express company domain publishes delia@trans-kalahari.com; re-check before outreach.",
+    phoneEvidence: "The company's public website surfaces the Gaborone branch telephone."
+  },
+  "print-elite": {
+    secondaryPhones: ["+267 74617779"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/13970/Print_Elite_Pty_Ltd",
+    phoneEvidence: "Current verified Local Botswana listing publishes the office contact and mobile +267 74617779."
+  },
+  "piashi-security-services": {
+    secondaryPhones: ["+267 72265321", "+267 77067648"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/14301/Piashi_Security_Services",
+    phoneEvidence: "Current verified Local Botswana listing publishes two public mobile contacts."
+  },
+  "winners-security-services": {
+    secondaryPhones: ["+267 71621873"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana business listing surfaces an additional public mobile contact."
+  },
+  "primehaven": {
+    secondaryPhones: ["+267 76088823"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana animal-feed/business listing surfaces an additional public mobile."
+  },
+  "acquazzone-pty-ltd": {
+    secondaryPhones: ["+267 75894848"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana water-business listing surfaces an additional public mobile."
+  },
+  "vyna-holdings-pty-ltd-letlodi-purified-water": {
+    secondaryPhones: ["+267 74379126"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana water-business listing surfaces an additional public mobile contact."
+  }
 
 };
