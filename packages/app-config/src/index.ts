@@ -9,6 +9,7 @@ export type ProductSlug =
   | "move-track"
   | "fresh-fold"
   | "nail-muse"
+  | "salon-book"
   | "aqua-flow"
   | "clean-care";
 
@@ -207,6 +208,24 @@ export const products: Record<ProductSlug, ProductConfig> = {
       onboarding: ["Business profile", "Nail services", "Pricing", "Opening hours", "Booking policies"],
       signatureFeatures: ["Visual nail portfolio", "Service and price menu", "Appointment booking", "Availability control", "Repeat-client notes"],
       compliance: ["Booking consent", "Service notes", "Appointment history", "Client communication record"]
+    }
+  },
+  "salon-book": {
+    slug: "salon-book",
+    name: "SalonBook AI",
+    sector: "Hair Salon & Barber",
+    description: "Customer-facing hair and barber websites, appointment enquiries, stylist rosters and client follow-up.",
+    tabs: ["Home", "Appointments", "Team", "Clients", "More"],
+    modules: ["Public hair and barber websites", "Salon service menus", "Barber service menus", "Appointment enquiries", "Booking status", "Stylists", "Client history", "Scheduling", "Promotions"],
+    dashboardMetrics: ["Appointment enquiries", "Awaiting confirmation", "Upcoming requests", "Returning clients"],
+    experience: {
+      mood: "Editorial, warm and style-first",
+      accent: "#9e335f",
+      surface: "#fff1f5",
+      hero: "Turn interest in hair and grooming into an easy appointment journey.",
+      onboarding: ["Business profile", "Hair or barber variant", "Service menu", "Stylists", "Opening hours and booking policies"],
+      signatureFeatures: ["Hair and barber variant websites", "Appointment requests", "Stylist preferences", "Booking review", "Client follow-ups"],
+      compliance: ["Appointment request consent", "Service notes", "Booking policies", "Client history"]
     }
   },
   "aqua-flow": {
