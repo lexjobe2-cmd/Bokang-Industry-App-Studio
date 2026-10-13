@@ -4,6 +4,8 @@ import {usePersistentState} from "@bokang/persistence";
 import {Plane,ClipboardCheck,TriangleAlert,CheckCircle2,ShieldAlert,ArrowRight,History,Building2} from "lucide-react";
 import {AVIATION_WORKFLOWS,AVIATION_AREA_LABELS,evaluateAviationObservation,makeAviationObservation,updateAviationFollowUp,
  type AviationCheckAnswer,type AviationCheckStatus,type AviationAction,type AviationObservationRecord} from "../../lib/aviation-operations";
+import {createAviationAsset,AVIATION_ASSET_KIND_LABELS,suggestedWorkflowForAsset,airframeForAsset,
+ type AviationAsset,type AviationAssetKind} from "../../lib/aviation-assets";
 import {AVIATION_SECTORS,AVIATION_SAFETY_REFERENCES,HELICOPTER_CHECKLIST_BOUNDARIES,
  type AviationSectorId,type AviationAirframeKind} from "../../lib/aviation-sector-profiles";
 
@@ -23,6 +25,14 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
  onOpenMeeting?:()=>void;adminMode?:boolean;
 }){
  const [records,setRecords]=usePersistentState<AviationObservationRecord[]>(storageKey,[]);
+ const [assets,setAssets]=usePersistentState<AviationAsset[]>("bokang-studio.move-track.aviation.assets.v1",[]);
+ const [assetKind,setAssetKind]=useState<AviationAssetKind>("HELICOPTER");
+ const [assetName,setAssetName]=useState("");
+ const [assetReference,setAssetReference]=useState("");
+ const [assetOperator,setAssetOperator]=useState("");
+ const [assetFacility,setAssetFacility]=useState("");
+ const [assetProcedure,setAssetProcedure]=useState("");
+ const [assetRevision,setAssetRevision]=useState("");
  const [workflowId,setWorkflowId]=useState(AVIATION_WORKFLOWS[0]!.id);
  const [sectorId,setSectorId]=useState<AviationSectorId>("COMMERCIAL");
  const [airframeKind,setAirframeKind]=useState<AviationAirframeKind>("NOT_APPLICABLE");
@@ -44,7 +54,7 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
  const [actionDueDate,setActionDueDate]=useState("");
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
- const [page,setPage]=useState<"inspect"|"records">("inspect");
+ const [page,setPage]=useState<"inspect"|"records"|"assets">("inspect");
  const workflow=AVIATION_WORKFLOWS.find(x=>x.id===workflowId)!;
  const evaluation=useMemo(()=>evaluateAviationObservation(workflow,answers),[workflow,answers]);
  const findings=records.filter(r=>r.actions.some(a=>a.state!=="CLOSED"));
@@ -75,6 +85,30 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
  function changeDetail(checkId:string,detail:string){
   setAnswers(current=>[...current.filter(x=>x.checkId!==checkId),{checkId,status:current.find(x=>x.checkId===checkId)?.status??"NOT_CHECKED",detail}]);
  }
+ function saveAsset(){
+  setError("");setNotice("");
+  try{
+   if(!adminMode)throw Error("Create aviation assets from the Admin workspace");
+   if(assets.some(x=>x.reference.toLowerCase()===assetReference.trim().toLowerCase()))
+    throw Error("An aviation asset with that reference already exists");
+   const asset=createAviationAsset({
+    id:"ASSET-"+crypto.randomUUID(),kind:assetKind,label:assetName.trim(),
+    reference:assetReference.trim(),operator:assetOperator.trim(),facility:assetFacility.trim(),
+    sectorId,procedureRef:assetProcedure.trim(),procedureRevision:assetRevision.trim(),
+    createdAt:new Date().toISOString()
+   });
+   setAssets(current=>[asset,...current]);
+   setAssetName("");setAssetReference("");setNotice("Aviation asset saved locally. This is not an authorization or airworthiness record.");
+  }catch(err){setError(err instanceof Error?err.message:"Could not add asset");}
+ }
+ function inspectAsset(asset:AviationAsset){
+  setSectorId(asset.sectorId);changeWorkflow(suggestedWorkflowForAsset(asset.kind));
+  setAirframeKind(airframeForAsset(asset.kind));setAirport(asset.facility);setSite(asset.kind==="HELIPORT"?asset.reference:"");
+  setAircraftRegistration(asset.kind==="HELICOPTER"||asset.kind==="FIXED_WING"?asset.reference:"");
+  setEquipmentId(asset.kind==="GSE"?asset.reference:"");
+  setProcedureReference(asset.procedureRef);setProcedureRevision(asset.procedureRevision);
+  setError("");setPage("inspect");
+ }
  function save(){
   setError("");setNotice("");
   try{
@@ -103,6 +137,7 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,150px),1fr))",gap:9}}>
    {[
     ["Available workflows",AVIATION_WORKFLOWS.length],
+    ["Registered aviation assets",assets.length],
     ["Recorded observations",records.length],
     ["Findings needing follow-up",findings.length],
     ["Open actions",records.flatMap(r=>r.actions).filter(a=>a.state!=="CLOSED").length]
@@ -124,6 +159,8 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
      <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{sector.contexts.map(x=><span key={x} style={{border:"1px solid var(--mt-border,#cbd5e1)",borderRadius:20,padding:"5px 9px",fontSize:11}}>{x}</span>)}</div>
      <p style={{margin:0,color:"var(--mt-warning,#ad6619)",fontWeight:800,fontSize:12}}>{sector.handlingNotice}</p>
    </section>
+   <button type="button" className="movetrack-ui-button" data-mt-variant={page==="assets"?"selected":"secondary"} style={{...btn,justifySelf:"start"}}
+    onClick={()=>{setPage("assets");setError("");}}>Aviation assets ({assets.length})</button>
    {page==="inspect"?<>
    <div style={{...panel,display:"grid",gap:10}}>
     <h3 style={{margin:0,fontSize:18}}>Choose an aviation workflow</h3>
