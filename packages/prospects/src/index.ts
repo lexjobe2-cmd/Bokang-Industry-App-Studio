@@ -78,8 +78,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Dry_Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana dry-cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "move-track",
-    "newTemplateOpportunity": "Laundry booking + pickup/delivery template",
+    "recommendedProduct": "fresh-fold",
     "fitHypothesis": "A mobile-first laundry site could present services, turnaround times and pickup/delivery requests instead of relying on directory discovery.",
     "evidence": "Current Local Botswana dry-cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -95,8 +94,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Dry_Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana dry-cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "move-track",
-    "newTemplateOpportunity": "Laundry booking + pickup/delivery template",
+    "recommendedProduct": "fresh-fold",
     "fitHypothesis": "A mobile-first laundry site could present services, turnaround times and pickup/delivery requests instead of relying on directory discovery.",
     "evidence": "Current Local Botswana dry-cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -112,8 +110,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Dry_Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana dry-cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "move-track",
-    "newTemplateOpportunity": "Laundry booking + pickup/delivery template",
+    "recommendedProduct": "fresh-fold",
     "fitHypothesis": "A mobile-first laundry site could present services, turnaround times and pickup/delivery requests instead of relying on directory discovery.",
     "evidence": "Current Local Botswana dry-cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -129,8 +126,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Dry_Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana dry-cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "move-track",
-    "newTemplateOpportunity": "Laundry booking + pickup/delivery template",
+    "recommendedProduct": "fresh-fold",
     "fitHypothesis": "A mobile-first laundry site could present services, turnaround times and pickup/delivery requests instead of relying on directory discovery.",
     "evidence": "Current Local Botswana dry-cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -146,8 +142,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Dry_Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana dry-cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "move-track",
-    "newTemplateOpportunity": "Laundry booking + pickup/delivery template",
+    "recommendedProduct": "fresh-fold",
     "fitHypothesis": "A mobile-first laundry site could present services, turnaround times and pickup/delivery requests instead of relying on directory discovery.",
     "evidence": "Current Local Botswana dry-cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
@@ -163,8 +158,7 @@ const baseSeeds: Seed[] = [
     "websiteStatus": "directory-only",
     "sourceUrl": "https://www.localbotswana.com/category/Dry_Cleaning/city%3AGaborone",
     "sourceLabel": "Local Botswana dry-cleaning directory — checked 2026-10-10",
-    "recommendedProduct": "move-track",
-    "newTemplateOpportunity": "Laundry booking + pickup/delivery template",
+    "recommendedProduct": "fresh-fold",
     "fitHypothesis": "A mobile-first laundry site could present services, turnaround times and pickup/delivery requests instead of relying on directory discovery.",
     "evidence": "Current Local Botswana dry-cleaning listing surfaces the business and contact details without a first-party Website label on the checked entry."
   },
