@@ -119,6 +119,7 @@ export default async function ClientDemoPage({
         location={demo.location || "Gaborone, Botswana"}
         email={clientPublicEmail}
         phone={demo.phone}
+        availableServices={typeof query.services === "string" ? query.services.split(",").map((item) => item.trim()).filter(Boolean) : undefined}
       />
     );
   }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
+import { cleanCareQuoteKey, type CleanCareQuote } from "../../lib/clean-care";
 import {
   ArrowRight,
   Building2,
@@ -19,6 +21,7 @@ type CleanCareClientSiteProps = {
   location?: string;
   email?: string;
   phone?: string;
+  availableServices?: string[];
 };
 
 const services = [
@@ -33,16 +36,23 @@ const services = [
 export function CleanCareClientSite({
   clientName,
   location = "Gaborone, Botswana",
-  email = "jobebokang@gmail.com",
+  email = "",
   phone = "",
+  availableServices,
 }: CleanCareClientSiteProps) {
   const [submitted, setSubmitted] = useState(false);
   const [service, setService] = useState("Residential cleaning");
+  const [, setQuoteRequests] = usePersistentState<CleanCareQuote[]>(cleanCareQuoteKey(clientName), []);
+  const displayServices = availableServices?.length
+    ? services.filter((item) => availableServices.some((name) => name.toLowerCase() === item.title.toLowerCase()))
+    : services;
+  const selectedService = displayServices.some((item) => item.title === service) ? service : (displayServices[0]?.title ?? "");
 
   const whatsAppHref = useMemo(() => {
     const digits = phone.replace(/\D/g, "");
-    if (!digits) return "";
-    const normalized = digits.startsWith("267") ? digits : "267" + digits.replace(/^0+/, "");
+    const local = digits.startsWith("267") ? digits.slice(3) : digits;
+    if (!/^7\d{7}$/.test(local)) return "";
+    const normalized = "267" + local;
     return "https://wa.me/" + normalized + "?text=" + encodeURIComponent("Hi " + clientName + ", I would like to request a cleaning quote.");
   }, [phone, clientName]);
 
@@ -80,12 +90,9 @@ export function CleanCareClientSite({
             flexible scheduling and a simple quote request experience for {clientName}.
           </p>
           <div className="cleancare-actions">
-            {whatsAppHref ? (
-              <a className="cleancare-primary" href={whatsAppHref} target="_blank" rel="noreferrer">WhatsApp for a quote <ArrowRight size={17} /></a>
-            ) : (
-              <a className="cleancare-primary" href="#quote">Get a cleaning quote <ArrowRight size={17} /></a>
-            )}
-            <a className="cleancare-secondary" href="#services">Explore services</a>
+            <a className="cleancare-primary" href="#quote">Request a quote <ArrowRight size={17} /></a>
+            <a className="cleancare-secondary" href="#services">View services</a>
+            {whatsAppHref ? <a className="cleancare-secondary" href={whatsAppHref} target="_blank" rel="noreferrer">WhatsApp us</a> : null}
           </div>
           <div className="cleancare-proof">
             <span><Clock3 size={16} /> Flexible scheduling</span>
@@ -114,16 +121,16 @@ export function CleanCareClientSite({
         <div className="cleancare-section-heading">
           <div>
             <span className="cleancare-kicker">Cleaning solutions</span>
-            <h2>Show the client exactly what gets cleaned.</h2>
+            <h2>Cleaning options built around your space.</h2>
           </div>
           <p>
-            A cleaning website should sell the service itself — not construction.
-            The service mix can be configured per company so only work they actually
-            provide is shown.
+            Explore the proposed cleaning categories, then tell us what your space needs.
+            The service scope is confirmed before an estimate is prepared.
           </p>
         </div>
+        {!availableServices?.length ? <p style={{fontSize:12,margin:"0 0 12px",color:"#64748b"}}>Illustrative services for the proposal. Confirm which services {clientName} offers before booking.</p> : null}
         <div className="cleancare-service-grid">
-          {services.map(({ icon: Icon, title, copy }) => (
+          {displayServices.map(({ icon: Icon, title, copy }) => (
             <article key={title}>
               <span><Icon size={22} /></span>
               <h3>{title}</h3>
@@ -183,7 +190,7 @@ export function CleanCareClientSite({
               <strong>{clientName}</strong>
               <span>{location}</span>
               {phone ? <span>{phone}</span> : null}
-              <a href={"mailto:" + email}>{email}</a>
+              {email ? <a href={"mailto:" + email}>{email}</a> : null}
             </div>
           </div>
         </div>
@@ -192,18 +199,50 @@ export function CleanCareClientSite({
           <div className="cleancare-success">
             <CheckCircle2 size={30} />
             <h3>Demo quote request captured.</h3>
-            <p>In production, {clientName} would receive this inside the private cleaning operations workspace.</p>
+            <p>Saved in this browser only. No live booking, email, payment, file upload or server submission occurred.</p>
             <button type="button" onClick={() => setSubmitted(false)}>Create another demo request</button>
           </div>
         ) : (
-          <form className="cleancare-form" onSubmit={(event)=>{event.preventDefault();setSubmitted(true);}}>
-            <label>Name / company<input required name="name" placeholder="Your name or business" /></label>
-            <label>Mobile<input required name="phone" inputMode="tel" placeholder="+267 ..." /></label>
-            <label>Service<select value={service} onChange={(event)=>setService(event.target.value)}>{services.map((item)=><option key={item.title}>{item.title}</option>)}</select></label>
-            <label>Frequency<select name="frequency"><option>One-time clean</option><option>Weekly</option><option>2–3 times per week</option><option>Daily contract</option><option>Custom schedule</option></select></label>
-            <label className="cleancare-wide">Location / site<input name="location" placeholder="Area or site location" /></label>
-            <label className="cleancare-wide">What needs cleaning?<textarea rows={4} name="notes" placeholder="Size of space, rooms, special areas, preferred date or site requirements." /></label>
-            <button type="submit" className="cleancare-submit">Submit demo quote <ArrowRight size={17} /></button>
+          <form className="cleancare-form" onSubmit={(event) => {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const values = new FormData(form);
+            const photos = form.elements.namedItem("photos") as HTMLInputElement | null;
+            const request: CleanCareQuote = {
+              id: "CL-" + Date.now().toString(36),
+              createdAt: new Date().toISOString(),
+              name: String(values.get("name") ?? "").trim(),
+              phone: String(values.get("phone") ?? "").trim(),
+              email: String(values.get("email") ?? "").trim(),
+              location: String(values.get("location") ?? "").trim(),
+              service: String(values.get("service") ?? selectedService),
+              facilityType: String(values.get("facilityType") ?? ""),
+              rooms: String(values.get("rooms") ?? ""),
+              area: String(values.get("area") ?? ""),
+              frequency: String(values.get("frequency") ?? ""),
+              preferredDate: String(values.get("preferredDate") ?? ""),
+              instructions: String(values.get("notes") ?? "").trim(),
+              photoNames: Array.from(photos?.files ?? []).map((file) => file.name).slice(0, 5),
+              status: "New enquiry",
+            };
+            setQuoteRequests((current) => [request, ...current].slice(0, 50));
+            form.reset();
+            setSubmitted(true);
+          }}>
+            <label>Name / company<input required name="name" autoComplete="name" placeholder="Your name or organisation" /></label>
+            <label>Phone<input required name="phone" type="tel" autoComplete="tel" placeholder="+267 ..." /></label>
+            <label>Email (optional)<input name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label>
+            <label>Property type<select name="facilityType" required defaultValue=""><option value="" disabled>Choose a property type</option>{["Home / apartment","Office","Retail / restaurant","Clinic","School","Guest house / hotel","Warehouse / workshop","Industrial site","Other"].map((item)=><option key={item}>{item}</option>)}</select></label>
+            <label>Service<select name="service" required value={selectedService} onChange={(event)=>setService(event.target.value)}>{displayServices.map((item)=><option key={item.title} value={item.title}>{item.title}</option>)}</select></label>
+            <label>Frequency<select name="frequency"><option>Once-off</option><option>Weekly</option><option>2–3 times per week</option><option>Daily contract</option><option>Custom recurring schedule</option></select></label>
+            <label>Rooms / offices<input name="rooms" type="number" min="0" max="9999" placeholder="Optional" /></label>
+            <label>Approx. size (m²)<input name="area" type="number" min="0" max="1000000" placeholder="Optional" /></label>
+            <label>Preferred date<input name="preferredDate" type="date" /></label>
+            <label>Optional site photos<input name="photos" type="file" multiple accept="image/*" aria-describedby="clean-photo-note" /></label>
+            <label className="cleancare-wide">Location / site<input required name="location" placeholder="Plot, area, suburb or town" /></label>
+            <label className="cleancare-wide">Special instructions<textarea rows={4} name="notes" placeholder="Access rules, floor surfaces, preferred times, equipment and priority areas." /></label>
+            <p id="clean-photo-note" className="cleancare-wide" style={{fontSize:12,color:"#64748b",margin:0}}>Interactive demo only. Details stay in this browser. Photos are not uploaded or retained; only filenames are saved. The business is not notified.</p>
+            <button type="submit" className="cleancare-submit" disabled={!selectedService}>Save demo quote request <ArrowRight size={17} /></button>
           </form>
         )}
       </section>
