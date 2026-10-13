@@ -19,6 +19,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "fresh-fold": "Dry cleaning & laundry website",
   "nail-muse": "Nail technician booking & portfolio website",
   "aqua-flow": "Purified water, refill & delivery website",
+  "clean-care": "Residential & commercial cleaning website",
 };
 
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {
