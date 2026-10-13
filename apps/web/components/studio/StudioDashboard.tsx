@@ -18,6 +18,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "move-track": "Logistics company website",
   "fresh-fold": "Dry cleaning & laundry website",
   "nail-muse": "Nail technician booking & portfolio website",
+  "salon-book": "Hair studio & barbershop website",
   "aqua-flow": "Purified water, refill & delivery website",
   "clean-care": "Residential & commercial cleaning website",
 };
