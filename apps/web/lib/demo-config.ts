@@ -93,6 +93,7 @@ export function sectorPrivacyData(product: ProductConfig) {
     Logistics: ["job details", "route information", "driver/fleet and delivery status"],
     "Nail Tech & Beauty": ["appointment details", "service preferences", "client booking notes"],
     "Purified Water & Delivery": ["order details", "delivery address", "refill and recurring-supply preferences"],
+    "Cleaning Services": ["quote details", "site address", "cleaning schedule and service notes"],
   };
   return [...common, ...(specific[product.sector] || ["industry workflow data"])];
 }
