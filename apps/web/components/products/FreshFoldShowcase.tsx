@@ -68,7 +68,7 @@ export function FreshFoldShowcase({ config }: { config: ProductConfig }) {
 
         <div style={{ display: "grid", gap: 9, marginTop: 16 }}>
           {jobs.map((job) => (
-            <div key={job.id} style={{ display: "grid", gridTemplateColumns: "minmax(170px,1.2fr) minmax(150px,1fr) auto auto", gap: 10, alignItems: "center", padding: 12, border: "1px solid #eef2f6", borderRadius: 14 }}>
+            <div key={job.id} className="freshfold-job-row" style={{ display: "grid", gridTemplateColumns: "minmax(170px,1.2fr) minmax(150px,1fr) auto auto", gap: 10, alignItems: "center", padding: 12, border: "1px solid #eef2f6", borderRadius: 14 }}>
               <div>
                 <strong>{job.customer}</strong>
                 <div style={{ color: "#98a2b3", fontSize: 10, marginTop: 2 }}>{job.id} · {job.fulfilment}</div>
