@@ -92,6 +92,7 @@ export function sectorPrivacyData(product: ProductConfig) {
     Tourism: ["traveller/enquiry details", "saved experiences", "itinerary and booking demo data"],
     Logistics: ["job details", "route information", "driver/fleet and delivery status"],
     "Nail Tech & Beauty": ["appointment details", "service preferences", "client booking notes"],
+    "Hair Salon & Barber": ["appointment requests", "preferred stylist and date", "service preferences", "client contact details"],
     "Purified Water & Delivery": ["order details", "delivery address", "refill and recurring-supply preferences"],
     "Cleaning Services": ["quote details", "site address", "cleaning schedule and service notes"],
   };
