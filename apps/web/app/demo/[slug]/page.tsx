@@ -13,6 +13,7 @@ import { LedgerDeskClientSite } from "../../../components/products/LedgerDeskCli
 import { TaxFlowClientSite } from "../../../components/products/TaxFlowClientSite";
 import { ClinicFlowClientSite } from "../../../components/products/ClinicFlowClientSite";
 import { PharmaDeskClientSite } from "../../../components/products/PharmaDeskClientSite";
+import { FreshFoldClientSite } from "../../../components/products/FreshFoldClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -72,6 +73,16 @@ export default async function ClientDemoPage({
 
   if (config.slug === "pharma-desk") {
     return <PharmaDeskClientSite clientName={demo.client} />;
+  }
+
+  if (config.slug === "fresh-fold") {
+    return (
+      <FreshFoldClientSite
+        clientName={demo.client}
+        location={demo.location || "Gaborone, Botswana"}
+        email={demo.email}
+      />
+    );
   }
 
   return (
