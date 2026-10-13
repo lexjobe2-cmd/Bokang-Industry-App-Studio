@@ -73,11 +73,11 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   },
   "clugston-group": {
     email: "info.clugston@gmail.com",
-    secondaryPhones: ["+267 73870282", "+267 72129376"],
+    secondaryPhones: ["+267 73870282", "+267 75024775"],
     emailSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
     phoneSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
     emailEvidence: "Current checked company directory listing visibly publishes info.clugston@gmail.com for the project manager and marketing executive.",
-    phoneEvidence: "Company listing publishes 395 0067, +267 73870282, and +267 72129376. Confirm preferred number before outreach."
+    phoneEvidence: "Published Clugston Group profile lists +267 3950067 and +267 73870282; its marketing executive contact visibly lists +267 75024775. Confirm preferred number before outreach."
   },
   "kalahari-shine": {
     email: "chris@kalaharishine.co.bw",
