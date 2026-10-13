@@ -71,6 +71,19 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.localbotswana.com/company/14089/Skitters_Cleaning_Company",
     phoneEvidence: "The Skitters company listing publishes landline +267 3165992 and mobile +267 71239170. Listed site not yet verified live."
   },
+  "clugston-group": {
+    email: "info.clugston@gmail.com",
+    secondaryPhones: ["+267 73870282", "+267 72129376"],
+    emailSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
+    phoneSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
+    emailEvidence: "Current checked company directory listing visibly publishes info.clugston@gmail.com for the project manager and marketing executive.",
+    phoneEvidence: "Company listing publishes 395 0067, +267 73870282, and +267 72129376. Confirm preferred number before outreach."
+  },
+  "ranjit-creations": {
+    secondaryPhones: ["+267 74704319"],
+    phoneSourceUrl: "https://government.co.bw/company/7100887",
+    phoneEvidence: "Public Botswana business directory lists office +267 3117212 and mobile +267 74704319 for cleaning, catering and detergent manufacturer."
+  },
   "kalahari-shine": {
     email: "chris@kalaharishine.co.bw",
     emailSourceUrl: "https://www.kalaharishine.co.bw/",

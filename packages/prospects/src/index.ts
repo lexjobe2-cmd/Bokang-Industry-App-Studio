@@ -3681,10 +3681,30 @@ const additionalSeeds: Seed[] = [
   }
 ];
 
+// Sector corrections are source-evidenced overrides, preserving the immutable historic seeds.
+const researchedSectorOverrides: Record<string, { industry: string; sector: string; subIndustry: string; evidenceUrl: string; rationale: string }> = {
+  "clugston-group": {
+    industry: "Construction & Built Environment",
+    sector: "Construction & Built Environment",
+    subIndustry: "Architectural, structural and property maintenance services",
+    evidenceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
+    rationale: "Company listing focuses on architectural consultancy, structural works, interior design and building/property maintenance; cleaning is merely one directory category.",
+  },
+  "everyday-outdoor-designers": {
+    industry: "Construction & Built Environment",
+    sector: "Construction & Built Environment",
+    subIndustry: "Pool construction, landscaping and outdoor works",
+    evidenceUrl: "https://www.localbotswana.com/company/13926/Everyday_outdoor_designers",
+    rationale: "Company description identifies pool construction, gazebos, thatching and landscape construction rather than a residential cleaning service. Public listing is old; operating status needs re-check.",
+  },
+};
+
 const seeds: Seed[] = [...baseSeeds, ...additionalSeeds, ...cipaOperatingProspectSeeds];
 
 export const prospects: Prospect[] = seeds.map((seed) => {
   const enrichment = contactEnrichment[seed.id];
+  const sectorOverride = researchedSectorOverrides[seed.id];
+  const sector = sectorOverride?.sector ?? seed.sector;
   const email = enrichment?.email ?? seed.email;
   const phone = enrichment?.phone ?? seed.phone;
   const secondaryPhones = enrichment?.secondaryPhones ?? [];
@@ -3713,12 +3733,12 @@ export const prospects: Prospect[] = seeds.map((seed) => {
   const socialPresence = websiteStatus === "social-only"
     ? ["Social page surfaced in current search"]
     : [];
-  const proposedProduct = resolvePublicProduct(seed.sector, seed.recommendedProduct);
-  const demoCompatibility = publicTemplateCompatibility(seed.sector, proposedProduct);
+  const proposedProduct = resolvePublicProduct(sector, seed.recommendedProduct);
+  const demoCompatibility = publicTemplateCompatibility(sector, proposedProduct);
   const publicDemoReady = demoCompatibility === "exact";
   // Never present a sector-incompatible historical seed product as a recommendation.
   const recommendedProduct: ProductSlug | null = publicDemoReady ? proposedProduct : null;
-  const newTemplateOpportunity = publicDemoReady ? null : (seed.newTemplateOpportunity ?? `${seed.sector} public website and operations template`);
+  const newTemplateOpportunity = publicDemoReady ? null : (seed.newTemplateOpportunity ?? `${sector} public website and operations template`);
   const mappingWarning = publicDemoReady
     ? null
     : "No exact public website template is approved for this sector yet. Do not share the current recommended-product demo with this prospect.";
@@ -3727,9 +3747,9 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     id: seed.id,
     company: seed.name,
     name: seed.name,
-    industry: seed.industry,
-    subIndustry: seed.subIndustry,
-    sector: seed.sector,
+    industry: sectorOverride?.industry ?? seed.industry,
+    subIndustry: sectorOverride?.subIndustry ?? seed.subIndustry,
+    sector,
     location: seed.location,
     city: seed.city,
     country: "Botswana",
@@ -3742,21 +3762,21 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     socialPresence,
     verificationState: enrichment?.website ? "verified-website" : (seed.verificationState ?? "source-checked"),
     sourceUrl: seed.sourceUrl,
-    sourceLinks: Array.from(new Set([seed.sourceUrl, ...(enrichment?.websiteSourceUrl ? [enrichment.websiteSourceUrl] : []), googleSearchUrl(seed.name), cipaLookupUrl()])),
+    sourceLinks: Array.from(new Set([seed.sourceUrl, ...(sectorOverride?.evidenceUrl ? [sectorOverride.evidenceUrl] : []), ...(enrichment?.websiteSourceUrl ? [enrichment.websiteSourceUrl] : []), googleSearchUrl(seed.name), cipaLookupUrl()])),
     sourceLabel: seed.sourceLabel,
     checkedAt: seed.checkedAt ?? checkedAt,
     recommendedProduct,
     newTemplateOpportunity,
     proposedDemoPath: recommendedProduct ? `/demo/${recommendedProduct}` : "",
-    prospectReason: seed.fitHypothesis,
+    prospectReason: sectorOverride?.rationale ?? seed.fitHypothesis,
     outreachAngle: recommendedProduct
       ? `Lead with the exact ${recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`
       : "Do not send a mismatched demo. Research/build the sector-specific public website template first, then prepare outreach.",
     confidence,
     outreachStatus: "new",
     lastChecked: seed.checkedAt ?? checkedAt,
-    fitHypothesis: seed.fitHypothesis,
-    publicEvidence: seed.evidence,
+    fitHypothesis: sectorOverride?.rationale ?? seed.fitHypothesis,
+    publicEvidence: sectorOverride ? `${sectorOverride.rationale} Source: ${sectorOverride.evidenceUrl}` : seed.evidence,
     cipaVerificationState: seed.cipaVerificationState ?? "search-pending",
     cipaEvidence: seed.cipaEvidence ?? "CIPA status has not yet been independently verified for this record.",
     cipaLookupUrl: cipaLookupUrl(),
