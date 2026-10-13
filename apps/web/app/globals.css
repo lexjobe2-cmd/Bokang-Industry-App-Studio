@@ -334,3 +334,908 @@ html[data-theme="dark"] textarea {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
+
+
+/* FreshFold public website */
+.freshfold-site {
+  --ff-ink: #12312d;
+  --ff-muted: #5f716e;
+  --ff-teal: #0f766e;
+  --ff-teal-dark: #0b4f4a;
+  --ff-mint: #e9f7f4;
+  --ff-cream: #f8f5ee;
+  --ff-line: #d9e5e2;
+  min-height: 100vh;
+  background: #fbfdfc;
+  color: var(--ff-ink);
+  overflow-x: clip;
+}
+
+.freshfold-site * {
+  box-sizing: border-box;
+}
+
+.freshfold-site a {
+  color: inherit;
+}
+
+.freshfold-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 16px 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  background: color-mix(in srgb, #fbfdfc 92%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.freshfold-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.freshfold-brand > span:last-child {
+  min-width: 0;
+}
+
+.freshfold-brand strong {
+  display: block;
+  font-size: 15px;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.freshfold-brand small {
+  display: block;
+  margin-top: 3px;
+  color: var(--ff-muted);
+  font-size: 10px;
+}
+
+.freshfold-mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  background: var(--ff-teal);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: .04em;
+}
+
+.freshfold-navlinks {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  min-width: 0;
+}
+
+.freshfold-navlinks a {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+  color: #36534e;
+}
+
+.freshfold-nav-cta,
+.freshfold-primary,
+.freshfold-light-button,
+.freshfold-form-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 900;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.freshfold-nav-cta {
+  background: var(--ff-ink);
+  color: #fff !important;
+  padding: 10px 15px;
+  font-size: 12px;
+}
+
+.freshfold-nav-cta:hover,
+.freshfold-primary:hover,
+.freshfold-light-button:hover,
+.freshfold-form-submit:hover {
+  transform: translateY(-1px);
+}
+
+.freshfold-hero {
+  width: min(1180px, calc(100% - 32px));
+  margin: 20px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(380px, 1.05fr);
+  gap: 34px;
+  align-items: center;
+  padding: 28px 0 46px;
+}
+
+.freshfold-kicker {
+  display: inline-block;
+  color: var(--ff-teal);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .13em;
+}
+
+.freshfold-kicker-light {
+  color: #a7f3d0;
+}
+
+.freshfold-hero h1,
+.freshfold-section-heading h2,
+.freshfold-copy-block h2,
+.freshfold-commercial h2,
+.freshfold-booking h2 {
+  letter-spacing: -.045em;
+}
+
+.freshfold-hero h1 {
+  margin: 16px 0 16px;
+  max-width: 700px;
+  font-size: clamp(42px, 6.4vw, 78px);
+  line-height: .96;
+}
+
+.freshfold-hero-copy > p {
+  max-width: 650px;
+  color: var(--ff-muted);
+  font-size: 17px;
+  line-height: 1.72;
+}
+
+.freshfold-hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.freshfold-primary {
+  background: var(--ff-teal);
+  color: #fff !important;
+  padding: 12px 17px;
+}
+
+.freshfold-primary:hover {
+  box-shadow: 0 12px 28px rgba(15,118,110,.18);
+}
+
+.freshfold-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ff-line);
+  border-radius: 999px;
+  padding: 12px 17px;
+  text-decoration: none;
+  font-weight: 850;
+  background: #fff;
+}
+
+.freshfold-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 25px;
+  color: #46615c;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.freshfold-trust-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.freshfold-hero-media {
+  position: relative;
+  min-height: 590px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 34px;
+  background: var(--ff-mint);
+  box-shadow: 0 28px 70px rgba(18,49,45,.12);
+}
+
+.freshfold-hero-media img,
+.freshfold-photo-main img,
+.freshfold-commercial-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.freshfold-hero-media figcaption {
+  position: absolute;
+  inset: auto 18px 18px 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: end;
+  padding: 15px 16px;
+  border-radius: 18px;
+  background: rgba(11,36,33,.78);
+  backdrop-filter: blur(12px);
+  color: #fff;
+}
+
+.freshfold-hero-media figcaption span {
+  font-weight: 900;
+}
+
+.freshfold-hero-media figcaption a,
+.freshfold-commercial-media figcaption a {
+  font-size: 10px;
+  opacity: .8;
+}
+
+.freshfold-value-strip {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 76px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--ff-line);
+  border-bottom: 1px solid var(--ff-line);
+}
+
+.freshfold-value-strip article {
+  padding: 18px 20px;
+  display: grid;
+  gap: 5px;
+  border-right: 1px solid var(--ff-line);
+}
+
+.freshfold-value-strip article:last-child {
+  border-right: 0;
+}
+
+.freshfold-value-strip strong {
+  color: var(--ff-teal);
+  font-size: 11px;
+}
+
+.freshfold-value-strip span {
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.freshfold-section,
+.freshfold-split,
+.freshfold-commercial,
+.freshfold-booking {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.freshfold-section {
+  padding: 28px 0 88px;
+}
+
+.freshfold-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
+  gap: 40px;
+  align-items: end;
+}
+
+.freshfold-section-heading h2,
+.freshfold-copy-block h2,
+.freshfold-commercial h2,
+.freshfold-booking h2 {
+  margin: 9px 0 0;
+  font-size: clamp(32px, 4.4vw, 52px);
+  line-height: 1.03;
+}
+
+.freshfold-section-heading > p,
+.freshfold-copy-block > p,
+.freshfold-commercial p,
+.freshfold-booking-copy > p {
+  color: var(--ff-muted);
+  line-height: 1.7;
+}
+
+.freshfold-service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.freshfold-service-card {
+  min-height: 255px;
+  padding: 22px;
+  border: 1px solid var(--ff-line);
+  border-radius: 22px;
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.freshfold-service-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(18,49,45,.07);
+}
+
+.freshfold-service-icon {
+  width: 42px;
+  height: 42px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--ff-mint);
+  color: var(--ff-teal);
+}
+
+.freshfold-service-card h3 {
+  margin: 22px 0 8px;
+  font-size: 18px;
+}
+
+.freshfold-service-card p {
+  color: var(--ff-muted);
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.freshfold-service-card small {
+  display: block;
+  margin-top: 18px;
+  font-weight: 850;
+  color: #46615c;
+}
+
+.freshfold-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .95fr);
+  gap: 54px;
+  align-items: center;
+  padding: 44px 0 96px;
+}
+
+.freshfold-photo-stack {
+  position: relative;
+  min-height: 570px;
+}
+
+.freshfold-photo-main {
+  position: absolute;
+  inset: 0 44px 44px 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 30px;
+  background: var(--ff-mint);
+}
+
+.freshfold-photo-note {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(310px, 72%);
+  padding: 18px;
+  display: grid;
+  gap: 5px;
+  border-radius: 22px;
+  background: var(--ff-ink);
+  color: #fff;
+  box-shadow: 0 20px 44px rgba(18,49,45,.18);
+}
+
+.freshfold-photo-note span {
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: .74;
+}
+
+.freshfold-copy-block {
+  padding: 14px 0;
+}
+
+.freshfold-steps {
+  display: grid;
+  gap: 0;
+  margin-top: 25px;
+  border-top: 1px solid var(--ff-line);
+}
+
+.freshfold-steps > div {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ff-line);
+}
+
+.freshfold-steps > div > span {
+  color: var(--ff-teal);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.freshfold-steps p {
+  margin: 4px 0 0;
+  color: var(--ff-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.freshfold-text-link {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ff-teal) !important;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.freshfold-commercial {
+  padding: 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(350px, .9fr);
+  gap: 34px;
+  align-items: center;
+  border-radius: 34px;
+  background: var(--ff-teal-dark);
+  color: #fff;
+}
+
+.freshfold-commercial p {
+  color: rgba(255,255,255,.72);
+}
+
+.freshfold-commercial-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.freshfold-commercial-tags span {
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(255,255,255,.06);
+}
+
+.freshfold-light-button {
+  margin-top: 24px;
+  padding: 11px 15px;
+  background: #fff;
+  color: var(--ff-ink) !important;
+}
+
+.freshfold-commercial-media {
+  position: relative;
+  height: 430px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.freshfold-commercial-media figcaption {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: rgba(11,36,33,.68);
+  color: #fff;
+}
+
+.freshfold-care-section {
+  padding-top: 94px;
+}
+
+.freshfold-care-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.freshfold-care-grid article {
+  padding: 22px;
+  border-radius: 20px;
+  background: var(--ff-cream);
+}
+
+.freshfold-care-grid svg {
+  color: var(--ff-teal);
+}
+
+.freshfold-care-grid h3 {
+  margin: 20px 0 7px;
+  font-size: 17px;
+}
+
+.freshfold-care-grid p {
+  margin: 0;
+  color: var(--ff-muted);
+  line-height: 1.6;
+  font-size: 12px;
+}
+
+.freshfold-booking {
+  margin-bottom: 70px;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: minmax(280px, .72fr) minmax(0, 1.28fr);
+  gap: 36px;
+  border: 1px solid var(--ff-line);
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(18,49,45,.06);
+}
+
+.freshfold-contact-card {
+  margin-top: 26px;
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+  border-radius: 16px;
+  background: var(--ff-mint);
+}
+
+.freshfold-contact-card div {
+  min-width: 0;
+}
+
+.freshfold-contact-card strong,
+.freshfold-contact-card a {
+  display: block;
+}
+
+.freshfold-contact-card a {
+  margin-top: 3px;
+  color: var(--ff-teal);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.freshfold-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.freshfold-form label {
+  display: grid;
+  gap: 6px;
+  color: #38534e;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.freshfold-form input,
+.freshfold-form select,
+.freshfold-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--ff-line);
+  border-radius: 13px;
+  padding: 11px 12px;
+  background: #fff !important;
+  color: var(--ff-ink) !important;
+  font: inherit;
+  line-height: 1.4;
+  color-scheme: light;
+}
+
+.freshfold-form textarea {
+  resize: vertical;
+}
+
+.freshfold-form-wide,
+.freshfold-form-submit {
+  grid-column: 1 / -1;
+}
+
+.freshfold-form-submit {
+  border: 0;
+  padding: 12px 16px;
+  background: var(--ff-teal);
+  color: #fff;
+  cursor: pointer;
+}
+
+.freshfold-success {
+  display: grid;
+  place-items: start;
+  align-content: center;
+  min-height: 330px;
+  padding: 26px;
+  border-radius: 22px;
+  background: var(--ff-mint);
+}
+
+.freshfold-success > span {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ff-teal);
+}
+
+.freshfold-success h3 {
+  margin: 18px 0 8px;
+  font-size: 26px;
+}
+
+.freshfold-success p {
+  color: var(--ff-muted);
+  line-height: 1.6;
+}
+
+.freshfold-success button {
+  margin-top: 12px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 13px;
+  background: var(--ff-ink);
+  color: #fff;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.freshfold-footer {
+  padding: 30px max(16px, calc((100vw - 1180px) / 2));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  border-top: 1px solid var(--ff-line);
+  background: #f3f8f6;
+}
+
+.freshfold-footer > div:first-child {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.freshfold-footer p {
+  margin: 3px 0 0;
+  color: var(--ff-muted);
+  font-size: 11px;
+}
+
+.freshfold-footer > div:nth-child(2) {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.freshfold-footer > div:nth-child(2) a {
+  color: var(--ff-teal);
+}
+
+.freshfold-footer small {
+  grid-column: 1 / -1;
+  color: #7b8e89;
+  font-size: 10px;
+}
+
+@media (max-width: 900px) {
+  .freshfold-nav {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .freshfold-navlinks {
+    display: none;
+  }
+
+  .freshfold-hero,
+  .freshfold-split,
+  .freshfold-commercial,
+  .freshfold-booking {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .freshfold-hero {
+    gap: 24px;
+  }
+
+  .freshfold-hero-media {
+    min-height: 500px;
+  }
+
+  .freshfold-service-grid,
+  .freshfold-care-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .freshfold-value-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .freshfold-value-strip article:nth-child(2) {
+    border-right: 0;
+  }
+
+  .freshfold-value-strip article:nth-child(-n+2) {
+    border-bottom: 1px solid var(--ff-line);
+  }
+
+  .freshfold-section-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .freshfold-photo-stack {
+    min-height: 500px;
+  }
+
+  .freshfold-commercial-media {
+    height: 390px;
+  }
+
+  .freshfold-footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .freshfold-footer > div:nth-child(2) {
+    justify-items: start;
+  }
+}
+
+@media (max-width: 560px) {
+  .freshfold-nav {
+    width: min(100% - 20px, 1180px);
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  .freshfold-brand small {
+    display: none;
+  }
+
+  .freshfold-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .freshfold-nav-cta {
+    padding: 9px 11px;
+    font-size: 11px;
+  }
+
+  .freshfold-hero,
+  .freshfold-section,
+  .freshfold-split,
+  .freshfold-commercial,
+  .freshfold-booking,
+  .freshfold-value-strip {
+    width: min(100% - 20px, 1180px);
+  }
+
+  .freshfold-hero {
+    margin-top: 10px;
+    padding-top: 20px;
+  }
+
+  .freshfold-hero h1 {
+    font-size: clamp(38px, 13vw, 56px);
+  }
+
+  .freshfold-hero-copy > p {
+    font-size: 15px;
+  }
+
+  .freshfold-hero-media {
+    min-height: 420px;
+    border-radius: 24px;
+  }
+
+  .freshfold-hero-media figcaption {
+    inset: auto 10px 10px 10px;
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .freshfold-trust-row {
+    display: grid;
+    gap: 8px;
+  }
+
+  .freshfold-value-strip {
+    grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 52px;
+  }
+
+  .freshfold-value-strip article {
+    border-right: 0;
+    border-bottom: 1px solid var(--ff-line);
+  }
+
+  .freshfold-value-strip article:last-child {
+    border-bottom: 0;
+  }
+
+  .freshfold-service-grid,
+  .freshfold-care-grid,
+  .freshfold-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .freshfold-service-card {
+    min-height: 0;
+  }
+
+  .freshfold-split {
+    gap: 28px;
+    padding-bottom: 68px;
+  }
+
+  .freshfold-photo-stack {
+    min-height: 420px;
+  }
+
+  .freshfold-photo-main {
+    inset: 0 18px 54px 0;
+    border-radius: 24px;
+  }
+
+  .freshfold-photo-note {
+    width: 84%;
+    padding: 15px;
+  }
+
+  .freshfold-commercial,
+  .freshfold-booking {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .freshfold-commercial-media {
+    height: 320px;
+  }
+
+  .freshfold-care-section {
+    padding-top: 64px;
+  }
+
+  .freshfold-form-wide,
+  .freshfold-form-submit {
+    grid-column: auto;
+  }
+
+  .freshfold-footer {
+    padding: 24px 12px 84px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .freshfold-site *,
+  .freshfold-site *::before,
+  .freshfold-site *::after {
+    transition: none !important;
+  }
+}
