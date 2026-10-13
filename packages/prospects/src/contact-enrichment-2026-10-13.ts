@@ -705,5 +705,40 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.localbotswana.com/",
     phoneEvidence: "Current Botswana water-business listing surfaces an additional public mobile contact."
   }
+,
+  "rahim-khan-and-company": {
+    email: "arkhan@rahimkhan.co.bw",
+    secondaryEmails: ["info@rahimkhan.co.bw"],
+    phone: "+267 3188988",
+    secondaryPhones: ["+267 3188989"],
+    emailSourceUrl: "https://dailynews.gov.bw/common_up/dailynews/dailynews_pdf/28-11-2025_11-12-20_1764321140_dailynews_pdf.pdf",
+    phoneSourceUrl: "https://dailynews.gov.bw/common_up/dailynews/dailynews_pdf/28-11-2025_11-12-20_1764321140_dailynews_pdf.pdf",
+    emailEvidence: "A 2025 Botswana Daily News legal notice publishes arkhan@rahimkhan.co.bw; a public 2023 recruitment notice also publishes info@rahimkhan.co.bw.",
+    phoneEvidence: "The 2025 legal notice publishes the firm's Gaborone telephone contacts."
+  },
+  "hardpro": {
+    email: "info@hardpro.biz",
+    secondaryEmails: ["sales@hardpro.biz", "bchilisa@hardpro.biz"],
+    phone: "+267 3909213",
+    emailSourceUrl: "https://hardpro.biz/index.php/en/about",
+    phoneSourceUrl: "https://hardpro.biz/index.php/en/about",
+    emailEvidence: "HardPro's current public site and current 2026 business posts publish info@hardpro.biz and sales@hardpro.biz; a 2026 recruitment notice publishes bchilisa@hardpro.biz.",
+    phoneEvidence: "HardPro's current public site publishes +267 390 9213."
+  },
+  "mivani": {
+    email: "sales@mivani.co.bw",
+    secondaryPhones: ["+267 76370995"],
+    emailSourceUrl: "https://servicemeonline.com/advert/mivani/",
+    phoneSourceUrl: "https://servicemeonline.com/advert/mivani/",
+    emailEvidence: "A current 2026 Botswana ServiceMe listing publishes sales@mivani.co.bw.",
+    phoneEvidence: "The current listing publishes +267 76 370 995 as a business contact."
+  },
+  "barloworld-motor-francistown": {
+    email: "terryp@barloworld.co.bw",
+    emailSourceUrl: "https://www.callupcontact.com/b/business/Barloworld_Motor/79201",
+    phoneSourceUrl: "https://www.localbotswana.com/company/2196/Barloworld_Motor",
+    emailEvidence: "A public Botswana Barloworld Motor business listing publishes terryp@barloworld.co.bw. Treat this as a Botswana brand contact rather than a Francistown-only mailbox and re-check before outreach.",
+    phoneEvidence: "The verified Francistown listing publishes +267 241 2323 and +267 241 2324."
+  }
 
 };
