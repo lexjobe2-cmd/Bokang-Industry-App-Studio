@@ -9,6 +9,7 @@ import { BuildQuoteShowcase } from "./BuildQuoteShowcase";
 import { ExploreBWShowcase } from "./ExploreBWShowcase";
 import { MoveTrackShowcase } from "./MoveTrackShowcase";
 import { FreshFoldShowcase } from "./FreshFoldShowcase";
+import { NailMuseShowcase } from "./NailMuseShowcase";
 import { ComplianceJourney } from "../shared/ComplianceJourney";
 import { IndustryEnhancements } from "../shared/IndustryEnhancements";
 import { DeepIndustryWorkflows } from "../shared/DeepIndustryWorkflows";
@@ -26,6 +27,7 @@ export function ProductExperience({ config }: { config: ProductConfig }) {
   else if (config.slug === "explore-bw") body = <ExploreBWShowcase />;
   else if (config.slug === "move-track") body = <MoveTrackShowcase />;
   else if (config.slug === "fresh-fold") body = <FreshFoldShowcase config={config} />;
+  else if (config.slug === "nail-muse") body = <NailMuseShowcase config={config} />;
   else body = (
     <section style={{ marginTop: 28 }}>
       <DashboardGrid>
