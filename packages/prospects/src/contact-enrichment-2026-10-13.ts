@@ -19,6 +19,9 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailEvidence: "MetsiExpress public website surfaces info@metsiexpress.com."
   },
   "arts-of-laser-beauty-spa": {
+    website: "https://artsoflaser.com/",
+    websiteSourceUrl: "https://artsoflaser.com/our-services/",
+    websiteEvidence: "Public, branded Arts of Laser first-party website offers mixed spa, beauty, hair, nail and laser-treatment categories; this prospect must not be pitched as a nail-only website.",
     email: "sales@artsoflaser.co.bw",
     phone: "+267 392 7111",
     secondaryPhones: ["+267 72158769", "+267 75651923"],

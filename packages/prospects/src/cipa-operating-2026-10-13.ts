@@ -51,6 +51,146 @@ function slugify(value: string) {
 // Detailed business profiles override broad directory classifications without deleting
 // their original sourced seed rows. CIPA remains search-pending until official evidence exists.
 const sectorCorrections: Record<string, Partial<RegistryProspectSeed>> = {
+  "upper-standards-beauty-matters": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "Beauty services advertised generically; public evidence does not establish a nail-specialist service menu.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Current services and operating status need direct verification."
+  },
+  "bev-s-beauty-bar": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "Generic beauty-bar name; a nail-only product would assert services not verified.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Current services and operating status need direct verification."
+  },
+  "sorbet-salon-fields-mall": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "Public Fields Mall business listing describes nails plus skin, lashes, facials and body treatments; nail-only presentation would be incomplete.",
+    "sourceUrl": "https://global.showmelocal.com/39573289-sorbet-salon-beauty-salon-gaborone",
+    "operatingEvidenceState": "directory-active",
+    "operatingEvidence": "A public service page or current business post was located; operation and availability still require re-check."
+  },
+  "arts-of-laser-beauty-spa": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "First-party service catalogue advertises aesthetic laser treatments, massage, facials, hair and nails, so neither nail-only nor hair-only template describes the full business.",
+    "sourceUrl": "https://artsoflaser.com/our-services/",
+    "operatingEvidenceState": "directory-active",
+    "operatingEvidence": "A public service page or current business post was located; operation and availability still require re-check."
+  },
+  "doll-life": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "Business name does not establish whether it is nails, hair, lashes or cosmetics; service research pending.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Current services and operating status need direct verification."
+  },
+  "essentials-beauty-spa-and-salon": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "Spa and salon positioning is broader than the nail-only public website; confirm its actual service mix.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Current services and operating status need direct verification."
+  },
+  "ms-jay-beauty-care": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "Beauty-care category is ambiguous; explicit nail-only service menu has not been verified.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Current services and operating status need direct verification."
+  },
+  "camelot-spa-grand-palm": {
+    "industry": "Beauty & Personal Care",
+    "subIndustry": "Spa, Beauty Treatments or Verification Pending",
+    "sector": "Spa & Beauty Services",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Dedicated spa/beauty services website with treatment-specific enquiry and booking",
+    "fitHypothesis": "NailMuse is unsuitable without verified nail-only positioning. Build an accurate spa/beauty public experience before demo outreach.",
+    "evidence": "Current public Grand Palm posts advertise massages, facial treatments, manicure and pedicure; the nail-only demo would misrepresent the spa.",
+    "sourceUrl": "https://www.findglocal.com/BW/Gaborone/509353379136502/Camelot-Spa-at-The-Grand-Palm",
+    "operatingEvidenceState": "directory-active",
+    "operatingEvidence": "A public service page or current business post was located; operation and availability still require re-check."
+  },
+  "lh-hair-studio": {
+    "subIndustry": "Hair Studio",
+    "sector": "Salon & Barber",
+    "recommendedProduct": "salon-book",
+    "fitHypothesis": "SalonBook offers a hair-specific client-facing site and appointment enquiry; actual hair services still need confirmation.",
+    "evidence": "Name explicitly identifies a hair studio/lab; confirm service menu and operating status before outreach."
+  },
+  "buhle-s-hair-lab": {
+    "subIndustry": "Hair Studio",
+    "sector": "Salon & Barber",
+    "recommendedProduct": "salon-book",
+    "fitHypothesis": "SalonBook offers a hair-specific client-facing site and appointment enquiry; actual hair services still need confirmation.",
+    "evidence": "Name explicitly identifies a hair studio/lab; confirm service menu and operating status before outreach."
+  },
+  "thr-holdings-pty-ltd": {
+    "industry": "Business Services",
+    "subIndustry": "Cleaning, Gardening, General Supply and Construction",
+    "sector": "Multi-sector Services",
+    "recommendedProduct": "build-quote",
+    "newTemplateOpportunity": "Multi-sector company site showing verified services, supplies, maintenance and enquiries",
+    "sourceUrl": "https://www.localbotswana.com/company/14258/THR_HOLDINGS_PTY_LTD",
+    "fitHypothesis": "Neither a hair-salon nor generic construction-only website accurately captures THR's documented mixed services.",
+    "evidence": "Named company profile describes general supplies, cleaning, gardening, landscaping, construction and maintenance, not hairdressing.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Directory listing last updated in May 2020; recent operations require verification."
+  },
+  "yarley-cosmetique-pty-ltd": {
+    "industry": "Beauty & Retail",
+    "subIndustry": "Cosmetics",
+    "sector": "Cosmetics & Beauty Retail",
+    "recommendedProduct": "nail-muse",
+    "newTemplateOpportunity": "Cosmetics catalogue, stock enquiries and storefront site",
+    "sourceUrl": "https://www.africanadvice.com/1118050/Cosmetics/Botswana/Yarley_Cosmetique_%28PTY%29_Ltd/",
+    "fitHypothesis": "A cosmetics distributor/retailer needs a product-led storefront rather than a hair or nail appointment site.",
+    "evidence": "Public industry directory classifies Yarley Cosmetique under cosmetics, not hairdressing.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Current trading activity has not been independently confirmed."
+  },
+  "fabb-suppliers-of-ladine": {
+    "industry": "Beauty & Retail",
+    "subIndustry": "Supplier / Classification Unclear",
+    "sector": "Beauty Supplier / Classification Pending",
+    "recommendedProduct": "salon-book",
+    "newTemplateOpportunity": "Verify whether this prospect is a hair salon, supplier or cosmetics retailer before selecting a public site",
+    "fitHypothesis": "Do not send a hair booking website to an unconfirmed supplier.",
+    "evidence": "Directory lists business among hairdressers but 'Suppliers' in the company name makes exact service type ambiguous.",
+    "operatingEvidenceState": "unclear",
+    "operatingEvidence": "Directory record is insufficient to establish current trading or service type."
+  },
   "clugston-group": {
     industry: "Built Environment",
     subIndustry: "Architectural Consultancy, Property Maintenance & Management",

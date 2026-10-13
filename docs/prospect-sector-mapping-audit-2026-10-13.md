@@ -31,7 +31,7 @@ The "Historical seed recommendation" column describes original sector→product 
 | Hardware & Building Supply | 35 | build-quote | **null** | Dedicated hardware/retail site needed |
 | Healthcare | 33 | clinic-flow | clinic-flow | Matched |
 | Construction & Built Environment | 32 | build-quote, including 2 corrected directory misclassifications | build-quote | Matched; verify per-business service emphasis |
-| Salon & Barber | 31 | 25 nail-muse, 6 clinic-flow | salon-book | Corrected: hair/barber public-site variants; business-specific services still need verification |
+| Salon & Barber | 30 | 25 nail-muse, 6 clinic-flow plus 2 hair-studio recategorizations, less 3 supplier/cosmetics misclassifications | salon-book for confirmed hair/barber category | Hair and barber public-site variants; confirm each business service menu |
 | Accounting & Tax | 30 | 29 ledger-desk, 1 tax-flow | ledger-desk / tax-flow | Matched (verify tax-specific practice) |
 | Dental Care | 23 | clinic-flow | clinic-flow | Matched |
 | Guest House & Accommodation | 22 | explore-bw | explore-bw | Matched |
@@ -39,15 +39,19 @@ The "Historical seed recommendation" column describes original sector→product 
 | Cleaning Services | 17 | clean-care | clean-care | Matched; dedicated customer-facing cleaning site |
 | Printing & Signage | 17 | build-quote | **null** | Printing/artwork/quote site needed |
 | Security Services | 16 | move-track | **null** | Security guarding/CCTV/response site needed |
-| Nail Tech & Beauty | 15 | nail-muse | nail-muse | Matched; confirm nail-oriented business |
+| Nail Tech & Beauty | 5 | nail-muse | nail-muse | Only explicitly nail-oriented business names remain; verify actual services |
 | Purified Water & Delivery | 10 | aqua-flow | aqua-flow | Matched |
 | Catering & Events | 7 | build-quote | **null** | Catering/event booking site needed |
 | Butchery & Fresh Food | 6 | build-quote | **null** | Food catalogue and orders site needed |
 | Funeral Services | 4 | build-quote | **null** | Keep historical prospects; do not source new funeral prospects |
 | Auto Repair & Workshop | 2 | move-track | **null** | Vehicle servicing and repair booking site needed |
 | Agricultural Supply & Feed | 2 | build-quote | **null** | Agriculture retail/stock enquiry site needed |
+| Spa & Beauty Services | 8 | nail-muse (broad original tag) | **null** | Multi-service spas, beauty salons and uncertain beauty businesses need verified sector-specific sites |
+| Multi-sector Services | 1 | salon-book from generic hairdresser directory | **null** | THR Holdings: cleaning, gardening, general supply, maintenance and construction |
+| Cosmetics & Beauty Retail | 1 | salon-book from generic hairdresser directory | **null** | Yarley Cosmetique: cosmetics retail site needed |
+| Beauty Supplier / Classification Pending | 1 | salon-book from generic hairdresser directory | **null** | Fabb Suppliers: determine whether salon, wholesaler or supplier before marketing |
 | Pharmacy | 2 | pharma-desk | pharma-desk | Matched |
-| **Total** | **450** | | **361 matched / 89 pending** | |
+| **Total** | **450** | | **350 matched / 100 pending** | |
 
 ## Specific cleaning-mapping corrections
 
@@ -71,3 +75,9 @@ The "Historical seed recommendation" column describes original sector→product 
 ## Verification
 
 Use \`pnpm typecheck\` and \`pnpm build\` in Studio CI, plus the GitHub Cloudflare stable-worker deploy workflow. A passing build/deploy alone does not establish 320px, 375px, 390px, 430px and tablet browser correctness; record separate runtime viewport evidence before marking responsive visual QA complete.
+
+## Name-level beauty mapping audit (13 Oct 2026)
+
+Eight broad beauty/spa or unverified businesses have been blocked from nail-only public demos. LH Hair Studio and Buhle’s Hair Lab were remapped to SalonBook. THR Holdings, Yarley Cosmetique and Fabb Suppliers were removed from SalonBook because their actual business models differ or are uncertain. Historical research is retained and never silently deleted.
+
+Sources include https://artsoflaser.com/our-services/ , https://global.showmelocal.com/39573289-sorbet-salon-beauty-salon-gaborone , https://www.localbotswana.com/company/14258/THR_HOLDINGS_PTY_LTD , and https://www.africanadvice.com/1118050/Cosmetics/Botswana/Yarley_Cosmetique_%28PTY%29_Ltd/ .
