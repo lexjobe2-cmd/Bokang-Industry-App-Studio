@@ -6,6 +6,9 @@ import {
 import {AVIATION_SECTORS,HELICOPTER_CHECKLIST_BOUNDARIES,AVIATION_SAFETY_REFERENCES}
  from "../apps/web/lib/aviation-sector-profiles.ts";
 
+import {createAviationAsset,suggestedWorkflowForAsset,airframeForAsset}
+ from "../apps/web/lib/aviation-assets.ts";
+
 const workflow=id=>{
  const value=AVIATION_WORKFLOWS.find(w=>w.id===id);
  assert.ok(value,"Missing workflow: "+id);
@@ -106,4 +109,25 @@ test("aviation follow-up closure requires external evidence and cannot erase saf
  assert.equal(record.actions[0].state,"OPEN","Immutable original evidence");
  assert.deepEqual(closed.answers,record.answers);
  assert.throws(()=>updateAviationFollowUp(record,"unknown","CLOSED","X"),/Unknown/);
+});
+
+test("helicopters, fixed-wing, GSE and heliports use distinct asset classes and observation workflow defaults",()=>{
+ const map={
+  HELICOPTER:["helicopter-ground-safety","HELICOPTER"],
+  FIXED_WING:["aircraft-defect-report","FIXED_WING"],
+  GSE:["gse-pre-use","NOT_APPLICABLE"],
+  HELIPORT:["heliport-ground-observation","NOT_APPLICABLE"]
+ };
+ for(const [kind,[workflowId,airframeKind]] of Object.entries(map)){
+  const asset=createAviationAsset({id:"A-"+kind,kind,label:"Test "+kind,reference:"PUBLIC-"+kind,
+   operator:"Public demo operator",facility:"Training facility",sectorId:"GOVERNMENT",
+   procedureRef:"DEMO",procedureRevision:"DEMO",createdAt:"2026-10-13T08:00:00Z"});
+  assert.equal(asset.kind,kind);
+  assert.equal(asset.operationalAuthority,false);
+  assert.equal(suggestedWorkflowForAsset(kind),workflowId);
+  assert.equal(airframeForAsset(kind),airframeKind);
+  assert.ok(workflow(workflowId));
+ }
+ assert.throws(()=>createAviationAsset({id:"bad",kind:"HELICOPTER",label:"",reference:"",operator:"",facility:"",
+  sectorId:"MINING",procedureRef:"",procedureRevision:"",createdAt:"2026-10-13T08:00:00Z"}),/Asset reference/);
 });
