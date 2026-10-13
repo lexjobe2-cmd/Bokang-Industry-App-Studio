@@ -65,6 +65,13 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     alt: "Laundry professional folding freshly cleaned garments",
     locality: "Laundry & garment care"
   },
+  "nail-muse": {
+    imageUrl: "https://images.pexels.com/photos/6135681/pexels-photo-6135681.jpeg?auto=compress&dpr=1&h=900&w=1600",
+    sourceUrl: "https://www.pexels.com/photo/professional-manicure-treatment-6135681/",
+    sourceLabel: "Pexels · Gabriel Puyén",
+    alt: "Professional manicure treatment in a modern nail salon",
+    locality: "Nail care & beauty"
+  },
   "move-track": {
     imageUrl: "https://images.pexels.com/photos/36298868/pexels-photo-36298868.jpeg?auto=compress&dpr=1&h=900&w=1800",
     sourceUrl: "https://www.pexels.com/photo/wide-load-truck-on-open-highway-in-africa-36298868/",
