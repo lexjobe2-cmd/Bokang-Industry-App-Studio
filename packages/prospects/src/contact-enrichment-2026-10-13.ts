@@ -608,9 +608,10 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneEvidence: "The company's public website surfaces the Gaborone branch telephone."
   },
   "print-elite": {
+    phone: "+267 71733727",
     secondaryPhones: ["+267 74617779"],
     phoneSourceUrl: "https://www.localbotswana.com/company/13970/Print_Elite_Pty_Ltd",
-    phoneEvidence: "Current verified Local Botswana listing publishes the office contact and mobile +267 74617779."
+    phoneEvidence: "Current verified Local Botswana listing publishes the office/mobile contacts."
   },
   "piashi-security-services": {
     secondaryPhones: ["+267 72265321", "+267 77067648"],
@@ -772,5 +773,91 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     secondaryPhones: ["+267 77704414"],
     phoneSourceUrl: "https://www.localbotswana.com/category/Hairdressers/city%3AGaborone",
     phoneEvidence: "Current Botswana directory information surfaces an additional public mobile contact."
+  },
+  "ross-breeders-botswana-pty-ltd": {
+    email: "hr@rossafrica.com",
+    phone: "+267 3161629",
+    emailSourceUrl: "https://www.rossafrica.com/",
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    emailEvidence: "Current 2026 Ross/Nutri Feeds Botswana recruitment notices publish hr@rossafrica.com. This is a public recruitment contact, so re-check suitability before sales outreach.",
+    phoneEvidence: "Current Botswana business listings publish +267 316 1629."
+  },
+  "exigency-grills": {
+    phone: "+267 3931777",
+    secondaryPhones: ["+267 74576543"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana business listing publishes the business telephone and mobile."
+  },
+  "ranjit-creations": {
+    phone: "+267 3117212",
+    secondaryPhones: ["+267 74704319"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana business listing publishes the business telephone and mobile."
+  },
+  "leinad-holdings": {
+    phone: "+267 76188600",
+    secondaryPhones: ["+267 76687137"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana business listing publishes two public mobile contacts."
+  },
+  "ndlovu-moitshepi-and-co": {
+    phone: "+267 3911716",
+    secondaryPhones: ["+267 76610460"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana legal directory listing publishes the office telephone and a mobile."
+  },
+  "matlala-attorneys": {
+    phone: "+267 3937681",
+    secondaryPhones: ["+267 71243189"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana legal directory listing publishes the office telephone and mobile."
+  },
+  "manyothwane-and-partners": {
+    phone: "+267 2416745",
+    secondaryPhones: ["+267 71846378"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana legal directory listing publishes the Francistown telephone and mobile."
+  },
+  "oarabile-pitso-attorneys": {
+    phone: "+267 3187529",
+    secondaryPhones: ["+267 73509878"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana legal directory information publishes the office telephone and mobile."
+  },
+  "mosate-and-associates": {
+    phone: "+267 3907234",
+    secondaryPhones: ["+267 3181081", "+267 3913888", "+267 74979374"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana legal-directory sources surface multiple public office/mobile contacts; re-check which line is preferred before outreach."
+  },
+  "zone-land-proprietary-limited": {
+    phone: "+267 3111141",
+    secondaryPhones: ["+267 73026055"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana printing-business listing publishes the office telephone and mobile."
+  },
+  "bush-mills-pty-ltd-t-a-rachi-enterprises": {
+    phone: "+267 3938583",
+    secondaryPhones: ["+267 3161707", "+267 3182987"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana hardware/business directory information publishes multiple office contacts."
+  },
+  "security-fencing-botswana-pty-ltd": {
+    phone: "+267 3938659",
+    secondaryPhones: ["+267 72330779"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana security directory listing publishes the office telephone and mobile."
+  },
+  "datadot-products-gaborone": {
+    phone: "+267 72686791",
+    secondaryPhones: ["+267 74037620"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current Botswana security/business listing publishes two public mobile contacts."
+  },
+  "preffered-one-pty-ltd": {
+    phone: "+267 71882717",
+    secondaryPhones: ["+267 71775580", "+267 71276357"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current verified Botswana logistics listing publishes +267 71882717 and +267 71775580; the older seed number is retained as an alternate."
   }
 };
