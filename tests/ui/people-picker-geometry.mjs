@@ -203,7 +203,7 @@ try{
    input.dispatchEvent(new Event('input',{bubbles:true}));
   }
   return {filled:true};
- })`);
+ })()`);
  await evaluate(String.raw`[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('Add asset to local register'))?.click()`);
  assert.ok(created.filled,JSON.stringify(created));
  await waitFor(()=>evaluate(String.raw`document.querySelector('section[aria-label="Aviation asset register"]')?.textContent?.includes('Demo helicopter')`),"saved helicopter asset");
