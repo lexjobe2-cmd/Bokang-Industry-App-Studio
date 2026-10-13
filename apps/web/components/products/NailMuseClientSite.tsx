@@ -19,6 +19,7 @@ type NailMuseClientSiteProps = {
   clientName: string;
   location?: string;
   email?: string;
+  phone?: string;
 };
 
 const services = [
@@ -55,10 +56,18 @@ export function NailMuseClientSite({
   clientName,
   location = "Gaborone, Botswana",
   email = "jobebokang@gmail.com",
+  phone = "",
 }: NailMuseClientSiteProps) {
   const [submitted, setSubmitted] = useState(false);
   const [service, setService] = useState("Gel overlay");
   const [day, setDay] = useState("Saturday");
+
+  const whatsAppHref = useMemo(() => {
+    const digits = phone.replace(/\D/g, "");
+    if (!digits) return "";
+    const normalized = digits.startsWith("267") ? digits : "267" + digits.replace(/^0+/, "");
+    return "https://wa.me/" + normalized + "?text=" + encodeURIComponent("Hi " + clientName + ", I would like to book a nail appointment.");
+  }, [phone, clientName]);
 
   const initials = useMemo(
     () => clientName
@@ -86,7 +95,11 @@ export function NailMuseClientSite({
           <a href="#book">Book</a>
           <a href="#about">About</a>
         </nav>
-        <a className="nailmuse-nav-cta" href="#book">Book your set</a>
+        {whatsAppHref ? (
+          <a className="nailmuse-nav-cta" href={whatsAppHref} target="_blank" rel="noreferrer">WhatsApp booking</a>
+        ) : (
+          <a className="nailmuse-nav-cta" href="#book">Book your set</a>
+        )}
       </header>
 
       <section id="top" className="nailmuse-hero">
@@ -98,9 +111,15 @@ export function NailMuseClientSite({
             visual booking experience made for how clients actually discover nail techs.
           </p>
           <div className="nailmuse-hero-actions">
-            <a className="nailmuse-primary" href="#book">
-              Book an appointment <ArrowRight size={17} />
-            </a>
+            {whatsAppHref ? (
+              <a className="nailmuse-primary" href={whatsAppHref} target="_blank" rel="noreferrer">
+                WhatsApp to book <ArrowRight size={17} />
+              </a>
+            ) : (
+              <a className="nailmuse-primary" href="#book">
+                Book an appointment <ArrowRight size={17} />
+              </a>
+            )}
             <a className="nailmuse-secondary" href="#looks">See recent looks</a>
           </div>
           <div className="nailmuse-social-proof">
@@ -228,7 +247,9 @@ export function NailMuseClientSite({
             <div>
               <strong>{clientName}</strong>
               <span>{location}</span>
-              <a href={"mailto:" + email}>{email}</a>
+              {phone ? <span>{phone}</span> : null}
+              {phone ? <span>{phone}</span> : null}
+          <a href={"mailto:" + email}>{email}</a>
             </div>
           </div>
         </div>
