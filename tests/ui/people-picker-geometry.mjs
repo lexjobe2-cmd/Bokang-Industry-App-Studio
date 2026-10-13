@@ -202,12 +202,10 @@ try{
    setter.call(input,value);
    input.dispatchEvent(new Event('input',{bubbles:true}));
   }
-  const button=[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('Add asset to local register'));
-  if(!button)return {error:"Missing save button"};
-  button.click();
-  return {clicked:true};
- })()`);
- assert.ok(created.clicked,JSON.stringify(created));
+  return {filled:true};
+ })`);
+ await evaluate(String.raw`[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('Add asset to local register'))?.click()`);
+ assert.ok(created.filled,JSON.stringify(created));
  await waitFor(()=>evaluate(String.raw`document.querySelector('section[aria-label="Aviation asset register"]')?.textContent?.includes('Demo helicopter')`),"saved helicopter asset");
  const selectedAsset=await evaluate(String.raw`(()=>{
   const list=document.querySelector('section[aria-label="Aviation asset register"]');
