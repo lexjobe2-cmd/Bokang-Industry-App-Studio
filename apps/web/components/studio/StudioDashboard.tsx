@@ -208,6 +208,9 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
                     <Field label="CTA email">
                       <input value={current.email} onChange={(e) => update(product, { email: e.target.value })} placeholder="jobebokang@gmail.com" style={inputStyle} />
                     </Field>
+                    <Field label="Phone / WhatsApp">
+                      <input value={current.phone} onChange={(e) => update(product, { phone: e.target.value })} placeholder="+267 7X XXX XXX" style={inputStyle} />
+                    </Field>
                   </div>
 
                   <label style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", fontSize: 12, fontWeight: 800 }}>
