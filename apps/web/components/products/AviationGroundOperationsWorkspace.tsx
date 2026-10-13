@@ -226,7 +226,7 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
     {error?<p role="alert" style={{margin:0,color:"var(--mt-danger,#c24129)",fontWeight:750,fontSize:12}}>{error}</p>:null}
     <button type="button" className="movetrack-ui-button" data-mt-variant="primary" style={{...btn,justifySelf:"start"}} onClick={save}>Record observations locally</button>
    </div>
-  </>:<section aria-label="Recorded aviation observations" style={{...panel,display:"grid",gap:11}}>
+  </>:page==="records"?<section aria-label="Recorded aviation observations" style={{...panel,display:"grid",gap:11}}>
     <h3 style={{margin:0}}>Aviation observation records</h3>
     {notice?<p role="status" style={{margin:0,color:"var(--mt-success,#087f5b)",fontWeight:800,fontSize:12}}>{notice}</p>:null}
     {error?<p role="alert" style={{margin:0,color:"var(--mt-danger,#b42318)",fontSize:12}}>{error}</p>:null}
@@ -256,6 +256,36 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
       </div>)}
       <small style={{...muted,fontWeight:700}}>Device-local · unverified · no regulatory release authority</small>
     </article>)}
+   </section>:<section aria-label="Aviation asset register" style={{...panel,display:"grid",gap:12}}>
+     <h3 style={{fontSize:18,margin:0}}>Aviation fleet and ground asset register</h3>
+     <p style={{...muted,margin:0}}>Register non-sensitive identifiers for helicopters, fixed-wing aircraft, helipads and support equipment. Records do not convey serviceability or flight approval.</p>
+     {notice?<p role="status" style={{...muted,margin:0,color:"var(--mt-success,#087f5b)",fontWeight:800}}>{notice}</p>:null}
+     {adminMode?<div style={{display:"grid",gap:10}}>
+      <h4 style={{margin:0,fontSize:14}}>Admin · Add aviation asset</h4>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10}}>
+       <label style={stack}>Asset category<select style={field} aria-label="Aviation asset category" value={assetKind} onChange={e=>setAssetKind(e.target.value as AviationAssetKind)}>
+        {Object.entries(AVIATION_ASSET_KIND_LABELS).map(([id,title])=><option key={id} value={id}>{title}</option>)}
+       </select></label>
+       <label style={stack}>Asset display name *<input style={field} value={assetName} onChange={e=>setAssetName(e.target.value)} placeholder="Helicopter / aircraft model or support equipment"/></label>
+       <label style={stack}>Non-sensitive asset reference *<input style={field} value={assetReference} onChange={e=>setAssetReference(e.target.value)} placeholder="Public alias or approved local ID"/></label>
+       <label style={stack}>Responsible operator *<input style={field} value={assetOperator} onChange={e=>setAssetOperator(e.target.value)} placeholder="Company or authorized organization"/></label>
+       <label style={stack}>Facility / station *<input style={field} value={assetFacility} onChange={e=>setAssetFacility(e.target.value)} placeholder="Non-sensitive airport, helipad or facility"/></label>
+       <label style={stack}>Procedure reference *<input style={field} value={assetProcedure} onChange={e=>setAssetProcedure(e.target.value)} placeholder="DEMO or approved SOP ID"/></label>
+       <label style={stack}>Revision *<input style={field} value={assetRevision} onChange={e=>setAssetRevision(e.target.value)} placeholder="DEMO or approved revision"/></label>
+      </div>
+      <button type="button" className="movetrack-ui-button" data-mt-variant="primary" style={{...btn,justifySelf:"start"}} onClick={saveAsset}>Add asset to local register</button>
+     </div>:<p style={{...muted,margin:0}}>To add or change assets, use Admin → Aviation ground operations. This demo has no authenticated admin permission enforcement.</p>}
+     {error?<p role="alert" style={{fontSize:12,color:"var(--mt-danger,#b42318)",margin:0}}>{error}</p>:null}
+     {!assets.length?<p style={muted}>No aviation assets recorded yet.</p>:null}
+     {assets.map(asset=><article key={asset.id} style={{...panel,display:"grid",gap:8}}>
+       <div style={{display:"flex",justifyContent:"space-between",gap:9,flexWrap:"wrap"}}>
+        <strong>{asset.label}</strong><small style={{...muted,fontWeight:800}}>{AVIATION_ASSET_KIND_LABELS[asset.kind]}</small>
+       </div>
+       <small style={muted}>{asset.reference} · {asset.operator} · {asset.facility} · {AVIATION_SECTORS.find(x=>x.id===asset.sectorId)?.name}</small>
+       <small style={muted}>Approved document reference: {asset.procedureRef} · Revision: {asset.procedureRevision}</small>
+       <button type="button" className="movetrack-ui-button" data-mt-variant="secondary" style={{...btn,justifySelf:"start"}} onClick={()=>inspectAsset(asset)}>Start ground safety observation <ArrowRight size={15} style={{verticalAlign:"middle"}}/></button>
+       <small style={muted}>Registered locally · NOT proof of aircraft airworthiness, release, operational readiness or a valid inspection.</small>
+      </article>)}
    </section>}
   <details style={panel}>
    <summary style={{fontWeight:800,cursor:"pointer",fontSize:13,minHeight:44}}>Helicopter checklists and approved-manual references</summary>
