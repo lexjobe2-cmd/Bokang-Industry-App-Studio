@@ -675,5 +675,102 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phone: "+267 71625639",
     phoneSourceUrl: "https://bobstandards.bw/wp-content/uploads/2022/05/Supplier-Directory-Consolidated.pdf",
     phoneEvidence: "A public Botswana supplier directory lists Olitha's Funeral Parlour with mobile +267 71625639. The source is older, so re-check before outreach."
+  },
+  "auto-and-general-supplies": {
+    email: "partssales@autoandgeneral.co.bw",
+    phone: "+267 3909399",
+    secondaryPhones: ["+267 3905979", "+267 3190151", "+267 76128894"],
+    emailSourceUrl: "https://www.autoandgeneral.co.bw/",
+    phoneSourceUrl: "https://www.autoandgeneral.co.bw/",
+    emailEvidence: "Auto & General Supplies' current public website publishes partssales@autoandgeneral.co.bw.",
+    phoneEvidence: "The current website publishes parts, windscreens and WhatsApp contact numbers."
+  },
+  "sadc-lawyers-association": {
+    email: "info@sadcla.org",
+    secondaryEmails: ["sadclawyers@gmail.com", "sadclawyers@info.bw"],
+    emailSourceUrl: "https://sadcla.org/resources/SADCLA-Report-ACDEG-24.pdf",
+    phoneSourceUrl: "https://achpr.au.int/en/ngos/southern-african-development-community-sadc-lawyers-association",
+    emailEvidence: "SADC Lawyers Association public materials publish info@sadcla.org; AU/ACPHR records also publish sadclawyers@info.bw, and a public association event contact publishes sadclawyers@gmail.com.",
+    phoneEvidence: "Public regional and Botswana association records publish organisation contact numbers."
+  },
+  "lady-vanessa": {
+    phone: "+267 74155000",
+    secondaryPhones: ["+267 3911721", "+267 3180141"],
+    phoneSourceUrl: "https://www.beautynailhairsalons.com/BW/Gaborone/168849013313285/Lady-Vanessa-Hair-Studio",
+    phoneEvidence: "Current 2026 Lady Vanessa business posts and Airport Junction directory information publish +267 74 155 000 and +267 391 1721."
+  },
+  "mmagabo-cleaning-services": {
+    phone: "+267 3187789",
+    secondaryPhones: ["+267 71334955", "+267 72654293", "+267 72540202"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/8912/MmaGABO_Cleaning_Services",
+    phoneEvidence: "Current Botswana business directory information publishes the landline plus three business mobile contacts."
+  },
+  "nick-laundry-and-cleaning-services": {
+    phone: "+267 76209454",
+    secondaryPhones: ["+267 71615327", "+267 71481583", "+267 75300712"],
+    phoneSourceUrl: "https://www.localbotswana.com/companies/services",
+    phoneEvidence: "Current verified Botswana business listing publishes multiple public mobile contacts for Nick Laundry & Cleaning Services."
+  },
+  "fargreen-pty-ltd": {
+    phone: "+267 72221556",
+    secondaryPhones: ["+267 76853932"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/15184/FARGREEN_PTY_LTD",
+    phoneEvidence: "Current Botswana business listing publishes both public mobile contacts."
+  },
+  "hardware-emporium-bk": {
+    phone: "+267 3913299",
+    secondaryPhones: ["+267 3916461"],
+    phoneSourceUrl: "https://www.equipment10.com/BW/Gaborone/108026601674947/Hardware-Emporium",
+    phoneEvidence: "Current 2026 Hardware Emporium business posts publish its Broadhurst and Old Lobatse Road contacts."
+  },
+  "gaborone-hardware": {
+    phone: "+267 3952611",
+    secondaryPhones: ["+267 3914474"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/4991/Gaborone_Hardware",
+    phoneEvidence: "Public Botswana directory information publishes both Gaborone Hardware telephone numbers."
+  },
+  "micro-peripheral-systems": {
+    phone: "+267 3186504",
+    secondaryPhones: ["+267 3956677", "+267 72105083"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/4331/Micro_Peripheral_Systems",
+    phoneEvidence: "Public Botswana directory information publishes two office numbers and a mobile contact."
+  },
+  "westside-motors": {
+    phone: "+267 3186702",
+    secondaryPhones: ["+267 3956515", "+267 72881016"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/2223/Westside_Motors",
+    phoneEvidence: "Current verified Botswana business listing publishes two telephone contacts and a mobile number."
+  },
+  "phomolong-guest-house": {
+    phone: "+267 3971579",
+    secondaryPhones: ["+267 71312782", "+267 73095757"],
+    phoneSourceUrl: "https://dailynews.gov.bw/common_up/dailynews/dailynews_pdf/19-09-2022_07-47-20_1663566440_dailynews_pdf.pdf",
+    phoneEvidence: "Botswana Daily News accommodation advertising publishes the business telephone plus two mobile booking contacts; re-check before outreach because this advertisement is older."
+  },
+  "dr-tau-dental-spa": {
+    phone: "+267 3133600",
+    secondaryPhones: ["+267 71241370"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/13983/Dr_Tau_Dental_Spa",
+    phoneEvidence: "Public Botswana dental listing publishes the clinic telephone and mobile."
+  },
+  "st-john-s-dental-clinic": {
+    secondaryPhones: ["+267 71621554"],
+    phoneSourceUrl: "https://www.localbotswana.com/category/Dentists",
+    phoneEvidence: "Current Botswana dental directory results surface an additional mobile contact for St John's Dental Clinic."
+  },
+  "uniseal-construction-chemicals": {
+    secondaryPhones: ["+267 76522252"],
+    phoneSourceUrl: "https://www.localbotswana.com/",
+    phoneEvidence: "Current verified Botswana business listing surfaces an additional mobile contact."
+  },
+  "afrodizzia-salon": {
+    secondaryPhones: ["+267 72110888"],
+    phoneSourceUrl: "https://www.localbotswana.com/category/Hairdressers/city%3AGaborone",
+    phoneEvidence: "Current Botswana salon directory/search information surfaces an additional mobile contact."
+  },
+  "thr-holdings-pty-ltd": {
+    secondaryPhones: ["+267 77704414"],
+    phoneSourceUrl: "https://www.localbotswana.com/category/Hairdressers/city%3AGaborone",
+    phoneEvidence: "Current Botswana directory information surfaces an additional public mobile contact."
   }
 };
