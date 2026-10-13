@@ -31,6 +31,14 @@ function outreachSubject(prospect: Prospect) {
   return "A working " + products[prospect.recommendedProduct].name + " website concept for " + prospect.name;
 }
 
+function whatsAppUrl(prospect: Prospect) {
+  if (!prospect.phone || !prospect.whatsappReady) return "";
+  const digits = prospect.phone.replace(/\D/g, "");
+  const normalized = digits.startsWith("267") ? digits : "267" + digits.replace(/^0+/, "");
+  const message = "Hi " + prospect.name + " team, my name is Bokang Jobe. I prepared a working website/software concept for your business and would like to share it with you.";
+  return "https://wa.me/" + normalized + "?text=" + encodeURIComponent(message);
+}
+
 function outreachBody(prospect: Prospect, demoUrl: string) {
   const product = products[prospect.recommendedProduct];
   const websiteGapChecked = prospect.websiteStatus === "no-first-party-site-found" ||
@@ -360,8 +368,9 @@ export function ProspectPipeline() {
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {prospect.email ? <button onClick={() => void copy(prospect.email!, prospect.id + "-contact")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-contact" ? "Copied" : "Copy email"}</button> : null}
-                    {!prospect.email && prospect.phone ? <button onClick={() => void copy(prospect.phone!, prospect.id + "-contact")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-contact" ? "Copied" : "Copy phone"}</button> : null}
+                    {prospect.email ? <button onClick={() => void copy(prospect.email!, prospect.id + "-email")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-email" ? "Copied" : "Copy email"}</button> : null}
+                    {prospect.phone ? <button onClick={() => void copy(prospect.phone!, prospect.id + "-phone")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-phone" ? "Copied" : "Copy phone"}</button> : null}
+                    {prospect.whatsappReady ? <a href={whatsAppUrl(prospect)} target="_blank" rel="noreferrer" style={{ ...primaryAction, background: "#027a48" }}>WhatsApp outreach <ExternalLink size={14} /></a> : null}
                     <button onClick={() => void copy((prospect.email ? "Subject: " + subject + "\n\n" : "") + body, prospect.id + "-body")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-body" ? "Copied" : "Copy outreach"}</button>
                     <button onClick={() => void copy(link, prospect.id + "-link")} style={secondaryAction}><Link2 size={14} /> {copied === prospect.id + "-link" ? "Copied" : "Copy demo link"}</button>
                     <a href={link} target="_blank" rel="noreferrer" style={primaryAction}>Preview client demo <ExternalLink size={14} /></a>
