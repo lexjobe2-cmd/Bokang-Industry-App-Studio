@@ -17,6 +17,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "explore-bw": "Safari operator website",
   "move-track": "Logistics company website",
   "fresh-fold": "Dry cleaning & laundry website",
+  "nail-muse": "Nail technician booking & portfolio website",
 };
 
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {
