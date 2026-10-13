@@ -79,6 +79,13 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     alt: "Clear bottled water against a clean blue background",
     locality: "Purified water & delivery"
   },
+  "clean-care": {
+    imageUrl: "https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&dpr=1&h=900&w=1600",
+    sourceUrl: "https://www.pexels.com/photo/person-cleaning-a-kitchen-counter-4239031/",
+    sourceLabel: "Pexels · cottonbro studio",
+    alt: "Professional cleaner wiping a bright modern surface",
+    locality: "Cleaning services"
+  },
   "move-track": {
     imageUrl: "https://images.pexels.com/photos/36298868/pexels-photo-36298868.jpeg?auto=compress&dpr=1&h=900&w=1800",
     sourceUrl: "https://www.pexels.com/photo/wide-load-truck-on-open-highway-in-africa-36298868/",
