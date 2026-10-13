@@ -169,7 +169,7 @@ export function AviationGroundOperationsWorkspace({onOpenMeeting,adminMode=false
       <label style={stack}>Observation status<select aria-label={check.label+" status"} style={field} value={answer?.status??"NOT_CHECKED"} onChange={e=>changeAnswer(check.id,e.target.value as AviationCheckStatus)}>
        {statuses.map(x=><option key={x.value} value={x.value}>{x.label}</option>)}
       </select></label>
-      {answer?.status==="ISSUE"?<label style={stack}>Describe the discrepancy for follow-up<textarea rows={2} style={field} value={answer.detail} onChange={e=>changeDetail(check.id,e.target.value)} placeholder="Factual safety observation; no sensitive security procedures"/></label>:null}
+      {(answer?.status==="ISSUE"||answer?.status==="NOT_APPLICABLE"&&check.critical)?<label style={stack}>{answer.status==="ISSUE"?"Describe the discrepancy for follow-up":"Reason for critical N/A (required)"}<textarea rows={2} style={field} value={answer.detail} onChange={e=>changeDetail(check.id,e.target.value)} placeholder="Factual safety observation or N/A justification; no sensitive security procedures"/></label>:null}
      </div>;
     })}
    </section>
