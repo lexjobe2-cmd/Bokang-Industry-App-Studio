@@ -2094,3 +2094,782 @@ html[data-theme="dark"] textarea {
     transition: none !important;
   }
 }
+
+
+/* AquaFlow public website */
+.aquaflow-site {
+  --aq-ink: #082f49;
+  --aq-muted: #5f7180;
+  --aq-blue: #0284c7;
+  --aq-blue-dark: #075985;
+  --aq-sky: #eaf7ff;
+  --aq-line: #d6ebf7;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fdff 0%, #ffffff 36%, #f7fcff 100%);
+  color: var(--aq-ink);
+  overflow-x: clip;
+}
+
+.aquaflow-site * { box-sizing: border-box; }
+.aquaflow-site a { color: inherit; }
+
+.aquaflow-nav {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 14px 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  background: color-mix(in srgb, #f8fdff 92%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.aquaflow-brand {
+  min-width: 0;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  text-decoration: none;
+}
+
+.aquaflow-brand > span:last-child { min-width: 0; }
+
+.aquaflow-brand strong {
+  display: block;
+  max-width: 235px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 15px;
+}
+
+.aquaflow-brand small {
+  display: block;
+  margin-top: 2px;
+  color: var(--aq-muted);
+  font-size: 10px;
+}
+
+.aquaflow-mark {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 14px 14px 20px 14px;
+  background: linear-gradient(145deg, #0ea5e9, #0369a1);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 950;
+  box-shadow: 0 10px 24px rgba(2,132,199,.2);
+}
+
+.aquaflow-navlinks {
+  display: flex;
+  justify-content: center;
+  gap: 23px;
+}
+
+.aquaflow-navlinks a {
+  text-decoration: none;
+  color: #38596c;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.aquaflow-nav-cta,
+.aquaflow-primary,
+.aquaflow-form-submit,
+.aquaflow-light-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.aquaflow-nav-cta {
+  padding: 10px 15px;
+  background: var(--aq-ink);
+  color: #fff !important;
+  font-size: 12px;
+}
+
+.aquaflow-primary {
+  padding: 12px 17px;
+  background: var(--aq-blue);
+  color: #fff !important;
+}
+
+.aquaflow-nav-cta:hover,
+.aquaflow-primary:hover,
+.aquaflow-form-submit:hover,
+.aquaflow-light-button:hover { transform: translateY(-1px); }
+
+.aquaflow-primary:hover { box-shadow: 0 14px 30px rgba(2,132,199,.2); }
+
+.aquaflow-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--aq-line);
+  border-radius: 999px;
+  padding: 12px 17px;
+  background: #fff;
+  text-decoration: none;
+  font-weight: 850;
+}
+
+.aquaflow-hero {
+  width: min(1180px, calc(100% - 32px));
+  margin: 22px auto 0;
+  padding: 30px 0 64px;
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(400px, 1.08fr);
+  gap: 38px;
+  align-items: center;
+}
+
+.aquaflow-kicker {
+  display: inline-block;
+  color: var(--aq-blue);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+}
+
+.aquaflow-kicker-light { color: #bae6fd; }
+
+.aquaflow-hero h1,
+.aquaflow-section-heading h2,
+.aquaflow-delivery h2,
+.aquaflow-business h2,
+.aquaflow-order h2 {
+  letter-spacing: -.045em;
+}
+
+.aquaflow-hero h1 {
+  margin: 16px 0 15px;
+  max-width: 690px;
+  font-size: clamp(44px, 6.2vw, 78px);
+  line-height: .95;
+}
+
+.aquaflow-hero-copy > p {
+  max-width: 640px;
+  color: var(--aq-muted);
+  font-size: 17px;
+  line-height: 1.72;
+}
+
+.aquaflow-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.aquaflow-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 25px;
+  color: #446273;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.aquaflow-trust-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aquaflow-hero-media {
+  position: relative;
+  min-height: 600px;
+}
+
+.aquaflow-hero-media figure {
+  position: absolute;
+  inset: 0 50px 44px 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 40px 40px 100px 40px;
+  background: var(--aq-sky);
+  box-shadow: 0 30px 70px rgba(8,47,73,.12);
+}
+
+.aquaflow-hero-media img,
+.aquaflow-delivery-media img,
+.aquaflow-business img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.aquaflow-hero-media figcaption,
+.aquaflow-business figcaption {
+  position: absolute;
+  inset: auto 12px 12px 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: end;
+  padding: 13px 14px;
+  border-radius: 16px;
+  background: rgba(8,47,73,.75);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.aquaflow-hero-media figcaption span,
+.aquaflow-business figcaption span { font-weight: 900; }
+
+.aquaflow-hero-media figcaption a,
+.aquaflow-business figcaption a {
+  font-size: 10px;
+  opacity: .78;
+}
+
+.aquaflow-hero-chip {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 240px;
+  display: grid;
+  gap: 5px;
+  padding: 18px;
+  border: 1px solid var(--aq-line);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 20px 44px rgba(8,47,73,.12);
+}
+
+.aquaflow-hero-chip svg { color: var(--aq-blue); }
+.aquaflow-hero-chip span { color: var(--aq-muted); font-size: 10px; font-weight: 850; text-transform: uppercase; }
+.aquaflow-hero-chip strong { font-size: 18px; }
+
+.aquaflow-flow {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 76px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--aq-line);
+  border-bottom: 1px solid var(--aq-line);
+}
+
+.aquaflow-flow article {
+  min-width: 0;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  border-right: 1px solid var(--aq-line);
+}
+
+.aquaflow-flow article:last-child { border-right: 0; }
+.aquaflow-flow article > strong { color: var(--aq-blue); font-size: 11px; }
+.aquaflow-flow article div { display: grid; gap: 4px; }
+.aquaflow-flow article span { font-size: 12px; font-weight: 900; }
+.aquaflow-flow article small { color: var(--aq-muted); line-height: 1.45; }
+
+.aquaflow-section,
+.aquaflow-delivery,
+.aquaflow-business,
+.aquaflow-order {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.aquaflow-section { padding: 24px 0 88px; }
+
+.aquaflow-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+  gap: 42px;
+  align-items: end;
+}
+
+.aquaflow-section-heading h2,
+.aquaflow-delivery h2,
+.aquaflow-business h2,
+.aquaflow-order h2 {
+  margin: 8px 0 0;
+  font-size: clamp(33px, 4.5vw, 54px);
+  line-height: 1.02;
+}
+
+.aquaflow-section-heading > p,
+.aquaflow-delivery p,
+.aquaflow-business p,
+.aquaflow-order-copy > p {
+  color: var(--aq-muted);
+  line-height: 1.7;
+}
+
+.aquaflow-product-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.aquaflow-product-grid article {
+  min-width: 0;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border: 1px solid var(--aq-line);
+  border-radius: 24px;
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.aquaflow-product-grid article:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(8,47,73,.07);
+}
+
+.aquaflow-product-grid article > span {
+  color: var(--aq-blue);
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.aquaflow-product-grid h3 {
+  margin: 26px 0 5px;
+  font-size: 33px;
+  letter-spacing: -.04em;
+}
+
+.aquaflow-product-grid p {
+  margin: 0;
+  color: var(--aq-muted);
+  font-size: 12px;
+}
+
+.aquaflow-product-grid small {
+  margin-top: 7px;
+  color: #78909c;
+}
+
+.aquaflow-product-grid a {
+  margin-top: auto;
+  padding-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--aq-blue);
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.aquaflow-product-featured {
+  background: var(--aq-sky) !important;
+  border-color: #bae6fd !important;
+}
+
+.aquaflow-delivery {
+  padding: 28px 0 96px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 54px;
+  align-items: center;
+}
+
+.aquaflow-delivery-media figure {
+  position: relative;
+  height: 540px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 30px;
+  background: var(--aq-sky);
+}
+
+.aquaflow-delivery-media a {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: rgba(8,47,73,.7);
+  color: #fff;
+  font-size: 10px;
+}
+
+.aquaflow-feature-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.aquaflow-feature-list div {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: #3e5c6e;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.aquaflow-feature-list svg { color: var(--aq-blue); }
+
+.aquaflow-text-link {
+  margin-top: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--aq-blue) !important;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.aquaflow-business {
+  margin-bottom: 94px;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, .95fr);
+  gap: 36px;
+  align-items: center;
+  border-radius: 36px;
+  background: linear-gradient(135deg, #075985, #0c4a6e 55%, #082f49);
+  color: #fff;
+}
+
+.aquaflow-business p { color: rgba(255,255,255,.72); }
+
+.aquaflow-business-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.aquaflow-business-tags span {
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.aquaflow-light-button {
+  margin-top: 24px;
+  padding: 11px 15px;
+  background: #fff;
+  color: var(--aq-ink) !important;
+}
+
+.aquaflow-business figure {
+  position: relative;
+  height: 430px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 26px;
+}
+
+.aquaflow-quality-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.aquaflow-quality-grid article {
+  padding: 22px;
+  border-radius: 22px;
+  background: var(--aq-sky);
+}
+
+.aquaflow-quality-grid svg { color: var(--aq-blue); }
+.aquaflow-quality-grid h3 { margin: 20px 0 7px; font-size: 17px; }
+.aquaflow-quality-grid p { margin: 0; color: var(--aq-muted); font-size: 12px; line-height: 1.6; }
+
+.aquaflow-order {
+  margin-bottom: 72px;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: minmax(280px, .74fr) minmax(0, 1.26fr);
+  gap: 38px;
+  border: 1px solid var(--aq-line);
+  border-radius: 34px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(8,47,73,.06);
+}
+
+.aquaflow-contact {
+  margin-top: 26px;
+  padding: 15px;
+  display: flex;
+  gap: 11px;
+  border-radius: 18px;
+  background: var(--aq-sky);
+}
+
+.aquaflow-contact svg { color: var(--aq-blue); }
+.aquaflow-contact div { min-width: 0; display: grid; gap: 3px; }
+.aquaflow-contact span { color: var(--aq-muted); font-size: 11px; }
+.aquaflow-contact a { color: var(--aq-blue); font-size: 11px; overflow-wrap: anywhere; }
+
+.aquaflow-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.aquaflow-form label {
+  display: grid;
+  gap: 6px;
+  color: #3e5c6e;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.aquaflow-form input,
+.aquaflow-form select,
+.aquaflow-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--aq-line);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: #fff !important;
+  color: var(--aq-ink) !important;
+  font: inherit;
+  color-scheme: light;
+}
+
+.aquaflow-form textarea { resize: vertical; }
+
+.aquaflow-form-wide,
+.aquaflow-form-submit { grid-column: 1 / -1; }
+
+.aquaflow-form-submit {
+  border: 0;
+  padding: 12px 16px;
+  background: var(--aq-blue);
+  color: #fff;
+  cursor: pointer;
+}
+
+.aquaflow-success {
+  min-height: 330px;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  padding: 28px;
+  border-radius: 24px;
+  background: var(--aq-sky);
+}
+
+.aquaflow-success svg { color: var(--aq-blue); }
+.aquaflow-success h3 { margin: 18px 0 7px; font-size: 25px; }
+.aquaflow-success p { color: var(--aq-muted); line-height: 1.65; }
+
+.aquaflow-success button {
+  margin-top: 12px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 13px;
+  background: var(--aq-ink);
+  color: #fff;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.aquaflow-footer {
+  padding: 30px max(16px, calc((100vw - 1180px) / 2));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  border-top: 1px solid var(--aq-line);
+  background: #eef9ff;
+}
+
+.aquaflow-footer-brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.aquaflow-footer p {
+  margin: 3px 0 0;
+  color: var(--aq-muted);
+  font-size: 11px;
+}
+
+.aquaflow-footer > div:nth-child(2) {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.aquaflow-footer > div:nth-child(2) a { color: var(--aq-blue); }
+
+.aquaflow-footer small {
+  grid-column: 1 / -1;
+  color: #7991a0;
+  font-size: 10px;
+}
+
+.aquaflow-job-row { min-width: 0; }
+
+@media (max-width: 960px) {
+  .aquaflow-nav { grid-template-columns: minmax(0, 1fr) auto; }
+  .aquaflow-navlinks { display: none; }
+
+  .aquaflow-hero,
+  .aquaflow-delivery,
+  .aquaflow-business,
+  .aquaflow-order {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aquaflow-hero-media { min-height: 520px; }
+
+  .aquaflow-flow { grid-template-columns: repeat(2, 1fr); }
+  .aquaflow-flow article:nth-child(2) { border-right: 0; }
+  .aquaflow-flow article:nth-child(-n+2) { border-bottom: 1px solid var(--aq-line); }
+
+  .aquaflow-section-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .aquaflow-product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .aquaflow-quality-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .aquaflow-footer { grid-template-columns: minmax(0, 1fr); }
+  .aquaflow-footer > div:nth-child(2) { justify-items: start; }
+
+  .aquaflow-job-row {
+    grid-template-columns: minmax(0, 1fr) minmax(140px, .8fr) !important;
+  }
+
+  .aquaflow-job-row select { width: 100%; }
+}
+
+@media (max-width: 560px) {
+  .aquaflow-nav {
+    width: min(100% - 20px, 1180px);
+    padding: 10px 0;
+    gap: 10px;
+  }
+
+  .aquaflow-brand small { display: none; }
+  .aquaflow-mark { width: 38px; height: 38px; }
+  .aquaflow-nav-cta { padding: 9px 11px; font-size: 11px; }
+
+  .aquaflow-hero,
+  .aquaflow-flow,
+  .aquaflow-section,
+  .aquaflow-delivery,
+  .aquaflow-business,
+  .aquaflow-order {
+    width: min(100% - 20px, 1180px);
+  }
+
+  .aquaflow-hero {
+    margin-top: 8px;
+    padding-top: 20px;
+    padding-bottom: 52px;
+  }
+
+  .aquaflow-hero h1 {
+    font-size: clamp(40px, 13.5vw, 58px);
+  }
+
+  .aquaflow-hero-copy > p { font-size: 15px; }
+
+  .aquaflow-trust-row {
+    display: grid;
+    gap: 8px;
+  }
+
+  .aquaflow-hero-media { min-height: 430px; }
+
+  .aquaflow-hero-media figure {
+    inset: 0 16px 52px 0;
+    border-radius: 28px 28px 64px 28px;
+  }
+
+  .aquaflow-hero-media figcaption {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .aquaflow-hero-chip {
+    width: 205px;
+    padding: 15px;
+  }
+
+  .aquaflow-flow {
+    grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 54px;
+  }
+
+  .aquaflow-flow article {
+    border-right: 0;
+    border-bottom: 1px solid var(--aq-line);
+  }
+
+  .aquaflow-flow article:last-child { border-bottom: 0; }
+
+  .aquaflow-product-grid,
+  .aquaflow-quality-grid,
+  .aquaflow-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aquaflow-product-grid article { min-height: 220px; }
+
+  .aquaflow-delivery-media figure { height: 390px; }
+
+  .aquaflow-business,
+  .aquaflow-order {
+    padding: 20px;
+    border-radius: 25px;
+  }
+
+  .aquaflow-business figure { height: 330px; }
+
+  .aquaflow-form-wide,
+  .aquaflow-form-submit { grid-column: auto; }
+
+  .aquaflow-job-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+  }
+
+  .aquaflow-footer {
+    padding: 24px 12px 84px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aquaflow-site *,
+  .aquaflow-site *::before,
+  .aquaflow-site *::after {
+    transition: none !important;
+  }
+}
