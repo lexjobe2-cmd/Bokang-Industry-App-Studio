@@ -58,6 +58,13 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     alt: "People travelling by mokoro in the Okavango Delta, Botswana",
     locality: "Okavango Delta · Botswana"
   },
+  "fresh-fold": {
+    imageUrl: "https://images.unsplash.com/photo-1742535036703-2f61723e93b6?auto=format&fit=crop&w=1800&q=82",
+    sourceUrl: "https://unsplash.com/photos/laundry-worker-neatly-folds-clothes-in-a-facility-OYgfYhBlAG8",
+    sourceLabel: "Unsplash · EqualStock",
+    alt: "Laundry professional folding freshly cleaned garments",
+    locality: "Laundry & garment care"
+  },
   "move-track": {
     imageUrl: "https://images.pexels.com/photos/36298868/pexels-photo-36298868.jpeg?auto=compress&dpr=1&h=900&w=1800",
     sourceUrl: "https://www.pexels.com/photo/wide-load-truck-on-open-highway-in-africa-36298868/",
