@@ -166,6 +166,60 @@ try{
  await waitFor(()=>evaluate(String.raw`document.querySelector('select[aria-label="Aviation airframe category"]')?.value==="HELICOPTER"`),"helicopter mode");
  assert.ok(await evaluate(String.raw`document.body.textContent.includes("Aircraft / non-sensitive asset reference")`));
  assert.equal(await evaluate(String.raw`document.body.textContent.includes("Recording does not grant aircraft dispatch")`),true);
+
+ // Admin asset onboarding must be actually interactive, not merely rendered.
+ await send("Page.navigate",{url:base+"/app/admin"});
+ await waitFor(()=>evaluate("!!document.querySelector('section[aria-label=\"Admin workspace\"]')"),"admin aviation navigation");
+ await ensureTheme("dark");
+ const adminClicked=await evaluate(String.raw`(()=>{
+  const admin=document.querySelector('section[aria-label="Admin workspace"]');
+  const tile=[...admin.querySelectorAll('button')].find(x=>x.textContent?.includes('Aviation ground operations'));
+  if(!tile)return false;
+  tile.click();return true;
+ })()`);
+ assert.equal(adminClicked,true,"Admin must have an aviation entry");
+ await waitFor(()=>evaluate("!!document.querySelector('section[aria-label=\"Aviation ground operations\"]')"),"admin aviation workspace");
+ const assetClicked=await evaluate(String.raw`(()=>{
+  const button=[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('Aviation assets ('));
+  if(!button)return false;
+  button.click();return true;
+ })()`);
+ assert.equal(assetClicked,true,"Missing aviation asset register");
+ await waitFor(()=>evaluate(String.raw`!!document.querySelector('input[placeholder="Helicopter / aircraft model or support equipment"]')`),"asset onboarding form");
+ const created=await evaluate(String.raw`(()=>{
+  const values={
+   "Helicopter / aircraft model or support equipment":"Demo helicopter",
+   "Public alias or approved local ID":"DEMO-HELI-01",
+   "Company or authorized organization":"Test civilian contractor",
+   "Non-sensitive airport, helipad or facility":"Demo helipad",
+   "DEMO or approved SOP ID":"DEMO-SOP",
+   "DEMO or approved revision":"DEMO-R1"
+  };
+  const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;
+  for(const [placeholder,value] of Object.entries(values)){
+   const input=document.querySelector('input[placeholder='+JSON.stringify(placeholder)+']');
+   if(!input)return {error:"Missing "+placeholder};
+   setter.call(input,value);
+   input.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  const button=[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('Add asset to local register'));
+  if(!button)return {error:"Missing save button"};
+  button.click();
+  return {clicked:true};
+ })()`);
+ assert.ok(created.clicked,JSON.stringify(created));
+ await waitFor(()=>evaluate(String.raw`document.querySelector('section[aria-label="Aviation asset register"]')?.textContent?.includes('Demo helicopter')`),"saved helicopter asset");
+ const selectedAsset=await evaluate(String.raw`(()=>{
+  const list=document.querySelector('section[aria-label="Aviation asset register"]');
+  const action=[...list.querySelectorAll('button')].find(x=>x.textContent?.includes('Start ground safety observation'));
+  if(!action)return false;
+  action.click();return true;
+ })()`);
+ assert.equal(selectedAsset,true);
+ await waitFor(()=>evaluate(String.raw`document.querySelector('select[aria-label="Aviation airframe category"]')?.value==="HELICOPTER"`),"onboarded helicopter inspection");
+ assert.ok(await evaluate(String.raw`[...document.querySelectorAll('input')].some(x=>x.value==="DEMO-HELI-01")`),"aircraft alias should carry into observation");
+ console.log("AVIATION ASSET ONBOARDING PASSED",JSON.stringify({kind:"HELICOPTER",asset:"DEMO-HELI-01",workflow:"helicopter-ground-safety"}));
+
  console.log("AVIATION ROTORCRAFT UI PASSED",JSON.stringify({sector:"MINING",workflow:"helicopter-ground-safety",airframe:"HELICOPTER"}));
 
  // Screenshot regression: measure the exact failing Agenda/Clear buttons with browser-computed
