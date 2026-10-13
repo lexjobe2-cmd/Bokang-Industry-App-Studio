@@ -15,7 +15,7 @@ type ModerationFilter = "active" | "discarded" | "removed" | "all";
 type ContactFilter = "all" | "email-and-phone" | "phone-only" | "email-only" | "missing-email" | "missing-phone" | "mobile";
 
 const websiteStatusLabels: Record<WebsiteStatus, string> = {
-  "no-first-party-site-found": "No first-party website found",
+  "no-first-party-site-found": "No first-party website surfaced in checked sources",
   "social-only": "Social-only presence",
   "directory-only": "Directory-only presence",
   "website-found": "Website found",
@@ -87,7 +87,7 @@ function outreachBody(prospect: Prospect, demoUrl: string) {
 
 export function ProspectPipeline() {
   const [query, setQuery] = useState("");
-  const [productFilter, setProductFilter] = useState<"all" | ProductSlug>("all");
+  const [productFilter, setProductFilter] = useState<"all" | "template-pending" | ProductSlug>("all");
   const [industryFilter, setIndustryFilter] = useState("all");
   const [cityFilter, setCityFilter] = useState("all");
   const [websiteFilter, setWebsiteFilter] = useState<"all" | WebsiteStatus>("all");
@@ -120,7 +120,7 @@ export function ProspectPipeline() {
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return prospects.filter((prospect) => {
-      const matchesProduct = productFilter === "all" || prospect.recommendedProduct === productFilter;
+      const matchesProduct = productFilter === "all" || (productFilter === "template-pending" ? !prospect.publicDemoReady : prospect.recommendedProduct === productFilter);
       const matchesModeration = moderationFilter === "all" || moderationFor(prospect.id) === moderationFilter;
       const matchesIndustry = industryFilter === "all" || prospect.sector === industryFilter;
       const matchesCity = cityFilter === "all" || prospect.city === cityFilter;
@@ -230,7 +230,7 @@ export function ProspectPipeline() {
           <strong style={{ display: "block", fontSize: 26, marginTop: 3 }}>{prospects.length}</strong>
           <div style={{ fontSize: 11, opacity: .72 }}>operating-business prospects · latest contact pass 13 Oct 2026</div>
           <div style={{ fontSize: 10, opacity: .62, marginTop: 7, lineHeight: 1.5 }}>
-            {contactCounts.withEmail} email · {contactCounts.withPhone} phone · {contactCounts.withBoth} both · {contactCounts.whatsappReady} WhatsApp-ready
+            {contactCounts.withEmail} email · {contactCounts.withPhone} phone · {contactCounts.withBoth} both · {contactCounts.whatsappReady} public mobile (WhatsApp unverified)
           </div>
         </div>
       </header>
@@ -258,8 +258,9 @@ export function ProspectPipeline() {
           <option value="all">All website states</option>
           {(Object.keys(websiteStatusLabels) as WebsiteStatus[]).map((status) => <option key={status} value={status}>{websiteStatusLabels[status]}</option>)}
         </select>
-        <select value={productFilter} onChange={(event) => setProductFilter(event.target.value as "all" | ProductSlug)} style={filterStyle}>
+        <select value={productFilter} onChange={(event) => setProductFilter(event.target.value as "all" | "template-pending" | ProductSlug)} style={filterStyle}>
           <option value="all">All products</option>
+          <option value="template-pending">Template needed (no approved public demo)</option>
           {Object.values(products).map((product) => <option key={product.slug} value={product.slug}>{product.name}</option>)}
         </select>
         <select value={outreachFilter} onChange={(event) => setOutreachFilter(event.target.value as "all" | ProspectStatus)} style={filterStyle}>

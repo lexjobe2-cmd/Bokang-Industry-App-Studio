@@ -21,7 +21,7 @@ export type RegistryProspectSeed = {
   checkedAt: string;
   cipaVerificationState: "search-pending";
   cipaEvidence: string;
-  operatingEvidenceState: "current-operating-evidence" | "directory-active";
+  operatingEvidenceState: "current-operating-evidence" | "directory-active" | "unclear";
   operatingEvidence: string;
 };
 
@@ -47,6 +47,35 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "")
     .slice(0, 90);
 }
+
+// Detailed business profiles override broad directory classifications without deleting
+// their original sourced seed rows. CIPA remains search-pending until official evidence exists.
+const sectorCorrections: Record<string, Partial<RegistryProspectSeed>> = {
+  "clugston-group": {
+    industry: "Built Environment",
+    subIndustry: "Architectural Consultancy, Property Maintenance & Management",
+    sector: "Construction & Built Environment",
+    recommendedProduct: "build-quote",
+    sourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
+    sourceLabel: "Clugston Group profile: built environment and property services, updated 7 Sep 2026; CIPA not verified",
+    evidence: "The published company profile describes architectural consultancy, structural works, property maintenance, interior design and landscaping; not a standalone cleaning contractor.",
+    fitHypothesis: "BuildQuote can illustrate construction, refurbishment, maintenance and architectural project enquiries.",
+    operatingEvidenceState: "directory-active",
+    operatingEvidence: "Owner-verified directory listing reports last update on 7 Sep 2026; independently confirm operations before outreach.",
+  },
+  "everyday-outdoor-designers": {
+    industry: "Built Environment",
+    subIndustry: "Landscaping, Thatching & Pool Construction",
+    sector: "Construction & Built Environment",
+    recommendedProduct: "build-quote",
+    sourceUrl: "https://www.localbotswana.com/company/13926/Everyday_outdoor_designers",
+    sourceLabel: "Everyday Outdoor Designers profile: landscaping and outdoor construction; business activity re-check needed",
+    evidence: "Directory profile describes landscape installation, pool construction and thatched structures rather than routine cleaning services.",
+    fitHypothesis: "BuildQuote can illustrate outdoor construction, pool and landscaping project quotations; tailor the service list before outreach.",
+    operatingEvidenceState: "unclear",
+    operatingEvidence: "Directory company profile last updated in July 2016; no recent activity established. Re-check business before outreach.",
+  },
+};
 
 function expand(group: Group): RegistryProspectSeed[] {
   return group.rows
@@ -85,6 +114,7 @@ function expand(group: Group): RegistryProspectSeed[] {
           operatingEvidenceState === "current-operating-evidence"
             ? "Recent public activity, booking availability, opening hours or current business information was surfaced in the sourcing pass."
             : "A current Botswana business-directory or professional listing was surfaced in the sourcing pass.",
+        ...sectorCorrections[slugify(name)],
       };
     });
 }

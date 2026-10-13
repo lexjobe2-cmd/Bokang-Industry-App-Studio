@@ -46,6 +46,14 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailEvidence: "Camelot Spa public contact information surfaces the Grand Palm email.",
     phoneEvidence: "Public contact information surfaces the Grand Palm telephone and WhatsApp contact."
   },
+  "clugston-group": {
+    email: "info.clugston@gmail.com",
+    secondaryPhones: ["+267 73870282", "+267 75024775"],
+    emailSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
+    phoneSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
+    emailEvidence: "Company profile lists info.clugston@gmail.com on its named employee contact cards.",
+    phoneEvidence: "Clugston company profile lists +267 73870282 and +267 75024775 as public mobile contacts."
+  },
   "cleantek-pty-ltd": {
     secondaryPhones: ["+267 311 0139", "+267 311 1064", "+267 72535673"],
     website: "https://www.cleantek.co.bw/",
@@ -56,14 +64,14 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   },
   "cleanall-services": {
     email: "info@cleanall.co.bw",
-    secondaryEmails: ["palapye@cleanall.co.bw", "receptionft@cleanall.co.bw", "kasane@cleanall.co.bw"],
+    secondaryEmails: ["sales@cleanall.co.bw", "palapye@cleanall.co.bw", "receptionft@cleanall.co.bw", "kasane@cleanall.co.bw"],
     secondaryPhones: ["+267 3912557", "+267 3186975", "+267 4920709", "+267 71926120", "+267 2402128", "+267 71300297"],
     website: "https://cleanall.co.bw/",
     websiteSourceUrl: "https://cleanall.co.bw/contact-us/",
     websiteEvidence: "First-party CleanAll website with current contact, quotation and cleaning service pages checked 13 Oct 2026.",
     emailSourceUrl: "https://cleanall.co.bw/contact-us/",
     phoneSourceUrl: "https://cleanall.co.bw/contact-us/",
-    emailEvidence: "Official CleanAll contact page publishes general and regional branch email addresses.",
+    emailEvidence: "Official CleanAll contact page publishes branch emails; its contract-cleaning service page also explicitly publishes sales@cleanall.co.bw.",
     phoneEvidence: "Official CleanAll contact page lists Gaborone, Palapye and Francistown office/mobile numbers; original seed mobile retained."
   },
   "skitters-cleaning-company": {
