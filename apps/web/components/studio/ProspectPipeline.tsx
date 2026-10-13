@@ -5,6 +5,7 @@ import { products, type ProductSlug } from "@bokang/app-config";
 import { prospects, type Prospect, type WebsiteStatus, type ProspectVerificationState } from "@bokang/prospects";
 import { ExternalLink, Mail, Copy, Link2, Search, CheckCircle2, Trash2, ArchiveX, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { defaultDemoConfig, demoParams } from "../../lib/demo-config";
+import { salonModeFromName } from "../../lib/salon-book";
 import { usePersistentState } from "@bokang/persistence";
 
 type ProspectStatus = "New" | "Prepared" | "Contacted" | "Replied" | "Converted" | "Not now";
@@ -198,6 +199,9 @@ export function ProspectPipeline() {
       phone: prospect.phone ?? "",
       email: prospect.email ?? "",
     });
+    if (product.slug === "salon-book") {
+      params.set("variant", salonModeFromName(prospect.name + " " + prospect.subIndustry));
+    }
     if (product.slug === "clean-care" && prospect.publicServices.length) {
       params.set("services", prospect.publicServices.join(","));
     }
@@ -444,6 +448,7 @@ export function ProspectPipeline() {
                     <button onClick={() => void copy(link, prospect.id + "-link")} style={secondaryAction}><Link2 size={14} /> {copied === prospect.id + "-link" ? "Copied" : "Copy demo link"}</button>
                     <a href={link} target="_blank" rel="noreferrer" style={primaryAction}>Preview client demo <ExternalLink size={14} /></a>
                     {prospect.recommendedProduct === "clean-care" ? <a href={"/products/clean-care?client=" + encodeURIComponent(prospect.name)} target="_blank" rel="noreferrer" style={secondaryAction}>Open local cleaning operations demo <ExternalLink size={14} /></a> : null}
+                    {prospect.recommendedProduct === "salon-book" ? <a href={"/products/salon-book?client=" + encodeURIComponent(prospect.name)} target="_blank" rel="noreferrer" style={secondaryAction}>Open local salon appointments demo <ExternalLink size={14} /></a> : null}
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
