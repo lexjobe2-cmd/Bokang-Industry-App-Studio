@@ -157,7 +157,11 @@ export const AVIATION_AREA_LABELS:Record<AviationWorkArea,string>={
 };
 export function evaluateAviationObservation(workflow:AviationWorkflow,answers:readonly AviationCheckAnswer[]){
  const selected=new Map(answers.map(a=>[a.checkId,a]));
- const missing=workflow.checks.filter(check=>!selected.get(check.id)||selected.get(check.id)?.status==="NOT_CHECKED");
+ const missing=workflow.checks.filter(check=>{
+  const answer=selected.get(check.id);
+  return !answer||answer.status==="NOT_CHECKED"||
+    check.critical&&answer.status==="NOT_APPLICABLE"&&!answer.detail.trim();
+ });
  const findings=workflow.checks.filter(check=>selected.get(check.id)?.status==="ISSUE");
  const criticalFindings=findings.filter(check=>check.critical);
  const status:AviationObservationRecord["state"]=missing.length?"DRAFT":findings.length?"FOLLOW_UP_REQUIRED":"OBSERVATIONS_RECORDED";
@@ -176,6 +180,7 @@ export function makeAviationObservation(input:Omit<AviationObservationRecord,"st
  const evaluation=evaluateAviationObservation(workflow,input.answers);
  if(evaluation.status==="DRAFT")throw Error("All checklist items must have an observation status before recording");
  if(evaluation.findings.length&&input.answers.some(a=>a.status==="ISSUE"&&!a.detail.trim()))throw Error("Describe each observed safety issue before recording");
+ if(input.actions.some(a=>!a.description.trim()||!a.owner.trim()))throw Error("Every action must have a description and owner");
  if(evaluation.findings.length&&!input.actions.some(a=>a.description.trim()&&a.owner.trim())){
   throw Error("Record a responsible follow-up owner and action for safety findings");
  }
