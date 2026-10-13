@@ -191,13 +191,13 @@ export function ProspectPipeline() {
           <p style={{ margin: 0, color: "#2563eb", fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase" }}>Prospect intelligence</p>
           <h1 style={{ margin: "10px 0 8px", fontSize: "clamp(34px,5vw,58px)" }}>Real businesses → relevant demo → manual outreach.</h1>
           <p style={{ margin: 0, maxWidth: 820, color: "#667085", lineHeight: 1.7, fontSize: 17 }}>
-            A Botswana outreach pipeline combining verified public email/contact sources with website-gap research. The original 50 active prospects are preserved and 150 additional email-ready prospects have been added, prioritising industries where the Studio already has a working template. Rows marked “unclear” must be re-checked for a current first-party website immediately before outreach.
+            A Botswana outreach pipeline combining public operating/contact evidence with website-gap research. The existing 200 prospects are preserved and a new 250-business CIPA-priority batch has been added, starting with NailMuse, FreshFold, cleaning, AquaFlow and other sectors mapped to working Studio templates. “CIPA check pending” means the official register still needs a manual re-check before outreach.
           </p>
         </div>
         <div className="prospect-seed-card" style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 220 }}>
           <div style={{ fontSize: 11, opacity: .65, textTransform: "uppercase", letterSpacing: 1.2 }}>Current seed list</div>
           <strong style={{ display: "block", fontSize: 26, marginTop: 3 }}>{prospects.length}</strong>
-          <div style={{ fontSize: 11, opacity: .72 }}>fresh website-gap opportunities · checked 10 Oct 2026</div>
+          <div style={{ fontSize: 11, opacity: .72 }}>operating-business prospects · latest batch 13 Oct 2026</div>
         </div>
       </header>
 
