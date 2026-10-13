@@ -740,5 +740,11 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailEvidence: "A public Botswana Barloworld Motor business listing publishes terryp@barloworld.co.bw. Treat this as a Botswana brand contact rather than a Francistown-only mailbox and re-check before outreach.",
     phoneEvidence: "The verified Francistown listing publishes +267 241 2323 and +267 241 2324."
   }
+,
+  "olitha-s-funeral-pty-ltd": {
+    phone: "+267 71625639",
+    phoneSourceUrl: "https://bobstandards.bw/wp-content/uploads/2022/05/Supplier-Directory-Consolidated.pdf",
+    phoneEvidence: "A public Botswana supplier directory lists Olitha's Funeral Parlour with mobile +267 71625639. The source is older, so re-check before outreach."
+  }
 
 };
