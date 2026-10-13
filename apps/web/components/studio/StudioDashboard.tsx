@@ -172,6 +172,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
 
               {isEditing ? (
                 <div style={{ display: "grid", gap: 11, padding: 14, borderRadius: 16, background: "#f8fafc" }}>
+                  {product.slug === "salon-book" ? <Field label="Public website style"><select value={current.variant} onChange={(event) => update(product, { variant: event.target.value as "hair" | "barber" })} style={inputStyle}><option value="hair">Hair salon / hair studio</option><option value="barber">Barbershop / grooming</option></select></Field> : null}
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 10 }}>
                     <Field label="Business name">
                       <input value={current.client} onChange={(e) => update(product, { client: e.target.value })} placeholder="Dube & Partners" style={inputStyle} />
@@ -209,8 +210,8 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
                     <Field label="CTA text">
                       <input value={current.cta} onChange={(e) => update(product, { cta: e.target.value })} placeholder="Discuss this demo" style={inputStyle} />
                     </Field>
-                    <Field label="CTA email">
-                      <input value={current.email} onChange={(e) => update(product, { email: e.target.value })} placeholder="jobebokang@gmail.com" style={inputStyle} />
+                    <Field label="Verified business email (optional)">
+                      <input type="email" value={current.email} onChange={(e) => update(product, { email: e.target.value })} placeholder="Business public email — if verified" style={inputStyle} />
                     </Field>
                     <Field label="Phone / WhatsApp">
                       <input value={current.phone} onChange={(e) => update(product, { phone: e.target.value })} placeholder="+267 7X XXX XXX" style={inputStyle} />
@@ -225,7 +226,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
               ) : null}
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 8 }}>
-                <a href={`/products/${product.slug}`} style={actionStyle}>
+                <a href={`/products/${product.slug}${["clean-care","salon-book"].includes(product.slug) ? "?client=" + encodeURIComponent(clientName(product)) : ""}`} style={actionStyle}>
                   Internal app <ExternalLink size={14} />
                 </a>
                 <a href={`/products/${product.slug}/onboarding`} style={actionStyle}>Client setup</a>
