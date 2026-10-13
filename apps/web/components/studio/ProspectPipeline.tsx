@@ -339,7 +339,7 @@ export function ProspectPipeline() {
                   <div style={{ color: "#667085", fontSize: 13, marginTop: 5 }}>{prospect.sector} · {prospect.location}</div>
                   <div style={{ marginTop: 9, display: "grid", gap: 4, fontSize: 12 }}>
                     <div><strong>Phone:</strong> {prospect.phone || "No public phone surfaced"}{prospect.secondaryPhones.length ? " · Alt: " + prospect.secondaryPhones.join(" / ") : ""}</div>
-                    <div><strong>Email:</strong> {prospect.email || "No public email surfaced — do not guess"}</div>
+                    <div><strong>Email:</strong> {prospect.email || "No public email surfaced — do not guess"}{prospect.secondaryEmails.length ? " · Alt: " + prospect.secondaryEmails.join(" / ") : ""}</div>
                   </div>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "12px 0 0" }}><strong>Public evidence:</strong> {prospect.publicEvidence}</p>
                   <p style={{ color: "#475467", lineHeight: 1.6, margin: "8px 0 0" }}><strong>Website check:</strong> {prospect.websiteEvidence}</p>
@@ -402,7 +402,7 @@ export function ProspectPipeline() {
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {prospect.email ? <button onClick={() => void copy(prospect.email!, prospect.id + "-email")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-email" ? "Copied" : "Copy email"}</button> : null}
+                    {prospect.email ? <button onClick={() => void copy([prospect.email!, ...prospect.secondaryEmails].join("\n"), prospect.id + "-email")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-email" ? "Copied" : prospect.secondaryEmails.length ? "Copy emails" : "Copy email"}</button> : null}
                     {prospect.phone ? <button onClick={() => void copy(prospect.phone!, prospect.id + "-phone")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-phone" ? "Copied" : "Copy phone"}</button> : null}
                     {prospect.whatsappReady ? <a href={whatsAppUrl(prospect)} target="_blank" rel="noreferrer" style={{ ...primaryAction, background: "#027a48" }}>WhatsApp outreach <ExternalLink size={14} /></a> : null}
                     <button onClick={() => void copy((prospect.email ? "Subject: " + subject + "\n\n" : "") + body, prospect.id + "-body")} style={secondaryAction}><Copy size={14} /> {copied === prospect.id + "-body" ? "Copied" : "Copy outreach"}</button>
