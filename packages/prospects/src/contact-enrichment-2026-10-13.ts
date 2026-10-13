@@ -389,5 +389,130 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailSourceUrl: "https://www.botswanatourism.co.bw/index.php/taxonomy/term/23?page=68",
     emailEvidence: "Botswana Tourism Organisation operating listing surfaces botsheloguesthouse@gmail.com."
   }
+,
+  "major-league-security": {
+    email: "admin@majorleaguesecurity.co.bw",
+    secondaryPhones: ["+267 72126777"],
+    emailSourceUrl: "https://jobsbotswana.info/jobs/security-guards-major-league-security/",
+    phoneSourceUrl: "https://jobsbotswana.info/jobs/security-guards-major-league-security/",
+    emailEvidence: "A current 2026 Major League Security recruitment notice publishes admin@majorleaguesecurity.co.bw.",
+    phoneEvidence: "The same current notice publishes WhatsApp +267 72126777."
+  },
+  "tlk-catering": {
+    email: "tlkfoodbw@gmail.com",
+    secondaryPhones: ["+267 71311511", "+267 74064563", "+267 73414853"],
+    emailSourceUrl: "https://www.localbotswana.com/company/14438/TLK_Botswana_Catering_Services",
+    phoneSourceUrl: "https://www.localbotswana.com/company/14438/TLK_Botswana_Catering_Services",
+    emailEvidence: "Verified Local Botswana employee/contact data publicly surfaces tlkfoodbw@gmail.com.",
+    phoneEvidence: "Verified listing publishes the business and staff mobile contacts."
+  },
+  "champs-motors": {
+    email: "champsautos@hotmail.com",
+    phone: "+267 318 2314",
+    emailSourceUrl: "https://servicemeonline.com/advert/champs-motors/",
+    phoneSourceUrl: "https://servicemeonline.com/advert/champs-motors/",
+    emailEvidence: "Current 2026 ServiceMe Botswana listing publishes champsautos@hotmail.com.",
+    phoneEvidence: "Current ServiceMe listing publishes the workshop telephone."
+  },
+  "stwalos-place": {
+    email: "stwalosplace@gmail.com",
+    secondaryPhones: ["+267 72418361"],
+    emailSourceUrl: "https://www.localbotswana.com/company/13932/Stwalos_Place",
+    phoneSourceUrl: "https://www.localbotswana.com/company/13932/Stwalos_Place",
+    emailEvidence: "Verified Local Botswana employee/contact data publishes stwalosplace@gmail.com.",
+    phoneEvidence: "Verified listing publishes the manager mobile alongside the business telephone."
+  },
+  "sosleepy-guest-house": {
+    email: "SoSleepyBnB@outlook.com",
+    phone: "+267 71429040",
+    secondaryPhones: ["+267 72725620"],
+    emailSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/513",
+    phoneSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/513",
+    emailEvidence: "Current Sesoa Botswana business profile publishes SoSleepyBnB@outlook.com.",
+    phoneEvidence: "Current profile publishes telephone/cell contacts for the guest house."
+  },
+  "prodent-dental-clinic": {
+    email: "chandfahim@gmail.com",
+    phone: "+267 3904219",
+    secondaryPhones: ["+267 3188028", "+267 71313000"],
+    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2013.pdf",
+    phoneSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2013.pdf",
+    emailEvidence: "Health Directory Botswana's public dental directory publishes chandfahim@gmail.com for Prodent Dental Clinic; re-check before outreach because this directory entry is older.",
+    phoneEvidence: "Health Directory Botswana publishes the clinic telephone and mobile contacts."
+  },
+  "hall-dr-dental-surgery": {
+    email: "dentalcare@gmail.com",
+    phone: "+267 3184262",
+    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2013.pdf",
+    phoneSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2013.pdf",
+    emailEvidence: "Health Directory Botswana lists Dr Hall's Dental Care Clinic at the same public telephone and publishes dentalcare@gmail.com; re-check before outreach because the directory entry is older.",
+    phoneEvidence: "The public Health Directory entry matches the prospect telephone."
+  },
+  "sikhakhane-and-company": {
+    email: "hmsikhakhane@gmail.com",
+    secondaryPhones: ["+267 73384246"],
+    emailSourceUrl: "https://transportsite.co.za/company/674588",
+    phoneSourceUrl: "https://www.localbotswana.com/company/8810/Sikhakhane_Company",
+    emailEvidence: "Public Botswana business directory information publishes hmsikhakhane@gmail.com for Sikhakhane & Co.",
+    phoneEvidence: "Local Botswana publishes the office and mobile contacts."
+  },
+  "monthe-marumo-and-company": {
+    email: "partners@monthemarumo.co.bw",
+    emailSourceUrl: "https://ulwazisa.com/listings/monthe-marumo-company-incorporating-molatlhegi-and-associates/",
+    emailEvidence: "Current public professional listing publishes partners@monthemarumo.co.bw."
+  },
+  "mosele-legal-services": {
+    email: "sales@mosele.co.bw",
+    emailSourceUrl: "https://www.botswanayouth.com/messenger-wanted-at/",
+    emailEvidence: "A public Mosele Legal Services vacancy notice publishes sales@mosele.co.bw; re-check before outreach because the notice itself is older."
+  },
+  "pg-glass-pty-ltd": {
+    email: "richard@pgglass.co.bw",
+    phone: "+267 3952901",
+    secondaryPhones: ["+267 3905331", "+267 3971351", "+267 74608992"],
+    emailSourceUrl: "https://servicemeonline.com/advert/pg-glass/",
+    phoneSourceUrl: "https://www.pgglassafrica.com/gaborone/",
+    emailEvidence: "Current 2025/2026 Botswana PG Glass listing publishes richard@pgglass.co.bw for Gaborone.",
+    phoneEvidence: "PG Glass Africa's current Gaborone page publishes branch telephone contacts."
+  },
+  "seed-co-international-limited": {
+    email: "samson.ruwisi@seedcogroup.com",
+    phone: "+267 3190743",
+    secondaryPhones: ["+267 3911906", "+267 3911907", "+267 72189977"],
+    emailSourceUrl: "https://www.seedcogroup.com/zw/fieldcrops/wp-content/uploads/2025/08/zw-seed-2025-ar.pdf",
+    phoneSourceUrl: "https://www.seedcogroup.com/zw/fieldcrops/wp-content/uploads/2025/08/zw-seed-2025-ar.pdf",
+    emailEvidence: "Seed Co's 2025 annual-report contact directory publishes samson.ruwisi@seedcogroup.com for Botswana.",
+    phoneEvidence: "The same company report publishes Botswana office and mobile contacts."
+  },
+  "prominent-paints-botswana": {
+    email: "customercare@prominentpaints.co.za",
+    emailSourceUrl: "https://www.prominentpaints.co.za/about-prominent-paints/",
+    emailEvidence: "Prominent Paints' current public corporate site publishes customercare@prominentpaints.co.za; this is a regional brand contact rather than a Botswana-only mailbox."
+  },
+  "so-sleepy-guest-house": {
+    email: "SoSleepyBnB@outlook.com",
+    phone: "+267 71429040",
+    secondaryPhones: ["+267 72725620"],
+    emailSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/513",
+    phoneSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/513",
+    emailEvidence: "Current Sesoa Botswana business profile publishes SoSleepyBnB@outlook.com.",
+    phoneEvidence: "Current profile publishes telephone/cell contacts for the guest house."
+  },
+  "right-move-dental-clinic": {
+    phone: "+267 72214295",
+    secondaryPhones: ["+267 76495025", "+267 75210777"],
+    phoneSourceUrl: "https://www.dentists10.com/BW/Gaborone/621216284694192/Right-Move-Dental-Clinic",
+    phoneEvidence: "Current September 2026 posts publish WhatsApp/mobile numbers for bookings; no explicit public email surfaced in the same current evidence."
+  },
+  "doll-life": {
+    phone: "+267 72767278",
+    phoneSourceUrl: "https://molapocrossing.co.bw/shops",
+    phoneEvidence: "Current Molapo Crossing store directory publishes the Doll Life mobile. The email is Cloudflare-obfuscated in the public page and is not stored until it can be read explicitly."
+  },
+  "nails-by-kelendria": {
+    phone: "+267 76752926",
+    phoneSourceUrl: "https://book.heygoldie.com/Nails-By-Kelendria",
+    phoneEvidence: "Current booking page publishes WhatsApp +267 76752926 and says clients may also email, but the email itself is hidden behind the booking platform."
+  }
 
 };
