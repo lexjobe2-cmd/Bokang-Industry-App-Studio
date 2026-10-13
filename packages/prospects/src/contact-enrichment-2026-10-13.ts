@@ -414,14 +414,6 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailEvidence: "Current 2026 ServiceMe Botswana listing publishes champsautos@hotmail.com.",
     phoneEvidence: "Current ServiceMe listing publishes the workshop telephone."
   },
-  "stwalos-place": {
-    email: "stwalosplace@gmail.com",
-    secondaryPhones: ["+267 72418361"],
-    emailSourceUrl: "https://www.localbotswana.com/company/13932/Stwalos_Place",
-    phoneSourceUrl: "https://www.localbotswana.com/company/13932/Stwalos_Place",
-    emailEvidence: "Verified Local Botswana employee/contact data publishes stwalosplace@gmail.com.",
-    phoneEvidence: "Verified listing publishes the manager mobile alongside the business telephone."
-  },
   "sosleepy-guest-house": {
     email: "SoSleepyBnB@outlook.com",
     phone: "+267 71429040",
@@ -488,15 +480,6 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     email: "customercare@prominentpaints.co.za",
     emailSourceUrl: "https://www.prominentpaints.co.za/about-prominent-paints/",
     emailEvidence: "Prominent Paints' current public corporate site publishes customercare@prominentpaints.co.za; this is a regional brand contact rather than a Botswana-only mailbox."
-  },
-  "so-sleepy-guest-house": {
-    email: "SoSleepyBnB@outlook.com",
-    phone: "+267 71429040",
-    secondaryPhones: ["+267 72725620"],
-    emailSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/513",
-    phoneSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/513",
-    emailEvidence: "Current Sesoa Botswana business profile publishes SoSleepyBnB@outlook.com.",
-    phoneEvidence: "Current profile publishes telephone/cell contacts for the guest house."
   },
   "right-move-dental-clinic": {
     phone: "+267 72214295",
