@@ -497,5 +497,62 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://book.heygoldie.com/Nails-By-Kelendria",
     phoneEvidence: "Current booking page publishes WhatsApp +267 76752926 and says clients may also email, but the email itself is hidden behind the booking platform."
   }
+,
+  "elite-dental-clinic": {
+    email: "edcsurgeon@gmail.com",
+    phone: "+267 4924730",
+    secondaryPhones: ["+267 76815797"],
+    emailSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/528",
+    phoneSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/528",
+    emailEvidence: "Current Sesoa Botswana business profile publishes edcsurgeon@gmail.com for Elite Dental Clinic.",
+    phoneEvidence: "Current Sesoa profile publishes the clinic telephone and mobile."
+  },
+  "luxury-inn": {
+    email: "info@luxuryinn.co.bw",
+    phone: "+267 3928500",
+    emailSourceUrl: "https://www.botswanatourism.co.bw/sites/default/files/2025-08/Accomodation%20Directory%202024%20-%202025.pdf",
+    phoneSourceUrl: "https://www.botswanatourism.co.bw/sites/default/files/2025-08/Accomodation%20Directory%202024%20-%202025.pdf",
+    emailEvidence: "Botswana Tourism Organisation accommodation directory publishes info@luxuryinn.co.bw.",
+    phoneEvidence: "Botswana Tourism Organisation directory publishes the Luxury Inn booking telephone."
+  },
+  "rehoboth-guest-house": {
+    email: "rehoboth@it.bw",
+    phone: "+267 3953780",
+    secondaryPhones: ["+267 71667171"],
+    emailSourceUrl: "https://governmentdirectree.com/business-directory/6396/rehoboth-guest-house/",
+    phoneSourceUrl: "https://governmentdirectree.com/business-directory/6396/rehoboth-guest-house/",
+    emailEvidence: "Botswana Government Directree business listing publishes rehoboth@it.bw for the Gaborone Rehoboth Guest House.",
+    phoneEvidence: "The same Botswana listing publishes the telephone and mobile."
+  },
+  "pula-dental-clinic": {
+    email: "rkgwaneng@yahoo.com",
+    phone: "+267 3170630",
+    secondaryPhones: ["+267 71704624"],
+    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2014.pdf",
+    phoneSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2014.pdf",
+    emailEvidence: "Health Directory Botswana publishes rkgwaneng@yahoo.com for a Pula Dental Clinic practitioner at the same BBS Mall practice; re-check before outreach because the directory record is older.",
+    phoneEvidence: "The directory record matches Pula Dental Clinic's public BBS Mall telephone and lists a mobile."
+  },
+  "dr-bp-mariri": {
+    email: "bmariri@yahoo.com",
+    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2014.pdf",
+    emailEvidence: "Health Directory Botswana publishes bmariri@yahoo.com for Dr B. P. Mariri; re-check before outreach because the directory record is older."
+  },
+  "dr-rp-matthews": {
+    email: "rebamats@vbn.co.bw",
+    secondaryPhones: ["+267 71313065"],
+    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2013.pdf",
+    phoneSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2013.pdf",
+    emailEvidence: "Health Directory Botswana publishes rebamats@vbn.co.bw for Dr Reba Matthews / Denmed; re-check before outreach because the directory record is older.",
+    phoneEvidence: "The same directory record matches the public Denmed telephone and lists a mobile."
+  },
+  "maxi-save-hardware": {
+    email: "maxi@maxisave.bw",
+    secondaryPhones: [],
+    emailSourceUrl: "https://pricemate.info/shops/%40maxisave",
+    phoneSourceUrl: "https://www.africabizinfo.com/BW/maxi-save-hardware-store_1K-392-4539",
+    emailEvidence: "Current public MAXI SAVE shop listing publishes maxi@maxisave.bw.",
+    phoneEvidence: "Current public business listing publishes the Gaborone store telephone numbers."
+  }
 
 };
