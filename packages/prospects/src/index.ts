@@ -1,11 +1,13 @@
 import type { ProductSlug } from "@bokang/app-config";
 import { cipaOperatingProspectSeeds } from "./cipa-operating-2026-10-13";
+import { contactEnrichment } from "./contact-enrichment-2026-10-13";
 
 export type WebsiteStatus = "no-first-party-site-found" | "social-only" | "directory-only" | "website-found" | "unclear";
 export type ProspectVerificationState = "source-checked" | "needs-recheck" | "verified-website";
 export type ProspectConfidence = "high" | "medium" | "low";
 export type CipaVerificationState = "search-pending" | "official-publication-evidence" | "registry-confirmed";
 export type OperatingEvidenceState = "current-operating-evidence" | "directory-active" | "unclear";
+export type ContactStatus = "verified-public" | "not-publicly-surfaced";
 export type ProspectOutreachStatus = "new" | "prepared" | "contacted" | "replied" | "converted" | "not-now" | "handled" | "archived" | "previous-outreach";
 
 export type Prospect = {
@@ -46,6 +48,12 @@ export type Prospect = {
   operatingEvidenceState: OperatingEvidenceState;
   operatingEvidence: string;
   whatsappReady: boolean;
+  emailStatus: ContactStatus;
+  phoneStatus: ContactStatus;
+  emailEvidence: string;
+  phoneEvidence: string;
+  secondaryPhones: string[];
+  contactEvidenceLinks: string[];
 };
 
 function googleSearchUrl(name: string) {
@@ -3631,6 +3639,22 @@ const additionalSeeds: Seed[] = [
 const seeds: Seed[] = [...baseSeeds, ...additionalSeeds, ...cipaOperatingProspectSeeds];
 
 export const prospects: Prospect[] = seeds.map((seed) => {
+  const enrichment = contactEnrichment[seed.id];
+  const email = enrichment?.email ?? seed.email;
+  const phone = enrichment?.phone ?? seed.phone;
+  const secondaryPhones = enrichment?.secondaryPhones ?? [];
+  const emailStatus: ContactStatus = email ? "verified-public" : "not-publicly-surfaced";
+  const phoneStatus: ContactStatus = phone ? "verified-public" : "not-publicly-surfaced";
+  const emailEvidence = enrichment?.emailEvidence ?? (email
+    ? "Public email was captured from the prospect's existing source record."
+    : "No explicit public email address has been surfaced yet. Do not guess or construct one.");
+  const phoneEvidence = enrichment?.phoneEvidence ?? (phone
+    ? "Public business phone was captured from the prospect's existing source record."
+    : "No explicit public business phone has been surfaced yet.");
+  const contactEvidenceLinks = Array.from(new Set([
+    ...(enrichment?.emailSourceUrl ? [enrichment.emailSourceUrl] : []),
+    ...(enrichment?.phoneSourceUrl ? [enrichment.phoneSourceUrl] : []),
+  ]));
   const websiteStatus = seed.websiteStatus ?? "no-first-party-site-found";
   const newTemplateOpportunity = seed.newTemplateOpportunity ?? null;
   const confidence: ProspectConfidence = websiteStatus === "unclear"
@@ -3654,8 +3678,8 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     location: seed.location,
     city: seed.city,
     country: "Botswana",
-    email: seed.email,
-    phone: seed.phone,
+    email,
+    phone,
     websiteStatus,
     websiteEvidence: seed.evidence,
     googleBusinessEvidence: googleSearchUrl(seed.name),
@@ -3682,7 +3706,13 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     cipaLookupUrl: cipaLookupUrl(),
     operatingEvidenceState: seed.operatingEvidenceState ?? "unclear",
     operatingEvidence: seed.operatingEvidence ?? seed.evidence,
-    whatsappReady: isBotswanaMobile(seed.phone),
+    whatsappReady: isBotswanaMobile(phone),
+    emailStatus,
+    phoneStatus,
+    emailEvidence,
+    phoneEvidence,
+    secondaryPhones,
+    contactEvidenceLinks,
   };
 });
 
