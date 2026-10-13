@@ -8,7 +8,8 @@ export type ProductSlug =
   | "explore-bw"
   | "move-track"
   | "fresh-fold"
-  | "nail-muse";
+  | "nail-muse"
+  | "aqua-flow";
 
 export type ProductExperienceProfile = {
   mood: string;
@@ -205,6 +206,24 @@ export const products: Record<ProductSlug, ProductConfig> = {
       onboarding: ["Business profile", "Nail services", "Pricing", "Opening hours", "Booking policies"],
       signatureFeatures: ["Visual nail portfolio", "Service and price menu", "Appointment booking", "Availability control", "Repeat-client notes"],
       compliance: ["Booking consent", "Service notes", "Appointment history", "Client communication record"]
+    }
+  },
+  "aqua-flow": {
+    slug: "aqua-flow",
+    name: "AquaFlow AI",
+    sector: "Purified Water & Delivery",
+    description: "Public water catalogue, delivery requests, refill and exchange, recurring supply, branded water, customers and fulfilment operations.",
+    tabs: ["Home", "Orders", "Deliveries", "Customers", "More"],
+    modules: ["Public water website", "Bottle-size catalogue", "Order requests", "20L refill/exchange", "Recurring delivery", "Corporate supply", "Custom-branded water", "Container tracking", "Delivery planning", "Customer history", "Analytics"],
+    dashboardMetrics: ["Open orders", "Deliveries today", "Refill exchanges", "Recurring customers"],
+    experience: {
+      mood: "Clean, product-led and delivery-first",
+      accent: "#0284c7",
+      surface: "#f0f9ff",
+      hero: "Turn bottled water, refills and delivery into a clear customer experience and organised fulfilment flow.",
+      onboarding: ["Business profile", "Water products", "Bottle sizes", "Delivery areas", "Refill and exchange rules"],
+      signatureFeatures: ["Bottle-size storefront", "20L refill/exchange", "Recurring home and office delivery", "Custom-labelled water", "Container tracking"],
+      compliance: ["Purification-process record", "Quality evidence register", "Batch/production note", "Delivery handover record"]
     }
   },
   "move-track": {
