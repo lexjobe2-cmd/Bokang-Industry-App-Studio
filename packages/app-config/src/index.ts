@@ -9,7 +9,8 @@ export type ProductSlug =
   | "move-track"
   | "fresh-fold"
   | "nail-muse"
-  | "aqua-flow";
+  | "aqua-flow"
+  | "clean-care";
 
 export type ProductExperienceProfile = {
   mood: string;
@@ -224,6 +225,24 @@ export const products: Record<ProductSlug, ProductConfig> = {
       onboarding: ["Business profile", "Water products", "Bottle sizes", "Delivery areas", "Refill and exchange rules"],
       signatureFeatures: ["Bottle-size storefront", "20L refill/exchange", "Recurring home and office delivery", "Custom-labelled water", "Container tracking"],
       compliance: ["Purification-process record", "Quality evidence register", "Batch/production note", "Delivery handover record"]
+    }
+  },
+  "clean-care": {
+    slug: "clean-care",
+    name: "CleanCare AI",
+    sector: "Cleaning Services",
+    description: "Public cleaning-services website, quote requests, recurring schedules, job allocation, site notes and quality-check operations.",
+    tabs: ["Home", "Jobs", "Schedule", "Customers", "More"],
+    modules: ["Public cleaning website", "Quote requests", "Residential cleaning", "Commercial cleaning", "Deep cleaning", "Post-construction cleanup", "Recurring schedules", "Team assignment", "Site notes", "Quality checks", "Customer history", "Analytics"],
+    dashboardMetrics: ["Active jobs", "Quotes awaiting response", "Teams assigned", "Quality checks"],
+    experience: {
+      mood: "Fresh, reliable and service-led",
+      accent: "#0f766e",
+      surface: "#ecfdf5",
+      hero: "Turn cleaning enquiries into scheduled, trackable service work.",
+      onboarding: ["Business profile", "Cleaning services", "Service areas", "Schedules", "Quote rules"],
+      signatureFeatures: ["Cleaning service catalogue", "Site assessment request", "Recurring schedule", "Team allocation", "Quality-check closeout"],
+      compliance: ["Site instructions", "Service checklist", "Completion evidence", "Customer confirmation"]
     }
   },
   "move-track": {
