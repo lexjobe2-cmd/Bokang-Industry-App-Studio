@@ -10,6 +10,7 @@ export type DemoConfig = {
   cta: string;
   email: string;
   phone: string;
+  variant: "hair" | "barber";
   showAnalytics: boolean;
 };
 
@@ -21,8 +22,9 @@ export const defaultDemoConfig: DemoConfig = {
   intro: "",
   logo: "",
   cta: "Discuss this demo",
-  email: "jobebokang@gmail.com",
+  email: "",
   phone: "",
+  variant: "hair",
   showAnalytics: true,
 };
 
@@ -37,6 +39,7 @@ export function demoParams(config: DemoConfig) {
   if (config.cta.trim()) params.set("cta", config.cta.trim());
   if (config.email.trim()) params.set("email", config.email.trim());
   if (config.phone.trim()) params.set("phone", config.phone.trim());
+  if (config.variant === "barber") params.set("variant", "barber");
   if (!config.showAnalytics) params.set("analytics", "0");
   return params;
 }
@@ -61,6 +64,7 @@ export function parseDemoConfig(
     cta: read("cta", 80) || "Discuss this demo",
     email: read("email", 180) || "jobebokang@gmail.com",
     phone: read("phone", 40),
+    variant: read("variant", 12) === "barber" ? "barber" : "hair",
     showAnalytics: read("analytics", 8) !== "0",
   };
 }
