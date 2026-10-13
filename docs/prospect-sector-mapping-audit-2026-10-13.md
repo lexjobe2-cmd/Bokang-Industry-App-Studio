@@ -21,7 +21,7 @@
 
 ## Full source-sector mapping audit
 
-The "Historical seed recommendation" column describes original sector→product assignments before the runtime compatibility rule, including mismatches preserved for research provenance. The **effective** runtime \`recommendedProduct\` is **null** for unsupported sectors; their public demo links are blocked.
+The "Historical seed recommendation" column describes original sector→product assignments before the runtime compatibility rule, including mismatches preserved for research provenance. The **effective** runtime \`recommendedProduct\` is **null** for sectors without a compatible website; their public demo links are blocked. The 31 salon/barber leads now route to a dedicated SalonBook website.
 
 | Sector | Records | Historical seed recommendation | Effective recommendation | Action |
 | --- | ---: | --- | --- | --- |
@@ -31,7 +31,7 @@ The "Historical seed recommendation" column describes original sector→product 
 | Hardware & Building Supply | 35 | build-quote | **null** | Dedicated hardware/retail site needed |
 | Healthcare | 33 | clinic-flow | clinic-flow | Matched |
 | Construction & Built Environment | 32 | build-quote, including 2 corrected directory misclassifications | build-quote | Matched; verify per-business service emphasis |
-| Salon & Barber | 31 | 25 nail-muse, 6 clinic-flow | **null** | Hair, barber, general-salon website needed |
+| Salon & Barber | 31 | 25 nail-muse, 6 clinic-flow | salon-book | Corrected: hair/barber public-site variants; business-specific services still need verification |
 | Accounting & Tax | 30 | 29 ledger-desk, 1 tax-flow | ledger-desk / tax-flow | Matched (verify tax-specific practice) |
 | Dental Care | 23 | clinic-flow | clinic-flow | Matched |
 | Guest House & Accommodation | 22 | explore-bw | explore-bw | Matched |
@@ -47,7 +47,7 @@ The "Historical seed recommendation" column describes original sector→product 
 | Auto Repair & Workshop | 2 | move-track | **null** | Vehicle servicing and repair booking site needed |
 | Agricultural Supply & Feed | 2 | build-quote | **null** | Agriculture retail/stock enquiry site needed |
 | Pharmacy | 2 | pharma-desk | pharma-desk | Matched |
-| **Total** | **450** | | **330 matched / 120 pending** | |
+| **Total** | **450** | | **361 matched / 89 pending** | |
 
 ## Specific cleaning-mapping corrections
 
@@ -62,6 +62,7 @@ The "Historical seed recommendation" column describes original sector→product 
 - Browser-local \`CleanCare\` public quote capture is **not** a live backend or notification workflow.
 - Cleaning job/teams/supplies storage is client-keyed for preview isolation; default workspace storage key preserved for existing demo state.
 - Sourced cleaning services are configured through the prospect-specific \`services\` query parameter.
+- Salon/barber demos use independent \`salon-book\` hair and barber variants; any service catalogue is illustrative pending business confirmation.
 - Missing prospect email is **not** substituted with the developer's support email on cleaning public sites.
 - A public Botswana mobile may create a WhatsApp outreach convenience link, but account activity is unverified.
 - CIPA statuses are not promoted to \`registry-confirmed\` without official current evidence.
