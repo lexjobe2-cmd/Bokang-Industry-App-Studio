@@ -13,7 +13,6 @@ import { NailMuseShowcase } from "./NailMuseShowcase";
 import { AquaFlowShowcase } from "./AquaFlowShowcase";
 import { CleanCareShowcase } from "./CleanCareShowcase";
 import { SalonBookShowcase } from "./SalonBookShowcase";
-import { SalonBookShowcase } from "./SalonBookShowcase";
 import { ComplianceJourney } from "../shared/ComplianceJourney";
 import { IndustryEnhancements } from "../shared/IndustryEnhancements";
 import { DeepIndustryWorkflows } from "../shared/DeepIndustryWorkflows";
@@ -35,7 +34,6 @@ export function ProductExperience({ config, clientName }: { config: ProductConfi
   else if (config.slug === "aqua-flow") body = <AquaFlowShowcase config={config} />;
   else if (config.slug === "clean-care") body = <CleanCareShowcase key={clientName || "your-business"} config={config} clientName={clientName} />;
   else if (config.slug === "salon-book") body = <SalonBookShowcase key={clientName || "your-business"} config={config} clientName={clientName} />;
-  else if (config.slug === "salon-book") body = <SalonBookShowcase config={config} clientName={clientName} />;
   else body = (
     <section style={{ marginTop: 28 }}>
       <DashboardGrid>
