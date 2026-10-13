@@ -87,6 +87,7 @@ export function sectorPrivacyData(product: ProductConfig) {
     Construction: ["lead details", "quotation data", "project and milestone status"],
     Tourism: ["traveller/enquiry details", "saved experiences", "itinerary and booking demo data"],
     Logistics: ["job details", "route information", "driver/fleet and delivery status"],
+    "Nail Tech & Beauty": ["appointment details", "service preferences", "client booking notes"],
   };
   return [...common, ...(specific[product.sector] || ["industry workflow data"])];
 }
