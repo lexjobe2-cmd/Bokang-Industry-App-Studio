@@ -92,6 +92,7 @@ export default async function ClientDemoPage({
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
         email={demo.email}
+        phone={demo.phone}
       />
     );
   }
