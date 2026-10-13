@@ -199,11 +199,11 @@ export function ProspectPipeline() {
       phone: prospect.phone ?? "",
       email: prospect.email ?? "",
     });
-    if (product.slug === "salon-book") {
-      params.set("variant", salonModeFromName(prospect.name + " " + prospect.subIndustry));
-    }
     if (product.slug === "clean-care" && prospect.publicServices.length) {
       params.set("services", prospect.publicServices.join(","));
+    }
+    if (product.slug === "salon-book") {
+      params.set("mode", salonModeFromName(prospect.name));
     }
     return window.location.origin + "/demo/" + product.slug + "?" + params.toString();
   }
@@ -448,7 +448,6 @@ export function ProspectPipeline() {
                     <button onClick={() => void copy(link, prospect.id + "-link")} style={secondaryAction}><Link2 size={14} /> {copied === prospect.id + "-link" ? "Copied" : "Copy demo link"}</button>
                     <a href={link} target="_blank" rel="noreferrer" style={primaryAction}>Preview client demo <ExternalLink size={14} /></a>
                     {prospect.recommendedProduct === "clean-care" ? <a href={"/products/clean-care?client=" + encodeURIComponent(prospect.name)} target="_blank" rel="noreferrer" style={secondaryAction}>Open local cleaning operations demo <ExternalLink size={14} /></a> : null}
-                    {prospect.recommendedProduct === "salon-book" ? <a href={"/products/salon-book?client=" + encodeURIComponent(prospect.name)} target="_blank" rel="noreferrer" style={secondaryAction}>Open local salon appointments demo <ExternalLink size={14} /></a> : null}
                   </div>
 
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

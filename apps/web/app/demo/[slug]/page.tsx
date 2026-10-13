@@ -18,6 +18,7 @@ import { NailMuseClientSite } from "../../../components/products/NailMuseClientS
 import { AquaFlowClientSite } from "../../../components/products/AquaFlowClientSite";
 import { CleanCareClientSite } from "../../../components/products/CleanCareClientSite";
 import { SalonBookClientSite } from "../../../components/products/SalonBookClientSite";
+import { SalonBookClientSite } from "../../../components/products/SalonBookClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -123,9 +124,23 @@ export default async function ClientDemoPage({
     />;
   }
 
+  if (config.slug === "salon-book") {
+    return (
+      <SalonBookClientSite
+        key={demo.client}
+        clientName={demo.client}
+        location={demo.location || "Gaborone, Botswana"}
+        email={clientPublicEmail}
+        phone={demo.phone}
+        mode={query.mode === "barber" ? "barber" : "hair"}
+      />
+    );
+  }
+
   if (config.slug === "clean-care") {
     return (
       <CleanCareClientSite
+        key={demo.client}
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
         email={clientPublicEmail}
