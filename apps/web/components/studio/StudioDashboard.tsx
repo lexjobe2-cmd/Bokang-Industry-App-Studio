@@ -117,7 +117,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
         </a>
       </section>
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 16, marginTop: 20 }}>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))", gap: 16, marginTop: 20 }}>
         {products.map((product) => {
           const current = draft(product);
           const isEditing = editing === product.slug;
@@ -225,7 +225,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
                 </div>
               ) : null}
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,110px),1fr))", gap: 8 }}>
                 <a href={`/products/${product.slug}${["clean-care","salon-book"].includes(product.slug) ? "?client=" + encodeURIComponent(clientName(product)) : ""}`} style={actionStyle}>
                   Internal app <ExternalLink size={14} />
                 </a>
