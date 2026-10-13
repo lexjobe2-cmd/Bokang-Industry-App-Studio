@@ -29,6 +29,7 @@ const verificationLabels: Record<ProspectVerificationState, string> = {
 };
 
 function outreachSubject(prospect: Prospect) {
+  if (!prospect.publicDemoReady) return "Website concept research for " + prospect.name;
   return "A working " + products[prospect.recommendedProduct].name + " website concept for " + prospect.name;
 }
 
@@ -41,6 +42,19 @@ function whatsAppUrl(prospect: Prospect) {
 }
 
 function outreachBody(prospect: Prospect, demoUrl: string) {
+  if (!prospect.publicDemoReady) {
+    return [
+      "Hello " + prospect.name + " team,",
+      "",
+      "I came across " + prospect.name + " while researching Botswana businesses in the " + prospect.sector.toLowerCase() + " space.",
+      "",
+      "I am currently preparing a sector-specific website concept for businesses like yours. I have deliberately not attached a mismatched demo.",
+      "",
+      "Regards,",
+      "Bokang Jobe",
+      "Designed & developed by Bokang Jobe"
+    ].join("\n");
+  }
   const product = products[prospect.recommendedProduct];
   const websiteGapChecked = prospect.websiteStatus === "no-first-party-site-found" ||
     prospect.websiteStatus === "directory-only" ||
@@ -172,7 +186,7 @@ export function ProspectPipeline() {
   }
 
   function demoUrl(prospect: Prospect) {
-    if (typeof window === "undefined") return "";
+    if (typeof window === "undefined" || !prospect.publicDemoReady) return "";
     const product = products[prospect.recommendedProduct];
     const params = demoParams({
       ...defaultDemoConfig,
@@ -335,6 +349,11 @@ export function ProspectPipeline() {
                     {prospect.whatsappReady ? (
                       <span style={{ background: "#ecfdf3", color: "#027a48", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>WhatsApp-ready mobile</span>
                     ) : null}
+                    {!prospect.publicDemoReady ? (
+                      <span style={{ background: "#fff1f3", color: "#c01048", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 900 }}>Wrong-template link blocked</span>
+                    ) : (
+                      <span style={{ background: "#eff8ff", color: "#175cd3", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 900 }}>Exact public template</span>
+                    )}
                   </div>
                   <div style={{ color: "#667085", fontSize: 13, marginTop: 5 }}>{prospect.sector} · {prospect.location}</div>
                   <div style={{ marginTop: 9, display: "grid", gap: 4, fontSize: 12 }}>
@@ -367,9 +386,15 @@ export function ProspectPipeline() {
                     setModerationState([prospect.id], "removed");
                   }
                 }} style={{ ...secondaryAction, color: "#b42318", borderColor: "#fecdca" }}><Trash2 size={14} /> Remove</button> : null}
-                <button onClick={() => { setActiveId(isActive ? null : prospect.id); setStatuses((current) => ({ ...current, [prospect.id]: current[prospect.id] ?? "Prepared" })); }} className="prospect-prepare" style={{ ...primaryAction, marginLeft: "auto" }}>
-                  <Mail size={15} /> {isActive ? "Close outreach" : "Prepare outreach"}
-                </button>
+                {prospect.publicDemoReady ? (
+                  <button onClick={() => { setActiveId(isActive ? null : prospect.id); setStatuses((current) => ({ ...current, [prospect.id]: current[prospect.id] ?? "Prepared" })); }} className="prospect-prepare" style={{ ...primaryAction, marginLeft: "auto" }}>
+                    <Mail size={15} /> {isActive ? "Close outreach" : "Prepare outreach"}
+                  </button>
+                ) : (
+                  <button disabled className="prospect-prepare" title={prospect.mappingWarning ?? "Exact public template not ready"} style={{ ...primaryAction, marginLeft: "auto", opacity: .55, cursor: "not-allowed", background: "#667085" }}>
+                    <Mail size={15} /> Template pending
+                  </button>
+                )}
               </div>
 
               {isActive ? (
@@ -379,7 +404,8 @@ export function ProspectPipeline() {
                     <Info label="Public phone" value={prospect.phone || "Not publicly surfaced"} />
                     <Info label="Email status" value={prospect.emailStatus} />
                     <Info label="Phone status" value={prospect.phoneStatus} />
-                    <Info label="Recommended demo" value={product.name} />
+                    <Info label="Recommended demo" value={prospect.publicDemoReady ? product.name : "Blocked until exact sector template exists"} />
+                    <Info label="Template compatibility" value={prospect.demoCompatibility} />
                     <Info label="Source checked" value={prospect.checkedAt} />
                     <Info label="Source type" value={prospect.sourceLabel} />
                     <Info label="Website status" value={websiteStatusLabels[prospect.websiteStatus]} />
@@ -388,7 +414,7 @@ export function ProspectPipeline() {
                     <Info label="Operating evidence" value={prospect.operatingEvidenceState} />
                     <Info label="CIPA status" value={prospect.cipaVerificationState} />
                     <Info label="WhatsApp-ready" value={prospect.whatsappReady ? "Yes — " + prospect.whatsappPhone : "Not confirmed"} />
-                    <Info label="Proposed demo path" value={prospect.proposedDemoPath} />
+                    <Info label="Proposed demo path" value={prospect.proposedDemoPath || "No public demo path — exact template pending"} />
                   </div>
 
                   <div>
