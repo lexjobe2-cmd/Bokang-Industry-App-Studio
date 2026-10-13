@@ -48,6 +48,7 @@ export type Prospect = {
   operatingEvidenceState: OperatingEvidenceState;
   operatingEvidence: string;
   whatsappReady: boolean;
+  whatsappPhone?: string;
   emailStatus: ContactStatus;
   phoneStatus: ContactStatus;
   emailEvidence: string;
@@ -70,6 +71,10 @@ function isBotswanaMobile(phone: string | undefined) {
   const digits = phone.replace(/\D/g, "");
   const local = digits.startsWith("267") ? digits.slice(3) : digits;
   return /^7\d{7}$/.test(local);
+}
+
+function firstBotswanaMobile(phones: Array<string | undefined>) {
+  return phones.find((phone) => isBotswanaMobile(phone));
 }
 
 type Seed = {
@@ -3647,6 +3652,7 @@ export const prospects: Prospect[] = seeds.map((seed) => {
   const secondaryEmails = enrichment?.secondaryEmails ?? [];
   const emailStatus: ContactStatus = email ? "verified-public" : "not-publicly-surfaced";
   const phoneStatus: ContactStatus = phone ? "verified-public" : "not-publicly-surfaced";
+  const whatsappPhone = firstBotswanaMobile([phone, ...secondaryPhones]);
   const emailEvidence = enrichment?.emailEvidence ?? (email
     ? "Public email was captured from the prospect's existing source record."
     : "No explicit public email address has been surfaced yet. Do not guess or construct one.");
@@ -3708,7 +3714,8 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     cipaLookupUrl: cipaLookupUrl(),
     operatingEvidenceState: seed.operatingEvidenceState ?? "unclear",
     operatingEvidence: seed.operatingEvidence ?? seed.evidence,
-    whatsappReady: isBotswanaMobile(phone),
+    whatsappReady: Boolean(whatsappPhone),
+    whatsappPhone,
     emailStatus,
     phoneStatus,
     emailEvidence,
