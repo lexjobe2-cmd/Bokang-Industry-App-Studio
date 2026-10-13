@@ -178,9 +178,8 @@ Purple Tie Dry Cleaners|Gaborone|+2673188874|
     industry: "Business Services",
     subIndustry: "Cleaning Services",
     sector: "Cleaning Services",
-    product: "build-quote",
+    product: "clean-care",
     source: "https://www.localbotswana.com/category/Cleaning/city%3AGaborone",
-    template: "Cleaning-services booking + quote template",
     rows: `
 Clugston Group|Gaborone|+2673950067|
 CleanTek (Pty) Ltd|Gaborone|+26771300922|
