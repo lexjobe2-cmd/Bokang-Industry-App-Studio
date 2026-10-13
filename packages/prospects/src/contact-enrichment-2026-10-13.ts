@@ -46,14 +46,6 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailEvidence: "Camelot Spa public contact information surfaces the Grand Palm email.",
     phoneEvidence: "Public contact information surfaces the Grand Palm telephone and WhatsApp contact."
   },
-  "clugston-group": {
-    email: "info.clugston@gmail.com",
-    secondaryPhones: ["+267 73870282", "+267 75024775"],
-    emailSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
-    phoneSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
-    emailEvidence: "Company profile lists info.clugston@gmail.com on its named employee contact cards.",
-    phoneEvidence: "Clugston company profile lists +267 73870282 and +267 75024775 as public mobile contacts."
-  },
   "cleantek-pty-ltd": {
     secondaryPhones: ["+267 311 0139", "+267 311 1064", "+267 72535673"],
     website: "https://www.cleantek.co.bw/",
@@ -86,11 +78,6 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.localbotswana.com/company/14394/Clugston_Group",
     emailEvidence: "Current checked company directory listing visibly publishes info.clugston@gmail.com for the project manager and marketing executive.",
     phoneEvidence: "Company listing publishes 395 0067, +267 73870282, and +267 72129376. Confirm preferred number before outreach."
-  },
-  "ranjit-creations": {
-    secondaryPhones: ["+267 74704319"],
-    phoneSourceUrl: "https://government.co.bw/company/7100887",
-    phoneEvidence: "Public Botswana business directory lists office +267 3117212 and mobile +267 74704319 for cleaning, catering and detergent manufacturer."
   },
   "kalahari-shine": {
     email: "chris@kalaharishine.co.bw",
@@ -840,8 +827,8 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   "ranjit-creations": {
     phone: "+267 3117212",
     secondaryPhones: ["+267 74704319"],
-    phoneSourceUrl: "https://www.localbotswana.com/",
-    phoneEvidence: "Current Botswana business listing publishes the business telephone and mobile."
+    phoneSourceUrl: "https://government.co.bw/company/7100887",
+    phoneEvidence: "Public Botswana business directory lists office +267 3117212 and mobile +267 74704319; the firm advertises cleaning, catering and detergent manufacturing."
   },
   "leinad-holdings": {
     phone: "+267 76188600",
