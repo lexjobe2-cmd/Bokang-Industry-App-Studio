@@ -642,5 +642,30 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailEvidence: "PostNet's current public Botswana store page publishes carbocentre@postnet.co.bw. This is a Gaborone branch mailbox rather than a confirmed national head-office email.",
     phoneEvidence: "The same current store page publishes +267 77 561 327."
   }
+,
+  "rahim-khan-and-company": {
+    email: "arkhan@rahimkhan.co.bw",
+    secondaryPhones: ["+267 71300270"],
+    emailSourceUrl: "https://dailynews.gov.bw/common_up/dailynews/dailynews_pdf/28-11-2025_11-12-20_1764321140_dailynews_pdf.pdf",
+    phoneSourceUrl: "https://www.knowledgehub.ccardesa.org/sites/default/files/2025-05/CKruger%2520CV%2520%25202021.pdf",
+    emailEvidence: "A 2025 Botswana Daily News legal notice publishes arkhan@rahimkhan.co.bw for Rahim Khan and Company.",
+    phoneEvidence: "Public professional-reference material surfaces mobile +267 71300270 for the firm's founder alongside the firm email."
+  },
+  "hardpro": {
+    email: "info@hardpro.biz",
+    phone: "+267 3909213",
+    emailSourceUrl: "https://hardpro.biz/index.php/en/",
+    phoneSourceUrl: "https://hardpro.biz/index.php/en/",
+    emailEvidence: "HardPro's current public website and recent LinkedIn posts publish info@hardpro.biz.",
+    phoneEvidence: "HardPro's current public website publishes +267 390 9213."
+  },
+  "mivani": {
+    email: "sales@mivani.co.bw",
+    phone: "+267 76370995",
+    emailSourceUrl: "https://servicemeonline.com/advert/mivani/",
+    phoneSourceUrl: "https://servicemeonline.com/advert/mivani/",
+    emailEvidence: "A current 2026 ServiceMe Botswana listing publishes sales@mivani.co.bw.",
+    phoneEvidence: "The same current listing publishes +267 76 370 995."
+  }
 
 };
