@@ -7,7 +7,8 @@ export type ProductSlug =
   | "build-quote"
   | "explore-bw"
   | "move-track"
-  | "fresh-fold";
+  | "fresh-fold"
+  | "nail-muse";
 
 export type ProductExperienceProfile = {
   mood: string;
@@ -186,6 +187,24 @@ export const products: Record<ProductSlug, ProductConfig> = {
       onboarding: ["Business profile", "Laundry services", "Turnaround times", "Pickup areas", "Commercial service rules"],
       signatureFeatures: ["Public booking site", "Pickup and delivery workflow", "Garment care board", "Commercial laundry accounts", "Repeat-customer history"],
       compliance: ["Order handover record", "Garment condition notes", "Pickup/delivery evidence", "Quality-check record"]
+    }
+  },
+  "nail-muse": {
+    slug: "nail-muse",
+    name: "NailMuse AI",
+    sector: "Nail Tech & Beauty",
+    description: "Public nail portfolio, service menu, appointment requests, availability, client history and repeat-booking operations.",
+    tabs: ["Home", "Appointments", "Clients", "Services", "More"],
+    modules: ["Public portfolio", "Service menu", "Appointment requests", "Availability", "Client profiles", "Design notes", "Repeat bookings", "Price menu", "Promotions", "Analytics"],
+    dashboardMetrics: ["Appointments today", "Pending confirmations", "Returning clients", "Popular service"],
+    experience: {
+      mood: "Visual, polished and booking-first",
+      accent: "#be185d",
+      surface: "#fff1f7",
+      hero: "Turn social attention into owned bookings, repeat clients and a polished nail portfolio.",
+      onboarding: ["Business profile", "Nail services", "Pricing", "Opening hours", "Booking policies"],
+      signatureFeatures: ["Visual nail portfolio", "Service and price menu", "Appointment booking", "Availability control", "Repeat-client notes"],
+      compliance: ["Booking consent", "Service notes", "Appointment history", "Client communication record"]
     }
   },
   "move-track": {
