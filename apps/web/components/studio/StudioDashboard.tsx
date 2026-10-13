@@ -16,6 +16,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "build-quote": "Construction company website",
   "explore-bw": "Safari operator website",
   "move-track": "Logistics company website",
+  "fresh-fold": "Dry cleaning & laundry website",
 };
 
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {
@@ -90,7 +91,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
             Configure, preview and share outreach demos.
           </h1>
           <p style={{ maxWidth: 780, color: "#667085", fontSize: 18, lineHeight: 1.7, margin: 0 }}>
-            Every product now has two deliberately separate surfaces: the internal operating app and an industry-specific public prospect website. Configure the client name once, preview the public site, then copy the current-deployment link into outreach.
+            Every product has two deliberately separate surfaces: the internal operating app and an industry-specific public prospect website. Configure the client name once, preview the public site, then copy the current-deployment link into outreach.
           </p>
         </div>
 
@@ -248,7 +249,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
       <section style={{ marginTop: 26, background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 20, padding: 18 }}>
         <strong>Public-site routing</strong>
         <p style={{ color: "#475467", lineHeight: 1.65, marginBottom: 0 }}>
-          The eight public websites use the current deployment origin plus their dedicated /demo/&lt;product&gt; route. That means the Studio always copies the newest deployed site URL instead of hard-coding temporary Cloudflare preview hosts. Configure client → open public site → copy/share link → use it in manual outreach.
+          The public websites use the current deployment origin plus their dedicated /demo/&lt;product&gt; route. That means the Studio always copies the newest deployed site URL instead of hard-coding temporary Cloudflare preview hosts. Configure client → open public site → copy/share link → use it in manual outreach.
         </p>
       </section>
 
