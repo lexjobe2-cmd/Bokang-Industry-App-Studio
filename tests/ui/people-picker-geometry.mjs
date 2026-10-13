@@ -139,6 +139,35 @@ try{
   }
  }
 
+
+ // Aviation workspace smoke test: sector changes present rotorcraft-specific checklist
+ // references while refusing to imply operational clearance.
+ await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});
+ await send("Page.navigate",{url:base+"/app/aviation"});
+ await waitFor(()=>evaluate("!!document.querySelector('section[aria-label=\"Aviation ground operations\"]')"),"aviation workspace");
+ await ensureTheme("dark");
+ const selected=await evaluate(String.raw`(()=>{
+  const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set;
+  const sector=document.querySelector('select[aria-label="Aviation sector profile"]');
+  if(!sector)return {error:"No sector profile"};
+  set.call(sector,"MINING");sector.dispatchEvent(new Event("change",{bubbles:true}));
+  return {sector:sector.value};
+ })()`);
+ assert.equal(selected.sector,"MINING",JSON.stringify(selected));
+ await waitFor(()=>evaluate(String.raw`document.querySelector('select[aria-label="Aviation airframe category"]')?.value==="NOT_APPLICABLE"`),"mine landing-area selection");
+ const rotorcraft=await evaluate(String.raw`(()=>{
+  const sel=[...document.querySelectorAll('select')].find(x=>x.closest('label')?.textContent?.includes('Inspection / oversight category'));
+  if(!sel)return {error:"No workflow selector"};
+  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(sel,'helicopter-ground-safety');
+  sel.dispatchEvent(new Event('change',{bubbles:true}));
+  return {selected:sel.value};
+ })()`);
+ assert.equal(rotorcraft.selected,"helicopter-ground-safety",JSON.stringify(rotorcraft));
+ await waitFor(()=>evaluate(String.raw`document.querySelector('select[aria-label="Aviation airframe category"]')?.value==="HELICOPTER"`),"helicopter mode");
+ assert.ok(await evaluate(String.raw`document.body.textContent.includes("Aircraft / non-sensitive asset reference")`));
+ assert.equal(await evaluate(String.raw`document.body.textContent.includes("Recording does not grant aircraft dispatch")`),true);
+ console.log("AVIATION ROTORCRAFT UI PASSED",JSON.stringify({sector:"MINING",workflow:"helicopter-ground-safety",airframe:"HELICOPTER"}));
+
  // Screenshot regression: measure the exact failing Agenda/Clear buttons with browser-computed
  // foreground and background, never infer contrast from authored CSS strings.
  for(const {width,height} of [{width:320,height:700},{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
@@ -193,7 +222,7 @@ try{
   "/","/company","/app/control","/app/fleet","/app/drivers","/app/sites",
   "/app/assign","/app/jobs","/search","/workflows","/app/forms",
   "/app/meetings","/app/paper","/app/release","/app/analytics",
-  "/app/workforce","/app/profile","/app/local-data","/app/settings","/app/admin","/app/aviation"
+  "/app/workforce","/app/profile","/app/local-data","/app/settings","/app/admin","/app/aviation","/app/aviation"
  ];
  const entryResults=[];
  const scanExpression=[
@@ -221,7 +250,7 @@ try{
     entryResults.push(item);
     if(metrics.page>metrics.viewport+2||metrics.outside.length||metrics.clipped.length||metrics.narrow.length||metrics.lowContrast.length)
      console.log("UI AUDIT FINDING",JSON.stringify(item));
-    if(width===390&&theme==="dark"&&["/","/app/admin","/app/fleet","/app/forms","/app/meetings","/app/analytics","/workflows","/search"].includes(route)){
+    if(width===390&&theme==="dark"&&["/","/app/admin","/app/fleet","/app/forms","/app/meetings","/app/analytics","/workflows","/search","/app/aviation"].includes(route)){
      const shot=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
      const name="ui-geometry-"+(route==="/"?"home":route.replace(/^\//,"").replaceAll("/","-"))+".png";
      await writeFile(name,Buffer.from(shot.data,"base64"));
