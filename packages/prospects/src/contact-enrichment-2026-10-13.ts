@@ -124,11 +124,6 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     emailSourceUrl: "https://www.baoa.org.bw/",
     emailEvidence: "Current BAOA public audit-firm information surfaces vikasa@rabcs.com."
   },
-  "bdo-botswana": {
-    email: "rlombard@bdo.bw",
-    emailSourceUrl: "https://www.bdo.global/",
-    emailEvidence: "Public BDO Botswana materials surface rlombard@bdo.bw as a business contact."
-  },
   "berry-bliss-guest-house": {
     email: "info@berrybliss.co.bw",
     emailSourceUrl: "https://berrybliss.co.bw/",
@@ -389,8 +384,7 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     email: "botsheloguesthouse@gmail.com",
     emailSourceUrl: "https://www.botswanatourism.co.bw/index.php/taxonomy/term/23?page=68",
     emailEvidence: "Botswana Tourism Organisation operating listing surfaces botsheloguesthouse@gmail.com."
-  }
-,
+  },
   "major-league-security": {
     email: "admin@majorleaguesecurity.co.bw",
     secondaryPhones: ["+267 72126777"],
@@ -497,42 +491,6 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phone: "+267 76752926",
     phoneSourceUrl: "https://book.heygoldie.com/Nails-By-Kelendria",
     phoneEvidence: "Current booking page publishes WhatsApp +267 76752926 and says clients may also email, but the email itself is hidden behind the booking platform."
-  }
-,
-  "elite-dental-clinic": {
-    email: "edcsurgeon@gmail.com",
-    phone: "+267 4924730",
-    secondaryPhones: ["+267 76815797"],
-    emailSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/528",
-    phoneSourceUrl: "https://www.sesoa.co.bw/init/default/business_profile/528",
-    emailEvidence: "Current Sesoa Botswana business profile publishes edcsurgeon@gmail.com for Elite Dental Clinic.",
-    phoneEvidence: "Current Sesoa profile publishes the clinic telephone and mobile."
-  },
-  "luxury-inn": {
-    email: "info@luxuryinn.co.bw",
-    phone: "+267 3928500",
-    emailSourceUrl: "https://www.botswanatourism.co.bw/sites/default/files/2025-08/Accomodation%20Directory%202024%20-%202025.pdf",
-    phoneSourceUrl: "https://www.botswanatourism.co.bw/sites/default/files/2025-08/Accomodation%20Directory%202024%20-%202025.pdf",
-    emailEvidence: "Botswana Tourism Organisation accommodation directory publishes info@luxuryinn.co.bw.",
-    phoneEvidence: "Botswana Tourism Organisation directory publishes the Luxury Inn booking telephone."
-  },
-  "rehoboth-guest-house": {
-    email: "rehoboth@it.bw",
-    phone: "+267 3953780",
-    secondaryPhones: ["+267 71667171"],
-    emailSourceUrl: "https://governmentdirectree.com/business-directory/6396/rehoboth-guest-house/",
-    phoneSourceUrl: "https://governmentdirectree.com/business-directory/6396/rehoboth-guest-house/",
-    emailEvidence: "Botswana Government Directree business listing publishes rehoboth@it.bw for the Gaborone Rehoboth Guest House.",
-    phoneEvidence: "The same Botswana listing publishes the telephone and mobile."
-  },
-  "pula-dental-clinic": {
-    email: "rkgwaneng@yahoo.com",
-    phone: "+267 3170630",
-    secondaryPhones: ["+267 71704624"],
-    emailSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2014.pdf",
-    phoneSourceUrl: "https://hdb.co.bw/wp-content/uploads/2021/04/Health-directory-2014.pdf",
-    emailEvidence: "Health Directory Botswana publishes rkgwaneng@yahoo.com for a Pula Dental Clinic practitioner at the same BBS Mall practice; re-check before outreach because the directory record is older.",
-    phoneEvidence: "The directory record matches Pula Dental Clinic's public BBS Mall telephone and lists a mobile."
   },
   "dr-bp-mariri": {
     email: "bmariri@yahoo.com",
@@ -554,8 +512,7 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.africabizinfo.com/BW/maxi-save-hardware-store_1K-392-4539",
     emailEvidence: "Current public MAXI SAVE shop listing publishes maxi@maxisave.bw.",
     phoneEvidence: "Current public business listing publishes the Gaborone store telephone numbers."
-  }
-,
+  },
   "ae-group": {
     email: "aegroupbotswana@gmail.com",
     secondaryPhones: ["+267 72415736"],
@@ -623,6 +580,7 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   },
   "bdo-botswana": {
     email: "plombard@bdo.bw",
+    secondaryEmails: ["rlombard@bdo.bw"],
     emailSourceUrl: "https://www.bdo.bw/en-gb/our-people/philip-lombard",
     phoneSourceUrl: "https://www.bdo.bw/en-gb/our-people/philip-lombard",
     emailEvidence: "BDO Botswana's current public leadership page publishes CEO Philip Lombard's business email.",
@@ -641,33 +599,7 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.postnet.co.za/stores/carbocentre",
     emailEvidence: "PostNet's current public Botswana store page publishes carbocentre@postnet.co.bw. This is a Gaborone branch mailbox rather than a confirmed national head-office email.",
     phoneEvidence: "The same current store page publishes +267 77 561 327."
-  }
-,
-  "rahim-khan-and-company": {
-    email: "arkhan@rahimkhan.co.bw",
-    secondaryPhones: ["+267 71300270"],
-    emailSourceUrl: "https://dailynews.gov.bw/common_up/dailynews/dailynews_pdf/28-11-2025_11-12-20_1764321140_dailynews_pdf.pdf",
-    phoneSourceUrl: "https://www.knowledgehub.ccardesa.org/sites/default/files/2025-05/CKruger%2520CV%2520%25202021.pdf",
-    emailEvidence: "A 2025 Botswana Daily News legal notice publishes arkhan@rahimkhan.co.bw for Rahim Khan and Company.",
-    phoneEvidence: "Public professional-reference material surfaces mobile +267 71300270 for the firm's founder alongside the firm email."
   },
-  "hardpro": {
-    email: "info@hardpro.biz",
-    phone: "+267 3909213",
-    emailSourceUrl: "https://hardpro.biz/index.php/en/",
-    phoneSourceUrl: "https://hardpro.biz/index.php/en/",
-    emailEvidence: "HardPro's current public website and recent LinkedIn posts publish info@hardpro.biz.",
-    phoneEvidence: "HardPro's current public website publishes +267 390 9213."
-  },
-  "mivani": {
-    email: "sales@mivani.co.bw",
-    phone: "+267 76370995",
-    emailSourceUrl: "https://servicemeonline.com/advert/mivani/",
-    phoneSourceUrl: "https://servicemeonline.com/advert/mivani/",
-    emailEvidence: "A current 2026 ServiceMe Botswana listing publishes sales@mivani.co.bw.",
-    phoneEvidence: "The same current listing publishes +267 76 370 995."
-  }
-,
   "pinnacle-express-couriers": {
     email: "delia@trans-kalahari.com",
     emailSourceUrl: "https://businesspages.co.za/company/76720236",
@@ -704,13 +636,12 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     secondaryPhones: ["+267 74379126"],
     phoneSourceUrl: "https://www.localbotswana.com/",
     phoneEvidence: "Current Botswana water-business listing surfaces an additional public mobile contact."
-  }
-,
+  },
   "rahim-khan-and-company": {
     email: "arkhan@rahimkhan.co.bw",
     secondaryEmails: ["info@rahimkhan.co.bw"],
     phone: "+267 3188988",
-    secondaryPhones: ["+267 3188989"],
+    secondaryPhones: ["+267 3188989", "+267 71300270"],
     emailSourceUrl: "https://dailynews.gov.bw/common_up/dailynews/dailynews_pdf/28-11-2025_11-12-20_1764321140_dailynews_pdf.pdf",
     phoneSourceUrl: "https://dailynews.gov.bw/common_up/dailynews/dailynews_pdf/28-11-2025_11-12-20_1764321140_dailynews_pdf.pdf",
     emailEvidence: "A 2025 Botswana Daily News legal notice publishes arkhan@rahimkhan.co.bw; a public 2023 recruitment notice also publishes info@rahimkhan.co.bw.",
@@ -739,12 +670,10 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.localbotswana.com/company/2196/Barloworld_Motor",
     emailEvidence: "A public Botswana Barloworld Motor business listing publishes terryp@barloworld.co.bw. Treat this as a Botswana brand contact rather than a Francistown-only mailbox and re-check before outreach.",
     phoneEvidence: "The verified Francistown listing publishes +267 241 2323 and +267 241 2324."
-  }
-,
+  },
   "olithas-funeral": {
     phone: "+267 71625639",
     phoneSourceUrl: "https://bobstandards.bw/wp-content/uploads/2022/05/Supplier-Directory-Consolidated.pdf",
     phoneEvidence: "A public Botswana supplier directory lists Olitha's Funeral Parlour with mobile +267 71625639. The source is older, so re-check before outreach."
   }
-
 };
