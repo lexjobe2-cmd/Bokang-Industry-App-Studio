@@ -11,7 +11,7 @@ function input(workflow){return {id:"AV-TEST",workflowId:workflow.id,airport:"Ma
   answers:a(workflow),actions:[]};}
 
 test("aviation assurance has unique workflows across aerodrome, ramp, GSE, turnaround, aircraft and security",()=>{
- assert.equal(AVIATION_WORKFLOWS.length,7);
+ assert.equal(AVIATION_WORKFLOWS.length,11);
  assert.equal(new Set(AVIATION_WORKFLOWS.map(w=>w.id)).size,AVIATION_WORKFLOWS.length);
  assert.ok(AVIATION_WORKFLOWS.every(w=>w.operatorApprovalRequired && w.checks.length>=4 && w.standardContext.length>=1));
  assert.deepEqual(new Set(AVIATION_WORKFLOWS.map(w=>w.area)),new Set(Object.keys(AVIATION_AREA_LABELS)));
@@ -46,7 +46,7 @@ test("issues need accountable follow up, even if remaining checks have no issue"
 test("ground support equipment inspections require equipment ID and aircraft record requires registration",()=>{
  assert.throws(()=>makeAviationObservation(input(gse)),/GSE asset identifier/);
  assert.equal(makeAviationObservation({...input(gse),equipmentId:"GSE-001"}).state,"OBSERVATIONS_RECORDED");
- assert.throws(()=>makeAviationObservation(input(aircraft)),/Aircraft registration/);
+ assert.throws(()=>makeAviationObservation(input(aircraft)),/Aircraft or non-sensitive asset reference/);
  assert.equal(makeAviationObservation({...input(aircraft),aircraftRegistration:"A2-DEMO"}).state,"OBSERVATIONS_RECORDED");
 });
 test("unknown workflows and missing observer or station do not produce records",()=>{
