@@ -3,6 +3,9 @@ export type ContactEnrichment = {
   phone?: string;
   secondaryPhones?: string[];
   secondaryEmails?: string[];
+  website?: string;
+  websiteSourceUrl?: string;
+  websiteEvidence?: string;
   emailSourceUrl?: string;
   phoneSourceUrl?: string;
   emailEvidence?: string;
@@ -42,6 +45,31 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
     phoneSourceUrl: "https://www.camelotspa.co.za/",
     emailEvidence: "Camelot Spa public contact information surfaces the Grand Palm email.",
     phoneEvidence: "Public contact information surfaces the Grand Palm telephone and WhatsApp contact."
+  },
+  "cleantek-pty-ltd": {
+    secondaryPhones: ["+267 311 0139", "+267 311 1064", "+267 72535673"],
+    website: "https://www.cleantek.co.bw/",
+    websiteSourceUrl: "https://www.cleantek.co.bw/",
+    websiteEvidence: "First-party CleanTek cleaning and hygiene website surfaced during the 13 Oct 2026 re-check.",
+    phoneSourceUrl: "https://www.cleantek.co.bw/",
+    phoneEvidence: "CleanTek first-party website lists +267 311 0139, 311 1064, +267 71300922 and +267 72535673."
+  },
+  "cleanall-services": {
+    email: "info@cleanall.co.bw",
+    secondaryEmails: ["palapye@cleanall.co.bw", "receptionft@cleanall.co.bw", "kasane@cleanall.co.bw"],
+    secondaryPhones: ["+267 3912557", "+267 3186975", "+267 4920709", "+267 71926120", "+267 2402128", "+267 71300297"],
+    website: "https://cleanall.co.bw/",
+    websiteSourceUrl: "https://cleanall.co.bw/contact-us/",
+    websiteEvidence: "First-party CleanAll website with current contact, quotation and cleaning service pages checked 13 Oct 2026.",
+    emailSourceUrl: "https://cleanall.co.bw/contact-us/",
+    phoneSourceUrl: "https://cleanall.co.bw/contact-us/",
+    emailEvidence: "Official CleanAll contact page publishes general and regional branch email addresses.",
+    phoneEvidence: "Official CleanAll contact page lists Gaborone, Palapye and Francistown office/mobile numbers; original seed mobile retained."
+  },
+  "skitters-cleaning-company": {
+    secondaryPhones: ["+267 71239170"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/14089/Skitters_Cleaning_Company",
+    phoneEvidence: "The Skitters company listing publishes landline +267 3165992 and mobile +267 71239170. Listed site not yet verified live."
   },
   "kalahari-shine": {
     email: "chris@kalaharishine.co.bw",

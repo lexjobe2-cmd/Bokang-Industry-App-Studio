@@ -12,7 +12,7 @@ type StatusMap = Record<string, ProspectStatus>;
 type ModerationState = "active" | "discarded" | "removed";
 type ModerationMap = Record<string, ModerationState>;
 type ModerationFilter = "active" | "discarded" | "removed" | "all";
-type ContactFilter = "all" | "email-and-phone" | "phone-only" | "email-only" | "missing-email" | "missing-phone";
+type ContactFilter = "all" | "email-and-phone" | "phone-only" | "email-only" | "missing-email" | "missing-phone" | "mobile";
 
 const websiteStatusLabels: Record<WebsiteStatus, string> = {
   "no-first-party-site-found": "No first-party website found",
@@ -29,7 +29,7 @@ const verificationLabels: Record<ProspectVerificationState, string> = {
 };
 
 function outreachSubject(prospect: Prospect) {
-  if (!prospect.publicDemoReady) return "Website concept research for " + prospect.name;
+  if (!prospect.publicDemoReady || !prospect.recommendedProduct) return "Website concept research for " + prospect.name;
   return "A working " + products[prospect.recommendedProduct].name + " website concept for " + prospect.name;
 }
 
@@ -42,7 +42,7 @@ function whatsAppUrl(prospect: Prospect) {
 }
 
 function outreachBody(prospect: Prospect, demoUrl: string) {
-  if (!prospect.publicDemoReady) {
+  if (!prospect.publicDemoReady || !prospect.recommendedProduct) {
     return [
       "Hello " + prospect.name + " team,",
       "",
@@ -133,7 +133,8 @@ export function ProspectPipeline() {
         (contactFilter === "phone-only" && Boolean(prospect.phone && !prospect.email)) ||
         (contactFilter === "email-only" && Boolean(prospect.email && !prospect.phone)) ||
         (contactFilter === "missing-email" && !prospect.email) ||
-        (contactFilter === "missing-phone" && !prospect.phone);
+        (contactFilter === "missing-phone" && !prospect.phone) ||
+        (contactFilter === "mobile" && prospect.whatsappReady);
       const matchesQuery = !needle ||
         prospect.name.toLowerCase().includes(needle) ||
         prospect.sector.toLowerCase().includes(needle) ||
@@ -186,7 +187,7 @@ export function ProspectPipeline() {
   }
 
   function demoUrl(prospect: Prospect) {
-    if (typeof window === "undefined" || !prospect.publicDemoReady) return "";
+    if (typeof window === "undefined" || !prospect.publicDemoReady || !prospect.recommendedProduct) return "";
     const product = products[prospect.recommendedProduct];
     const params = demoParams({
       ...defaultDemoConfig,
@@ -195,7 +196,7 @@ export function ProspectPipeline() {
       headline: "A " + product.sector.toLowerCase() + " workspace concept for " + prospect.name,
       intro: "We prepared this interactive " + product.name + " concept to demonstrate how " + prospect.name + " could explore a more structured digital workflow around " + product.description.toLowerCase(),
       phone: prospect.phone ?? "",
-      email: prospect.email ?? defaultDemoConfig.email,
+      email: prospect.email ?? "",
     });
     return window.location.origin + "/demo/" + product.slug + "?" + params.toString();
   }
@@ -276,6 +277,7 @@ export function ProspectPipeline() {
           <option value="email-only">Email only</option>
           <option value="missing-email">Missing public email</option>
           <option value="missing-phone">Missing public phone</option>
+          <option value="mobile">Public Botswana mobile (WhatsApp unverified)</option>
         </select>
       </section>
 
@@ -320,7 +322,7 @@ export function ProspectPipeline() {
 
       <section className="prospect-list" style={{ display: "grid", gap: 14, marginTop: 20 }}>
         {visible.map((prospect) => {
-          const product = products[prospect.recommendedProduct];
+          const product = prospect.recommendedProduct ? products[prospect.recommendedProduct] : null;
           const isActive = activeId === prospect.id;
           const link = typeof window === "undefined" ? "" : demoUrl(prospect);
           const subject = outreachSubject(prospect);
@@ -347,7 +349,7 @@ export function ProspectPipeline() {
                       <span style={{ background: "#f2f4f7", color: "#475467", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>CIPA check pending</span>
                     )}
                     {prospect.whatsappReady ? (
-                      <span style={{ background: "#ecfdf3", color: "#027a48", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>WhatsApp-ready mobile</span>
+                      <span style={{ background: "#ecfdf3", color: "#027a48", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 850 }}>Public mobile · WhatsApp unverified</span>
                     ) : null}
                     {!prospect.publicDemoReady ? (
                       <span style={{ background: "#fff1f3", color: "#c01048", borderRadius: 999, padding: "4px 8px", fontSize: 11, fontWeight: 900 }}>Wrong-template link blocked</span>
@@ -369,7 +371,7 @@ export function ProspectPipeline() {
 
                 <div className="prospect-status-panel" style={{ display: "grid", justifyItems: "end", gap: 8 }}>
                   <span style={{ color: prospect.publicDemoReady ? "#2563eb" : "#6941c6", fontWeight: 900, fontSize: 12 }}>
-                    {prospect.publicDemoReady ? product.name : "Exact template pending"}
+                    {prospect.publicDemoReady ? product?.name : "Exact template pending"}
                   </span>
                   <select value={statusFor(prospect.id)} onChange={(event) => setStatuses((current) => ({ ...current, [prospect.id]: event.target.value as ProspectStatus }))} style={{ border: "1px solid #d0d5dd", borderRadius: 10, padding: "7px 9px", background: "#fff", fontWeight: 750 }}>
                     {(["New","Prepared","Contacted","Replied","Converted","Not now"] as ProspectStatus[]).map((status) => <option key={status}>{status}</option>)}
@@ -406,7 +408,7 @@ export function ProspectPipeline() {
                     <Info label="Public phone" value={prospect.phone || "Not publicly surfaced"} />
                     <Info label="Email status" value={prospect.emailStatus} />
                     <Info label="Phone status" value={prospect.phoneStatus} />
-                    <Info label="Recommended demo" value={prospect.publicDemoReady ? product.name : "Blocked until exact sector template exists"} />
+                    <Info label="Recommended demo" value={prospect.publicDemoReady ? (product?.name ?? "Template pending") : "Blocked until exact sector template exists"} />
                     <Info label="Template compatibility" value={prospect.demoCompatibility} />
                     <Info label="Source checked" value={prospect.checkedAt} />
                     <Info label="Source type" value={prospect.sourceLabel} />
@@ -415,7 +417,7 @@ export function ProspectPipeline() {
                     <Info label="Confidence" value={prospect.confidence} />
                     <Info label="Operating evidence" value={prospect.operatingEvidenceState} />
                     <Info label="CIPA status" value={prospect.cipaVerificationState} />
-                    <Info label="WhatsApp-ready" value={prospect.whatsappReady ? "Yes — " + prospect.whatsappPhone : "Not confirmed"} />
+                    <Info label="Public Botswana mobile (WhatsApp unverified)" value={prospect.whatsappReady ? "Yes — " + prospect.whatsappPhone : "No qualifying mobile surfaced"} />
                     <Info label="Proposed demo path" value={prospect.proposedDemoPath || "No public demo path — exact template pending"} />
                   </div>
 

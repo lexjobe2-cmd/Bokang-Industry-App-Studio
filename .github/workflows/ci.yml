@@ -2,7 +2,7 @@ name: Studio CI
 
 on:
   push:
-    branches: ["main", "foundation/**", "feature/**"]
+    branches: ["main", "foundation/**", "feature/**", "showcase/cloudflare-client-demos"]
   pull_request:
     branches: ["main"]
 

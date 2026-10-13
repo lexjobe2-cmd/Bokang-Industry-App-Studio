@@ -36,6 +36,8 @@ export default async function ClientDemoPage({
   const config = getProductConfig(slug as ProductSlug);
   const demo = parseDemoConfig(config, query);
   const logo = safeLogoUrl(demo.logo);
+  // A missing prospect email must not be replaced by the developer email on the client website.
+  const clientPublicEmail = typeof query.email === "string" && query.email.trim() ? demo.email : "";
   const legalQuery = `?client=${encodeURIComponent(demo.client)}`;
 
   if (config.slug === "build-quote") {
@@ -44,7 +46,7 @@ export default async function ClientDemoPage({
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
         contact={demo.contact}
-        email={demo.email}
+        email={clientPublicEmail}
         cta={demo.cta || "Request a consultation"}
       />
     );
@@ -83,7 +85,7 @@ export default async function ClientDemoPage({
       <FreshFoldClientSite
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
-        email={demo.email}
+        email={clientPublicEmail}
       />
     );
   }
@@ -93,7 +95,7 @@ export default async function ClientDemoPage({
       <NailMuseClientSite
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
-        email={demo.email}
+        email={clientPublicEmail}
         phone={demo.phone}
       />
     );
@@ -104,7 +106,7 @@ export default async function ClientDemoPage({
       <AquaFlowClientSite
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
-        email={demo.email}
+        email={clientPublicEmail}
         phone={demo.phone}
       />
     );
@@ -115,7 +117,7 @@ export default async function ClientDemoPage({
       <CleanCareClientSite
         clientName={demo.client}
         location={demo.location || "Gaborone, Botswana"}
-        email={demo.email}
+        email={clientPublicEmail}
         phone={demo.phone}
       />
     );

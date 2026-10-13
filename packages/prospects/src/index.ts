@@ -33,7 +33,7 @@ export type Prospect = {
   sourceLinks: string[];
   sourceLabel: string;
   checkedAt: string;
-  recommendedProduct: ProductSlug;
+  recommendedProduct: ProductSlug | null;
   newTemplateOpportunity: string | null;
   proposedDemoPath: string;
   prospectReason: string;
@@ -3702,8 +3702,7 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     ...(enrichment?.emailSourceUrl ? [enrichment.emailSourceUrl] : []),
     ...(enrichment?.phoneSourceUrl ? [enrichment.phoneSourceUrl] : []),
   ]));
-  const websiteStatus = seed.websiteStatus ?? "no-first-party-site-found";
-  const newTemplateOpportunity = seed.newTemplateOpportunity ?? null;
+  const websiteStatus: WebsiteStatus = enrichment?.website ? "website-found" : (seed.websiteStatus ?? "no-first-party-site-found");
   const confidence: ProspectConfidence = websiteStatus === "unclear"
     ? "low"
     : websiteStatus === "website-found"
@@ -3714,9 +3713,12 @@ export const prospects: Prospect[] = seeds.map((seed) => {
   const socialPresence = websiteStatus === "social-only"
     ? ["Social page surfaced in current search"]
     : [];
-  const recommendedProduct = resolvePublicProduct(seed.sector, seed.recommendedProduct);
-  const demoCompatibility = publicTemplateCompatibility(seed.sector, recommendedProduct);
+  const proposedProduct = resolvePublicProduct(seed.sector, seed.recommendedProduct);
+  const demoCompatibility = publicTemplateCompatibility(seed.sector, proposedProduct);
   const publicDemoReady = demoCompatibility === "exact";
+  // Never present a sector-incompatible historical seed product as a recommendation.
+  const recommendedProduct: ProductSlug | null = publicDemoReady ? proposedProduct : null;
+  const newTemplateOpportunity = publicDemoReady ? null : (seed.newTemplateOpportunity ?? `${seed.sector} public website and operations template`);
   const mappingWarning = publicDemoReady
     ? null
     : "No exact public website template is approved for this sector yet. Do not share the current recommended-product demo with this prospect.";
@@ -3733,20 +3735,21 @@ export const prospects: Prospect[] = seeds.map((seed) => {
     country: "Botswana",
     email,
     phone,
+    website: enrichment?.website,
     websiteStatus,
-    websiteEvidence: seed.evidence,
+    websiteEvidence: enrichment?.websiteEvidence ?? seed.evidence,
     googleBusinessEvidence: googleSearchUrl(seed.name),
     socialPresence,
-    verificationState: seed.verificationState ?? "source-checked",
+    verificationState: enrichment?.website ? "verified-website" : (seed.verificationState ?? "source-checked"),
     sourceUrl: seed.sourceUrl,
-    sourceLinks: Array.from(new Set([seed.sourceUrl, googleSearchUrl(seed.name), cipaLookupUrl()])),
+    sourceLinks: Array.from(new Set([seed.sourceUrl, ...(enrichment?.websiteSourceUrl ? [enrichment.websiteSourceUrl] : []), googleSearchUrl(seed.name), cipaLookupUrl()])),
     sourceLabel: seed.sourceLabel,
     checkedAt: seed.checkedAt ?? checkedAt,
     recommendedProduct,
     newTemplateOpportunity,
-    proposedDemoPath: publicDemoReady ? `/demo/${recommendedProduct}` : "",
+    proposedDemoPath: recommendedProduct ? `/demo/${recommendedProduct}` : "",
     prospectReason: seed.fitHypothesis,
-    outreachAngle: publicDemoReady
+    outreachAngle: recommendedProduct
       ? `Lead with the exact ${recommendedProduct} public demo tailored to ${seed.name}, then connect the public front door to the relevant internal workflow.`
       : "Do not send a mismatched demo. Research/build the sector-specific public website template first, then prepare outreach.",
     confidence,
