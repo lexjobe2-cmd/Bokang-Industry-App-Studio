@@ -33,8 +33,8 @@ function outreachSubject(prospect: Prospect) {
 }
 
 function whatsAppUrl(prospect: Prospect) {
-  if (!prospect.phone || !prospect.whatsappReady) return "";
-  const digits = prospect.phone.replace(/\D/g, "");
+  if (!prospect.whatsappPhone || !prospect.whatsappReady) return "";
+  const digits = prospect.whatsappPhone.replace(/\D/g, "");
   const normalized = digits.startsWith("267") ? digits : "267" + digits.replace(/^0+/, "");
   const message = "Hi " + prospect.name + " team, my name is Bokang Jobe. I prepared a working website/software concept for your business and would like to share it with you.";
   return "https://wa.me/" + normalized + "?text=" + encodeURIComponent(message);
@@ -387,7 +387,7 @@ export function ProspectPipeline() {
                     <Info label="Confidence" value={prospect.confidence} />
                     <Info label="Operating evidence" value={prospect.operatingEvidenceState} />
                     <Info label="CIPA status" value={prospect.cipaVerificationState} />
-                    <Info label="WhatsApp-ready" value={prospect.whatsappReady ? "Yes — public Botswana mobile" : "Not confirmed"} />
+                    <Info label="WhatsApp-ready" value={prospect.whatsappReady ? "Yes — " + prospect.whatsappPhone : "Not confirmed"} />
                     <Info label="Proposed demo path" value={prospect.proposedDemoPath} />
                   </div>
 
