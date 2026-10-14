@@ -145,7 +145,7 @@ export default async function ClientDemoPage({
       <BakeBoxClientSite
         key={demo.client}
         clientName={demo.client}
-        location={demo.location || "Gaborone, Botswana"}
+        location={demo.location || "Botswana"}
         email={clientPublicEmail}
         phone={demo.phone}
       />

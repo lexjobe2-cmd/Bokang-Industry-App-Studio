@@ -4160,3 +4160,11 @@ html[data-theme="dark"] textarea {
     transition: none !important;
   }
 }
+
+/* Bakery enquiry feedback and field access at mobile widths. */
+.bakebox-form-notice { grid-column: 1 / -1; margin: 0; color: #755a49; font-size: 12px; line-height: 1.6; }
+.bakebox-form-submit:disabled { cursor: wait; opacity: .65; }
+.bakebox-form input:focus-visible, .bakebox-form select:focus-visible, .bakebox-form textarea:focus-visible,
+.bakebox-site a:focus-visible, .bakebox-site button:focus-visible { outline: 3px solid #dc8b35; outline-offset: 3px; }
+.bakebox-success .bakebox-primary { margin-top: 18px; }
+@media (max-width: 560px) { .bakebox-form-notice { grid-column: auto; } }

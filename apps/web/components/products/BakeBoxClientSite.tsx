@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
+import { bakeryOrdersKey, type BakeryOrder } from "../../lib/bakery-orders";
 import {
   ArrowRight,
   CalendarDays,
@@ -82,7 +84,8 @@ export function BakeBoxClientSite({
   email = "",
   phone = "",
 }: BakeBoxClientSiteProps) {
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedOrder, setSubmittedOrder] = useState<BakeryOrder | null>(null);
+  const [, setOrders, hydrated] = usePersistentState<BakeryOrder[]>(bakeryOrdersKey(clientName), []);
   const [selectedBake, setSelectedBake] = useState("Classic scones");
   const [fulfilment, setFulfilment] = useState("Collection");
 
@@ -99,10 +102,24 @@ export function BakeBoxClientSite({
   const whatsAppHref = useMemo(() => {
     const digits = phone.replace(/\D/g, "");
     if (!digits) return "";
-    const normalized = digits.startsWith("267") ? digits : "267" + digits.replace(/^0+/, "");
-    return "https://wa.me/" + normalized + "?text=" +
+    const local = digits.startsWith("267") ? digits.slice(3) : digits.replace(/^0/, "");
+    // A phone number is not evidence that an active WhatsApp account exists.
+    if (!/^7\d{7}$/.test(local)) return "";
+    return "https://wa.me/267" + local + "?text=" +
       encodeURIComponent("Hi " + clientName + ", I would like to place a bakery order.");
   }, [phone, clientName]);
+
+  const orderWhatsAppHref = submittedOrder && whatsAppHref
+    ? whatsAppHref.split("?")[0] + "?text=" + encodeURIComponent(
+      "Hello " + clientName + ", I would like to enquire about " + submittedOrder.quantity +
+      " of " + submittedOrder.product + " for " + submittedOrder.due +
+      " (" + submittedOrder.fulfilment + "). My name is " + submittedOrder.customer +
+      ". Please confirm price and availability."
+    )
+    : "";
+
+  const today = new Date();
+  const earliestDate = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, "0"), String(today.getDate()).padStart(2, "0")].join("-");
 
   return (
     <main className="bakebox-site">
@@ -140,7 +157,7 @@ export function BakeBoxClientSite({
 
           <div className="bakebox-hero-actions">
             <a className="bakebox-primary" href="#menu">
-              See today&apos;s bakes <ArrowRight size={17} />
+              Browse our sample menu <ArrowRight size={17} />
             </a>
             {whatsAppHref ? (
               <a className="bakebox-secondary" href={whatsAppHref} target="_blank" rel="noreferrer">
@@ -154,7 +171,7 @@ export function BakeBoxClientSite({
           <div className="bakebox-trust-row">
             <span><Clock3 size={16} /> Pre-order friendly</span>
             <span><ShoppingBag size={16} /> Pickup ready</span>
-            <span><Truck size={16} /> Delivery can be configured</span>
+            <span><Truck size={16} /> Delivery subject to confirmation</span>
           </div>
         </div>
 
@@ -168,9 +185,9 @@ export function BakeBoxClientSite({
           </figure>
           <div className="bakebox-drop-card">
             <Sparkles size={20} />
-            <span>Weekend drop</span>
+            <span>Made-to-order favourites</span>
             <strong>Scones + cinnamon rolls</strong>
-            <small>Demo menu — client configures final products and prices.</small>
+            <small>Illustrative menu — confirm products, prices and availability.</small>
           </div>
         </div>
       </section>
@@ -187,12 +204,11 @@ export function BakeBoxClientSite({
         <div className="bakebox-section-heading">
           <div>
             <span className="bakebox-kicker">What&apos;s baking</span>
-            <h2>A simple menu people can actually order from.</h2>
+            <h2>Discover the sweet favourites.</h2>
           </div>
           <p>
-            The strongest local bakery pages put the product, pack size, price and order
-            contact together. This demo turns that social-selling pattern into an owned
-            bakery website.
+            Browse our sample selection and choose a box size. Every item, flavour, price and
+            delivery option must be confirmed with the bakery before your order is accepted.
           </p>
         </div>
 
@@ -217,7 +233,7 @@ export function BakeBoxClientSite({
         </div>
 
         <p className="bakebox-demo-price-note">
-          Sample demo pricing only. Each bakery controls its own products, flavours, box sizes and final prices.
+          Illustrative prices and menu only — not a real offer. Confirm availability, ingredients, pack sizes and price with the business.
         </p>
       </section>
 
@@ -233,9 +249,8 @@ export function BakeBoxClientSite({
           <span className="bakebox-kicker">Pre-order without the DM confusion</span>
           <h2>Choose. Confirm. Bake. Collect.</h2>
           <p>
-            Botswana bakers often announce flavour drops and collect orders through WhatsApp.
-            The site keeps that familiar behaviour, while giving customers one clear place to see
-            the menu, timing, pickup details and ordering rules.
+            Tell us what you would like to enjoy and when. We will help you prepare a clear
+            enquiry with the product, pack size and collection or delivery preference.
           </p>
 
           <div className="bakebox-order-steps">
@@ -282,20 +297,20 @@ export function BakeBoxClientSite({
       <section id="story" className="bakebox-section bakebox-story">
         <div className="bakebox-section-heading">
           <div>
-            <span className="bakebox-kicker">A real bakery front door</span>
-            <h2>Introduce the baker before asking for the order.</h2>
+            <span className="bakebox-kicker">Baked for moments worth sharing</span>
+            <h2>Sweet treats for ordinary days and special occasions.</h2>
           </div>
           <p>
-            The homepage gives the business a proper identity, while still keeping the
-            fast social-media style of photos, flavour announcements and direct ordering.
+            From a warm scone with morning tea to a tray of cinnamon rolls for the office,
+            the best bakes are the ones you get to share.
           </p>
         </div>
 
         <div className="bakebox-values">
-          <article><Wheat size={23} /><h3>Fresh batches</h3><p>Show when products are baked and which items are available by pre-order or daily drop.</p></article>
-          <article><Package size={23} /><h3>Clear box sizes</h3><p>Customers can understand the pack before sending a message or request.</p></article>
-          <article><CalendarDays size={23} /><h3>Lead-time clarity</h3><p>Publish real order cutoffs and advance-notice requirements per product.</p></article>
-          <article><MapPin size={23} /><h3>Pickup confidence</h3><p>Make location, collection windows and delivery rules easy to find.</p></article>
+          <article><Wheat size={23} /><h3>Fresh batches</h3><p>Ask which favourites are available for your preferred date and time.</p></article>
+          <article><Package size={23} /><h3>Clear box sizes</h3><p>Choose an illustrative pack size and confirm the bakery&apos;s available options.</p></article>
+          <article><CalendarDays size={23} /><h3>Lead-time clarity</h3><p>Allow enough time for preparation and ask about custom-order lead times.</p></article>
+          <article><MapPin size={23} /><h3>Pickup confidence</h3><p>Confirm collection time and address, or ask whether delivery is available.</p></article>
         </div>
       </section>
 
@@ -304,8 +319,8 @@ export function BakeBoxClientSite({
           <span className="bakebox-kicker">Place a bakery request</span>
           <h2>What should we bake for you?</h2>
           <p>
-            This is a proposal/demo order form. It captures the intended customer journey
-            without processing live payments or sending a real bakery order.
+            This interactive demo saves your request in this browser only. It does not send
+            an order to the bakery or take payment. To enquire for real, use the listed contact details.
           </p>
 
           <div className="bakebox-contact-card">
@@ -319,20 +334,47 @@ export function BakeBoxClientSite({
           </div>
         </div>
 
-        {submitted ? (
+        {submittedOrder ? (
           <div className="bakebox-success">
             <CheckCircle2 size={30} />
-            <h3>Demo order request captured.</h3>
+            <h3>Demo request saved on this device.</h3>
             <p>
-              In production, {clientName} would review the product, date, quantity and
-              fulfilment choice in the private bakery order workspace before confirming it.
+              Your request is stored in this browser only. The bakery has not been notified,
+              and this is not a confirmed order. The Studio workspace can review it on the same device.
             </p>
-            <button type="button" onClick={() => setSubmitted(false)}>Start another demo order</button>
+            {orderWhatsAppHref ? (
+              <a className="bakebox-primary" href={orderWhatsAppHref} target="_blank" rel="noreferrer">
+                Continue enquiry on WhatsApp <ArrowRight size={16} />
+              </a>
+            ) : null}
+            <button type="button" onClick={() => setSubmittedOrder(null)}>Start another demo request</button>
           </div>
         ) : (
           <form className="bakebox-form" onSubmit={(event) => {
             event.preventDefault();
-            setSubmitted(true);
+            if (!hydrated) return;
+            const fields = new FormData(event.currentTarget);
+            const get = (key: string, limit = 300) => String(fields.get(key) ?? "").trim().slice(0, limit);
+            const requestedDate = get("date", 10);
+            if (!requestedDate || requestedDate < earliestDate) return;
+            const order: BakeryOrder = {
+              id: "BK-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 6).toUpperCase(),
+              customer: get("name", 120),
+              phone: get("phone", 40),
+              email: get("email", 180),
+              product: selectedBake,
+              quantity: get("quantity", 120),
+              due: requestedDate,
+              fulfilment: fulfilment === "Delivery" ? "Delivery" : "Collection",
+              deliveryArea: get("deliveryArea", 180),
+              notes: get("notes", 1000),
+              status: "Requested",
+              createdAt: new Date().toISOString(),
+              demoOnly: true,
+            };
+            if (!order.customer || !order.phone || !order.quantity) return;
+            setOrders((current) => [order, ...current]);
+            setSubmittedOrder(order);
           }}>
             <label>
               Name
@@ -340,7 +382,11 @@ export function BakeBoxClientSite({
             </label>
             <label>
               Mobile
-              <input required name="phone" inputMode="tel" placeholder="+267 ..." />
+              <input required name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+267 ..." />
+            </label>
+            <label>
+              Email (optional)
+              <input name="email" type="email" autoComplete="email" placeholder="you@example.com" />
             </label>
             <label>
               Bake
@@ -350,26 +396,33 @@ export function BakeBoxClientSite({
             </label>
             <label>
               Pickup / delivery
-              <select value={fulfilment} onChange={(event) => setFulfilment(event.target.value)}>
+              <select name="fulfilment" value={fulfilment} onChange={(event) => setFulfilment(event.target.value)}>
                 <option>Collection</option>
                 <option>Delivery</option>
-                <option>Confirm with baker</option>
+                
               </select>
             </label>
+            {fulfilment === "Delivery" ? (
+              <label>
+                Delivery area
+                <input name="deliveryArea" required placeholder="Your suburb or delivery location" />
+              </label>
+            ) : null}
             <label>
               Quantity / box size
               <input required name="quantity" placeholder="e.g. 24 scones / 2 boxes" />
             </label>
             <label>
               Date needed
-              <input required name="date" type="date" />
+              <input required name="date" type="date" min={earliestDate} />
             </label>
             <label className="bakebox-form-wide">
               Flavour / notes
               <textarea name="notes" rows={4} placeholder="Flavour, icing, allergy note, event, delivery area or other details." />
             </label>
-            <button className="bakebox-form-submit" type="submit">
-              Submit demo request <ArrowRight size={17} />
+            <p className="bakebox-form-notice">Demo only: this request stays on your device; nothing is submitted to the bakery. For a real order, contact the business directly.</p>
+            <button className="bakebox-form-submit" type="submit" disabled={!hydrated}>
+              {hydrated ? "Save demo request" : "Preparing demo form"} <ArrowRight size={17} />
             </button>
           </form>
         )}

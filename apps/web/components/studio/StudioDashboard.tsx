@@ -226,7 +226,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
               ) : null}
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,110px),1fr))", gap: 8 }}>
-                <a href={`/products/${product.slug}${["clean-care","salon-book"].includes(product.slug) ? "?client=" + encodeURIComponent(clientName(product)) : ""}`} style={actionStyle}>
+                <a href={`/products/${product.slug}${["clean-care","salon-book","bake-box"].includes(product.slug) ? "?client=" + encodeURIComponent(clientName(product)) : ""}`} style={actionStyle}>
                   Internal app <ExternalLink size={14} />
                 </a>
                 <a href={`/products/${product.slug}/onboarding`} style={actionStyle}>Client setup</a>
