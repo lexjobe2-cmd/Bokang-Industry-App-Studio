@@ -99,6 +99,7 @@ export function sectorPrivacyData(product: ProductConfig) {
     "Hair Salon & Barber": ["appointment requests", "preferred stylist and date", "service preferences", "client contact details"],
     "Purified Water & Delivery": ["order details", "delivery address", "refill and recurring-supply preferences"],
     "Cleaning Services": ["quote details", "site address", "cleaning schedule and service notes"],
+    "Bakery & Baked Goods": ["order details", "requested products and quantities", "pickup or delivery preferences", "allergy notes"],
   };
   return [...common, ...(specific[product.sector] || ["industry workflow data"])];
 }
