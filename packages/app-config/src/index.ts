@@ -11,7 +11,8 @@ export type ProductSlug =
   | "nail-muse"
   | "salon-book"
   | "aqua-flow"
-  | "clean-care";
+  | "clean-care"
+  | "bake-box";
 
 export type ProductExperienceProfile = {
   mood: string;
@@ -262,6 +263,24 @@ export const products: Record<ProductSlug, ProductConfig> = {
       onboarding: ["Business profile", "Cleaning services", "Service areas", "Schedules", "Quote rules"],
       signatureFeatures: ["Cleaning service catalogue", "Site assessment request", "Recurring schedule", "Team allocation", "Quality-check closeout"],
       compliance: ["Site instructions", "Service checklist", "Completion evidence", "Customer confirmation"]
+    }
+  },
+  "bake-box": {
+    slug: "bake-box",
+    name: "BakeBox AI",
+    sector: "Bakery & Baked Goods",
+    description: "Public bakery website, product and box menu, pre-orders, pickup/delivery requests, production queue, customers and repeat-order operations.",
+    tabs: ["Home", "Orders", "Bake Queue", "Customers", "More"],
+    modules: ["Public bakery website", "Bake menu", "Box sizes", "Pre-orders", "Pickup requests", "Delivery requests", "Flavour drops", "Production queue", "Customer history", "Corporate orders", "Analytics"],
+    dashboardMetrics: ["Open orders", "Baking now", "Ready for pickup", "Deliveries"],
+    experience: {
+      mood: "Warm, visual and order-first",
+      accent: "#b45309",
+      surface: "#fff7ed",
+      hero: "Turn social-media cravings into clear pre-orders, pickup windows and repeat bakery customers.",
+      onboarding: ["Business profile", "Bake menu", "Box sizes and prices", "Lead times", "Pickup and delivery rules"],
+      signatureFeatures: ["Visual bake menu", "Pre-order flow", "Box-size ordering", "WhatsApp ordering", "Production queue", "Pickup and delivery"],
+      compliance: ["Order confirmation", "Customer allergy note", "Pickup/delivery record", "Completion history"]
     }
   },
   "move-track": {
