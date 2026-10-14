@@ -21,6 +21,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "salon-book": "Hair studio & barbershop website",
   "aqua-flow": "Purified water, refill & delivery website",
   "clean-care": "Residential & commercial cleaning website",
+  "bake-box": "Bakery, scones, rolls & pre-order website",
 };
 
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {
