@@ -86,6 +86,13 @@ export const productMedia: Partial<Record<ProductSlug, ProductMedia>> = {
     alt: "Professional cleaner wiping a bright modern surface",
     locality: "Cleaning services"
   },
+  "bake-box": {
+    imageUrl: "https://images.pexels.com/photos/3951306/pexels-photo-3951306.jpeg?auto=compress&dpr=1&h=900&w=1600",
+    sourceUrl: "https://www.pexels.com/photo/cinnamon-rolls-3951306/",
+    sourceLabel: "Pexels · NastyaSensei",
+    alt: "Freshly baked cinnamon rolls with icing",
+    locality: "Bakery & baked goods"
+  },
   "move-track": {
     imageUrl: "https://images.pexels.com/photos/36298868/pexels-photo-36298868.jpeg?auto=compress&dpr=1&h=900&w=1800",
     sourceUrl: "https://www.pexels.com/photo/wide-load-truck-on-open-highway-in-africa-36298868/",
