@@ -18,6 +18,7 @@ import { NailMuseClientSite } from "../../../components/products/NailMuseClientS
 import { AquaFlowClientSite } from "../../../components/products/AquaFlowClientSite";
 import { CleanCareClientSite } from "../../../components/products/CleanCareClientSite";
 import { SalonBookClientSite } from "../../../components/products/SalonBookClientSite";
+import { BakeBoxClientSite } from "../../../components/products/BakeBoxClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -135,6 +136,18 @@ export default async function ClientDemoPage({
         email={clientPublicEmail}
         phone={demo.phone}
         availableServices={typeof query.services === "string" ? query.services.split(",").map((item) => item.trim()).filter(Boolean) : undefined}
+      />
+    );
+  }
+
+  if (config.slug === "bake-box") {
+    return (
+      <BakeBoxClientSite
+        key={demo.client}
+        clientName={demo.client}
+        location={demo.location || "Gaborone, Botswana"}
+        email={clientPublicEmail}
+        phone={demo.phone}
       />
     );
   }
