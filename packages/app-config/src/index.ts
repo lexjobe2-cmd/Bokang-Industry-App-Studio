@@ -12,7 +12,8 @@ export type ProductSlug =
   | "salon-book"
   | "aqua-flow"
   | "clean-care"
-  | "bake-box";
+  | "bake-box"
+  | "botswana-cultural-explorer";
 
 export type ProductExperienceProfile = {
   mood: string;
@@ -36,6 +37,24 @@ export type ProductConfig = {
 };
 
 export const products: Record<ProductSlug, ProductConfig> = {
+  "botswana-cultural-explorer": {
+    slug: "botswana-cultural-explorer",
+    name: "Botswana Cultural Explorer",
+    sector: "Cultural Marketplace",
+    description: "A Botswana-first marketplace for cultural crafts, traditional clothing, jewellery, artefacts, books, art, venues and cultural experiences. Customer enquiries use WhatsApp or phone; no card checkout.",
+    tabs: ["Discover", "Storefronts", "Inventory", "Bookings", "More"],
+    modules: ["Public cultural marketplace", "Storefront onboarding", "Maker and venue profiles", "Keyless map preview", "Inventory management", "Product photo uploads", "Venue enquiries", "Offline payment preferences", "WhatsApp item enquiries", "Local demo backup"],
+    dashboardMetrics: ["My storefronts", "Published inventory", "Venue enquiries", "Items in stock"],
+    experience: {
+      mood: "Rooted in Botswana heritage",
+      accent: "#264b3d",
+      surface: "#f6f2e7",
+      hero: "Bring Botswana's culture, makers and places closer to the world.",
+      onboarding: ["Storefront identity", "Cultural business type", "Public location and privacy", "Contact and WhatsApp", "Offline payment preferences", "Products or venue details"],
+      signatureFeatures: ["Seller storefront and location", "Craft inventory", "Venue booking enquiries", "Grouped WhatsApp order messages", "Offline payment arrangements"],
+      compliance: ["Consent-based precise location", "Owner data separation when auth connects", "Accurate product provenance", "No automatic booking confirmation", "No online payment processing"]
+    }
+  },
   "lex-intake": {
     slug: "lex-intake",
     name: "LexIntake AI",
