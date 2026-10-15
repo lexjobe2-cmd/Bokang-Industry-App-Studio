@@ -199,8 +199,11 @@ export function ProspectPipeline() {
       phone: prospect.phone ?? "",
       email: prospect.email ?? "",
     });
-    if (product.slug === "clean-care" && prospect.publicServices.length) {
-      params.set("services", prospect.publicServices.join(","));
+    if (product.slug === "clean-care") {
+      if (prospect.publicServices.length) params.set("services", prospect.publicServices.join(","));
+      // Keep the published office number as the main phone; pass a separately
+      // sourced public mobile for an optional WhatsApp convenience CTA.
+      if (prospect.whatsappReady && prospect.whatsappPhone) params.set("mobile", prospect.whatsappPhone);
     }
     if (product.slug === "salon-book") {
       params.set("variant", salonModeFromName(prospect.name + " " + prospect.subIndustry));
