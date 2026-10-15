@@ -100,6 +100,7 @@ export function sectorPrivacyData(product: ProductConfig) {
     "Purified Water & Delivery": ["order details", "delivery address", "refill and recurring-supply preferences"],
     "Cleaning Services": ["quote details", "site address", "cleaning schedule and service notes"],
     "Bakery & Baked Goods": ["order details", "requested products and quantities", "pickup or delivery preferences", "allergy notes"],
+    "Cultural Marketplace": ["seller profiles", "cultural products and imagery", "optional public location", "offline payment preferences", "venue enquiries and preferred dates"],
   };
   return [...common, ...(specific[product.sector] || ["industry workflow data"])];
 }
