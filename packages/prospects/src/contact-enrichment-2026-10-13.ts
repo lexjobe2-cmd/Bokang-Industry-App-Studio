@@ -60,14 +60,14 @@ export const contactEnrichment: Record<string, ContactEnrichment> = {
   "cleanall-services": {
     email: "info@cleanall.co.bw",
     secondaryEmails: ["sales@cleanall.co.bw", "palapye@cleanall.co.bw", "receptionft@cleanall.co.bw", "kasane@cleanall.co.bw"],
-    secondaryPhones: ["+267 3912557", "+267 3186975", "+267 4920709", "+267 71926120", "+267 2402128", "+267 71300297"],
+    secondaryPhones: ["+267 3912557", "+267 3186975", "+267 4920709", "+267 71926120", "+267 2402128", "+267 71300297", "+267 71734636"],
     website: "https://cleanall.co.bw/",
     websiteSourceUrl: "https://cleanall.co.bw/contact-us/",
     websiteEvidence: "First-party CleanAll website with current contact, quotation and cleaning service pages checked 13 Oct 2026.",
     emailSourceUrl: "https://cleanall.co.bw/contact-us/",
     phoneSourceUrl: "https://cleanall.co.bw/contact-us/",
     emailEvidence: "Official CleanAll contact page publishes branch emails; its contract-cleaning service page also explicitly publishes sales@cleanall.co.bw.",
-    phoneEvidence: "Official CleanAll contact page lists Gaborone, Palapye and Francistown office/mobile numbers; original seed mobile retained."
+    phoneEvidence: "Official CleanAll contact page lists Gaborone, Palapye, Francistown and Kasane office/mobile numbers; original seed mobile retained."
   },
   "skitters-cleaning-company": {
     secondaryPhones: ["+267 71239170"],
