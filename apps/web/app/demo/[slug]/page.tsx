@@ -136,6 +136,7 @@ export default async function ClientDemoPage({
         email={clientPublicEmail}
         phone={demo.phone}
         availableServices={typeof query.services === "string" ? query.services.split(",").map((item) => item.trim()).filter(Boolean) : undefined}
+        mobile={typeof query.mobile === "string" ? query.mobile : ""}
       />
     );
   }
