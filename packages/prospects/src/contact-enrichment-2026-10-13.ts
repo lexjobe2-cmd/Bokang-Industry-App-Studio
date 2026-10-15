@@ -13,6 +13,11 @@ export type ContactEnrichment = {
 };
 
 export const contactEnrichment: Record<string, ContactEnrichment> = {
+  "vito-hygiene-pty-ltd": {
+    secondaryPhones: ["+267 75756797", "+267 71792590"],
+    phoneSourceUrl: "https://www.localbotswana.com/company/13766/vito-hygiene",
+    phoneEvidence: "The Vito Hygiene directory profile publishes business mobile contacts +267 75756797 and +267 71792590 as well as landline 3933303; profile last updated in 2022, so re-check before outreach."
+  },
   "metsiexpress": {
     email: "info@metsiexpress.com",
     emailSourceUrl: "https://www.metsiexpress.com/",
