@@ -22,6 +22,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "aqua-flow": "Purified water, refill & delivery website",
   "clean-care": "Residential & commercial cleaning website",
   "bake-box": "Bakery, scones, rolls & pre-order website",
+  "botswana-cultural-explorer": "Cultural marketplace · crafts, heritage venues, and maker storefronts",
 };
 
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {
