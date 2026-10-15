@@ -1,6 +1,6 @@
 "use client";
 
-import {useMemo,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import {usePersistentState} from "@bokang/persistence";
 import {ArrowRight,Compass,MapPin,ShoppingBag,Store,Phone,MessageCircle,Plus,Heart,CalendarDays,Search,X,Minus,ExternalLink} from "lucide-react";
@@ -37,6 +37,10 @@ export function BotswanaCultureClientSite(){
   const [selected,setSelected]=useState("");
   const [enquirySaved,setEnquirySaved]=useState(false);
   const [showSaved,setShowSaved]=useState(false);
+  useEffect(()=>{
+    const storeId=new URLSearchParams(window.location.search).get("store");
+    if(storeId&&stores.some(s=>s.id===storeId)){setSelected(storeId);setDrawer("store");setView("stores");}
+  },[stores]);
   const published=useMemo(()=>listings.filter(l=>l.status==="published"&&l.stock>0&&stores.some(s=>s.id===l.storeId)),[listings,stores]);
   const filtered=useMemo(()=>published.filter(l=>{
     const owner=stores.find(s=>s.id===l.storeId);
