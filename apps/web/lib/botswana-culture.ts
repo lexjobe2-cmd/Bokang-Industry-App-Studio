@@ -98,6 +98,10 @@ export const culturalEditorial = [
   {name:"Basket weaving",area:"Ngamiland and across Botswana",kind:"Craft tradition",description:"Discover the craft of mokolwane-palm baskets and the makers who sustain it.",url:"https://www.botswanatourism.co.bw/arts-and-crafts",symbol:"🧺"},
   {name:"Pottery and ceramics",area:"Thamaga & Gabane",kind:"Craft tradition",description:"Explore places associated with local pottery and ceramic traditions.",url:"https://www.botswanatourism.co.bw/arts-and-crafts",symbol:"🏺"},
   {name:"Cultural tourism",area:"Across Botswana",kind:"Experiences",description:"Learn about villages, community-led cultural visits and Botswana heritage.",url:"https://www.botswanatourism.co.bw/",symbol:"🌾"},
+  {name:"Old Palapye",area:"Tswapong Hills region",kind:"Heritage",description:"Trace the history of Phalatswe, a former Bangwato capital and protected cultural monument.",url:"https://www.botswanatourism.co.bw/explore/old-palapye",symbol:"🏛"},
+  {name:"Okavango Delta",area:"North-west Botswana",kind:"Nature & culture",description:"Discover the extraordinary wetlands, local guiding and traditional mokoro experiences.",url:"https://botswanatourism.co.bw/explore/okavango-delta",symbol:"🛶"},
+  {name:"Chobe National Park",area:"Kasane and Chobe",kind:"Wildlife & places",description:"Explore Chobe River landscapes, wildlife viewing and the region's culture markets.",url:"https://www.botswanatourism.co.bw/index.php/explore/chobe-national-park",symbol:"🐘"},
+  {name:"Moremi Game Reserve",area:"Ngamiland",kind:"Community heritage",description:"Learn about a reserve first established by local communities to protect ancestral lands and wildlife.",url:"https://botswanatourism.co.bw/explore/moremi-game-reserve",symbol:"🦓"},
 ];
 // Fictional local-only example records, not verified businesses or available-to-buy offers.
 export const cultureDemoStores: CultureStore[] = [
