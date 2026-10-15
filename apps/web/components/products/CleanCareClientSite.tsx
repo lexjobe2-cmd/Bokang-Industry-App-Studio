@@ -21,6 +21,7 @@ type CleanCareClientSiteProps = {
   location?: string;
   email?: string;
   phone?: string;
+  mobile?: string;
   availableServices?: string[];
 };
 
@@ -57,6 +58,7 @@ export function CleanCareClientSite({
   location = "Gaborone, Botswana",
   email = "",
   phone = "",
+  mobile = "",
   availableServices,
 }: CleanCareClientSiteProps) {
   const [submitted, setSubmitted] = useState(false);
@@ -70,12 +72,12 @@ export function CleanCareClientSite({
   const commercialMenu = !availableServices?.length || availableServices.some((name) => /office|commercial|contract|hygiene|industrial/i.test(name));
 
   const whatsAppHref = useMemo(() => {
-    const digits = phone.replace(/\D/g, "");
+    const digits = (mobile || phone).replace(/\D/g, "");
     const local = digits.startsWith("267") ? digits.slice(3) : digits;
     if (!/^7\d{7}$/.test(local)) return "";
     const normalized = "267" + local;
     return "https://wa.me/" + normalized + "?text=" + encodeURIComponent("Hi " + clientName + ", I would like to request a cleaning quote.");
-  }, [phone, clientName]);
+  }, [phone, mobile, clientName]);
 
   const initials = useMemo(
     () => clientName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "CC",
@@ -92,11 +94,11 @@ export function CleanCareClientSite({
         <nav className="cleancare-navlinks">
           <a href="#services">Services</a>
           <a href="#process">How it works</a>
-          <a href="#commercial">Commercial</a>
+          {commercialMenu ? <a href="#commercial">Commercial</a> : null}
           <a href="#quote">Get a quote</a>
         </nav>
         {whatsAppHref ? (
-          <a className="cleancare-nav-cta" href={whatsAppHref} target="_blank" rel="noreferrer">WhatsApp quote</a>
+          <a className="cleancare-nav-cta" href={whatsAppHref} target="_blank" rel="noreferrer" title="Public mobile number; WhatsApp availability has not been verified">Try WhatsApp</a>
         ) : (
           <a className="cleancare-nav-cta" href="#quote">Request a quote</a>
         )}
@@ -113,7 +115,7 @@ export function CleanCareClientSite({
           <div className="cleancare-actions">
             <a className="cleancare-primary" href="#quote">Request a quote <ArrowRight size={17} /></a>
             <a className="cleancare-secondary" href="#services">View services</a>
-            {whatsAppHref ? <a className="cleancare-secondary" href={whatsAppHref} target="_blank" rel="noreferrer">WhatsApp us</a> : null}
+            {whatsAppHref ? <a className="cleancare-secondary" href={whatsAppHref} target="_blank" rel="noreferrer" title="Public mobile number; WhatsApp availability has not been verified">Try WhatsApp</a> : null}
           </div>
           <div className="cleancare-proof">
             <span><Clock3 size={16} /> Flexible scheduling</span>
@@ -210,7 +212,9 @@ export function CleanCareClientSite({
             <div>
               <strong>{clientName}</strong>
               <span>{location}</span>
-              {phone ? <span>{phone}</span> : null}
+              {phone ? <span>Phone: {phone}</span> : null}
+              {mobile && mobile !== phone ? <span>Public mobile: {mobile}</span> : null}
+              {whatsAppHref ? <span>WhatsApp account availability is unverified.</span> : null}
               {email ? <a href={"mailto:" + email}>{email}</a> : null}
             </div>
           </div>
