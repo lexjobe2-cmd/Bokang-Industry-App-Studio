@@ -51,6 +51,17 @@ function slugify(value: string) {
 // Detailed business profiles override broad directory classifications without deleting
 // their original sourced seed rows. CIPA remains search-pending until official evidence exists.
 const sectorCorrections: Record<string, Partial<RegistryProspectSeed>> = {
+  "vito-hygiene-pty-ltd": {
+    industry: "Retail & Wholesale Supplies",
+    subIndustry: "Cleaning chemicals, machines and janitorial supplies distributor",
+    sector: "Cleaning Supplies & Equipment",
+    recommendedProduct: "clean-care",
+    newTemplateOpportunity: "Cleaning chemicals and equipment catalogue, stock enquiry and wholesale quotation website",
+    fitHypothesis: "Vito Hygiene sells cleaning supplies and equipment to cleaners, hotels and retailers; a service-cleaning quotation homepage would misrepresent the business.",
+    evidence: "Published Vito Hygiene company profile identifies a distributor of cleaning chemicals, cleaning machines and cleaning materials, not a contracted cleaning-service operator. https://www.localbotswana.com/company/13766/vito-hygiene",
+    operatingEvidenceState: "unclear",
+    operatingEvidence: "Public directory profile last updated 2022; recent activity and operating status require re-check before outreach.",
+  },
   "upper-standards-beauty-matters": {
     "industry": "Beauty & Personal Care",
     "subIndustry": "Spa, Beauty Treatments or Verification Pending",
