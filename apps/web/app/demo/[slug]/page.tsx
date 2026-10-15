@@ -19,6 +19,7 @@ import { AquaFlowClientSite } from "../../../components/products/AquaFlowClientS
 import { CleanCareClientSite } from "../../../components/products/CleanCareClientSite";
 import { SalonBookClientSite } from "../../../components/products/SalonBookClientSite";
 import { BakeBoxClientSite } from "../../../components/products/BakeBoxClientSite";
+import { BotswanaCultureClientSite } from "../../../components/products/BotswanaCultureClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -41,6 +42,8 @@ export default async function ClientDemoPage({
   // A missing prospect email must not be replaced by the developer email on the client website.
   const clientPublicEmail = typeof query.email === "string" && query.email.trim() ? demo.email : "";
   const legalQuery = `?client=${encodeURIComponent(demo.client)}`;
+
+  if (config.slug === "botswana-cultural-explorer") return <BotswanaCultureClientSite />;
 
   if (config.slug === "build-quote") {
     return (
