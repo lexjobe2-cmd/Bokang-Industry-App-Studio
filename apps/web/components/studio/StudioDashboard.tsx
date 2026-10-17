@@ -91,7 +91,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
             Bokang Industry App Studio
           </p>
           <h1 style={{ fontSize: "clamp(38px,6vw,68px)", lineHeight: 1.02, margin: "14px 0 12px", maxWidth: 850 }}>
-            Configure, preview and share outreach demos.
+            Explore websites. Create opportunities.
           </h1>
           <p style={{ maxWidth: 780, color: "#667085", fontSize: 18, lineHeight: 1.7, margin: 0 }}>
             Explore industry-specific websites alongside practical business workspaces. Personalise a demonstration for a client, review it together, and share a ready-to-open link.
@@ -107,15 +107,15 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
 
       <section style={{ marginTop: 22, display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap", background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 14 }}>
         <div>
-          <strong>Website-gap prospect intelligence</strong>
-          <div style={{ color: "#667085", fontSize: 12, marginTop: 3 }}>Target Botswana businesses whose Google business/search result did not show a website link when checked, then prepare a matching public-site demo and manual outreach.</div>
+          <strong>Business opportunities & outreach</strong>
+          <div style={{ color: "#667085", fontSize: 12, marginTop: 3 }}>Discover businesses that could benefit from a stronger digital presence, prepare personalised website examples and manage your outreach in one place.</div>
         </div>
         <a href="/prospects" style={{ background: "#2563eb", color: "#fff", borderRadius: 11, padding: "10px 14px", fontWeight: 900, fontSize: 13 }}>
           View prospects →
         </a>
       </section>
 
-      <section aria-label="Engineering demonstrations" style={{ marginTop: 20, background: "#f0fdfa", border: "1px solid #99f6e4", borderRadius: 20, padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+      <section aria-label="Business demonstrations" style={{ marginTop: 20, background: "#f0fdfa", border: "1px solid #99f6e4", borderRadius: 20, padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
         <div style={{ maxWidth: 690 }}>
           <p style={{ margin: "0 0 7px", color: "#0f766e", textTransform: "uppercase", fontSize: 11, fontWeight: 900, letterSpacing: 1.2 }}>Featured business solution</p>
           <h2 style={{ fontSize: 24, margin: "0 0 7px" }}>Stockroom — Inventory Intelligence</h2>
@@ -172,7 +172,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
               >
                 <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
                   <Settings2 size={16} />
-                  Configure client demo
+                  Personalise website
                 </span>
                 {isEditing ? <X size={16} /> : <span style={{ color: "#667085", fontSize: 12 }}>{clientName(product)}</span>}
               </button>
