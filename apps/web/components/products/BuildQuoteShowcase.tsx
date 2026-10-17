@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import { botswanaPlaces, constructionTradeTypes, quoteStages } from "@bokang/domain-data";
 
 type Lead={id:string;client:string;trade:string;location:string;value:string;stage:string};
 const starter:Lead[]=[{id:"BQ-401",client:"Metsi Retail",trade:"Renovation",location:"Gaborone",value:"P85,000",stage:"Estimating"},{id:"BQ-402",client:"Kago Properties",trade:"Electrical",location:"Tlokweng",value:"P24,500",stage:"Quote sent"}];
 export function BuildQuoteShowcase(){
- const [items,setItems]=useState(starter); const [client,setClient]=useState(""); const [trade,setTrade]=useState<(typeof constructionTradeTypes)[number]>("General building"); const [location,setLocation]=useState<(typeof botswanaPlaces)[number]>("Gaborone"); const [view,setView]=useState<"leads"|"new"|"projects"|"analytics">("leads");
+ const [items,setItems]=usePersistentState("bokang-studio.build-quote.leads.v1", starter); const [client,setClient]=useState(""); const [trade,setTrade]=useState<(typeof constructionTradeTypes)[number]>("General building"); const [location,setLocation]=useState<(typeof botswanaPlaces)[number]>("Gaborone"); const [view,setView]=useState<"leads"|"new"|"projects"|"analytics">("leads");
  function add(){if(!client.trim())return;setItems(c=>[{id:`BQ-${400+c.length+1}`,client:client.trim(),trade,location,value:"TBD",stage:"New lead"},...c]);setClient("");setView("leads");}
  return <section style={{marginTop:28,display:"grid",gap:18}}>
   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{([["leads","Quotes & leads"],["new","New quote"],["projects","Projects"],["analytics","Analytics"]] as const).map(([k,l])=><button key={k} onClick={()=>setView(k)} style={{border:"1px solid #d0d5dd",background:view===k?"#101827":"#fff",color:view===k?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{l}</button>)}</div>

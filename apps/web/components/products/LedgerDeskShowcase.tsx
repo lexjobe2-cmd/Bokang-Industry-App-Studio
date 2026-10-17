@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import { accountingDocumentTypes, accountingEngagementTypes, botswanaPlaces } from "@bokang/domain-data";
 
 type Engagement = {
@@ -21,7 +22,7 @@ const starter: Engagement[] = [
 const statuses = ["Onboarding", "Active", "Awaiting documents", "Review", "Ready", "Completed"] as const;
 
 export function LedgerDeskShowcase() {
-  const [items, setItems] = useState(starter);
+  const [items, setItems] = usePersistentState("bokang-studio.ledger-desk.engagements.v1", starter);
   const [client, setClient] = useState("");
   const [type, setType] = useState<(typeof accountingEngagementTypes)[number]>("Monthly bookkeeping");
   const [location, setLocation] = useState<(typeof botswanaPlaces)[number]>("Gaborone");

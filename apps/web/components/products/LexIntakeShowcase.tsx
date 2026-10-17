@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import {
   botswanaPlaces,
   legalConsultationModes,
@@ -74,7 +75,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 export function LexIntakeShowcase() {
-  const [intakes, setIntakes] = useState<Intake[]>(starterIntakes);
+  const [intakes, setIntakes] = usePersistentState<Intake[]>("bokang-studio.lex-intake.intakes.v1", starterIntakes);
   const [client, setClient] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState<(typeof botswanaPlaces)[number]>("Gaborone");

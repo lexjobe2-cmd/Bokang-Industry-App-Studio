@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { usePersistentState } from "@bokang/persistence";
 import { botswanaPlaces, tourismExperienceTypes } from "@bokang/domain-data";
 
 type Experience={id:string;name:string;type:string;location:string;price:string;saved:boolean};
 const starter:Experience[]=[{id:"BW-01",name:"Okavango Delta Escape",type:"Safari",location:"Maun",price:"From P4,800",saved:true},{id:"BW-02",name:"Chobe River Day",type:"Safari",location:"Kasane",price:"From P1,950",saved:false},{id:"BW-03",name:"Gaborone Culture Trail",type:"Cultural experience",location:"Gaborone",price:"From P650",saved:false}];
 export function ExploreBWShowcase(){
- const [items,setItems]=useState(starter); const [view,setView]=useState<"explore"|"itinerary"|"booking"|"operator">("explore"); const [destination,setDestination]=useState<(typeof botswanaPlaces)[number]>("Maun"); const [kind,setKind]=useState<(typeof tourismExperienceTypes)[number]>("Safari");
+ const [items,setItems]=usePersistentState("bokang-studio.explore-bw.experiences.v1", starter); const [view,setView]=useState<"explore"|"itinerary"|"booking"|"operator">("explore"); const [destination,setDestination]=useState<(typeof botswanaPlaces)[number]>("Maun"); const [kind,setKind]=useState<(typeof tourismExperienceTypes)[number]>("Safari");
  return <section style={{marginTop:28,display:"grid",gap:18}}>
   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{([["explore","Explore"],["itinerary","Itinerary"],["booking","Booking"],["operator","Operator dashboard"]] as const).map(([k,l])=><button key={k} onClick={()=>setView(k)} style={{border:"1px solid #d0d5dd",background:view===k?"#101827":"#fff",color:view===k?"#fff":"#344054",borderRadius:999,padding:"9px 14px",fontWeight:800}}>{l}</button>)}</div>
   {view==="explore"&&<div style={{display:"grid",gap:14}}><div style={{display:"flex",gap:10,flexWrap:"wrap"}}><select value={destination} onChange={e=>setDestination(e.target.value as typeof destination)} style={{border:"1px solid #d0d5dd",borderRadius:12,padding:10}}>{botswanaPlaces.map(x=><option key={x}>{x}</option>)}</select><select value={kind} onChange={e=>setKind(e.target.value as typeof kind)} style={{border:"1px solid #d0d5dd",borderRadius:12,padding:10}}>{tourismExperienceTypes.map(x=><option key={x}>{x}</option>)}</select></div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:12}}>{items.map(x=><article key={x.id} style={{background:"#fff",border:"1px solid #e5e7eb",borderRadius:20,padding:18}}><small style={{color:"#2563eb",fontWeight:800}}>{x.type} · {x.location}</small><h3>{x.name}</h3><p style={{color:"#667085"}}>{x.price}</p><button onClick={()=>setItems(c=>c.map(y=>y.id===x.id?{...y,saved:!y.saved}:y))} style={{border:"1px solid #d0d5dd",borderRadius:10,padding:"8px 11px",background:x.saved?"#eff6ff":"#fff",fontWeight:800}}>{x.saved?"✓ Saved":"Save trip"}</button></article>)}</div></div>}

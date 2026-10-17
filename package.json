@@ -7,7 +7,10 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "typecheck": "turbo typecheck",
-    "lint": "turbo lint"
+    "lint": "turbo lint",
+    "preview:cf": "pnpm --filter @bokang/web preview:cf",
+    "deploy:cf": "pnpm --filter @bokang/web deploy:cf",
+    "cf:typegen": "pnpm --filter @bokang/web cf:typegen"
   },
   "devDependencies": {
     "turbo": "^2.5.8",

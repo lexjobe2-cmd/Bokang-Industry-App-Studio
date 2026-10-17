@@ -2,7 +2,7 @@ name: Studio CI
 
 on:
   push:
-    branches: ["main", "foundation/**", "feature/**"]
+    branches: ["main", "foundation/**", "feature/**", "showcase/cloudflare-client-demos"]
   pull_request:
     branches: ["main"]
 
@@ -19,3 +19,4 @@ jobs:
           node-version: 22
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm typecheck
+      - run: pnpm build
