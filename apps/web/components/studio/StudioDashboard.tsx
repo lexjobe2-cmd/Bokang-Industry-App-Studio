@@ -118,6 +118,15 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
         </a>
       </section>
 
+      <section aria-label="Engineering demonstrations" style={{ marginTop: 20, background: "#f0fdfa", border: "1px solid #99f6e4", borderRadius: 20, padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+        <div style={{ maxWidth: 690 }}>
+          <p style={{ margin: "0 0 7px", color: "#0f766e", textTransform: "uppercase", fontSize: 11, fontWeight: 900, letterSpacing: 1.2 }}>Engineering demos · Python &amp; SQL</p>
+          <h2 style={{ fontSize: 24, margin: "0 0 7px" }}>Stockroom — Inventory Intelligence</h2>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: "#475569" }}>Explore stock on hand, reorder reports, historical balances and CSV validation. The public link is a browser-local React showcase; the original Python/SQLite service runs separately in the interview project.</p>
+        </div>
+        <a href="https://apjakal-stockroom.lexjobe2.workers.dev/" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", justifyContent: "center", alignItems: "center", gap: 8, background: "#0f766e", borderRadius: 12, color: "#fff", textDecoration: "none", padding: "13px 17px", fontSize: 13, fontWeight: 900 }}>Open Stockroom <ExternalLink size={15} /></a>
+      </section>
+
       <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))", gap: 16, marginTop: 20 }}>
         {products.map((product) => {
           const current = draft(product);
