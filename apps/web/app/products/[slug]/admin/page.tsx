@@ -25,7 +25,7 @@ export default async function ProductAdminPage({ params }: { params: Promise<{ s
         </p>
         <h1 style={{ margin: "8px 0", fontSize: "clamp(32px,5vw,48px)" }}>{config.name} settings</h1>
         <p style={{ maxWidth: 760, color: "#667085", lineHeight: 1.7 }}>
-          Manage workspace identity, team access, notifications, integrations, storage policy and platform health.
+          Manage workspace identity, team access, notifications, connected services and document preferences.
         </p>
 
         <div style={{ marginTop: 28 }}>

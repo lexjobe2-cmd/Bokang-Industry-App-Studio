@@ -285,7 +285,7 @@ export function FreshFoldClientSite({
             <span><CheckCircle2 size={28} /></span>
             <h3>Demo booking captured.</h3>
             <p>
-              In a live implementation, {clientName} would receive this request inside
+              When fully launched, {clientName} could review this request inside
               the private operations workspace for confirmation and scheduling.
             </p>
             <button type="button" onClick={() => setSubmitted(false)}>Create another demo request</button>

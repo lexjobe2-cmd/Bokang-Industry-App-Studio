@@ -115,7 +115,7 @@ export function DataImportWorkbench({ config }: { config: ProductConfig }) {
         <div>
           <p style={{ margin: 0, color: config.experience.accent, fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: 1.2 }}>Bulk data</p>
           <h2 style={{ marginBottom: 6 }}>CSV / Excel import</h2>
-          <p style={{ margin: 0, color: "#667085", lineHeight: 1.6 }}>Preview up to 5,000 rows before committing them to the local showcase dataset.</p>
+          <p style={{ margin: 0, color: "#667085", lineHeight: 1.6 }}>Review up to 5,000 rows before adding them to your demonstration workspace.</p>
         </div>
         <div style={{ textAlign: "right" }}>
           <strong>{importedRows.toLocaleString()} imported rows</strong>
