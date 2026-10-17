@@ -52,7 +52,7 @@ export const products: Record<ProductSlug, ProductConfig> = {
       surface: "#ecf2e9",
       hero: "Evidence that changes what happens next.",
       onboarding: ["Company and principal profile", "Service catalogue", "Research focus", "Evidence classification", "Enquiry contact"],
-      signatureFeatures: ["Dedicated Framer Motion website", "Documented project references", "Responsive service catalogue", "Study filters and details", "Email-based enquiry"],
+      signatureFeatures: ["Animated research-company website", "Documented project references", "Responsive service catalogue", "Study filters and details", "Email-based enquiry"],
       compliance: ["Participant confidentiality", "Research ethics and consent", "Verified reference attribution", "No public raw data", "Human review of reported findings"]
     }
   },

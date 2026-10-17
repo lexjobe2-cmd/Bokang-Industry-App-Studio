@@ -89,11 +89,11 @@ export function OnboardingFlow({ config }: { config: ProductConfig }) {
         {step === totalSteps - 1 ? (
           <div style={{ display: "grid", gap: 12 }}>
             <h2 style={{ marginTop: 0 }}>Storage & integrations</h2>
-            <p style={{ color: "#667085" }}>For showcase mode, these choices remain architectural preferences only. No OAuth or Redis connection is required.</p>
+            <p style={{ color: "#667085" }}>Select your preferred way of organising business files for a future rollout. This selection does not connect an account.</p>
             {([
               ["google", "Google Workspace", "Drive · Gmail · Sheets"],
               ["microsoft", "Microsoft 365", "OneDrive · SharePoint · Excel · Outlook"],
-              ["later", "Choose later", "Stay fully local for demonstrations"],
+              ["later", "Choose later", "Continue without connecting an account"],
             ] as const).map(([value, label, detail]) => (
               <button key={value} onClick={() => setState((c) => ({ ...c, preferredProvider: value }))} style={{
                 border: "1px solid #d0d5dd",

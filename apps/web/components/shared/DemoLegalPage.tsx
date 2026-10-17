@@ -27,7 +27,7 @@ export function DemoLegalPage({
           <p style={{ color: "#2563eb", fontWeight: 900, fontSize: 12, textTransform: "uppercase", letterSpacing: 1.4, marginTop: 28 }}>Privacy</p>
           <h1>Privacy policy — {config.name}</h1>
           <p style={{ color: "#667085", lineHeight: 1.75 }}>
-            This showcase is a proposal environment for {client}. It is designed to demonstrate product workflows without requiring production accounts, OAuth connections, Redis, or a permanent application database.
+            This is an interactive proposal for {client}, intended to demonstrate the experience before a live business account is set up.
           </p>
           <h2>Information used in the demo</h2>
           <p style={{ color: "#667085", lineHeight: 1.75 }}>
@@ -71,11 +71,11 @@ export function DemoLegalPage({
           <p style={{ color: "#2563eb", fontWeight: 900, fontSize: 12, textTransform: "uppercase", letterSpacing: 1.4, marginTop: 28 }}>Demo data notice</p>
           <h1>How data behaves in this showcase</h1>
           <p style={{ color: "#667085", lineHeight: 1.75 }}>
-            The current outreach demo is deliberately backend-light. OAuth, Redis and cloud-workspace connectors exist as architectural foundation but are not required or activated for a prospect to explore this demo.
+            You can explore this proposal without connecting your business accounts. The content and sample activities are for demonstration only.
           </p>
           <h2>Local interactive state</h2>
           <p style={{ color: "#667085", lineHeight: 1.75 }}>
-            Interactive records you create in the demo are stored locally in your browser and scoped to this product and prospect name. They are not automatically sent to Google, Microsoft, Redis or a production database.
+            Interactive records entered into this demo are saved in your current browser and are scoped to this product and prospect name. They are not automatically shared with outside services or treated as live business records.
           </p>
           <h2>Sample analytics</h2>
           <p style={{ color: "#667085", lineHeight: 1.75 }}>
@@ -83,7 +83,7 @@ export function DemoLegalPage({
           </p>
           <h2>Production direction</h2>
           <p style={{ color: "#667085", lineHeight: 1.75 }}>
-            If commissioned, the app can later connect authorized business systems such as Google Workspace or Microsoft 365 while keeping the same frontend workflow foundation.
+            A future commissioned service can be tailored to approved business processes and connected accounts with your permission.
           </p>
         </>
       )}

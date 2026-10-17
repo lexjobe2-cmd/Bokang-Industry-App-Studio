@@ -118,7 +118,7 @@ export function WorkspaceDataShowcase({ config }: { config: ProductConfig }) {
           </p>
           <h2 style={{ margin: "6px 0" }}>Use the client&apos;s own cloud.</h2>
           <p style={{ color: "#667085", lineHeight: 1.6 }}>
-            {config.name} keeps long-lived business files in a user-authorized Google or Microsoft workspace where practical. Provider tokens remain server-only.
+            Choose where your business prefers to organise its documents. Connections require your permission, and linked accounts remain under your control.
           </p>
 
           <div style={{ display: "grid", gap: 10, marginTop: 16 }}>
@@ -151,7 +151,7 @@ export function WorkspaceDataShowcase({ config }: { config: ProductConfig }) {
           </div>
 
           <p style={{ color: "#98a2b3", fontSize: 11, lineHeight: 1.5, marginBottom: 0 }}>
-            OAuth requests explicit consent. Connections can be revoked here without deleting the user&apos;s own files.
+            Connecting a service requires your permission. Disconnecting it does not delete files held in your own account.
           </p>
         </article>
 

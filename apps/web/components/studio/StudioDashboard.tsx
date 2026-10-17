@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { ProductConfig } from "@bokang/app-config";
 import { ExternalLink, Link2, Settings2, Share2, X } from "lucide-react";
 import { defaultDemoConfig, demoParams, type DemoConfig } from "../../lib/demo-config";
+import { STUDIO_PUBLIC_URL } from "../../lib/studio-links";
 
 type Drafts = Record<string, DemoConfig>;
 
@@ -31,11 +32,6 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
-  const origin = useMemo(
-    () => typeof window === "undefined" ? "" : window.location.origin,
-    []
-  );
-
   function draft(product: ProductConfig): DemoConfig {
     return drafts[product.slug] ?? { ...defaultDemoConfig };
   }
@@ -56,7 +52,7 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
   }
 
   function demoUrl(product: ProductConfig) {
-    return `${origin}${demoPath(product)}`;
+    return `${STUDIO_PUBLIC_URL}${demoPath(product)}`;
   }
 
   async function copyLink(product: ProductConfig) {
@@ -98,14 +94,14 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
             Configure, preview and share outreach demos.
           </h1>
           <p style={{ maxWidth: 780, color: "#667085", fontSize: 18, lineHeight: 1.7, margin: 0 }}>
-            Every product has two deliberately separate surfaces: the internal operating app and an industry-specific public prospect website. Configure the client name once, preview the public site, then copy the current-deployment link into outreach.
+            Explore industry-specific websites alongside practical business workspaces. Personalise a demonstration for a client, review it together, and share a ready-to-open link.
           </p>
         </div>
 
         <div style={{ background: "#101827", color: "#fff", borderRadius: 18, padding: "14px 16px", minWidth: 250 }}>
-          <div style={{ fontSize: 11, opacity: 0.7, textTransform: "uppercase", letterSpacing: 1.3 }}>Showcase runtime</div>
-          <strong style={{ display: "block", marginTop: 5 }}>Cloudflare-ready · interactive demos</strong>
-          <div style={{ fontSize: 11, opacity: 0.72, marginTop: 5 }}>OAuth & Redis remain dormant foundation.</div>
+          <div style={{ fontSize: 11, opacity: 0.7, textTransform: "uppercase", letterSpacing: 1.3 }}>Explore the Studio</div>
+          <strong style={{ display: "block", marginTop: 5 }}>Interactive websites & business solutions</strong>
+          <div style={{ fontSize: 11, opacity: 0.72, marginTop: 5 }}>Personalise demos, prepare outreach, and share opportunities with clients.</div>
         </div>
       </header>
 
@@ -121,9 +117,9 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
 
       <section aria-label="Engineering demonstrations" style={{ marginTop: 20, background: "#f0fdfa", border: "1px solid #99f6e4", borderRadius: 20, padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
         <div style={{ maxWidth: 690 }}>
-          <p style={{ margin: "0 0 7px", color: "#0f766e", textTransform: "uppercase", fontSize: 11, fontWeight: 900, letterSpacing: 1.2 }}>Engineering demos · Python &amp; SQL</p>
+          <p style={{ margin: "0 0 7px", color: "#0f766e", textTransform: "uppercase", fontSize: 11, fontWeight: 900, letterSpacing: 1.2 }}>Featured business solution</p>
           <h2 style={{ fontSize: 24, margin: "0 0 7px" }}>Stockroom — Inventory Intelligence</h2>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: "#475569" }}>Explore stock on hand, reorder reports, historical balances and CSV validation. The public link is a browser-local React showcase; the original Python/SQLite service runs separately in the interview project.</p>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: "#475569" }}>Explore stock on hand, reorder reports, historical balances and CSV validation. Try inventory reports, stock history, reorder alerts and CSV imports in an interactive demonstration workspace.</p>
         </div>
         <a href="/stockroom" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", justifyContent: "center", alignItems: "center", gap: 8, background: "#0f766e", borderRadius: 12, color: "#fff", textDecoration: "none", padding: "13px 17px", fontSize: 13, fontWeight: 900 }}>Open Stockroom <ExternalLink size={15} /></a>
       </section>
@@ -267,9 +263,9 @@ export function StudioDashboard({ products }: { products: ProductConfig[] }) {
       </section>
 
       <section style={{ marginTop: 26, background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 20, padding: 18 }}>
-        <strong>Public-site routing</strong>
+        <strong>Ready to share with prospective clients</strong>
         <p style={{ color: "#475467", lineHeight: 1.65, marginBottom: 0 }}>
-          The public websites use the current deployment origin plus their dedicated /demo/&lt;product&gt; route. That means the Studio always copies the newest deployed site URL instead of hard-coding temporary Cloudflare preview hosts. Configure client → open public site → copy/share link → use it in manual outreach.
+          Choose a website, personalise it for a business, open the preview and share its permanent Studio link. Your prospect receives a focused example of the solution instead of a technical presentation.
         </p>
       </section>
 

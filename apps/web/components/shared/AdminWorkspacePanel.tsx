@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ProductConfig } from "@bokang/app-config";
 import { usePersistentState, useStudioSession } from "@bokang/persistence";
 
@@ -17,12 +17,6 @@ type Preferences = {
   workflowReminders: boolean;
   storageWarnings: boolean;
   weeklyDigest: boolean;
-};
-
-type CoordinationHealth = {
-  configured: boolean;
-  healthy: boolean;
-  mode: "redis" | "local-only";
 };
 
 const starterMembers: Member[] = [
@@ -45,15 +39,7 @@ export function AdminWorkspacePanel({ config }: { config: ProductConfig }) {
     }
   );
   const [inviteEmail, setInviteEmail] = useState("");
-  const [coordination, setCoordination] = useState<CoordinationHealth | null>(null);
   const [notice, setNotice] = useState("");
-
-  useEffect(() => {
-    fetch("/api/coordination/health", { cache: "no-store" })
-      .then((response) => response.json() as Promise<CoordinationHealth>)
-      .then(setCoordination)
-      .catch(() => setCoordination({ configured: false, healthy: false, mode: "local-only" }));
-  }, []);
 
   function inviteMember() {
     const email = inviteEmail.trim();
@@ -88,7 +74,7 @@ export function AdminWorkspacePanel({ config }: { config: ProductConfig }) {
         </p>
         <h2 style={{ marginBottom: 8 }}>{config.name} admin</h2>
         <p style={{ color: "#667085", lineHeight: 1.6 }}>
-          Shared account and workspace settings are reused across every industry frontend.
+          Manage the team and preferences for this business workspace.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12 }}>
           <label style={{ display: "grid", gap: 6, fontSize: 12, fontWeight: 800 }}>
@@ -196,20 +182,10 @@ export function AdminWorkspacePanel({ config }: { config: ProductConfig }) {
 
         <article style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 22, padding: 20 }}>
           <p style={{ margin: 0, color: "#2563eb", fontSize: 12, fontWeight: 850, textTransform: "uppercase", letterSpacing: 1.4 }}>
-            Platform health
+            Business connections
           </p>
-          <h2>Coordination & data plane</h2>
+          <h2>Connected workspaces</h2>
           <div style={{ display: "grid", gap: 10 }}>
-            <div style={{ border: "1px solid #e5e7eb", borderRadius: 14, padding: 12 }}>
-              <strong>Redis coordination</strong>
-              <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>
-                {coordination === null
-                  ? "Checking…"
-                  : coordination.configured
-                    ? coordination.healthy ? "Configured · healthy" : "Configured · unavailable"
-                    : "Not configured · local-only mode"}
-              </div>
-            </div>
             <div style={{ border: "1px solid #e5e7eb", borderRadius: 14, padding: 12 }}>
               <strong>Google Workspace</strong>
               <div style={{ color: "#667085", fontSize: 12, marginTop: 4 }}>
@@ -232,7 +208,7 @@ export function AdminWorkspacePanel({ config }: { config: ProductConfig }) {
         </p>
         <h2>Export, revoke and delete deliberately.</h2>
         <p style={{ color: "#667085", lineHeight: 1.6 }}>
-          Production account deletion must revoke provider access, remove app-owned coordination state and preserve user-owned files unless the user explicitly selects those files for deletion.
+          For future account deletion, connected-service access and app-managed data must be handled carefully. Files held in your own accounts are not automatically deleted.
         </p>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button style={{ border: "1px solid #d0d5dd", background: "#fff", borderRadius: 11, padding: "9px 12px", fontWeight: 800 }}>Export workspace settings</button>
