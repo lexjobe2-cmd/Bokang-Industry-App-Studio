@@ -13,7 +13,8 @@ export type ProductSlug =
   | "aqua-flow"
   | "clean-care"
   | "bake-box"
-  | "botswana-cultural-explorer";
+  | "botswana-cultural-explorer"
+  | "stats-technicians";
 
 export type ProductExperienceProfile = {
   mood: string;
@@ -37,6 +38,24 @@ export type ProductConfig = {
 };
 
 export const products: Record<ProductSlug, ProductConfig> = {
+  "stats-technicians": {
+    slug: "stats-technicians",
+    name: "Stats Technicians",
+    sector: "Research & Strategy",
+    description: "Botswana research consultancy website featuring documented studies, survey expertise, policy analysis, monitoring and evaluation, and research enquiries.",
+    tabs: ["Overview", "Projects", "Surveys", "Analysis", "More"],
+    modules: ["Public corporate website", "Company mission and vision", "Verified study portfolio", "Research services", "Stakeholder and partner references", "Project enquiry form", "Research instrument planning", "Survey management", "Data analysis", "Report writing"],
+    dashboardMetrics: ["Research enquiries", "Study references", "Survey instruments", "Reports"],
+    experience: {
+      mood: "Credible evidence, clear decisions",
+      accent: "#316445",
+      surface: "#ecf2e9",
+      hero: "Evidence that changes what happens next.",
+      onboarding: ["Company and principal profile", "Service catalogue", "Research focus", "Evidence classification", "Enquiry contact"],
+      signatureFeatures: ["Dedicated Framer Motion website", "Documented project references", "Responsive service catalogue", "Study filters and details", "Email-based enquiry"],
+      compliance: ["Participant confidentiality", "Research ethics and consent", "Verified reference attribution", "No public raw data", "Human review of reported findings"]
+    }
+  },
   "botswana-cultural-explorer": {
     slug: "botswana-cultural-explorer",
     name: "Botswana Cultural Explorer",

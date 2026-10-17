@@ -23,6 +23,7 @@ const publicSurfaceLabels: Record<string, string> = {
   "clean-care": "Residential & commercial cleaning website",
   "bake-box": "Bakery, scones, rolls & pre-order website",
   "botswana-cultural-explorer": "Cultural marketplace · crafts, heritage venues, and maker storefronts",
+  "stats-technicians": "Research and strategy consultancy website",
 };
 
 export function StudioDashboard({ products }: { products: ProductConfig[] }) {

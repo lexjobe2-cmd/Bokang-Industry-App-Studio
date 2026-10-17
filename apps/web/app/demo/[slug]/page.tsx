@@ -20,6 +20,7 @@ import { CleanCareClientSite } from "../../../components/products/CleanCareClien
 import { SalonBookClientSite } from "../../../components/products/SalonBookClientSite";
 import { BakeBoxClientSite } from "../../../components/products/BakeBoxClientSite";
 import { BotswanaCultureClientSite } from "../../../components/products/BotswanaCultureClientSite";
+import { StatsTechniciansClientSite } from "../../../components/products/StatsTechniciansClientSite";
 
 export function generateStaticParams() {
   return productList.map((product) => ({ slug: product.slug }));
@@ -44,6 +45,7 @@ export default async function ClientDemoPage({
   const legalQuery = `?client=${encodeURIComponent(demo.client)}`;
 
   if (config.slug === "botswana-cultural-explorer") return <BotswanaCultureClientSite />;
+  if (config.slug === "stats-technicians") return <StatsTechniciansClientSite />;
 
   if (config.slug === "build-quote") {
     return (

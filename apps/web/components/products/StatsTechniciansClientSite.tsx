@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowDownRight, ArrowRight, ArrowUpRight, BarChart3, Check, ChevronDown,
-  ClipboardList, Database, FileText, Globe2, Layers3, Mail, MapPin,
+  ClipboardList, FileText, Globe2, Layers3, Mail, MapPin,
   Menu, Phone, SearchCheck, ShieldCheck, Target, X
 } from "lucide-react";
 import styles from "./StatsTechnicians.module.css";
@@ -45,7 +45,7 @@ const studies = [
     scope: "Brand and audience research",
     context: "Motor Vehicle Accident Fund is explicitly named as the organisation in the company referees.",
     evidence: "Referees record · 2022 · stated duration: 3 months",
-    theme: "brand"
+    theme: "perception"
   }
 ] as const;
 
@@ -101,7 +101,6 @@ export function StatsTechniciansClientSite() {
   const [form, setForm] = useState({ name: "", email: "", service: "Research & surveys", message: "" });
   const reduceMotion = useReducedMotion();
   const visibleStudies = useMemo(() => category === "All projects" ? studies : studies.filter(s => s.tag === category), [category]);
-  const chosen = studies.find(s => s.id === selected);
   const reveal = { initial: reduceMotion ? {} : { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.16 }, transition: { duration: 0.55 } };
   function closeMenu() { setMobileOpen(false); }
   function composeMail(event: FormEvent<HTMLFormElement>) {
@@ -177,7 +176,7 @@ export function StatsTechniciansClientSite() {
       <div className={styles.steps}>{approach.map((step,index)=><motion.div {...reveal} key={step.number} className={styles.step}><span>{step.number}</span><div><h3>{step.title}</h3><p>{step.detail}</p></div><span className={styles.stepIcon}>{index===approach.length-1 ? <Check size={19}/> : <ArrowDownRight size={20}/>}</span></motion.div>)}</div>
     </div></section>
 
-    <section className={styles.teamSection}><div className={styles.contentWrap}><div className={styles.teamGrid}><motion.div {...reveal}><span className={styles.label}>THE PEOPLE BEHIND THE INSIGHT</span><h2>Expertise with<br/><em>a human side.</em></h2><p>With experience spanning statistics, economics, policy analysis, data management, monitoring and evaluation, we work with clients at the point where evidence becomes action.</p></motion.div><div className={styles.teamTile}><span className={styles.teamMonogram}>MJ<span>✳</span></span><div><span>COMPANY LEADERSHIP</span><h3>Mopati Jobe</h3><p>Owner — as identified in the website brief.</p></div><div className={styles.teamNote}><Globe2 size={18}/> Botswana-based, working across sectors</div></div></div></div></section>
+    <section className={styles.teamSection}><div className={styles.contentWrap}><div className={styles.teamGrid}><motion.div {...reveal}><span className={styles.label}>THE PEOPLE BEHIND THE INSIGHT</span><h2>Expertise with<br/><em>a human side.</em></h2><p>With experience spanning statistics, economics, policy analysis, data management, monitoring and evaluation, we work with clients at the point where evidence becomes action.</p></motion.div><div className={styles.teamTile}><span className={styles.teamMonogram}>MJ<span>✳</span></span><div><span>COMPANY LEADERSHIP</span><h3>Mopati Jobe</h3><p>Owner</p></div><div className={styles.teamNote}><Globe2 size={18}/> Botswana-based, working across sectors</div></div></div></div></section>
 
     <section className={styles.contactSection} id="contact"><div className={styles.contentWrap}><div className={styles.contactGrid}>
       <div className={styles.contactIntro}><span className={styles.label}>05 — LET'S WORK TOGETHER</span><h2>Have a question<br/>worth <em>answering?</em></h2><p>Tell us about the problem, policy question or research challenge you want to explore. Great work starts with a conversation.</p><a href="mailto:statstechnicians@gmail.com"><Mail size={18}/> statstechnicians@gmail.com</a><a href="tel:+2673113051"><Phone size={18}/> +267 311 3051</a><span className={styles.location}><MapPin size={18}/> Plot 6876, Mmaratanang Ward, Tlokweng, Botswana</span></div>
