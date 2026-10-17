@@ -89,7 +89,7 @@ function loadDemo(itemsCSV: string, movementsCSV: string): Dataset {
   for (const field of ["movement_id", "date", "item_code", "warehouse", "direction", "qty", "reference"])
     if (!moveRows.headers.includes(field)) throw new Error("movements.csv is missing " + field);
   const items = itemRows.records.map(r => ({
-    code: r.item_code.toUpperCase(), name: r.item_name, uom: r.uom, reorder: Number(r.reorder_level),
+    code: (r.item_code ?? "").toUpperCase(), name: r.item_name ?? "", uom: r.uom ?? "", reorder: Number(r.reorder_level ?? ""),
   }));
   const codes = new Set(items.map(i => i.code));
   if (items.some(i => !i.code || !i.name || !i.uom || !Number.isFinite(i.reorder) || i.reorder < 0) || codes.size !== items.length)
@@ -97,8 +97,8 @@ function loadDemo(itemsCSV: string, movementsCSV: string): Dataset {
   const movements: Movement[] = [], rejected: Rejection[] = [], acceptedIds = new Set<string>();
   for (const r of moveRows.records) {
     const m = {
-      id: r.movement_id, date: r.date, code: r.item_code.toUpperCase(), warehouse: r.warehouse,
-      direction: r.direction.toUpperCase(), qty: Number(r.qty), reference: r.reference,
+      id: r.movement_id ?? "", date: r.date ?? "", code: (r.item_code ?? "").toUpperCase(), warehouse: r.warehouse ?? "",
+      direction: (r.direction ?? "").toUpperCase(), qty: Number(r.qty ?? ""), reference: r.reference ?? "",
     };
     let reason = "";
     if (acceptedIds.has(m.id)) reason = "duplicate id";
@@ -106,7 +106,7 @@ function loadDemo(itemsCSV: string, movementsCSV: string): Dataset {
     else if (!codes.has(m.code)) reason = "unknown item";
     else if (!m.warehouse) reason = "missing warehouse";
     else if (m.direction !== "IN" && m.direction !== "OUT") reason = "bad direction";
-    else if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(r.qty) || !(m.qty > 0)) reason = "bad qty";
+    else if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(r.qty ?? "") || !(m.qty > 0)) reason = "bad qty";
     if (reason) rejected.push({ id: m.id, reason });
     else { movements.push(m as Movement); acceptedIds.add(m.id); }
   }
