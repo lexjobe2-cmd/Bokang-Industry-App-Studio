@@ -1,5 +1,9 @@
 # Bokang Industry App Studio
 
+**Explore the Studio:** https://bokang-industry-app-studio.lexjobe2.workers.dev/  
+**Find business prospects:** https://bokang-industry-app-studio.lexjobe2.workers.dev/prospects
+
+
 A reusable, backend-light application studio for turning real business opportunities into production-oriented industry apps.
 
 **Designed & developed by Bokang Jobe**
@@ -1051,7 +1055,7 @@ The current seed list replaces the earlier website-heavy targets with prospects 
 
 ## Studio public-site links
 
-The Studio dashboard does not hard-code Cloudflare temporary preview hosts. Each product's **Public site** action is generated from the current runtime origin plus the dedicated product route:
+For outreach, the Studio copies client-specific demo links from the permanent public Studio address. Each product’s **Public site** action opens a dedicated product route:
 
 - LexIntake → `/demo/lex-intake`
 - LedgerDesk → `/demo/ledger-desk`

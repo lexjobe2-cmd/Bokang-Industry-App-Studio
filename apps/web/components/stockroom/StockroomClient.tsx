@@ -228,7 +228,7 @@ export function StockroomClient() {
       <div className={styles.brand}><span className={styles.brandIcon}><Boxes size={23}/></span><span>stockroom<span className={styles.brandDot}>.</span></span></div>
       <div className={styles.navSection}>Workspace</div>
       <nav className={styles.nav}>{nav.map(n => <button type="button" key={n.id} className={tab === n.id ? styles.navActive : ""} onClick={() => navigate(n.id)}><n.icon size={18}/>{n.name}{tab === n.id ? <span className={styles.navMarker}/> : null}</button>)}</nav>
-      <div className={styles.sideBottom}><div className={styles.sidebarBadge}><ShieldCheck size={17}/> Local demo workspace</div><p>Apjakal Software Developer assessment<br/>Python + SQL companion showcase</p><a href="/" className={styles.studioLink}><ArrowLeft size={15}/> Back to App Studio</a></div>
+      <div className={styles.sideBottom}><div className={styles.sidebarBadge}><ShieldCheck size={17}/> Local demo workspace</div><p>Inventory management showcase<br/>Explore stock, movements and reporting</p><a href="/" className={styles.studioLink}><ArrowLeft size={15}/> Back to App Studio</a></div>
     </aside>
     {menuOpen ? <button aria-label="Close navigation" type="button" className={styles.backdrop} onClick={() => setMenuOpen(false)}/> : null}
     <div className={styles.main}>
@@ -264,7 +264,7 @@ export function StockroomClient() {
                 <Table headers={["Item code","Description","Unit","On hand","Reorder level","Status"]} rows={dataset.items.filter(i=>(i.code+" "+i.name).toLowerCase().includes(search.toLowerCase())).map(i => [<strong key={i.code}>{i.code}</strong>,i.name,i.uom,num(model.totals[i.code]||0),num(i.reorder),<Badge key={i.code} variant={(model.totals[i.code]||0)<i.reorder?"warning":"success"}>{(model.totals[i.code]||0)<i.reorder?"Reorder":"Healthy"}</Badge>])}/>
               </Panel>
               <div className={styles.spacer}/>
-              <Panel title="Historical stock balance" sub="Recreate the Python stock_as_of(item_code, date) calculation">
+              <Panel title="Historical stock balance" sub="Review stock at any selected date">
                 <div className={styles.lookup}><label>Choose item<select value={picked?.code||""} onChange={e=>setItemCode(e.target.value)}>{dataset.items.map(i=><option value={i.code} key={i.code}>{i.code} — {i.name}</option>)}</select></label><label>As of date<input type="date" value={asOf} onChange={e=>setAsOf(e.target.value)}/></label><div className={styles.lookupResult}><History size={21}/><span>Stock at date <strong>{num(history)} {picked?.uom||"units"}</strong></span></div></div>
               </Panel>
             </> : null}
@@ -279,9 +279,9 @@ export function StockroomClient() {
                 ["below_reorder","Reorder intelligence","Items needing replenishment",AlertCircle],
                 ["monthly_out","Monthly outbound","Monthly usage by stock item",BarChart3],
               ] as const).map(([id,title,sub,Icon])=><motion.button whileHover={reduceMotion?undefined:{y:-3}} key={id} type="button" onClick={()=>setReport(id)} className={styles.reportChoice} data-selected={report===id}><Icon size={20}/><strong>{title}</strong><span>{sub}</span>{report===id?<Check className={styles.reportCheck} size={16}/>:null}</motion.button>)}</div>
-              <Panel title="SQL-equivalent report" sub="Cloudflare demonstration computes the same reports in the browser" action={<button className={styles.outlineButton} type="button" onClick={()=>exportCSV("stockroom-"+report+".csv",reportData.headers,reportData.raw)}><Download size={14}/> Export</button>}>
+              <Panel title="Inventory report" sub="Reports calculated from the demonstration inventory records" action={<button className={styles.outlineButton} type="button" onClick={()=>exportCSV("stockroom-"+report+".csv",reportData.headers,reportData.raw)}><Download size={14}/> Export</button>}>
                 <Table headers={reportData.headers} rows={reportData.raw.map(r => r.map(v=>typeof v==="number"?num(v):v))}/>
-                <div className={styles.info}><Database size={17}/> The official assessment runs these reports against SQLite in Python. This hosted showcase displays equivalent browser calculations.</div>
+                <div className={styles.info}><Database size={17}/> Reports and totals reflect the sample inventory or files you import here. They are not connected to a live warehouse.</div>
               </Panel>
             </> : null}
             {tab === "imports" ? <>

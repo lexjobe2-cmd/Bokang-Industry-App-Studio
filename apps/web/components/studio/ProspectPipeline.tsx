@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { STUDIO_PUBLIC_URL } from "../../lib/studio-links";
 import { products, type ProductSlug } from "@bokang/app-config";
 import { prospects, type Prospect, type WebsiteStatus, type ProspectVerificationState } from "@bokang/prospects";
 import { ExternalLink, Mail, Copy, Link2, Search, CheckCircle2, Trash2, ArchiveX, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
@@ -208,7 +209,7 @@ export function ProspectPipeline() {
     if (product.slug === "salon-book") {
       params.set("variant", salonModeFromName(prospect.name + " " + prospect.subIndustry));
     }
-    return window.location.origin + "/demo/" + product.slug + "?" + params.toString();
+    return STUDIO_PUBLIC_URL + "/demo/" + product.slug + "?" + params.toString();
   }
 
   async function copy(value: string, key: string) {
